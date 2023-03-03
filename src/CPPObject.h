@@ -64,7 +64,7 @@ public:
     void operator delete(void *ptr);
 
     //是否在heap上，判断是否为栈变量或堆变量
-        bool IsInHeap();
+    bool IsInHeap();
 
     //若为堆上的变量，当前是否在创建它的线程
     bool IsInThread();
