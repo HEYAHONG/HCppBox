@@ -81,7 +81,7 @@ protected:
 
 /*
 CPPObject的子类必须包含以下结构
-class A
+class A:public CPPObject::CPPObject
 {
     ...//其它声明或定义
 protected:
