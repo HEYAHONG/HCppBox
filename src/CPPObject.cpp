@@ -3,6 +3,9 @@
 #include <map>
 #include <mutex>
 
+//对象池操作
+extern void CPPObjectPool_ObjectDelete(void *ptr);
+
 namespace CPPObject
 {
 static std::map<void *,CPPObjectInfo> CPPHeapObjPool;
@@ -12,8 +15,10 @@ static void AddCPPObject(void *ptr)
     std::lock_guard<std::mutex> lock(CPPHeapObjPoolLock);
     CPPHeapObjPool[ptr]=CPPObjectInfo();
 }
+
 static void RemoveCPPObject(void *ptr)
 {
+    CPPObjectPool_ObjectDelete(ptr);
     std::lock_guard<std::mutex> lock(CPPHeapObjPoolLock);
     auto it=CPPHeapObjPool.find(ptr);
     if(it!=CPPHeapObjPool.end())
@@ -55,19 +60,24 @@ void CPPObject::operator delete(void *ptr)
 
 bool CPPObject::IsInHeap()
 {
-    return HasCPPObject(getthis());
+    return HasCPPObject(GetVoidPtr());
 }
 
 bool CPPObject::IsInThread()
 {
-    if(HasCPPObject(getthis()))
+    if(HasCPPObject(GetVoidPtr()))
     {
-        return CPPHeapObjPool[getthis()].GetThreadId()==std::this_thread::get_id();
+        return CPPHeapObjPool[GetVoidPtr()].GetThreadId()==std::this_thread::get_id();
     }
     else
     {
         return false;
     }
+}
+
+void * CPPObject::GetVoidPtr()
+{
+    return (void *)getthis();
 }
 
 }

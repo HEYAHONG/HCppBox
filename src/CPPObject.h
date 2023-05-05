@@ -69,6 +69,9 @@ public:
     //若为堆上的变量，当前是否在创建它的线程
     bool IsInThread();
 
+    //获取此类的void指针
+    void * GetVoidPtr();
+
 protected:
     //必须在子类重载此函数
     virtual void * getthis()=0;
