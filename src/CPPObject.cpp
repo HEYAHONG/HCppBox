@@ -1,5 +1,5 @@
 ﻿
-#include "CPPOBject.h"
+#include "CPPObject.h"
 #include <map>
 #include <mutex>
 
