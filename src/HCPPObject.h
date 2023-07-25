@@ -87,12 +87,12 @@ HCPPObject的子类必须包含以下结构
 class A:public HCPPObject::HCPPObject
 {
     ...//其它声明或定义
-protected:
     O_HCPPOBJECT
-    ...//其它声明或定义(需要重新声明权限)
+    ...//其它声明或定义(注意：后面的权限变为public)
 }
 */
 #define O_HCPPOBJECT \
+                    protected:\
                     void *getthis()\
                     {\
                         return static_cast<void *>(this);\
@@ -106,7 +106,6 @@ protected:
                     {\
                         return HCPPObject::operator delete(ptr);\
                     }\
-                    protected:
 
 
 
