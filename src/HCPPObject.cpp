@@ -1,24 +1,24 @@
 ﻿
-#include "CPPObject.h"
+#include "HCPPObject.h"
 #include <map>
 #include <mutex>
 
 //对象池操作
-extern void CPPObjectPool_ObjectDelete(void *ptr);
+extern void HCPPObjectPool_ObjectDelete(void *ptr);
 
-namespace CPPObject
+namespace HCPPObject
 {
-static std::map<void *,CPPObjectInfo> CPPHeapObjPool;
+static std::map<void *,HCPPObjectInfo> CPPHeapObjPool;
 static std::mutex CPPHeapObjPoolLock;
-static void AddCPPObject(void *ptr)
+static void AddHCPPObject(void *ptr)
 {
     std::lock_guard<std::mutex> lock(CPPHeapObjPoolLock);
-    CPPHeapObjPool[ptr]=CPPObjectInfo();
+    CPPHeapObjPool[ptr]=HCPPObjectInfo();
 }
 
-static void RemoveCPPObject(void *ptr)
+static void RemoveHCPPObject(void *ptr)
 {
-    CPPObjectPool_ObjectDelete(ptr);
+    HCPPObjectPool_ObjectDelete(ptr);
     std::lock_guard<std::mutex> lock(CPPHeapObjPoolLock);
     auto it=CPPHeapObjPool.find(ptr);
     if(it!=CPPHeapObjPool.end())
@@ -26,46 +26,46 @@ static void RemoveCPPObject(void *ptr)
         CPPHeapObjPool.erase(it);
     }
 }
-static void UpdateCPPObject(void *ptr,CPPObjectInfo &info)
+static void UpdateHCPPObject(void *ptr,HCPPObjectInfo &info)
 {
-    RemoveCPPObject(ptr);
+    RemoveHCPPObject(ptr);
     std::lock_guard<std::mutex> lock(CPPHeapObjPoolLock);
     CPPHeapObjPool[ptr]=info;
 }
 
-static bool HasCPPObject(void *ptr)
+static bool HasHCPPObject(void *ptr)
 {
     return CPPHeapObjPool.find(ptr)!=CPPHeapObjPool.end();
 }
 
-void *CPPObject::operator new(std::size_t count)
+void *HCPPObject::operator new(std::size_t count)
 {
     //调用全局的new
     void *ptr=::operator new(count);
 
     //记录此对象
-    AddCPPObject(ptr);
+    AddHCPPObject(ptr);
 
     return ptr;
 }
 
-void CPPObject::operator delete(void *ptr)
+void HCPPObject::operator delete(void *ptr)
 {
     //删除记录
-    RemoveCPPObject(ptr);
+    RemoveHCPPObject(ptr);
 
     //调用全局的delete
     ::operator delete(ptr);
 }
 
-bool CPPObject::IsInHeap()
+bool HCPPObject::IsInHeap()
 {
-    return HasCPPObject(GetVoidPtr());
+    return HasHCPPObject(GetVoidPtr());
 }
 
-bool CPPObject::IsInThread()
+bool HCPPObject::IsInThread()
 {
-    if(HasCPPObject(GetVoidPtr()))
+    if(HasHCPPObject(GetVoidPtr()))
     {
         return CPPHeapObjPool[GetVoidPtr()].GetThreadId()==std::this_thread::get_id();
     }
@@ -75,7 +75,7 @@ bool CPPObject::IsInThread()
     }
 }
 
-void * CPPObject::GetVoidPtr()
+void * HCPPObject::GetVoidPtr()
 {
     return (void *)getthis();
 }

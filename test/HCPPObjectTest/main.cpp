@@ -1,5 +1,5 @@
 
-#include "CPPObject.h"
+#include "HCPPObject.h"
 #include "stdint.h"
 #include <thread>
 #include <chrono>
@@ -16,11 +16,11 @@ private:
     int m_B[100];
 };
 
-class C:public A,public B,public CPPObject::CPPObject
+class C:public A,public B,public HCPPObject::HCPPObject
 {
 
 protected:
-    O_CPPOBJECT
+    O_HCPPOBJECT
 
 };
 

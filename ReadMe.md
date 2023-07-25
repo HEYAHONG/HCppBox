@@ -1,8 +1,6 @@
 # 说明
 
-本工程主要实现一些本人常用的C++功能。现有功能如下:
-
-- 通过重载operator new与operator delete实现对变量是否在堆上分配的判断
+本工程主要实现一些本人常用的C++功能。
 
 
 ## 使用
@@ -12,6 +10,21 @@
 
 代码示例请参考[test](test)目录。
 
-# 测试程序截图
+# 组件
+
+## HCPPObject
+
+功能如下:
+
+- 通过重载operator new与operator delete实现对变量是否在堆上分配的判断
+
+### 文件列表
+
+- HCPPObject.cpp  
+- HCPPObject.h  
+- HCPPObjectPool.cpp  
+- HCPPObjectPool.h
+
+### 测试程序截图
 
 ![test](doc/test.png)

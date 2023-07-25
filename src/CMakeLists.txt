@@ -7,12 +7,12 @@ if(MSVC)
     add_compile_options(-utf-8 )
 endif()
 
-add_library(CPPObject)
-file(GLOB  CPPOBJECT_CPP_FILES *.cpp *.h)
-target_sources(CPPObject PUBLIC ${CPPOBJECT_CPP_FILES})
-target_include_directories(CPPObject PUBLIC ./)
+add_library(HCppBox)
+file(GLOB  HCPPBOX_CPP_FILES *.cpp *.h)
+target_sources(HCppBox PUBLIC ${HCPPBOX_CPP_FILES})
+target_include_directories(HCppBox PUBLIC ./)
 
 #添加线程库
 find_package(Threads REQUIRED)
-target_link_libraries(CPPObject  ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(HCppBox  ${CMAKE_THREAD_LIBS_INIT})
 

@@ -3,20 +3,12 @@ cmake_minimum_required(VERSION 3.14)
 
 project(test C CXX ASM)
 
-#添加可执行文件
-add_executable(test)
+file(GLOB TESTS *)
+foreach(TEST ${TESTS})
+	if(IS_DIRECTORY ${TEST})
+		file(RELATIVE_PATH TESTNAME ${CMAKE_CURRENT_SOURCE_DIR}/ ${TEST})
+	 	message(STATUS "Add Test ${TESTNAME}")
+		add_subdirectory(${TEST})
+	endif()
+endforeach()
 
-#设置C++标准
-set_property(TARGET test PROPERTY CXX_STANDARD 20)
-
-
-#包含CPPObject
-add_subdirectory(../ CPPObject)
-
-#启用cppobject
-cppobject_enable(test)
-
-
-#添加源代码
-file(GLOB  TEST_CPP_C_FILES *.cpp *.CPP *.c *.C *.h)
-target_sources(test PUBLIC ${TEST_CPP_C_FILES})

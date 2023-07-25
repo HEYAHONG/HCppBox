@@ -6,12 +6,12 @@ endif()
 
 add_subdirectory(src EXCLUDE_FROM_ALL)
 
-set_target_properties(CPPObject
-			PROPERTIES CPPOBJECT_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+set_target_properties(HCppBox
+			PROPERTIES HCPPBOX_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 			)
 
-#启用cppobject
-function(cppobject_enable targetname)
-target_link_libraries(${targetname} CPPObject)
+#启用HCppBox
+function(hcppbox_enable targetname)
+target_link_libraries(${targetname} HCppBox)
 endfunction()
 

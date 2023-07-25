@@ -1,27 +1,27 @@
-#ifndef __CPPOBJECT_H__
-#define __CPPOBJECT_H_
+#ifndef __HCPPOBJECT_H__
+#define __HCPPOBJECT_H_
 
 
 #ifdef __cplusplus
 #include <thread>
 #include "stdlib.h"
 #include "stdint.h"
-namespace CPPObject
+namespace HCPPObject
 {
 
-class CPPObjectInfo
+class HCPPObjectInfo
 {
     std::thread::id _tid;
 public:
-    CPPObjectInfo()
+    HCPPObjectInfo()
     {
         _tid=std::this_thread::get_id();
     }
-    CPPObjectInfo(CPPObjectInfo &&other):_tid(other._tid)
+    HCPPObjectInfo(HCPPObjectInfo &&other):_tid(other._tid)
     {
 
     }
-    CPPObjectInfo &operator =(CPPObjectInfo &&other)
+    HCPPObjectInfo &operator =(HCPPObjectInfo &&other)
     {
         if(this==&other)
         {
@@ -32,11 +32,11 @@ public:
 
         return *this;
     }
-    CPPObjectInfo(CPPObjectInfo &other):_tid(other._tid)
+    HCPPObjectInfo(HCPPObjectInfo &other):_tid(other._tid)
     {
 
     }
-    CPPObjectInfo &operator =(CPPObjectInfo &other)
+    HCPPObjectInfo &operator =(HCPPObjectInfo &other)
     {
         if(this==&other)
         {
@@ -55,7 +55,7 @@ public:
 };
 
 
-class CPPObject
+class HCPPObject
 {
 public:
     //重载new
@@ -83,16 +83,16 @@ protected:
 #endif // __cplusplus
 
 /*
-CPPObject的子类必须包含以下结构
-class A:public CPPObject::CPPObject
+HCPPObject的子类必须包含以下结构
+class A:public HCPPObject::HCPPObject
 {
     ...//其它声明或定义
 protected:
-    O_CPPOBJECT
+    O_HCPPOBJECT
     ...//其它声明或定义(需要重新声明权限)
 }
 */
-#define O_CPPOBJECT \
+#define O_HCPPOBJECT \
                     void *getthis()\
                     {\
                         return static_cast<void *>(this);\
@@ -100,11 +100,11 @@ protected:
                     public:\
                     void *operator new(std::size_t count)\
                     {\
-                        return CPPObject::operator new(count);\
+                        return HCPPObject::operator new(count);\
                     }\
                     void operator delete(void *ptr)\
                     {\
-                        return CPPObject::operator delete(ptr);\
+                        return HCPPObject::operator delete(ptr);\
                     }\
                     protected:
 
