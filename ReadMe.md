@@ -14,6 +14,8 @@
 
 ## HCPPObject
 
+本组件一般用作其它组件的基类，提供一些基础的功能。
+
 功能如下:
 
 - 通过重载operator new与operator delete实现对变量是否在堆上分配的判断
@@ -21,10 +23,22 @@
 ### 文件列表
 
 - HCPPObject.cpp  
+
 - HCPPObject.h  
-- HCPPObjectPool.cpp  
-- HCPPObjectPool.h
 
 ### 测试程序截图
 
 ![test](doc/test.png)
+
+## HCPPObjectPool
+
+本组件主要提供一些全局指针的存储。
+
+功能如下:
+
+- 提供一个对象池用于使用字符串访问对象指针。
+
+### 文件列表
+
+- HCPPObjectPool.cpp  
+- HCPPObjectPool.h
