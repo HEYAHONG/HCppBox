@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.14)
 add_executable(HCPPObjectTest)
 
 #设置C++标准
-set_property(TARGET HCPPObjectTest PROPERTY CXX_STANDARD 20)
+set_property(TARGET HCPPObjectTest PROPERTY CXX_STANDARD 23)
 
 
 #包含HCPPObject
