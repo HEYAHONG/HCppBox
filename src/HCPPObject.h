@@ -9,51 +9,11 @@
 namespace HCPPObject
 {
 
-class HCPPObjectInfo
+typedef enum
 {
-    std::thread::id _tid;
-public:
-    HCPPObjectInfo()
-    {
-        _tid=std::this_thread::get_id();
-    }
-    HCPPObjectInfo(HCPPObjectInfo &&other):_tid(other._tid)
-    {
-
-    }
-    HCPPObjectInfo &operator =(HCPPObjectInfo &&other)
-    {
-        if(this==&other)
-        {
-            return *this;
-        }
-
-        _tid=other._tid;
-
-        return *this;
-    }
-    HCPPObjectInfo(HCPPObjectInfo &other):_tid(other._tid)
-    {
-
-    }
-    HCPPObjectInfo &operator =(HCPPObjectInfo &other)
-    {
-        if(this==&other)
-        {
-            return *this;
-        }
-
-        _tid=other._tid;
-
-        return *this;
-    }
-    std::thread::id GetThreadId()
-    {
-        return _tid;
-    }
-
-};
-
+    HCPPOBJECT_TYPE_BASE=0, /**< HCPPObject基类 */
+    HCPPOBJECT_TYPE_SIMPLE /**< HCPPObjectSimple模板类 */
+} Type;
 
 class HCPPObject
 {
@@ -71,6 +31,12 @@ public:
 
     //获取此类的void指针
     void * GetVoidPtr();
+
+    //获取类型
+    virtual Type GetType()
+    {
+        return HCPPOBJECT_TYPE_BASE;
+    }
 
 protected:
     //必须在子类重载此函数
@@ -107,7 +73,46 @@ class A:public HCPPObject::HCPPObject
                         return HCPPObject::operator delete(ptr);\
                     }\
 
+#ifdef __cplusplus
+namespace HCPPObject
+{
 
+/*
+简易的C++对象模板
+*/
+template<typename T>
+class HCPPObjectSimple:public HCPPObject
+{
+    T data;
+    O_HCPPOBJECT
+public:
+    HCPPObjectSimple(T &_data):data(_data)
+    {
+
+    }
+    HCPPObjectSimple(T &&_data):data(_data)
+    {
+
+    }
+    virtual ~HCPPObjectSimple()
+    {
+
+    }
+    //获取类型
+    virtual Type GetType()
+    {
+        return HCPPOBJECT_TYPE_SIMPLE;
+    }
+    //获取数据,失败返回NULL
+    template<typename DataType=T>
+    DataType *GetDataPtr()
+    {
+        return dynamic_cast<DataType*>(&data);
+    }
+};
+
+}
+#endif // __cplusplus
 
 #endif // __CPPOBJECT__
 

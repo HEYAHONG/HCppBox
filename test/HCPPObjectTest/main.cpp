@@ -26,7 +26,6 @@ protected:
 
 C g_global;
 C *g_global_heap=NULL;
-
 void thread_func()
 {
     {

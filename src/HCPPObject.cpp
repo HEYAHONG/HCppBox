@@ -8,6 +8,50 @@ extern void HCPPObjectPool_ObjectDelete(void *ptr);
 
 namespace HCPPObject
 {
+class HCPPObjectInfo
+{
+    std::thread::id _tid;
+public:
+    HCPPObjectInfo()
+    {
+        _tid=std::this_thread::get_id();
+    }
+    HCPPObjectInfo(HCPPObjectInfo &&other):_tid(other._tid)
+    {
+
+    }
+    HCPPObjectInfo &operator =(HCPPObjectInfo &&other)
+    {
+        if(this==&other)
+        {
+            return *this;
+        }
+
+        _tid=other._tid;
+
+        return *this;
+    }
+    HCPPObjectInfo(HCPPObjectInfo &other):_tid(other._tid)
+    {
+
+    }
+    HCPPObjectInfo &operator =(HCPPObjectInfo &other)
+    {
+        if(this==&other)
+        {
+            return *this;
+        }
+
+        _tid=other._tid;
+
+        return *this;
+    }
+    std::thread::id GetThreadId()
+    {
+        return _tid;
+    }
+
+};
 static std::map<void *,HCPPObjectInfo> CPPHeapObjPool;
 static std::mutex CPPHeapObjPoolLock;
 static void AddHCPPObject(void *ptr)
