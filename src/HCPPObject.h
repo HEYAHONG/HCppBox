@@ -4,6 +4,7 @@
 
 #ifdef __cplusplus
 #include <thread>
+#include <typeinfo>
 #include "stdlib.h"
 #include "stdint.h"
 namespace HCPPObject
@@ -38,6 +39,12 @@ public:
         return HCPPOBJECT_TYPE_BASE;
     }
 
+    //获取typeid
+    virtual const std::type_info & GetTypeId()
+    {
+        return typeid(*this);
+    }
+
 protected:
     //必须在子类重载此函数
     virtual void * getthis()=0;
@@ -59,7 +66,7 @@ class A:public HCPPObject::HCPPObject
 */
 #define O_HCPPOBJECT \
                     protected:\
-                    void *getthis()\
+                    void *getthis() override\
                     {\
                         return static_cast<void *>(this);\
                     }\
@@ -71,6 +78,10 @@ class A:public HCPPObject::HCPPObject
                     void operator delete(void *ptr)\
                     {\
                         return HCPPObject::operator delete(ptr);\
+                    }\
+                    const std::type_info & GetTypeId() override\
+                    {\
+                        return typeid(*this);\
                     }\
 
 #ifdef __cplusplus
@@ -99,7 +110,7 @@ public:
 
     }
     //获取类型
-    virtual Type GetType()
+    Type GetType() override
     {
         return HCPPOBJECT_TYPE_SIMPLE;
     }
@@ -110,6 +121,19 @@ public:
         return dynamic_cast<DataType*>(&data);
     }
 };
+
+/*
+判断简易的C++对象模板数据类型是否为某类型
+*/
+template<typename T>
+bool IsHCPPObjectSimpleDataType(HCPPObject *obj)
+{
+    if((obj!=NULL) && (obj->GetType()==HCPPOBJECT_TYPE_SIMPLE))
+    {
+        return typeid(HCPPObjectSimple<T>)==obj->GetTypeId();
+    }
+    return false;
+}
 
 }
 #endif // __cplusplus
