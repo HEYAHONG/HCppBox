@@ -3,7 +3,7 @@
 #include <mutex>
 
 static std::mutex HCPPObjectPoolLock;
-static std::map<std::string,HCPPObject::HCPPObject *> HCPPObjectPool;
+static std::map<std::string,HCPPObject *> HCPPObjectPool;
 static std::map<void *,std::string> HCPPObjectPoolDeleteHelper;
 
 /** \brief 删除对象池的对象(一般用于自动删除)
@@ -24,7 +24,7 @@ void HCPPObjectPool_ObjectDelete(void *ptr)
         HCPPObjectPoolDeleteHelper.erase(HCPPObjectPoolDeleteHelper.find(ptr));
     }
 }
-void HCPPObjectPool_Set(std::string id,HCPPObject::HCPPObject *obj)
+void HCPPObjectPool_Set(std::string id,HCPPObject *obj)
 {
     if(id.empty() || obj == NULL)
     {
@@ -37,7 +37,7 @@ void HCPPObjectPool_Set(std::string id,HCPPObject::HCPPObject *obj)
 
 }
 
-HCPPObject::HCPPObject *HCPPObjectPool_Get(std::string id)
+HCPPObject *HCPPObjectPool_Get(std::string id)
 {
     std::lock_guard<std::mutex> lock(HCPPObjectPoolLock);
     if(HCPPObjectPool.find(id)!=HCPPObjectPool.end())

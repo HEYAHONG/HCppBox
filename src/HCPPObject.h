@@ -7,18 +7,15 @@
 #include <typeinfo>
 #include "stdlib.h"
 #include "stdint.h"
-namespace HCPPObject
-{
-
-typedef enum
-{
-    HCPPOBJECT_TYPE_BASE=0, /**< HCPPObject基类 */
-    HCPPOBJECT_TYPE_SIMPLE /**< HCPPObjectSimple模板类 */
-} Type;
-
 class HCPPObject
 {
 public:
+    typedef enum
+    {
+        HCPPOBJECT_TYPE_BASE=0, /**< HCPPObject基类 */
+        HCPPOBJECT_TYPE_SIMPLE /**< HCPPObjectSimple模板类 */
+    } Type;
+
     //重载new
     void *operator new(std::size_t count);
     //重载delete
@@ -50,14 +47,11 @@ protected:
     virtual void * getthis()=0;
 
 };
-
-
-}
 #endif // __cplusplus
 
 /*
 HCPPObject的子类必须包含以下结构
-class A:public HCPPObject::HCPPObject
+class A:public HCPPObject
 {
     ...//其它声明或定义
     O_HCPPOBJECT
@@ -85,9 +79,6 @@ class A:public HCPPObject::HCPPObject
                     }\
 
 #ifdef __cplusplus
-namespace HCPPObject
-{
-
 /*
 简易的C++对象模板
 */
@@ -128,13 +119,11 @@ public:
 template<typename T>
 bool IsHCPPObjectSimpleDataType(HCPPObject *obj)
 {
-    if((obj!=NULL) && (obj->GetType()==HCPPOBJECT_TYPE_SIMPLE))
+    if((obj!=NULL) && (obj->GetType()==HCPPObject::HCPPOBJECT_TYPE_SIMPLE))
     {
         return typeid(HCPPObjectSimple<T>)==obj->GetTypeId();
     }
     return false;
-}
-
 }
 #endif // __cplusplus
 

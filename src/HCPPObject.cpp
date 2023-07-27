@@ -6,8 +6,6 @@
 //对象池操作
 extern void HCPPObjectPool_ObjectDelete(void *ptr);
 
-namespace HCPPObject
-{
 class HCPPObjectInfo
 {
     std::thread::id _tid;
@@ -122,6 +120,4 @@ bool HCPPObject::IsInThread()
 void * HCPPObject::GetVoidPtr()
 {
     return (void *)getthis();
-}
-
 }

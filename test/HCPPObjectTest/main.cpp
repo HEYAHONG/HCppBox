@@ -16,7 +16,7 @@ private:
     int m_B[100];
 };
 
-class C:public A,public B,public HCPPObject::HCPPObject
+class C:public A,public B,public HCPPObject
 {
 
 protected:
