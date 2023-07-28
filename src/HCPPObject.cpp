@@ -108,6 +108,12 @@ HCPPObject::HCPPObject(HCPPObject *parent):m_parent(parent),m_lock(new std::recu
 
 HCPPObject::~HCPPObject()
 {
+    if(m_parent!=NULL)
+    {
+        //从原有父对象删除
+        m_parent->RemoveFromChildList(this);
+        m_parent=NULL;
+    }
     {
         //清理子对象(从子对象列表中删除子对象)
         std::lock_guard<std::recursive_mutex> lock(*m_lock);
