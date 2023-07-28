@@ -3,13 +3,39 @@
 
 
 #ifdef __cplusplus
+#include <mutex>
+#include <list>
 #include <thread>
 #include <typeinfo>
 #include "stdlib.h"
 #include "stdint.h"
 class HCPPObject
 {
+private:
+    //对象锁
+    std::recursive_mutex *m_lock;
+    //父对象指针
+    HCPPObject *m_parent;
+    //子对象列表
+    std::list<HCPPObject *> m_child_list;
+    void AddToChildList(HCPPObject * child);
+    void RemoveFromChildList(HCPPObject * child);
 public:
+    HCPPObject(HCPPObject *parent=NULL);
+    virtual ~HCPPObject();
+
+    //获取父对象
+    HCPPObject *GetParent();
+
+    //设置父对象
+    bool SetParent(HCPPObject * parent,bool force_update=false);
+
+    //锁定对象
+    void Lock();
+
+    //解锁对象
+    void UnLock();
+
     typedef enum
     {
         HCPPOBJECT_TYPE_BASE=0, /**< HCPPObject基类 */
@@ -88,11 +114,11 @@ class HCPPObjectSimple:public HCPPObject
     T data;
     O_HCPPOBJECT
 public:
-    HCPPObjectSimple(T &_data):data(_data)
+    HCPPObjectSimple(T &_data,HCPPObject *parent=NULL):data(_data),HCPPObject(parent)
     {
 
     }
-    HCPPObjectSimple(T &&_data):data(_data)
+    HCPPObjectSimple(T &&_data,HCPPObject *parent=NULL):data(_data),HCPPObject(parent)
     {
 
     }
