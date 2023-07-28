@@ -53,6 +53,9 @@ public:
     //若为堆上的变量，当前是否在创建它的线程
     bool IsInThread();
 
+    //获取线程ID
+    std::thread::id *GetThreadId();
+
     //获取此类的void指针
     void * GetVoidPtr();
 

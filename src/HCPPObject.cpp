@@ -45,7 +45,7 @@ public:
 
         return *this;
     }
-    std::thread::id GetThreadId()
+    std::thread::id &GetThreadId()
     {
         return _tid;
     }
@@ -199,6 +199,15 @@ bool HCPPObject::IsInThread()
     {
         return false;
     }
+}
+
+std::thread::id *HCPPObject::GetThreadId()
+{
+    if(HasHCPPObject(GetVoidPtr()))
+    {
+        return &CPPHeapObjPool[GetVoidPtr()].GetThreadId();
+    }
+    return NULL;
 }
 
 void * HCPPObject::GetVoidPtr()
