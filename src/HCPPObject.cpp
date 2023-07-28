@@ -2,6 +2,7 @@
 #include "HCPPObject.h"
 #include <map>
 #include <mutex>
+#include <algorithm>
 
 //对象池操作
 extern void HCPPObjectPool_ObjectDelete(void *ptr);
