@@ -120,10 +120,19 @@ HCPPObject::~HCPPObject()
         for(std::list<HCPPObject*>::iterator it=m_child_list.begin(); it!=m_child_list.end(); it++)
         {
             HCPPObject *child=(*it);
-            if(child!=NULL && child->IsInHeap())
+            if(child!=NULL)
             {
-                //删除在堆上分配的子对象
-                delete child;
+                if(child->IsInHeap())
+                {
+                    //删除在堆上分配的子对象
+                    delete child;
+                }
+                else
+                {
+                    //当非堆上分配的对象，直接移除其父对象指针
+                    std::lock_guard<std::recursive_mutex> lock(*child->m_lock);
+                    child->m_parent=NULL;
+                }
             }
         }
         m_child_list.clear();
