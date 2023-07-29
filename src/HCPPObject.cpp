@@ -117,7 +117,8 @@ HCPPObject::~HCPPObject()
     {
         //清理子对象(从子对象列表中删除子对象)
         std::lock_guard<std::recursive_mutex> lock(*m_lock);
-        for(std::list<HCPPObject*>::iterator it=m_child_list.begin(); it!=m_child_list.end(); it++)
+        auto m_child_list_copy=m_child_list;//由于删除子对象时会修改m_child_list，故使用副本进行遍历
+        for(std::list<HCPPObject*>::iterator it=m_child_list_copy.begin(); it!=m_child_list_copy.end(); it++)
         {
             HCPPObject *child=(*it);
             if(child!=NULL)
