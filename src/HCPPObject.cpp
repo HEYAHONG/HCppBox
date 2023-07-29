@@ -150,6 +150,25 @@ HCPPObject *HCPPObject::GetParent()
     return m_parent;
 }
 
+HCPPObject *HCPPObject::GetTopHCPPObject()
+{
+    HCPPObject *ret=m_parent;
+    if(ret!=NULL)
+    {
+        HCPPObject *next_parent=ret->m_parent;
+        while(next_parent!=NULL)
+        {
+            ret=next_parent;
+            next_parent=ret->m_parent;
+        }
+    }
+    if(ret==NULL)
+    {
+        ret=this;
+    }
+    return ret;
+}
+
 bool HCPPObject::SetParent(HCPPObject * parent,bool force_update)
 {
     if(!force_update && m_parent!=NULL)

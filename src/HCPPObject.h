@@ -27,6 +27,9 @@ public:
     //获取父对象
     HCPPObject *GetParent();
 
+    //获取最顶层对象,对于没有父对象的对象而言，顶层对象就是他们自身。
+    HCPPObject *GetTopHCPPObject();
+
     //设置父对象
     bool SetParent(HCPPObject * parent,bool force_update=false);
 
