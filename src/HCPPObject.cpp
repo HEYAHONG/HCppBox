@@ -146,8 +146,7 @@ HCPPObject::HCPPObject(HCPPObject &&other):m_parent(other.m_parent),m_lock(new s
             HCPPObject *child=(*it);
             if(child!=NULL)
             {
-                other.RemoveFromChildList(child);
-                AddToChildList(child);
+                child->SetParent(this,true);
             }
         }
     }
