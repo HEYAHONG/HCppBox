@@ -17,9 +17,8 @@ private:
 
 class C:public A,public B,public HCPPObject
 {
-
-protected:
     O_HCPPOBJECT
+public:
 
 };
 
