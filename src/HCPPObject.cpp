@@ -250,6 +250,25 @@ bool HCPPObject::SetParent(HCPPObject * parent,bool force_update)
     return true;
 }
 
+void HCPPObject::EnumChild(std::function<void(const HCPPObject * const)> OnEnum)
+{
+    if(OnEnum==NULL)
+    {
+        return;
+    }
+    {
+        std::lock_guard<std::recursive_mutex> lock(*m_lock);
+         for(std::list<HCPPObject*>::iterator it=m_child_list.begin(); it!=m_child_list.end(); it++)
+        {
+            HCPPObject *child=(*it);
+            if(child!=NULL)
+            {
+                OnEnum(child);
+            }
+        }
+    }
+}
+
 void HCPPObject::Lock()
 {
     m_lock->lock();

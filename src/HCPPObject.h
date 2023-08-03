@@ -7,6 +7,7 @@
 #include <list>
 #include <thread>
 #include <typeinfo>
+#include <functional>
 #include "stdlib.h"
 #include "stdint.h"
 class HCPPObject
@@ -39,6 +40,9 @@ public:
 
     //设置父对象
     bool SetParent(HCPPObject * parent,bool force_update=false);
+
+    //对象枚举
+    void EnumChild(std::function<void(const HCPPObject * const)> OnEnum);
 
     //锁定对象
     void Lock();
