@@ -120,6 +120,52 @@ HCPPObject::HCPPObject(HCPPObject *parent):m_parent(parent),m_lock(new std::recu
     }
 }
 
+HCPPObject::HCPPObject(HCPPObject &other):m_parent(other.m_parent),m_lock(new std::recursive_mutex)
+{
+    if(m_parent!=NULL)
+    {
+        //添加到父对象
+        m_parent->AddToChildList(this);
+    }
+}
+
+HCPPObject::HCPPObject(HCPPObject &&other):m_parent(other.m_parent),m_lock(new std::recursive_mutex)
+{
+    if(m_parent!=NULL)
+    {
+        //添加到父对象
+        m_parent->AddToChildList(this);
+    }
+
+    {
+        std::lock_guard<std::recursive_mutex> lock(*m_lock);
+        std::lock_guard<std::recursive_mutex> lock_other(*other.m_lock);
+        auto m_child_list_copy=other.m_child_list;//由于过程中会修改m_child_list，故使用副本进行遍历
+        for(std::list<HCPPObject*>::iterator it=m_child_list_copy.begin(); it!=m_child_list_copy.end(); it++)
+        {
+            HCPPObject *child=(*it);
+            if(child!=NULL)
+            {
+                other.RemoveFromChildList(child);
+                AddToChildList(child);
+            }
+        }
+    }
+}
+
+HCPPObject & HCPPObject::operator =(HCPPObject &other)
+{
+    if(&other==this)
+    {
+        return *this;
+    }
+
+    SetParent(other.m_parent,true);
+
+    return *this;
+}
+
+
 HCPPObject::~HCPPObject()
 {
     if(m_parent!=NULL)

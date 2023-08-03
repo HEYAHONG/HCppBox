@@ -24,6 +24,13 @@ public:
     HCPPObject(HCPPObject *parent=NULL);
     virtual ~HCPPObject();
 
+    //拷贝构造函数,注意：不复制子对象列表
+    HCPPObject(HCPPObject &other);
+    //移动构造函数,注意将移动子对象列表
+    HCPPObject(HCPPObject &&other);
+    //赋值操作符,注意：不赋值子对象列表
+    HCPPObject & operator =(HCPPObject &other);
+
     //获取父对象
     HCPPObject *GetParent();
 
