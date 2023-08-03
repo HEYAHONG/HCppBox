@@ -50,8 +50,13 @@ public:
         return _tid;
     }
 
-    bool SetThreadId(std::thread::id &_id)
+    bool SetThreadId(std::thread::id _id,bool force_update=false)
     {
+        if(force_update)
+        {
+            _tid=_id;
+            return true;
+        }
         if(_id==std::this_thread::get_id())
         {
             _tid=_id;
@@ -252,6 +257,15 @@ std::thread::id const * const HCPPObject::GetThreadId()
         return &CPPHeapObjPool[GetVoidPtr()].GetThreadId();
     }
     return NULL;
+}
+
+bool HCPPObject::SetThreadId(std::thread::id _id,bool force_update)
+{
+    if(HasHCPPObject(GetVoidPtr()))
+    {
+        return CPPHeapObjPool[GetVoidPtr()].SetThreadId(_id,force_update);
+    }
+    return false;
 }
 
 void * HCPPObject::GetVoidPtr()

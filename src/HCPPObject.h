@@ -42,7 +42,8 @@ public:
     typedef enum
     {
         HCPPOBJECT_TYPE_BASE=0, /**< HCPPObject基类 */
-        HCPPOBJECT_TYPE_SIMPLE /**< HCPPObjectSimple模板类 */
+        HCPPOBJECT_TYPE_SIMPLE, /**< HCPPObjectSimple模板类 */
+        HCPPOBJECT_TYPE_CUSTOM_BASE /**< 自定义类型基址，可使用类似HCPPOBJECT_TYPE_CUSTOM_BASE+0,HCPPOBJECT_TYPE_CUSTOM_BASE+1形式自定义类*/
     } Type;
 
     //重载new
@@ -58,6 +59,9 @@ public:
 
     //获取线程ID
     std::thread::id const * const GetThreadId();
+
+    //设置线程ID，默认情况下只有对象所属线程可以更新
+    bool SetThreadId(std::thread::id _id,bool force_update=false);
 
     //获取此类的void指针
     void * GetVoidPtr();
