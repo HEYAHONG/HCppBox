@@ -5,12 +5,14 @@
 #include <chrono>
 
 void IsInHeap_IsInThread_main();
+void Parent_main();
 
 int main()
 {
 
     IsInHeap_IsInThread_main();
 
+    Parent_main();
 #ifdef WIN32
     printf("press any key to exit\n");
     getchar();

@@ -1,5 +1,6 @@
 #include "HCPPObject.h"
 #include "stdint.h"
+#include "stdio.h"
 #include <thread>
 #include <chrono>
 
@@ -35,6 +36,8 @@ void thread_func()
 
 void IsInHeap_IsInThread_main()
 {
+    printf(__FILE__  " Start\r\n");
+
     //缺陷:不可在main之前分配内存
     g_global_heap=new C;
     {
@@ -64,4 +67,6 @@ void IsInHeap_IsInThread_main()
     }
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    printf(__FILE__  " End\r\n");
 }
