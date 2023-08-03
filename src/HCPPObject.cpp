@@ -50,6 +50,15 @@ public:
         return _tid;
     }
 
+    bool SetThreadId(std::thread::id &_id)
+    {
+        if(_id==std::this_thread::get_id())
+        {
+            _tid=_id;
+            return true;
+        }
+        return false;
+    }
 };
 static std::map<void *,HCPPObjectInfo> CPPHeapObjPool;
 static std::mutex CPPHeapObjPoolLock;
@@ -236,7 +245,7 @@ bool HCPPObject::IsInThread()
     }
 }
 
-std::thread::id *HCPPObject::GetThreadId()
+std::thread::id const * const HCPPObject::GetThreadId()
 {
     if(HasHCPPObject(GetVoidPtr()))
     {

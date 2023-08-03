@@ -57,7 +57,7 @@ public:
     bool IsInThread();
 
     //获取线程ID
-    std::thread::id *GetThreadId();
+    std::thread::id const * const GetThreadId();
 
     //获取此类的void指针
     void * GetVoidPtr();

@@ -30,8 +30,8 @@ void thread_func()
 {
     {
         //全局变量测试
-        printf("thread g_global(%08X) heap:%s thread:%s\n",(uint32_t)reinterpret_cast<uint64_t>(&g_global),g_global.IsInHeap()?"true":"false",g_global.IsInThread()?"true":"false");
-        printf("thread g_global_heap(%08X) heap:%s thread:%s\n",(uint32_t)reinterpret_cast<uint64_t>(g_global_heap),g_global_heap->IsInHeap()?"true":"false",g_global_heap->IsInThread()?"true":"false");
+        printf("thread g_global(%08X) heap:%s thread:%s\n",(uint32_t)reinterpret_cast<uintptr_t>(&g_global),g_global.IsInHeap()?"true":"false",g_global.IsInThread()?"true":"false");
+        printf("thread g_global_heap(%08X) heap:%s thread:%s\n",(uint32_t)reinterpret_cast<uintptr_t>(g_global_heap),g_global_heap->IsInHeap()?"true":"false",g_global_heap->IsInThread()?"true":"false");
     }
 }
 
@@ -41,8 +41,8 @@ int main()
     g_global_heap=new C;
     {
         //全局变量测试
-        printf("g_global(%08X) heap:%s thread:%s\n",(uint32_t)reinterpret_cast<uint64_t>(&g_global),g_global.IsInHeap()?"true":"false",g_global.IsInThread()?"true":"false");
-        printf("g_global_heap(%08X) heap:%s thread:%s\n",(uint32_t)reinterpret_cast<uint64_t>(g_global_heap),g_global_heap->IsInHeap()?"true":"false",g_global_heap->IsInThread()?"true":"false");
+        printf("g_global(%08X) heap:%s thread:%s\n",(uint32_t)reinterpret_cast<uintptr_t>(&g_global),g_global.IsInHeap()?"true":"false",g_global.IsInThread()?"true":"false");
+        printf("g_global_heap(%08X) heap:%s thread:%s\n",(uint32_t)reinterpret_cast<uintptr_t>(g_global_heap),g_global_heap->IsInHeap()?"true":"false",g_global_heap->IsInThread()?"true":"false");
     }
 
     //启动线程
