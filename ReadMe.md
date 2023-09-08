@@ -1,18 +1,24 @@
 # 说明
 
-本工程主要实现一些本人常用的C++功能。
+本工程主要实现一些本人常用的C++/C功能。
 
-通常运行于Windows与Linux,一般不支持RTOS。
+C相关代码放置于[hbox](hbox)，通常只依赖于C运行库与部分OS接口。
+
+C++相关代码放置于[src](src),通常运行于Windows与Linux,一般不支持RTOS。
 
 
 ## 使用
 
 
-本工程主要支持CMake构建的工程,其它类型项目请直接添加[src](src)下的cpp文件。
+本工程主要支持CMake构建的工程,其它类型项目请直接添加[src](src)下的cpp文件与[hbox](hbox)的C语言文件,并设置相关头文件搜索目录。
 
 代码示例请参考[test](test)目录。
 
 # 组件
+
+## hbox
+
+hbox 为C语言组件，详情参考[hbox](hbox)目录。
 
 ## HCPPObject
 

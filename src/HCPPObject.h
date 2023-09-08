@@ -1,6 +1,8 @@
 #ifndef __HCPPOBJECT_H__
 #define __HCPPOBJECT_H_
 
+#include "hcompiler.h"
+#include "hdefaults.h"
 
 #ifdef __cplusplus
 #include <mutex>
