@@ -9,10 +9,14 @@ C++相关代码放置于[src](src),通常运行于Windows与Linux,一般不支�
 
 ## 使用
 
-
 本工程主要支持CMake构建的工程,其它类型项目请直接添加[src](src)下的cpp文件与[hbox](hbox)的C语言文件,并设置相关头文件搜索目录。
 
 代码示例请参考[test](test)目录。
+
+对于基于CMake的工程，在将本工程顶级目录使用`add_subdirectory`命令添加为子目录后，可使用以下自定义命令:
+
+- hcppbox_enable(targetname):为目标名为targetname的目标启用C++相关组件。
+- hbox_enable(targetname):为目标名为targetname的目标启用HBox(C相关组件)。
 
 # 组件
 

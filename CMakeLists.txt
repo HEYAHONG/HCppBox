@@ -15,3 +15,7 @@ function(hcppbox_enable targetname)
 target_link_libraries(${targetname} HCppBox)
 endfunction()
 
+#启用HBox
+function(hbox_enable targetname)
+target_link_libraries(${targetname} HBox)
+endfunction()
