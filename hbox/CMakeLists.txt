@@ -15,3 +15,7 @@ target_include_directories(HBox PUBLIC ./ )
 set_property(TARGET HBox PROPERTY CXX_STANDARD 11)
 set_property(TARGET HBox PROPERTY C_STANDARD 99)
 
+#启用HBox
+function(hbox_enable targetname)
+target_link_libraries(${targetname} HBox)
+endfunction()
