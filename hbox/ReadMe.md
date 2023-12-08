@@ -38,6 +38,7 @@ hbox意为HYH的工具箱。
 |      `__RESTRICT`      | restrict限定符 |                                                              |
 |      `__NO_INIT`       |  不进行初始化  | 通常用于支持SRAM在复位时不复位的单片机使用。可减少异常复位带来的数据损失。 |
 |       `__ALIAS`        |      别名      |                                                              |
+|      `__SECTION`       |     设置节     |                     通常配合链接脚本使用                     |
 
 ## hdefaults
 
