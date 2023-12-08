@@ -9,9 +9,6 @@ add_executable(HCPPObjectTest)
 set_property(TARGET HCPPObjectTest PROPERTY CXX_STANDARD 23)
 
 
-#包含HCPPObject
-add_subdirectory(../../ HCppBox)
-
 #启用HCppBox
 hcppbox_enable(HCPPObjectTest)
 

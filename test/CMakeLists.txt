@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.14)
 
 project(test C CXX ASM)
 
+#包含库文件
+add_subdirectory(../ HCppBox)
+
 file(GLOB TESTS *)
 foreach(TEST ${TESTS})
 	if(IS_DIRECTORY ${TEST})
