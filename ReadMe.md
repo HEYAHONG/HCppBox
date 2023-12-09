@@ -18,7 +18,7 @@
 
 ## hbox
 
-hbox 为以C语言为主要语言组件，详情参考[hbox](hbox)目录。
+hbox 为以C语言为主要语言的组件，详情参考[hbox](hbox)目录。
 
 本组件主要用于嵌入式编程，通常只依赖于C运行库与部分OS接口,尽量使用较少的依赖以适应各种编译环境。
 
@@ -29,7 +29,7 @@ hbox 为以C语言为主要语言组件，详情参考[hbox](hbox)目录。
 
 ## hcppbox
 
-hcppbox为以C++为主要语言组件,详情参考[hcppbox](hcppbox)目录。
+hcppbox为以C++为主要语言的组件,详情参考[hcppbox](hcppbox)目录。
 
 本组件不可单独使用,依赖于hbox组件。
 
