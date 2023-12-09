@@ -11,11 +11,22 @@
 #include "hmemoryheap.h"
 
 #if __STDC_VERSION__ >= 199901L
+//C99,MSVC不使用此方法判断
+
 #ifndef HAVE_UINTPTR_T
 #define HAVE_UINTPTR_T 1
 #endif // HAVE_UINTPTR_T
+
 #endif // __STDC_VERSION__
 
+#ifdef _MSC_VER
+//MSVC
+
+#ifndef HAVE_UINTPTR_T
+#define HAVE_UINTPTR_T 1
+#endif // HAVE_UINTPTR_T
+
+#endif // _MSC_VER
 
 struct hmemoryheap_pool
 {

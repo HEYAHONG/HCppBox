@@ -6,6 +6,10 @@ project(test C CXX ASM)
 #包含库文件
 add_subdirectory(../ HCppBox)
 
+if(MSVC)
+    add_compile_options(-utf-8 )
+endif()
+
 file(GLOB TESTS *)
 foreach(TEST ${TESTS})
 	if(IS_DIRECTORY ${TEST})
