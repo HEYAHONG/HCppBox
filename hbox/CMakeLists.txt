@@ -6,7 +6,7 @@ if(MSVC)
 endif()
 
 add_library(HBox)
-file(GLOB  HBOX_C_CPP_FILES *.cpp *.h *.c *.h)
+file(GLOB  HBOX_C_CPP_FILES *.cpp *.hpp *.c *.h)
 target_sources(HBox PUBLIC ${HBOX_C_CPP_FILES})
 target_include_directories(HBox PUBLIC ./ )
 
