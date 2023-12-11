@@ -488,6 +488,13 @@ void hmemoryheap_pool_free(hmemoryheap_pool_t *pool,void *ptr)
 
 static hmemoryheap_pool_t *default_pool=NULL;
 
+
+#ifdef USING_HMEMORYHEAP
+#ifndef HMEMORYHEAP_DEFAULT_POOL_SIZE
+#define HMEMORYHEAP_DEFAULT_POOL_SIZE 256
+#endif // HMEMORYHEAP_DEFAULT_POOL_SIZE
+#endif // USING_HMEMORYHEAP
+
 #if HMEMORYHEAP_DEFAULT_POOL_SIZE >= 256
 static uint8_t pool_store[HMEMORYHEAP_DEFAULT_POOL_SIZE]= {0};
 static bool g_is_defalut_pool_init=false;

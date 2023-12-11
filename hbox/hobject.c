@@ -448,7 +448,7 @@ void hobject_struct_init(hobject_struct_t *obj_ptr,uint16_t usr_type)
 
 hobject_base_t * hobject_struct_base(hobject_struct_t *obj_ptr)
 {
-     return HOBJECT_BASE(obj_ptr);
+    return HOBJECT_BASE(obj_ptr);
 }
 
 hobject_struct_t * hobject_struct(hobject_base_t *base)
@@ -504,7 +504,7 @@ void hobject_managed_struct_init(hobject_managed_struct_t *obj_ptr,uint16_t usr_
 
 hobject_base_t * hobject_managed_struct_base(hobject_managed_struct_t *obj_ptr)
 {
-     return HOBJECT_BASE(obj_ptr);
+    return HOBJECT_BASE(obj_ptr);
 }
 
 hobject_managed_struct_t * hobject_managed_struct(hobject_base_t *base)
