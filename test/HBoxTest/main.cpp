@@ -74,14 +74,228 @@ static int hdefaults_test(int argc,const char *argv[])
 }
 static int heventloop_test(int argc,const char *argv[])
 {
+    //创建eventloop
+    heventloop_t *loop=heventloop_new(NULL);
+    if(loop==NULL)
+    {
+        printf("heventloop_test:create error\r\n");
+        return -1;
+    }
+    printf("heventloop_test:pool addr=0x%" PRIX64 "\r\n",(uint64_t)(intptr_t)loop);
+
+    //添加两个事件(使用无捕获的lambda函数)
+    printf("heventloop_test:add events\r\n");
+    heventloop_add_event(loop,NULL,[](void *)
+    {
+        printf("heventloop_test:event\r\n");
+    },NULL);
+    heventloop_add_event_ex1(loop,NULL,[](void*,heventloop_t *m_loop)
+    {
+        printf("heventloop_test:event ex\r\n");
+        printf("heventloop_test:pool addr=0x%" PRIX64 "\r\n",(uint64_t)(intptr_t)m_loop);
+    },NULL);
+
+    printf("heventloop_test:process events(1)\r\n");
+    heventloop_process_event(loop);
+
+    printf("heventloop_test:process events(2)\r\n");
+    heventloop_process_event(loop);
+
+
+    //添加两个事件(使用无捕获的lambda函数)
+    printf("heventloop_test:add events\r\n");
+    heventloop_add_event_ex1(loop,NULL,[](void*,heventloop_t *m_loop)
+    {
+        printf("heventloop_test:event ex\r\n");
+        printf("heventloop_test:pool addr=0x%" PRIX64 "\r\n",(uint64_t)(intptr_t)m_loop);
+    },NULL);
+    heventloop_add_event(loop,NULL,[](void *)
+    {
+        printf("heventloop_test:event\r\n");
+    },NULL);
+
+    printf("heventloop_test:process events(3)\r\n");
+    heventloop_process_event(loop);
+
+    //释放eventloop(正常使用时一般不用释放)
+    heventloop_free(loop);
     return 0;
 }
 static int heventslots_test(int argc,const char *argv[])
 {
+    //创建eventslots
+    heventslots_t *slots=heventslots_new(NULL);
+    if(slots==NULL)
+    {
+        printf("heventslots_test:create error\r\n");
+        return -1;
+    }
+    printf("heventslots_test:slots addr=0x%" PRIX64 "\r\n",(uint64_t)(intptr_t)slots);
+
+
+    //添加槽函数
+    printf("heventslots_test:add slots\r\n");
+    uint32_t slot1=heventslots_register_slot(slots,NULL,[](void *signal,void *usr)
+    {
+        printf("heventslots_test:slot1,signal:%s\r\n",signal!=NULL?((const char *)signal):"");
+    },NULL);
+    uint32_t slot2=heventslots_register_slot(slots,NULL,[](void *signal,void *usr)
+    {
+        printf("heventslots_test:slot2,signal:%s\r\n",signal!=NULL?((const char *)signal):"");
+    },NULL);
+    uint32_t slot3=heventslots_register_slot(slots,NULL,[](void *signal,void *usr)
+    {
+        printf("heventslots_test:slot3,signal:%s\r\n",signal!=NULL?((const char *)signal):"");
+    },NULL);
+    uint32_t slot4=heventslots_register_slot(slots,NULL,[](void *signal,void *usr)
+    {
+        printf("heventslots_test:slot4,signal:%s\r\n",signal!=NULL?((const char *)signal):"");
+    },NULL);
+    uint32_t slot5=heventslots_register_slot(slots,NULL,[](void *signal,void *usr)
+    {
+        printf("heventslots_test:slot5,signal:%s\r\n",signal!=NULL?((const char *)signal):"");
+    },NULL);
+
+    //发送信号
+    printf("heventslots_test:emit signal 1\r\n");
+    heventslots_emit_signal(slots,(char *)"1");
+    printf("heventslots_test:emit signal 2\r\n");
+    heventslots_emit_signal(slots,(char *)"2");
+    printf("heventslots_test:emit signal 3\r\n");
+    heventslots_emit_signal(slots,(char *)"3");
+
+    //删除slot3
+    printf("heventslots_test:remove slot3\r\n");
+    heventslots_unregister_slot(slots,slot3);
+
+    //发送信号
+    printf("heventslots_test:emit signal 1\r\n");
+    heventslots_emit_signal(slots,(char *)"1");
+    printf("heventslots_test:emit signal 2\r\n");
+    heventslots_emit_signal(slots,(char *)"2");
+    printf("heventslots_test:emit signal 3\r\n");
+    heventslots_emit_signal(slots,(char *)"3");
+
+    //释放evnetslots
+    heventslots_free(slots);
+
     return 0;
 }
 static int heventchain_test(int argc,const char *argv[])
 {
+    //创建eventchain
+    heventchain_t *chain=heventchain_new(NULL);
+    if(chain==NULL)
+    {
+        printf("heventchain_test:create error\r\n");
+        return -1;
+    }
+    printf("heventchain_test:chain addr=0x%" PRIX64 "\r\n",(uint64_t)(intptr_t)chain);
+
+    //添加chain
+    printf("heventchain_test:add chain\r\n");
+    heventchain_install_hook(chain,1,NULL,[](void *para,void *usr)->bool
+    {
+        printf("heventchain_test:hook 1\r\n");
+        if(para!=NULL)
+        {
+            int paraval=*(int*)para;
+            if(paraval==1)
+            {
+                return true;
+            }
+        }
+        return false;
+    },NULL);
+    heventchain_install_hook(chain,5,NULL,[](void *para,void *usr)->bool
+    {
+        printf("heventchain_test:hook 5\r\n");
+        if(para!=NULL)
+        {
+            int paraval=*(int*)para;
+            if(paraval==5)
+            {
+                return true;
+            }
+        }
+        return false;
+    },NULL);
+    heventchain_install_hook(chain,4,NULL,[](void *para,void *usr)->bool
+    {
+        printf("heventchain_test:hook 4\r\n");
+        if(para!=NULL)
+        {
+            int paraval=*(int*)para;
+            if(paraval==4)
+            {
+                return true;
+            }
+        }
+        return false;
+    },NULL);
+    heventchain_install_hook(chain,2,NULL,[](void *para,void *usr)->bool
+    {
+        printf("heventchain_test:hook 2\r\n");
+        if(para!=NULL)
+        {
+            int paraval=*(int*)para;
+            if(paraval==2)
+            {
+                return true;
+            }
+        }
+        return false;
+    },NULL);
+    heventchain_install_hook(chain,3,NULL,[](void *para,void *usr)->bool
+    {
+        printf("heventchain_test:hook 3\r\n");
+        if(para!=NULL)
+        {
+            int paraval=*(int*)para;
+            if(paraval==3)
+            {
+                return true;
+            }
+        }
+        return false;
+    },NULL);
+
+    //启动事件链
+    {
+        printf("heventchain_test:start chain 0\r\n");
+        int val=0;
+        heventchain_start(chain,&val);
+    }
+    {
+        printf("heventchain_test:start chain 1\r\n");
+        int val=1;
+        heventchain_start(chain,&val);
+    }
+    {
+        printf("heventchain_test:start chain 2\r\n");
+        int val=2;
+        heventchain_start(chain,&val);
+    }
+    {
+        printf("heventchain_test:start chain 3\r\n");
+        int val=3;
+        heventchain_start(chain,&val);
+    }
+    {
+        printf("heventchain_test:start chain 4\r\n");
+        int val=4;
+        heventchain_start(chain,&val);
+    }
+    {
+        printf("heventchain_test:start chain 5\r\n");
+        int val=5;
+        heventchain_start(chain,&val);
+    }
+
+
+
+    //释放eventchain
+    heventchain_free(chain);
     return 0;
 }
 static int hwatchdog_test(int argc,const char *argv[])
