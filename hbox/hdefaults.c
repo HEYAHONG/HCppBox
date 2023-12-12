@@ -74,9 +74,16 @@ void hdefaults_free(void *ptr,void *usr)
 
 }
 
+
+#ifdef HDEFAULTS_MUTEX_LOCK
+extern void HDEFAULTS_MUTEX_LOCK();
+#endif // HDEFAULTS_MUTEX_LOCK
+
 void  hdefaults_mutex_lock(void *usr)
 {
-#ifdef  __RTTHREAD__
+#ifdef HDEFAULTS_MUTEX_LOCK
+    HDEFAULTS_MUTEX_LOCK();
+#elif defined(__RTTHREAD__)
     rt_enter_critical();
 #elif defined(WIN32)
     check_mutex_lock();
@@ -89,9 +96,15 @@ void  hdefaults_mutex_lock(void *usr)
 #endif
 }
 
+#ifdef HDEFAULTS_MUTEX_UNLOCK
+extern void HDEFAULTS_MUTEX_UNLOCK();
+#endif // HDEFAULTS_MUTEX_UNLOCK
+
 void  hdefaults_mutex_unlock(void *usr)
 {
-#ifdef  __RTTHREAD__
+#ifdef  HDEFAULTS_MUTEX_UNLOCK
+    HDEFAULTS_MUTEX_UNLOCK();
+#elif defined(__RTTHREAD__)
     rt_exit_critical();
 #elif defined(WIN32)
     check_mutex_lock();
