@@ -1,5 +1,5 @@
-#ifndef HCPPOBJECTPOOL_H
-#define HCPPOBJECTPOOL_H
+#ifndef __HCPPOBJECTPOOL_H__
+#define __HCPPOBJECTPOOL_H__
 #ifdef __cplusplus
 #include "HCPPObject.h"
 #include <string>

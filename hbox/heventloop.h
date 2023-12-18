@@ -7,8 +7,8 @@
  * License:   MIT
  **************************************************************/
 
-#ifndef HEVENTLOOP_H_INCLUDED
-#define HEVENTLOOP_H_INCLUDED
+#ifndef __HEVENTLOOP_H_INCLUDED__
+#define __HEVENTLOOP_H_INCLUDED__
 
 
 /*

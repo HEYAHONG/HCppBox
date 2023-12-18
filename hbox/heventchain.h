@@ -8,8 +8,8 @@
  **************************************************************/
 
 
-#ifndef HEVENTCHAIN_H_INCLUDED
-#define HEVENTCHAIN_H_INCLUDED
+#ifndef __HEVENTCHAIN_H_INCLUDED__
+#define __HEVENTCHAIN_H_INCLUDED__
 
 /*
 本文件用于实现钩子(Hook)回调函数功能,通常配合heventslots.h中的函数类似

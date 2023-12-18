@@ -7,8 +7,8 @@
  * License:   MIT
  **************************************************************/
 
-#ifndef HWATCHDOG_H_INCLUDED
-#define HWATCHDOG_H_INCLUDED
+#ifndef __HWATCHDOG_H_INCLUDED__
+#define __HWATCHDOG_H_INCLUDED__
 
 /*
 本文件用于实现辅助看门狗操作。

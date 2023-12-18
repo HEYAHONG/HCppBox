@@ -7,8 +7,8 @@
  * License:   MIT
  **************************************************************/
 
-#ifndef HCOMPILER_H_INCLUDED
-#define HCOMPILER_H_INCLUDED
+#ifndef __HCOMPILER_H_INCLUDED__
+#define __HCOMPILER_H_INCLUDED__
 
 /*
 本文件主要定义一些编译器相关宏定义。

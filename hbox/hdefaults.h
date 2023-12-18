@@ -7,8 +7,8 @@
  * License:   MIT
  **************************************************************/
 
-#ifndef HDEFAULTS_H_INCLUDED
-#define HDEFAULTS_H_INCLUDED
+#ifndef __HDEFAULTS_H_INCLUDED__
+#define __HDEFAULTS_H_INCLUDED__
 
 /*
 本文件主要定义一些默认相关宏定义及函数。

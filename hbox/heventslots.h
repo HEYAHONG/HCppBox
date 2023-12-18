@@ -8,8 +8,8 @@
  **************************************************************/
 
 
-#ifndef HEVENTSLOTS_H_INCLUDED
-#define HEVENTSLOTS_H_INCLUDED
+#ifndef __HEVENTSLOTS_H_INCLUDED__
+#define __HEVENTSLOTS_H_INCLUDED__
 
 /*
 本文件用于实现一些事件调用常用的回调函数功能,通常配合heventloop.h中的函数使用

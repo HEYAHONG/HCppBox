@@ -7,8 +7,8 @@
  * License:   MIT
  **************************************************************/
 
-#ifndef HMEMORYHEAP_H_INCLUDED
-#define HMEMORYHEAP_H_INCLUDED
+#ifndef __HMEMORYHEAP_H_INCLUDED__
+#define __HMEMORYHEAP_H_INCLUDED__
 
 /*
 本文件主要用于实现一个简易的内存堆(最大可支持2^31-HMEMORYHEAP_ALIGNED_SIZE字节)，用于在操作系统没有动态内存分配时提供简易的支持。

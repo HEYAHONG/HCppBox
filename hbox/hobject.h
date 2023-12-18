@@ -7,8 +7,8 @@
  * License:   MIT
  **************************************************************/
 
-#ifndef HOBJECT_H_INCLUDED
-#define HOBJECT_H_INCLUDED
+#ifndef __HOBJECT_H_INCLUDED__
+#define __HOBJECT_H_INCLUDED__
 
 /*
 本文件主要用于实现一些基于C语言的简易的对象操作,可配合其它文件使用。
