@@ -552,5 +552,305 @@ static int hmemoryheap_test(int argc,const char *argv[])
 }
 static int hobject_test(int argc,const char *argv[])
 {
+    {
+
+        {
+            //对象初始化(格式1)
+            hobject_simple_ptr_t  obj=HOBJECT_SIMPLE_PTR_INITIALIZER;
+        }
+        {
+            //对象初始化(格式2,C++,指针)
+            hobject_simple_ptr_t *obj=new hobject_simple_ptr_t(HOBJECT_SIMPLE_PTR_INITIALIZER);
+
+            //释放内存
+            hobject_cleanup(hobject_simple_ptr_base(obj));
+            free(obj);
+        }
+        {
+            //对象初始化(格式3,C,指针)
+            hobject_simple_ptr_t *obj=(hobject_simple_ptr_t*)malloc(sizeof(hobject_simple_ptr_t));
+            (*obj)=HOBJECT_SIMPLE_PTR_INITIALIZER;
+
+            //释放内存
+            hobject_cleanup(hobject_simple_ptr_base(obj));
+            free(obj);
+        }
+    }
+    {
+
+        {
+            //对象初始化(格式1)
+            hobject_array_ptr_t  obj=HOBJECT_ARRAY_PTR_INITIALIZER;
+        }
+        {
+            //对象初始化(格式2,C++,指针)
+            hobject_array_ptr_t *obj=new hobject_array_ptr_t(HOBJECT_ARRAY_PTR_INITIALIZER);
+
+            //释放内存
+            hobject_cleanup(hobject_array_ptr_base(obj));
+            free(obj);
+        }
+        {
+            //对象初始化(格式3,C,指针)
+            hobject_array_ptr_t *obj=(hobject_array_ptr_t*)malloc(sizeof(hobject_array_ptr_t));
+            (*obj)=HOBJECT_ARRAY_PTR_INITIALIZER;
+
+            //释放内存
+            hobject_cleanup(hobject_array_ptr_base(obj));
+            free(obj);
+        }
+    }
+    {
+
+        {
+            //对象初始化(格式1)
+            hobject_managed_ptr_t  obj=HOBJECT_MANAGED_PTR_INITIALIZER;
+        }
+        {
+            //对象初始化(格式2,C++,指针)
+            hobject_managed_ptr_t *obj=new hobject_managed_ptr_t(HOBJECT_MANAGED_PTR_INITIALIZER);
+
+            //释放内存
+            hobject_cleanup(hobject_managed_ptr_base(obj));
+            free(obj);
+        }
+        {
+            //对象初始化(格式3,C,指针)
+            hobject_managed_ptr_t *obj=(hobject_managed_ptr_t*)malloc(sizeof(hobject_managed_ptr_t));
+            (*obj)=HOBJECT_MANAGED_PTR_INITIALIZER;
+
+            //释放内存
+            hobject_cleanup(hobject_managed_ptr_base(obj));
+            free(obj);
+        }
+    }
+    {
+
+        {
+            //对象初始化(格式1)
+            hobject_managed_array_ptr_t  obj=HOBJECT_MANAGED_ARRAY_PTR_INITIALIZER;
+        }
+        {
+            //对象初始化(格式2,C++,指针)
+            hobject_managed_array_ptr_t *obj=new hobject_managed_array_ptr_t(HOBJECT_MANAGED_ARRAY_PTR_INITIALIZER);
+
+            //释放内存
+            hobject_cleanup(hobject_managed_array_ptr_base(obj));
+            free(obj);
+        }
+        {
+            //对象初始化(格式3,C,指针)
+            hobject_managed_array_ptr_t *obj=(hobject_managed_array_ptr_t*)malloc(sizeof(hobject_managed_array_ptr_t));
+            (*obj)=HOBJECT_MANAGED_ARRAY_PTR_INITIALIZER;
+
+            //释放内存
+            hobject_cleanup(hobject_managed_array_ptr_base(obj));
+            free(obj);
+        }
+    }
+    {
+
+        {
+            //对象初始化(格式1)
+            hobject_double_t  obj=HOBJECT_DOUBLE_INITIALIZER;
+        }
+        {
+            //对象初始化(格式2,C++,指针)
+            hobject_double_t *obj=new hobject_double_t(HOBJECT_DOUBLE_INITIALIZER);
+
+            //释放内存
+            hobject_cleanup(hobject_double_base(obj));
+            free(obj);
+        }
+        {
+            //对象初始化(格式3,C,指针)
+            hobject_double_t *obj=(hobject_double_t*)malloc(sizeof(hobject_double_t));
+            (*obj)=HOBJECT_DOUBLE_INITIALIZER;
+
+            //释放内存
+            hobject_cleanup(hobject_double_base(obj));
+            free(obj);
+        }
+    }
+    {
+
+        {
+            //对象初始化(格式1)
+            hobject_int8_t  obj=HOBJECT_INT8_INITIALIZER;
+        }
+        {
+            //对象初始化(格式2,C++,指针)
+            hobject_int8_t *obj=new hobject_int8_t(HOBJECT_INT8_INITIALIZER);
+
+            //释放内存
+            hobject_cleanup(hobject_int8_base(obj));
+            free(obj);
+        }
+        {
+            //对象初始化(格式3,C,指针)
+            hobject_int8_t *obj=(hobject_int8_t*)malloc(sizeof(hobject_int8_t));
+            (*obj)=HOBJECT_INT8_INITIALIZER;
+
+            //释放内存
+            hobject_cleanup(hobject_int8_base(obj));
+            free(obj);
+        }
+    }
+    {
+
+        {
+            //对象初始化(格式1)
+            hobject_uint8_t  obj=HOBJECT_UINT8_INITIALIZER;
+        }
+        {
+            //对象初始化(格式2,C++,指针)
+            hobject_uint8_t *obj=new hobject_uint8_t(HOBJECT_UINT8_INITIALIZER);
+
+            //释放内存
+            hobject_cleanup(hobject_uint8_base(obj));
+            free(obj);
+        }
+        {
+            //对象初始化(格式3,C,指针)
+            hobject_uint8_t *obj=(hobject_uint8_t*)malloc(sizeof(hobject_uint8_t));
+            (*obj)=HOBJECT_UINT8_INITIALIZER;
+
+            //释放内存
+            hobject_cleanup(hobject_uint8_base(obj));
+            free(obj);
+        }
+    }
+    {
+
+        {
+            //对象初始化(格式1)
+            hobject_int32_t  obj=HOBJECT_INT32_INITIALIZER;
+        }
+        {
+            //对象初始化(格式2,C++,指针)
+            hobject_int32_t *obj=new hobject_int32_t(HOBJECT_INT8_INITIALIZER);
+
+            //释放内存
+            hobject_cleanup(hobject_int32_base(obj));
+            free(obj);
+        }
+        {
+            //对象初始化(格式3,C,指针)
+            hobject_int32_t *obj=(hobject_int32_t*)malloc(sizeof(hobject_int32_t));
+            (*obj)=HOBJECT_INT32_INITIALIZER;
+
+            //释放内存
+            hobject_cleanup(hobject_int32_base(obj));
+            free(obj);
+        }
+    }
+    {
+
+        {
+            //对象初始化(格式1)
+            hobject_uint32_t  obj=HOBJECT_UINT32_INITIALIZER;
+        }
+        {
+            //对象初始化(格式2,C++,指针)
+            hobject_uint32_t *obj=new hobject_uint32_t(HOBJECT_UINT32_INITIALIZER);
+
+            //释放内存
+            hobject_cleanup(hobject_uint32_base(obj));
+            free(obj);
+        }
+        {
+            //对象初始化(格式3,C,指针)
+            hobject_uint32_t *obj=(hobject_uint32_t*)malloc(sizeof(hobject_uint32_t));
+            (*obj)=HOBJECT_UINT32_INITIALIZER;
+
+            //释放内存
+            hobject_cleanup(hobject_uint32_base(obj));
+            free(obj);
+        }
+    }
+    {
+
+        {
+            //对象初始化(格式1)
+            hobject_int64_t  obj=HOBJECT_INT64_INITIALIZER;
+        }
+        {
+            //对象初始化(格式2,C++,指针)
+            hobject_int64_t *obj=new hobject_int64_t(HOBJECT_INT8_INITIALIZER);
+
+            //释放内存
+            hobject_cleanup(hobject_int64_base(obj));
+            free(obj);
+        }
+        {
+            //对象初始化(格式3,C,指针)
+            hobject_int64_t *obj=(hobject_int64_t*)malloc(sizeof(hobject_int64_t));
+            (*obj)=HOBJECT_INT64_INITIALIZER;
+
+            //释放内存
+            hobject_cleanup(hobject_int64_base(obj));
+            free(obj);
+        }
+    }
+    {
+
+        {
+            //对象初始化(格式1)
+            hobject_uint64_t  obj=HOBJECT_UINT64_INITIALIZER;
+        }
+        {
+            //对象初始化(格式2,C++,指针)
+            hobject_uint64_t *obj=new hobject_uint64_t(HOBJECT_UINT64_INITIALIZER);
+
+            //释放内存
+            hobject_cleanup(hobject_uint64_base(obj));
+            free(obj);
+        }
+        {
+            //对象初始化(格式3,C,指针)
+            hobject_uint64_t *obj=(hobject_uint64_t*)malloc(sizeof(hobject_uint64_t));
+            (*obj)=HOBJECT_UINT64_INITIALIZER;
+
+            //释放内存
+            hobject_cleanup(hobject_uint64_base(obj));
+            free(obj);
+        }
+    }
+    {
+        {
+            //对象初始化(格式1,C,指针),末尾32字节用于存储字符串
+            hobject_struct_t *obj=(hobject_struct_t*)malloc(sizeof(hobject_struct_t)+32);
+#ifndef _MSC_VER
+            (*obj)=HOBJECT_STRUCT_INITIALIZER;
+#else
+            memset(obj,0,sizeof(*obj));//MSVC不支持长度为0的初始化,使用memset替代
+#endif
+
+            //存储字符串
+            memcpy((void *)obj->o_struct,"struct test",strlen("struct test"));
+
+            //释放内存
+            hobject_cleanup(hobject_struct_base(obj));
+            free(obj);
+        }
+    }
+    {
+        {
+            //对象初始化(格式1,C,指针),末尾32字节用于存储字符串
+            hobject_managed_struct_t *obj=(hobject_managed_struct_t*)malloc(sizeof(hobject_managed_struct_t)+32);
+#ifndef  _MSC_VER
+            (*obj)=HOBJECT_MANAGED_STRUCT_INITIALIZER;
+#else
+            memset(obj,0,sizeof(*obj));//MSVC不支持长度为0的初始化,使用memset替代
+#endif
+
+            //存储字符串
+            memcpy((void *)obj->o_struct,"struct test",strlen("struct test"));
+
+            //释放内存
+            hobject_cleanup(hobject_managed_struct_base(obj));
+            free(obj);
+        }
+    }
     return 0;
 }
