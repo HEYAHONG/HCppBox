@@ -46,11 +46,15 @@ void check_mutex_lock()
 #ifdef USING_HMEMORYHEAP
 extern void* hmemoryheap_malloc(size_t nBytes);
 #endif // USING_HMEMORYHEAP
-
+#ifdef HDEFAULTS_MALLOC
+extern void * HDEFAULTS_MALLOC(size_t bytes);
+#endif // HDEFAULTS_MALLOC
 void * hdefaults_malloc(size_t nBytes,void *usr)
 {
 
-#ifdef __RTTHREAD__
+#ifdef HDEFAULTS_MALLOC
+    return HDEFAULTS_MALLOC(nBytes);
+#elif defined(__RTTHREAD__)
     return rt_malloc(nBytes);
 #elif defined(USING_HMEMORYHEAP)
     return hmemoryheap_malloc(nBytes);
@@ -62,9 +66,14 @@ void * hdefaults_malloc(size_t nBytes,void *usr)
 #ifdef USING_HMEMORYHEAP
 extern void hmemoryheap_free(void*);
 #endif // USING_HMEMORYHEAP
+#ifdef HDEFAULTS_FREE
+extern void  HDEFAULTS_FREE(void *ptr);
+#endif // HDEFAULTS_FREE
 void hdefaults_free(void *ptr,void *usr)
 {
-#ifdef __RTTHREAD__
+#ifdef HDEFAULTS_FREE
+    HDEFAULTS_FREE(ptr);
+#elif defined(__RTTHREAD__)
     rt_free(ptr);
 #elif defined(USING_HMEMORYHEAP)
     hmemoryheap_free(ptr);
