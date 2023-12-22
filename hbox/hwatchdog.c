@@ -228,6 +228,11 @@ void hwatchdog_add_watch(bool (*check)(hwatchdog_watch_info_t *info),uint32_t ti
     if(hwatchdog_dog.watch_start==NULL)
     {
         hwatchdog_dog.watch_start=watch;
+        //解锁
+        if(hwatchdog_dog.mutex_unlock!=NULL)
+        {
+            hwatchdog_dog.mutex_unlock(hwatchdog_dog.usr);
+        }
         return;
     }
 
