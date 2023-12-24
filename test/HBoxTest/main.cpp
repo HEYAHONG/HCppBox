@@ -9,6 +9,7 @@
 #include "hwatchdog.h"
 #include "hmemoryheap.h"
 #include "hobject.h"
+#include "hringbuf.h"
 
 static int hcompiler_test(int argc,const char *argv[]);
 static int hdefaults_test(int argc,const char *argv[]);
@@ -18,6 +19,7 @@ static int heventchain_test(int argc,const char *argv[]);
 static int hwatchdog_test(int argc,const char *argv[]);
 static int hmemoryheap_test(int argc,const char *argv[]);
 static int hobject_test(int argc,const char *argv[]);
+static int hringbuf_test(int argc,const char *argv[]);
 
 static int (*test_cb[])(int,const char *[])=
 {
@@ -29,6 +31,7 @@ static int (*test_cb[])(int,const char *[])=
     hwatchdog_test,
     hmemoryheap_test,
     hobject_test,
+    hringbuf_test,
 };
 
 int main(int argc,const char *argv[])
@@ -552,6 +555,7 @@ static int hmemoryheap_test(int argc,const char *argv[])
 }
 static int hobject_test(int argc,const char *argv[])
 {
+    printf("hobject_test:start\r\n");
     {
 
         {
@@ -851,6 +855,33 @@ static int hobject_test(int argc,const char *argv[])
             hobject_cleanup(hobject_managed_struct_base(obj));
             free(obj);
         }
+    }
+    printf("hobject_test:end\r\n");
+    return 0;
+}
+
+static int hringbuf_test(int argc,const char *argv[])
+{
+    uint8_t buffer[256]= {0};
+    hringbuf_t *ring=hringbuf_get(buffer,sizeof(buffer));
+    {
+        uint8_t buff[256]= {0};
+        printf("hringbuf_test:test 1\r\n");
+        hringbuf_input(ring,(uint8_t *)"Hello",strlen("Hello"));
+        hringbuf_output(ring,buff,sizeof(buff));
+        printf("hringbuf_test:%s\r\n",buff);
+        hringbuf_input(ring,(uint8_t *)"ringbuf",strlen("ringbuf"));
+        hringbuf_output(ring,buff,sizeof(buff));
+        printf("hringbuf_test:%s\r\n",buff);
+    }
+    {
+        uint8_t buff[256]= {0};
+        printf("hringbuf_test:test 2\r\n");
+        hringbuf_input(ring,(uint8_t *)"Hello",strlen("Hello"));
+        hringbuf_input(ring,(uint8_t *)" ",strlen(" "));
+        hringbuf_input(ring,(uint8_t *)"ringbuf",strlen("ringbuf"));
+        hringbuf_output(ring,buff,sizeof(buff));
+        printf("hringbuf_test:%s\r\n",buff);
     }
     return 0;
 }
