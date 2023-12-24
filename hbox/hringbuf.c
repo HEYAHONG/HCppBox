@@ -107,7 +107,7 @@ size_t hringbuf_get_max_length(hringbuf_t * buff)
     return 0;
 }
 
-size_t hringbuf_input(hringbuf_t * buff,uint8_t *data,size_t data_length)
+size_t hringbuf_input(hringbuf_t * buff,const uint8_t *data,size_t data_length)
 {
     if(buff == NULL || data ==NULL || data_length == 0)
     {

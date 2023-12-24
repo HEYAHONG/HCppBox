@@ -35,7 +35,7 @@ typedef struct hringbuf hringbuf_t; /**< hringbuf_t类型定义 */
  * \return hringbuf_t* hringbuf_t指针,失败返回NULL
  *
  */
-    hringbuf_t *hringbuf_get(uint8_t *buff,size_t length);
+hringbuf_t *hringbuf_get(uint8_t *buff,size_t length);
 
 /** \brief 设置环形缓冲区锁
  *
@@ -79,7 +79,7 @@ size_t hringbuf_get_max_length(hringbuf_t * buff);
  * \return size_t 已写入的长度
  *
  */
-size_t hringbuf_input(hringbuf_t * buff,uint8_t *data,size_t data_length);
+size_t hringbuf_input(hringbuf_t * buff,const uint8_t *data,size_t data_length);
 
 /** \brief 从环形缓冲区读取数据
  *

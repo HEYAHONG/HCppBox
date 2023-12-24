@@ -236,4 +236,11 @@ GCC编译器
 
 //#endif // __GNUC__
 
+/*
+较为通用的宏定义
+*/
+#ifndef UNUSED
+#define UNUSED(x) ((void)x)
+#endif // UNUSED
+
 #endif // HCOMPILER_H_INCLUDED

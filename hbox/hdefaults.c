@@ -51,7 +51,7 @@ extern void * HDEFAULTS_MALLOC(size_t bytes);
 #endif // HDEFAULTS_MALLOC
 void * hdefaults_malloc(size_t nBytes,void *usr)
 {
-
+    UNUSED(usr);
 #ifdef HDEFAULTS_MALLOC
     return HDEFAULTS_MALLOC(nBytes);
 #elif defined(__RTTHREAD__)
@@ -71,6 +71,7 @@ extern void  HDEFAULTS_FREE(void *ptr);
 #endif // HDEFAULTS_FREE
 void hdefaults_free(void *ptr,void *usr)
 {
+    UNUSED(usr);
 #ifdef HDEFAULTS_FREE
     HDEFAULTS_FREE(ptr);
 #elif defined(__RTTHREAD__)
@@ -90,6 +91,7 @@ extern void HDEFAULTS_MUTEX_LOCK();
 
 void  hdefaults_mutex_lock(void *usr)
 {
+    UNUSED(usr);
 #ifdef HDEFAULTS_MUTEX_LOCK
     HDEFAULTS_MUTEX_LOCK();
 #elif defined(__RTTHREAD__)
@@ -111,6 +113,7 @@ extern void HDEFAULTS_MUTEX_UNLOCK();
 
 void  hdefaults_mutex_unlock(void *usr)
 {
+    UNUSED(usr);
 #ifdef  HDEFAULTS_MUTEX_UNLOCK
     HDEFAULTS_MUTEX_UNLOCK();
 #elif defined(__RTTHREAD__)
