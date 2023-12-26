@@ -30,7 +30,7 @@ typedef struct hringbuf hringbuf_t; /**< hringbuf_t类型定义 */
 
 /** \brief 获取环形缓冲区指针
  *
- * \param buff uint8_t* 缓冲区指针,注意:指针要符合对齐
+ * \param buff uint8_t* 缓冲区指针,注意:指针要符合对齐,缓冲区应当初始化为0，否则可能出现异常
  * \param length size_t 缓冲区大小,注意:缓冲区前部分将用于环形缓冲区信息，因此缓冲区不可过小
  * \return hringbuf_t* hringbuf_t指针,失败返回NULL
  *
