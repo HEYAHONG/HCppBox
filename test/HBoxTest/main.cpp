@@ -1,15 +1,7 @@
 ﻿
 #include <inttypes.h>
 #include <stdint.h>
-#include "hcompiler.h"
-#include "hdefaults.h"
-#include "heventloop.h"
-#include "heventslots.h"
-#include "heventchain.h"
-#include "hwatchdog.h"
-#include "hmemoryheap.h"
-#include "hobject.h"
-#include "hringbuf.h"
+#include "hbox.h"
 
 static int hcompiler_test(int argc,const char *argv[]);
 static int hdefaults_test(int argc,const char *argv[]);
