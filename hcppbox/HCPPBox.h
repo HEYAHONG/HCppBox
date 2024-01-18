@@ -10,5 +10,6 @@
 #define HCPPBOX_H_INCLUDED
 
 #include "HCPPObject.h"
+#include "HCPPObjectPool.h"
 
 #endif // HCPPBOX_H_INCLUDED
