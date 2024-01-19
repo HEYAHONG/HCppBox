@@ -257,7 +257,7 @@ void HCPPObject::EnumChild(std::function<void(const HCPPObject * const)> OnEnum)
     }
     {
         std::lock_guard<std::recursive_mutex> lock(*m_lock);
-         for(std::list<HCPPObject*>::iterator it=m_child_list.begin(); it!=m_child_list.end(); it++)
+        for(std::list<HCPPObject*>::iterator it=m_child_list.begin(); it!=m_child_list.end(); it++)
         {
             HCPPObject *child=(*it);
             if(child!=NULL)
