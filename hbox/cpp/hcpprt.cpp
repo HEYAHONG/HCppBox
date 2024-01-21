@@ -43,10 +43,16 @@ extern "C"
 #ifdef __GNUC__
     //GCC环境
     typedef void(*ctors_func)();
+#ifdef WIN32
+    //Windows一般不需要手动进行构造函数调用
+    ctors_func *__init_array_start=NULL;
+    ctors_func *__init_array_end=NULL;
+#else
     //由链接脚本提供
     extern ctors_func __init_array_start[];
     //由链接脚本提供
     extern ctors_func __init_array_end[];
+#endif
 #endif // __GNUC__
 }
 
