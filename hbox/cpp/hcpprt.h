@@ -8,6 +8,7 @@
  **************************************************************/
 #ifndef HCPPRT_H
 #define HCPPRT_H
+#include "hdefaults.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -23,5 +24,76 @@ void hcpprt_init();
 #ifdef __cplusplus
 }
 #endif // __cplusplus
+#ifdef __cplusplus
 
+/*
+包装C语言的内存分配,可通过继承此类并实现相应虚函数实现自己的内存分配
+*/
+class hcmemory
+{
+public:
+    hcmemory()
+    {
+
+    }
+    virtual ~hcmemory()
+    {
+
+    }
+    virtual void *malloc(size_t size)
+    {
+        return hdefaults_malloc(size,NULL);
+    }
+    virtual void free(void *ptr)
+    {
+        hdefaults_free(ptr,NULL);
+    }
+};
+
+/*
+锁,可通过继承此类并实现相应虚函数实现自己的锁
+*/
+class hlock
+{
+public:
+    hlock()
+    {
+
+    }
+    hlock(hlock & oths) = delete;
+    hlock(hlock && oths) = delete;
+    hlock & operator = (hlock & oths) = delete;
+    hlock & operator = (hlock && oths) = delete;
+    virtual ~hlock()
+    {
+    }
+    virtual void lock()
+    {
+        hdefaults_mutex_lock(NULL);
+    }
+    virtual void unlock()
+    {
+        hdefaults_mutex_unlock(NULL);
+    }
+};
+
+/*
+提供类似std::locak_gaurd的功能
+*/
+template<class lock=hlock>
+class hlockgaurd
+{
+    lock &m_lock;
+public:
+    hlockgaurd(lock &_lock):m_lock(_lock)
+    {
+        m_lock.lock();
+    }
+    virtual ~hlockgaurd()
+    {
+        m_lock.unlock();
+    }
+};
+
+#endif // __cplusplus
 #endif // HCPPRT_H

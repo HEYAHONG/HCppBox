@@ -9,6 +9,9 @@
 #ifndef HBOX_H_INCLUDED
 #define HBOX_H_INCLUDED
 
+/*
+由C语言编写的组件
+*/
 #include "hcompiler.h"
 #include "hdefaults.h"
 #include "heventloop.h"
@@ -18,6 +21,11 @@
 #include "hmemoryheap.h"
 #include "hobject.h"
 #include "hringbuf.h"
+
+/*
+由C++编写的组件
+*/
+#include "hcpprt.h"
 
 
 #endif // HBOX_H_INCLUDED
