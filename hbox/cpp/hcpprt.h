@@ -75,6 +75,14 @@ public:
     {
         hdefaults_mutex_unlock(NULL);
     }
+    virtual bool try_lock()
+    {
+        lock();
+        /*
+        由于未实现try_lock(),使用lock()永远返回true
+        */
+        return true;
+    }
 };
 
 /*
