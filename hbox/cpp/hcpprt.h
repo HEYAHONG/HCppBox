@@ -34,11 +34,9 @@ class hcmemory
 public:
     hcmemory()
     {
-
     }
     virtual ~hcmemory()
     {
-
     }
     virtual void *malloc(size_t size)
     {
@@ -58,7 +56,6 @@ class hlock
 public:
     hlock()
     {
-
     }
     hlock(hlock & oths) = delete;
     hlock(hlock && oths) = delete;
@@ -94,6 +91,13 @@ class hlockgaurd
     lock &m_lock;
 public:
     hlockgaurd(lock &_lock):m_lock(_lock)
+    {
+        m_lock.lock();
+    }
+    /*
+    此用法仅推荐用于hlock(其本质是全局锁)
+    */
+    hlockgaurd(lock &&_lock):m_lock(_lock)
     {
         m_lock.lock();
     }
