@@ -7,6 +7,8 @@ add_subdirectory(hbox EXCLUDE_FROM_ALL)
 
 add_subdirectory(hcppbox EXCLUDE_FROM_ALL)
 
+add_subdirectory(hrc EXCLUDE_FROM_ALL)
+
 set_target_properties(HCppBox
 			PROPERTIES HCPPBOX_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 			)

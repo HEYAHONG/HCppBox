@@ -26,4 +26,5 @@ set_property(TARGET HCppBox PROPERTY CXX_STANDARD 23)
 #启用HCppBox
 function(hcppbox_enable targetname)
 target_link_libraries(${targetname} HCppBox)
+target_compile_definitions(${targetname} PUBLIC HCPPBOX_ENABLE=1)
 endfunction()
