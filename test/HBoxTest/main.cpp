@@ -381,7 +381,7 @@ static int heventchain_test(int argc,const char *argv[])
             m_chain.start(&val);
         }
         {
-            printf("heventchain_test:start chain 3\r\n");
+            printf("hevent_test:start chain 3\r\n");
             int val=3;
             m_chain.start(&val);
         }
