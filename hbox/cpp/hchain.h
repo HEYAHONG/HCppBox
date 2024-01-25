@@ -77,6 +77,19 @@ public:
     hchain(lock &_lock,cmemory &_cmemory):m_lock(_lock),m_cmemory(_cmemory),m_chain(NULL)
     {
     }
+
+    //注意:拷贝构造不会复制已安装的钩子,即不允许多个对象使用同一个heventchain
+    hchain(hchain & oths):m_lock(oths.m_lock),m_cmemory(oths.m_cmemory),m_chain(NULL)
+    {
+    }
+    hchain(hchain && oths):m_lock(oths.m_lock),m_cmemory(oths.m_cmemory),m_chain(NULL)
+    {
+    }
+
+    //不允许赋值操作
+    hchain &operator =(hchain & oths) =delete;
+    hchain &operator =(hchain && oths) =delete;
+
     virtual ~hchain()
     {
         destory();
