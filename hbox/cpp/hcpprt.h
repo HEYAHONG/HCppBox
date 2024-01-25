@@ -94,13 +94,6 @@ public:
     {
         m_lock.lock();
     }
-    /*
-    此用法仅推荐用于hlock(其本质是全局锁)
-    */
-    hlockguard(lock &&_lock):m_lock(_lock)
-    {
-        m_lock.lock();
-    }
     virtual ~hlockguard()
     {
         m_lock.unlock();

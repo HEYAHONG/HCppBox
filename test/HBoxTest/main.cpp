@@ -293,8 +293,108 @@ static int heventchain_test(int argc,const char *argv[])
     heventchain_free(chain);
 
     {
+        printf("hchain_test:add chain\r\n");
         //C++测试
-        hchain m_chain;
+        hlock m_lock;
+        hcmemory cmemory;
+        hchain m_chain(m_lock,cmemory);
+        m_chain.install_hook([](void *para,void *usr)->bool
+        {
+            printf("hchain_test:hook 1\r\n");
+            if(para!=NULL)
+            {
+                int paraval=*(int*)para;
+                if(paraval==1)
+                {
+                    return true;
+                }
+            }
+            return false;
+        },NULL,1);
+        m_chain.install_hook([](void *para,void *usr)->bool
+        {
+            printf("hchain_test:hook 5\r\n");
+            if(para!=NULL)
+            {
+                int paraval=*(int*)para;
+                if(paraval==5)
+                {
+                    return true;
+                }
+            }
+            return false;
+        },NULL,5);
+        m_chain.install_hook([](void *para,void *usr)->bool
+        {
+            printf("hchain_test:hook 4\r\n");
+            if(para!=NULL)
+            {
+                int paraval=*(int*)para;
+                if(paraval==4)
+                {
+                    return true;
+                }
+            }
+            return false;
+        },NULL,4);
+        m_chain.install_hook([](void *para,void *usr)->bool
+        {
+            printf("hchain_test:hook 2\r\n");
+            if(para!=NULL)
+            {
+                int paraval=*(int*)para;
+                if(paraval==2)
+                {
+                    return true;
+                }
+            }
+            return false;
+        },NULL,2);
+        m_chain.install_hook([](void *para,void *usr)->bool
+        {
+            printf("hchain_test:hook 3\r\n");
+            if(para!=NULL)
+            {
+                int paraval=*(int*)para;
+                if(paraval==3)
+                {
+                    return true;
+                }
+            }
+            return false;
+        },NULL,3);
+
+        //启动事件链
+        {
+            printf("hchain_test:start chain 0\r\n");
+            int val=0;
+            m_chain.start(&val);
+        }
+        {
+            printf("hchain_test:start chain 1\r\n");
+            int val=1;
+            m_chain.start(&val);
+        }
+        {
+            printf("hchain_test:start chain 2\r\n");
+            int val=2;
+            m_chain.start(&val);
+        }
+        {
+            printf("heventchain_test:start chain 3\r\n");
+            int val=3;
+            m_chain.start(&val);
+        }
+        {
+            printf("hchain_test:start chain 4\r\n");
+            int val=4;
+            m_chain.start(&val);
+        }
+        {
+            printf("hchain_test:start chain 5\r\n");
+            int val=5;
+            m_chain.start(&val);
+        }
     }
 
     return 0;

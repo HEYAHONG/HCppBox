@@ -14,17 +14,13 @@
 #include "hcpprt.h"
 #include "heventchain.h"
 
+
 template<class lock=hlock,class cmemory=hcmemory>
 class hchain
 {
     lock &m_lock;
     cmemory &m_cmemory;
-    static void *mem_alloc(size_t,void *);
-    static void mem_free(void *,void *);
-    static void mutex_lock(void *);
-    static void mutex_unlock(void *);
     heventchain_t * m_chain;
-    friend heventchain_t * heventchain_new_with_memmang_and_lock(void *usr,void *(*mem_alloc)(size_t,void *),void (*mem_free)(void *,void *),void (*mutex_lock)(void *),void (*mutex_unlock)(void *));
     bool is_vaild()
     {
         return m_chain!=NULL;
@@ -34,7 +30,37 @@ class hchain
         hlockguard<lock> s_lock(m_lock);
         if(!is_vaild())
         {
-            m_chain=heventchain_new_with_memmang_and_lock(this,mem_alloc,mem_free,mutex_lock,mutex_unlock);
+            m_chain=heventchain_new_with_memmang_and_lock(this,
+                    [](size_t size,void *usr) ->void *
+            {
+                if(usr!=NULL)
+                {
+                    hchain<lock,cmemory> &obj=*(hchain<lock,cmemory> *)usr;
+                    return obj.m_cmemory.malloc(size);
+                }
+                return NULL;
+            },[](void *ptr,void *usr) ->void
+            {
+                if(usr!=NULL)
+                {
+                    hchain<lock,cmemory> &obj=*(hchain<lock,cmemory> *)usr;
+                    obj.m_cmemory.free(ptr);
+                }
+            },[](void *usr)->void
+            {
+                if(usr!=NULL)
+                {
+                    hchain<lock,cmemory> &obj=*(hchain<lock,cmemory> *)usr;
+                    obj.m_lock.lock();
+                }
+            },[](void *usr)->void
+            {
+                if(usr!=NULL)
+                {
+                    hchain<lock,cmemory> &obj=*(hchain<lock,cmemory> *)usr;
+                    obj.m_lock.unlock();
+                }
+            });
         }
 
     }
@@ -48,15 +74,7 @@ class hchain
         }
     }
 public:
-    hchain(lock &_lock,cmemory &_cmemory):m_lock(_lock),m_cmemory(_cmemory)
-    {
-    }
-    //此用法仅用于默认C内存分配（全局内存分配），不推荐用户有自己定义的C内存分配时使用
-    hchain(lock &_lock,cmemory &&_cmemory=cmemory()):m_lock(_lock),m_cmemory(_cmemory)
-    {
-    }
-    //此用法仅用于默认锁(全局锁)及C内存分配（全局内存分配），不推荐用户有自己定义的锁及C内存分配时使用
-    hchain(lock &&_lock=lock(),cmemory &&_cmemory=cmemory()):m_lock(_lock),m_cmemory(_cmemory)
+    hchain(lock &_lock,cmemory &_cmemory):m_lock(_lock),m_cmemory(_cmemory),m_chain(NULL)
     {
     }
     virtual ~hchain()
