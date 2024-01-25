@@ -26,6 +26,7 @@
 由C++编写的组件
 */
 #include "hcpprt.h"
+#include "hchain.h"
 
 
 #endif // HBOX_H_INCLUDED

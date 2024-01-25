@@ -28,3 +28,12 @@
 | `hlock`      | 锁,定义常用的锁的接口，默认使用hdefaults的锁函数，故而默认情况下是一个全局锁，与对象无关。 |      |
 | `hlockguard` | 提供类似`std::lock_guard`的功能，配合hlock进行锁定操作。     |      |
 
+## hchain
+
+此组件主要用于包装heventchain组件
+
+### 类
+
+| 类       | 说明            | 备注 |
+| -------- | --------------- | ---- |
+| `hchain` | 包装heventchain |      |

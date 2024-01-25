@@ -291,6 +291,12 @@ static int heventchain_test(int argc,const char *argv[])
 
     //释放eventchain
     heventchain_free(chain);
+
+    {
+        //C++测试
+        hchain m_chain;
+    }
+
     return 0;
 }
 static int hwatchdog_test(int argc,const char *argv[])
