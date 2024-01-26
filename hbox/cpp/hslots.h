@@ -123,7 +123,7 @@ public:
         }
     }
 
-    void unregister_all_slot(uint32_t id)
+    void unregister_all_slot()
     {
         create();
         if(is_vaild())
