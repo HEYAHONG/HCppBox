@@ -24,6 +24,25 @@ extern "C"
 #include "string.h"
 #include "stdbool.h"
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
+#ifndef hdefaults_xstr
+#define hdefaults_xstr(s) hdefaults_str(s)
+#endif // hdefaults_xstr
+
+
+#ifndef hdefaults_str
+#define hdefaults_str(s) #s
+#endif // hdefaults_str
+
+#ifdef HBOX_CONFIG_HEADER
+#include hdefaults_xstr(HBOX_CONFIG_HEADER)
+#endif
+
+
+
 /** \brief 默认内存分配
  *
  * \param nBytes size_t 待分配的字节数
