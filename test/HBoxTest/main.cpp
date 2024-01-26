@@ -114,6 +114,49 @@ static int heventloop_test(int argc,const char *argv[])
 
     //释放eventloop(正常使用时一般不用释放)
     heventloop_free(loop);
+
+    {
+        //C++测试
+        hlock m_lock;
+        hcmemory cmemory;
+        hloop m_loop(m_lock,cmemory);
+
+        //添加两个事件(使用无捕获的lambda函数)
+        printf("hloop_test:add events\r\n");
+        m_loop.add_event([](void *)
+        {
+            printf("hloop_test:event\r\n");
+        },NULL,NULL);
+        m_loop.add_event_ex1([](void*,heventloop_t *m_loop)
+        {
+            printf("hloop_test:event ex\r\n");
+            printf("hloop_test:pool addr=0x%" PRIX64 "\r\n",(uint64_t)(intptr_t)m_loop);
+        },NULL,NULL);
+
+        printf("hloop_test:process events(1)\r\n");
+        m_loop.process_event();
+
+        printf("hloop_test:process events(2)\r\n");
+        m_loop.process_event();
+
+
+        //添加两个事件(使用无捕获的lambda函数)
+        printf("hloop_test:add events\r\n");
+        m_loop.add_event_ex1([](void*,heventloop_t *m_loop)
+        {
+            printf("hloop_test:event ex\r\n");
+            printf("hloop_test:pool addr=0x%" PRIX64 "\r\n",(uint64_t)(intptr_t)m_loop);
+        },NULL,NULL);
+        m_loop.add_event([](void *)
+        {
+            printf("hloop_test:event\r\n");
+        },NULL,NULL);
+
+        printf("hloop_test:process events(3)\r\n");
+        m_loop.process_event();
+
+
+    }
     return 0;
 }
 static int heventslots_test(int argc,const char *argv[])
@@ -173,6 +216,7 @@ static int heventslots_test(int argc,const char *argv[])
 
     //释放evnetslots
     heventslots_free(slots);
+
 
     return 0;
 }

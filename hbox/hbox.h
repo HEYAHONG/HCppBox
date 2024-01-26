@@ -27,6 +27,7 @@
 */
 #include "hcpprt.h"
 #include "hchain.h"
+#include "hloop.h"
 
 
 #endif // HBOX_H_INCLUDED

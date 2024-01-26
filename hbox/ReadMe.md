@@ -18,7 +18,7 @@ hbox意为HYH的工具箱。
 |       `WIN32`        |                        处于windows中                         |                                                              |
 |      `__unix__`      |                        处于(类)unix中                        | 若处于linux中，可使用`__linux__` 判断。在(类)unix中将使用pthread及其相关库（有些可能需要手动启用）。 |
 |   `HAVE_CONFIG_H`    |          `config.h`存在,当定义存在时包含`config.h`           |                    此宏定义一般由用户定义                    |
-| `HBOX_CONFIG_HEADER` | `HBOX_CONFIG_HEADER`表示hbox的配置文件路径，若定义将由hdefaults包含该配置文件。 |                    此宏定义一般由用户定义                    |
+| `HBOX_CONFIG_HEADER` | `HBOX_CONFIG_HEADER`表示hbox的配置文件路径(不含引号)，若定义将由hdefaults包含该配置文件。 |                    此宏定义一般由用户定义                    |
 
 # C++组件
 
