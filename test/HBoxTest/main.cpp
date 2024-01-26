@@ -217,6 +217,57 @@ static int heventslots_test(int argc,const char *argv[])
     //释放evnetslots
     heventslots_free(slots);
 
+    {
+        //C++测试
+        hlock m_lock;
+        hcmemory cmemory;
+        hslots m_slots(m_lock,cmemory);
+
+        //添加槽函数
+        printf("hslots_test:add slots\r\n");
+        uint32_t slot1=m_slots.register_slot([](void *signal,void *usr)
+        {
+            printf("hslots_test:slot1,signal:%s\r\n",signal!=NULL?((const char *)signal):"");
+        });
+        uint32_t slot2=m_slots.register_slot([](void *signal,void *usr)
+        {
+            printf("hslots_test:slot2,signal:%s\r\n",signal!=NULL?((const char *)signal):"");
+        });
+        uint32_t slot3=m_slots.register_slot([](void *signal,void *usr)
+        {
+            printf("hslots_test:slot3,signal:%s\r\n",signal!=NULL?((const char *)signal):"");
+        });
+        uint32_t slot4=m_slots.register_slot([](void *signal,void *usr)
+        {
+            printf("hslots_test:slot4,signal:%s\r\n",signal!=NULL?((const char *)signal):"");
+        });
+        uint32_t slot5=m_slots.register_slot([](void *signal,void *usr)
+        {
+            printf("hslots_test:slot5,signal:%s\r\n",signal!=NULL?((const char *)signal):"");
+        });
+
+        //发送信号
+        printf("hslots_test:emit signal 1\r\n");
+        m_slots.emit_signal((char *)"1");
+        printf("hslots_test:emit signal 2\r\n");
+        m_slots.emit_signal((char *)"2");
+        printf("hslots_test:emit signal 3\r\n");
+        m_slots.emit_signal((char *)"3");
+
+        //删除slot3
+        printf("hslots_test:remove slot3\r\n");
+        m_slots.unregister_slot(slot3);
+
+        //发送信号
+        printf("hslots_test:emit signal 1\r\n");
+        m_slots.emit_signal((char *)"1");
+        printf("hlots_test:emit signal 2\r\n");
+        m_slots.emit_signal((char *)"2");
+        printf("hslots_test:emit signal 3\r\n");
+        m_slots.emit_signal((char *)"3");
+
+    }
+
 
     return 0;
 }
