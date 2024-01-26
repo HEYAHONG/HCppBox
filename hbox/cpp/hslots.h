@@ -77,7 +77,7 @@ public:
     {
     }
 
-    //注意:拷贝构造不会复制事件循环,即不允许多个对象使用同一个heventslots
+    //注意:拷贝构造不会复制槽,即不允许多个对象使用同一个heventslots
     hslots(hslots & oths):m_lock(oths.m_lock),m_cmemory(oths.m_cmemory),m_slots(NULL)
     {
     }
