@@ -10,6 +10,10 @@
 #define HCPPRT_H
 #include "hdefaults.h"
 
+#ifndef HCPPRT_NO_ATOMIC
+#include <atomic>
+#endif // HCPPRT_NO_ATOMIC
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -81,6 +85,51 @@ public:
         return true;
     }
 };
+
+/*
+简易自旋锁(不区分加锁顺序),利用原子操作实现,注意:不支持递归,不能被HBox中的应用直接使用
+*/
+#ifndef HCPPRT_NO_ATOMIC
+class hspinlock:public hlock
+{
+    std::atomic_flag m_flag;
+public:
+    hspinlock():m_flag(ATOMIC_FLAG_INIT)
+    {
+    }
+    hspinlock(hspinlock & oths) = delete;
+    hspinlock(hspinlock && oths) = delete;
+    hspinlock & operator = (hspinlock & oths) = delete;
+    hspinlock & operator = (hspinlock && oths) = delete;
+    virtual ~hspinlock()
+    {
+    }
+
+    //默认为空函数,在实时操作系统中可尝试进行上下文切换(当然那样也不能称之为一般的自旋锁了)
+    virtual void spin()
+    {
+    }
+
+    virtual void lock() override
+    {
+        while(m_flag.test_and_set())
+        {
+            spin();
+        }
+    }
+
+    virtual void unlock() override
+    {
+        m_flag.clear();
+    }
+
+    virtual bool try_lock() override
+    {
+        return !m_flag.test_and_set();
+    }
+
+};
+#endif // HCPPRT_NO_ATOMIC
 
 /*
 提供类似std::locak_guard的功能
