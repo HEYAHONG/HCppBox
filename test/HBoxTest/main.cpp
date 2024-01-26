@@ -261,7 +261,7 @@ static int heventslots_test(int argc,const char *argv[])
         //发送信号
         printf("hslots_test:emit signal 1\r\n");
         m_slots.emit_signal((char *)"1");
-        printf("hlots_test:emit signal 2\r\n");
+        printf("hslots_test:emit signal 2\r\n");
         m_slots.emit_signal((char *)"2");
         printf("hslots_test:emit signal 3\r\n");
         m_slots.emit_signal((char *)"3");

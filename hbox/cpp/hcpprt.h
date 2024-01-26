@@ -129,6 +129,7 @@ public:
     }
 
 };
+
 #endif // HCPPRT_NO_ATOMIC
 
 /*
