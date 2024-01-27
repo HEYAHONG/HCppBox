@@ -86,10 +86,11 @@ public:
     }
 };
 
+
+#ifndef HCPPRT_NO_ATOMIC
 /*
 简易自旋锁(不区分加锁顺序),利用原子操作实现,注意:不支持递归,不能被HBox中的应用直接使用
 */
-#ifndef HCPPRT_NO_ATOMIC
 class hspinlock:public hlock
 {
     std::atomic_flag m_flag=ATOMIC_FLAG_INIT;
