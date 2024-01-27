@@ -92,9 +92,9 @@ public:
 #ifndef HCPPRT_NO_ATOMIC
 class hspinlock:public hlock
 {
-    std::atomic_flag m_flag;
+    std::atomic_flag m_flag=ATOMIC_FLAG_INIT;
 public:
-    hspinlock():m_flag(ATOMIC_FLAG_INIT)
+    hspinlock()
     {
     }
     hspinlock(hspinlock & oths) = delete;
