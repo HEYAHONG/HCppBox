@@ -130,6 +130,85 @@ public:
 
 };
 
+
+/*
+简易可重入自旋锁(不区分加锁顺序),利用原子操作实现,注意:此类不可直接使用，必须实现相应虚函数
+*/
+class hreentrantspinlock:public hlock
+{
+    std::atomic_flag m_flag = ATOMIC_FLAG_INIT;
+    std::atomic_int cnt;
+public:
+    hreentrantspinlock():cnt(0)
+    {
+    }
+    hreentrantspinlock(hreentrantspinlock & oths) = delete;
+    hreentrantspinlock(hreentrantspinlock && oths) = delete;
+    hreentrantspinlock & operator = (hreentrantspinlock & oths) = delete;
+    hreentrantspinlock & operator = (hreentrantspinlock && oths) = delete;
+    virtual ~hreentrantspinlock()
+    {
+    }
+
+    //是否为所有者,仅当已加锁且处于所有者线程这才返回true
+    virtual bool is_currnet_ownner() = 0;
+    //设置所有者
+    virtual void set_currnet_ownner() = 0;
+    //清除所有者
+    virtual void clear_currnet_ownner() = 0;
+
+    //旋转函数，等待锁时执行
+    virtual void spin() = 0;
+
+    virtual void lock() override
+    {
+        if(is_currnet_ownner())
+        {
+            cnt++;
+        }
+        else
+        {
+            while(m_flag.test_and_set())
+            {
+                spin();
+            }
+            set_currnet_ownner();
+            cnt++;
+        }
+
+    }
+
+    virtual void unlock() override
+    {
+        if(is_currnet_ownner())
+        {
+            cnt--;
+            if(cnt == 0)
+            {
+                clear_currnet_ownner();
+                m_flag.clear();
+            }
+        }
+    }
+
+    virtual bool try_lock() override
+    {
+        if(is_currnet_ownner())
+        {
+            cnt++;
+            return true;
+        }
+        bool ret=!m_flag.test_and_set();
+        if(ret)
+        {
+            set_currnet_ownner();
+            cnt++;
+        }
+        return ret;
+    }
+
+};
+
 #endif // HCPPRT_NO_ATOMIC
 
 /*
