@@ -184,3 +184,44 @@ size_t hringbuf_output(hringbuf_t * buff,uint8_t *data,size_t data_length)
 
     return count;
 }
+
+size_t hringbuf_output_no_clear(hringbuf_t * buff,uint8_t *data,size_t data_length)
+{
+    if(buff == NULL || data ==NULL || data_length == 0)
+    {
+        return 0;
+    }
+
+    //加锁
+    if(buff->mutex_lock!=NULL)
+    {
+        buff->mutex_lock(buff->usr);
+    }
+
+    size_t count=data_length;
+
+    if(count > hringbuf_get_length(buff))
+    {
+        count =  hringbuf_get_length(buff);
+    }
+
+    size_t data_start=buff->data_start;
+
+    for(size_t i=0 ; i< count; i++)
+    {
+        if(data_start >= buff->buff_length)
+        {
+            data_start-=buff->buff_length;
+        }
+        data[i]=((uint8_t *)buff->buff)[data_start];
+        data_start++;
+    }
+
+    //解锁
+    if(buff->mutex_unlock!=NULL)
+    {
+        buff->mutex_unlock(buff->usr);
+    }
+
+    return count;
+}

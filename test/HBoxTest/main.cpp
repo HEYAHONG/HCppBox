@@ -1061,9 +1061,13 @@ static int hringbuf_test(int argc,const char *argv[])
         uint8_t buff[256]= {0};
         printf("hringbuf_test:test 1\r\n");
         hringbuf_input(ring,(uint8_t *)"Hello",strlen("Hello"));
+        hringbuf_output_no_clear(ring,buff,sizeof(buff));
+        printf("hringbuf_test(no_clear):%s\r\n",buff);
         hringbuf_output(ring,buff,sizeof(buff));
         printf("hringbuf_test:%s\r\n",buff);
         hringbuf_input(ring,(uint8_t *)"ringbuf",strlen("ringbuf"));
+        hringbuf_output_no_clear(ring,buff,sizeof(buff));
+        printf("hringbuf_test(no_clear):%s\r\n",buff);
         hringbuf_output(ring,buff,sizeof(buff));
         printf("hringbuf_test:%s\r\n",buff);
     }

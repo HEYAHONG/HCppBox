@@ -91,6 +91,16 @@ size_t hringbuf_input(hringbuf_t * buff,const uint8_t *data,size_t data_length);
  */
 size_t hringbuf_output(hringbuf_t * buff,uint8_t *data,size_t data_length);
 
+/** \brief 从环形缓冲区读取数据(不清除缓冲区的数据)
+ *
+ * \param buff hringbuf_t* hringbuf_t指针
+ * \param data uint8_t* 数据指针
+ * \param data_length size_t 数据长度
+ * \return size_t 已读取的长度
+ *
+ */
+size_t hringbuf_output_no_clear(hringbuf_t * buff,uint8_t *data,size_t data_length);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
