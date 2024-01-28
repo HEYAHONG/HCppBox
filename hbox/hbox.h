@@ -29,6 +29,7 @@
 #include "hchain.h"
 #include "hloop.h"
 #include "hslots.h"
+#include "hfifo.h"
 
 
 #endif // HBOX_H_INCLUDED

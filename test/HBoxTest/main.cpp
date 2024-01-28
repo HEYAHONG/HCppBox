@@ -1080,5 +1080,37 @@ static int hringbuf_test(int argc,const char *argv[])
         hringbuf_output(ring,buff,sizeof(buff));
         printf("hringbuf_test:%s\r\n",buff);
     }
+
+    {
+        //C++测试
+        hlock m_lock;
+        hfifo m_fifo(m_lock);
+        m_fifo.set_buffer(buffer,sizeof(buffer));
+        {
+            uint8_t buff[256]= {0};
+            printf("hfifo_test:test 1\r\n");
+            m_fifo.write((uint8_t *)"Hello",strlen("Hello"));
+            m_fifo.read(buff,sizeof(buff),false);
+            printf("hfifo_test(no_clear):%s\r\n",buff);
+            m_fifo.read(buff,sizeof(buff));
+            printf("hfifo_test:%s\r\n",buff);
+            m_fifo.write((uint8_t *)"ringbuf",strlen("ringbuf"));
+            m_fifo.read(buff,sizeof(buff),false);
+            printf("hfifo_test(no_clear):%s\r\n",buff);
+            m_fifo.read(buff,sizeof(buff));
+            printf("hfifo_test:%s\r\n",buff);
+        }
+        {
+            uint8_t buff[256]= {0};
+            printf("hfifo_test:test 2\r\n");
+            m_fifo.write((uint8_t *)"Hello",strlen("Hello"));
+            m_fifo.write((uint8_t *)" ",strlen(" "));
+            m_fifo.write((uint8_t *)"ringbuf",strlen("ringbuf"));
+            m_fifo.read(buff,sizeof(buff));
+            printf("hfifo_test:%s\r\n",buff);
+        }
+
+
+    }
     return 0;
 }
