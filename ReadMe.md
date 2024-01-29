@@ -9,8 +9,9 @@
 
 对于基于CMake的工程，在将本工程顶级目录使用`add_subdirectory`命令添加为子目录后，可使用以下自定义命令:
 
-- hcppbox_enable(targetname):为目标名为targetname的目标启用C++相关组件。
-- hbox_enable(targetname):为目标名为targetname的目标启用HBox(C相关组件)。
+- hcppbox_enable(targetname):为目标名为targetname的目标启用HCppBox。
+- hbox_enable(targetname):为目标名为targetname的目标启用HBox。
+- hrc_enable(targetname):为目标名为targetname的目标启用HRC。
 
 代码示例请参考[test](test)目录。
 
