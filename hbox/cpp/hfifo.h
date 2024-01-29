@@ -58,14 +58,22 @@ public:
         return m_ringbuf!=NULL;
     }
 
-    //设置FIFO缓冲区，flase表示无效
-    bool set_buffer(uint8_t *buffer,size_t buffer_length)
+    //设置FIFO缓冲区，false表示无效,注意:若buffer已被使用过，be_zero必须为true
+    bool set_buffer(uint8_t *buffer,size_t buffer_length,bool be_zero=false)
     {
         if(is_vaild())
         {
             return false;
         }
         hlockguard<lock> s_lock(m_lock);
+        if(!be_zero)
+        {
+            //若未被清零过,则清零
+            for(size_t i = 0; i< buffer_length; i++)
+            {
+                buffer[i]=0;
+            }
+        }
         m_ringbuf=hringbuf_get(buffer,buffer_length);
         if(is_vaild())
         {
