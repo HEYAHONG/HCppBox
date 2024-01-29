@@ -88,7 +88,7 @@ public:
         return is_vaild();
     }
 
-    //heventloop接口包装
+    //hringbuf接口包装
 
     size_t get_length()
     {
