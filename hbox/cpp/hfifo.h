@@ -69,9 +69,12 @@ public:
         if(!be_zero)
         {
             //若未被清零过,则清零
-            for(size_t i = 0; i< buffer_length; i++)
+            if(buffer!=NULL && buffer_length != 0)
             {
-                buffer[i]=0;
+                for(size_t i = 0; i< buffer_length; i++)
+                {
+                    buffer[i]=0;
+                }
             }
         }
         m_ringbuf=hringbuf_get(buffer,buffer_length);
