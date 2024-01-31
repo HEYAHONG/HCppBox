@@ -15,8 +15,8 @@ typedef struct hwatchdog_watch
     struct hwatchdog_watch *next;
     hwatchdog_watch_info_t info;
     bool (*check)(hwatchdog_watch_info_t *info);
-    uint32_t timeout_ms;
-    uint64_t tick;
+    hwatchdog_tick_t timeout_ms;
+    hwatchdog_tick_t tick;
 } hwatchdog_watch_t;
 
 static struct
@@ -36,7 +36,7 @@ static struct
     //系统复位
     void (*sys_reset)();
     //系统获取节拍
-    uint64_t (*sys_tick_ms)();
+    hwatchdog_tick_t (*sys_tick_ms)();
     //检查起始
     hwatchdog_watch_t *watch_start;
 
@@ -105,7 +105,7 @@ void hwatchdog_set_hardware_dog_feed(void (*hw_feed)())
     hwatchdog_dog.hw_feed=hw_feed;
 }
 
-void hwatchdog_setup_software_dog(void (*sys_reset)(),uint64_t (*sys_tick_ms)())
+void hwatchdog_setup_software_dog(void (*sys_reset)(),hwatchdog_tick_t (*sys_tick_ms)())
 {
     hwatchdog_dog.sys_reset=sys_reset;
     hwatchdog_dog.sys_tick_ms=sys_tick_ms;
@@ -189,7 +189,7 @@ void hwatchdog_feed(void)
     }
 }
 
-void hwatchdog_add_watch(bool (*check)(hwatchdog_watch_info_t *info),uint32_t timeout_ms,hwatchdog_watch_info_t info)
+void hwatchdog_add_watch(bool (*check)(hwatchdog_watch_info_t *info),hwatchdog_tick_t timeout_ms,hwatchdog_watch_info_t info)
 {
     check_watchdog_parameter();
 

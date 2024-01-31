@@ -34,6 +34,30 @@ extern "C"
 #include "stdint.h"
 #include "stdbool.h"
 
+/*
+定义系统节拍变量位宽，数据位宽越大，容许的超时越长，但需要注意的是，低位宽的看门狗可在高位宽的系统中运行，反之不能，如16位的看门狗系统节拍能在系统节拍为32位的系统中运行，反之不能。
+*/
+
+//64位
+#ifdef HWATCHDOG_USING_64_TICK
+#define hwatchdog_tick_t uint64_t
+#endif // HWATCHDOG_USING_64_TICK
+
+//32位
+#ifdef HWATCHDOG_USING_32_TICK
+#define hwatchdog_tick_t uint32_t
+#endif // HWATCHDOG_USING_32_TICK
+
+//16位
+#ifdef HWATCHDOG_USING_16_TICK
+#define hwatchdog_tick_t uint16_t
+#endif // HWATCHDOG_USING_16_TICK
+
+//默认位宽为32位
+#ifndef hwatchdog_tick_t
+#define hwatchdog_tick_t uint32_t
+#endif // hwatchdog_tick_t
+
 /** \brief 设置看门狗内存管理。如不设置将使用malloc与free。
  *
  * \param  usr void* 用户指针
@@ -64,7 +88,7 @@ void hwatchdog_set_hardware_dog_feed(void (*hw_feed)());
  * \param sys_tick_ms 系统节拍(毫秒),通常为自增值
  *
  */
-void hwatchdog_setup_software_dog(void (*sys_reset)(),uint64_t (*sys_tick_ms)());
+void hwatchdog_setup_software_dog(void (*sys_reset)(),hwatchdog_tick_t (*sys_tick_ms)());
 
 /** \brief 检查看门狗是否有效，若无效则说明某些必要参数未设置。
  *
@@ -99,11 +123,11 @@ typedef struct
 /** \brief 添加看门狗检查(一般不直接使用此函数,而使用HWATCHDOG_ADD_WATCH)
  *
  * \param check 检查函数。检查失败返回false(即异常状态)
- * \param timeout_ms uint32_t 超时。仅当软件看门狗正确设置后有效。
+ * \param timeout_ms hwatchdog_tick_t 超时。仅当软件看门狗正确设置后有效。
  * \param info hwatchdog_watch_info_t检查信息
  *
  */
-void hwatchdog_add_watch(bool (*check)(hwatchdog_watch_info_t* info),uint32_t timeout_ms,hwatchdog_watch_info_t info);
+void hwatchdog_add_watch(bool (*check)(hwatchdog_watch_info_t* info),hwatchdog_tick_t timeout_ms,hwatchdog_watch_info_t info);
 
 /** \brief 添加看门狗检查
  *
