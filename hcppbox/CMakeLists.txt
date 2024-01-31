@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
 
-#设置默认C++标准
-set(CMAKE_CXX_STANDARD 23)
 
 if(MSVC)
     add_compile_options(-utf-8 )
@@ -22,6 +20,9 @@ hbox_enable(HCppBox)
 
 #设置C++标准
 set_property(TARGET HCppBox PROPERTY CXX_STANDARD 23)
+
+#设置C标准
+set_property(TARGET HCppBox PROPERTY C_STANDARD 23)
 
 #启用HCppBox
 function(hcppbox_enable targetname)

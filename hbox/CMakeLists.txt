@@ -14,7 +14,8 @@ target_include_directories(HBox PUBLIC ./cpp/ )
 
 #设置属性
 set_property(TARGET HBox PROPERTY CXX_STANDARD 11)
-set_property(TARGET HBox PROPERTY C_STANDARD 99)
+#虽然最低支持C99，但此处仍然设置为C11
+set_property(TARGET HBox PROPERTY C_STANDARD 11)
 
 #启用HBox
 function(hbox_enable targetname)

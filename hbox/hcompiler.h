@@ -243,4 +243,63 @@ GCC编译器
 #define UNUSED(x) ((void)x)
 #endif // UNUSED
 
+#ifdef __STDC_VERSION__
+
+/*
+默认最低采用C99标准,故不判断是否为C99
+*/
+
+//C11
+#if __STDC_VERSION__ >= 201112L
+#define __HAS_C11 1
+#endif // __STDC_VERSION__
+
+//C17
+#if __STDC_VERSION__ >= 201710L
+#define __HAS_C17 1
+#endif // __STDC_VERSION__
+
+//C23
+#if __STDC_VERSION__ >= 202311L
+#define __HAS_C23 1
+#endif // __STDC_VERSION__
+
+
+#endif // __STDC_VERSION__
+
+#ifdef __cplusplus
+
+#ifdef _MSVC_LANG
+#define __cplusplus_date _MSVC_LANG
+#else
+#define __cplusplus_date __cplusplus
+#endif // _MSVC_LANG
+
+//C++11
+#if __cplusplus_date >= 201103L
+#define __HAS_CPP11 1
+#endif // __cplusplus_date
+
+//C++14
+#if __cplusplus_date >= 201402L
+#define __HAS_CPP14 1
+#endif // __cplusplus_date
+
+//C++17
+#if __cplusplus_date >= 201703L
+#define __HAS_CPP17 1
+#endif // __cplusplus_date
+
+//C++20
+#if __cplusplus_date >= 202002L
+#define __HAS_CPP20 1
+#endif // __cplusplus_date
+
+//C++23
+#if __cplusplus_date >= 202302L
+#define __HAS_CPP23 1
+#endif // __cplusplus_date
+
+#endif // __cplusplus
+
 #endif // HCOMPILER_H_INCLUDED

@@ -10,10 +10,6 @@
 #define HCPPRT_H
 #include "hdefaults.h"
 
-#ifndef HCPPRT_NO_ATOMIC
-#include <atomic>
-#endif // HCPPRT_NO_ATOMIC
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -28,7 +24,12 @@ void hcpprt_init();
 #ifdef __cplusplus
 }
 #endif // __cplusplus
+
 #ifdef __cplusplus
+
+#ifndef HCPPRT_NO_ATOMIC
+#include <atomic>
+#endif // HCPPRT_NO_ATOMIC
 
 /*
 包装C语言的内存分配,可通过继承此类并实现相应虚函数实现自己的内存分配

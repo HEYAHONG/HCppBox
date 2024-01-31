@@ -39,9 +39,33 @@ int main(int argc,const char *argv[])
     return 0;
 }
 
-
+extern "C" void c_compiler_test();
 static int hcompiler_test(int argc,const char *argv[])
 {
+    c_compiler_test();
+#ifdef __HAS_CPP11
+    printf("hcompiler:C++11\r\n");
+#endif // __HAS_CPP11
+
+#ifdef __HAS_CPP14
+    printf("hcompiler:C++14\r\n");
+#endif // __HAS_CPP14
+
+#ifdef __HAS_CPP17
+    printf("hcompiler:C++17\r\n");
+#endif // __HAS_CPP17
+
+#ifdef __HAS_CPP20
+    printf("hcompiler:C++20\r\n");
+#endif // __HAS_CPP20
+
+#ifdef __HAS_CPP23
+    printf("hcompiler:C++23\r\n");
+#endif // __HAS_CPP23
+
+#ifdef __cplusplus_date
+    printf("hcompiler: C++ %d\r\n",(int)__cplusplus_date);
+#endif // __cplusplus_date
     return 0;
 }
 

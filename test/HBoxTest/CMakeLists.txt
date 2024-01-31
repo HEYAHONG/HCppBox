@@ -5,9 +5,9 @@ cmake_minimum_required(VERSION 3.14)
 #添加可执行文件
 add_executable(HBoxTest)
 
-#设置C++标准
+#设置C/C++标准
 set_property(TARGET HBoxTest PROPERTY CXX_STANDARD 23)
-
+set_property(TARGET HBoxTest PROPERTY C_STANDARD 23)
 
 #启用HBox
 hbox_enable(HBoxTest)
