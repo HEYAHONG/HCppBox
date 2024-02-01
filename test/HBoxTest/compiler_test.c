@@ -25,7 +25,7 @@ void c_compiler_test()
 #endif // __HAS_C23
 
 #ifdef __STDC_VERSION__
-    printf("hcompiler: C %d\r\n",(int)__STDC_VERSION__);
+    printf("hcompiler:CVer=%d\r\n",(int)__C_VERSION);
 #endif // __STDC_VERSION__
 
 }

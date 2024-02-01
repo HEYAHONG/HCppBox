@@ -64,7 +64,7 @@ static int hcompiler_test(int argc,const char *argv[])
 #endif // __HAS_CPP23
 
 #ifdef __cplusplus_date
-    printf("hcompiler: C++ %d\r\n",(int)__cplusplus_date);
+    printf("hcompiler:C++Ver=%d\r\n",(int)__CPP_VERSION);
 #endif // __cplusplus_date
     return 0;
 }

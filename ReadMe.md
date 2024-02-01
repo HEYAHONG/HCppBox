@@ -15,6 +15,13 @@
 
 代码示例请参考[test](test)目录。
 
+## 编译器支持
+
+注意:应当尽可能使用最新版编译器。
+
+- GCC4.8.1及更新:https://gcc.gnu.org/
+- Clang 3.3 及以上版本:https://clang.llvm.org/
+
 # 组件
 
 ## hbox

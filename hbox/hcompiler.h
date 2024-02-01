@@ -243,6 +243,26 @@ GCC编译器
 #define UNUSED(x) ((void)x)
 #endif // UNUSED
 
+/*
+标识IO输入,一般定义为volatile,通常用于嵌入式
+*/
+#ifndef __IO_I
+#define __IO_I volatile
+#endif // __IO_I
+
+/*
+标识IO输出,一般定义为volatile,通常用于嵌入式
+*/
+#ifndef __IO_O
+#define __IO_O volatile
+#endif // __IO_O
+
+/*
+标识IO输入输出,,一般定义为volatile,通常用于嵌入式
+*/
+#ifndef __IO
+#define __IO volatile
+#endif // __IO
 
 /*
 C语言标准
@@ -268,6 +288,9 @@ C语言标准
 #define __HAS_C23 1
 #endif // __STDC_VERSION__
 
+#ifndef __C_VERSION
+#define __C_VERSION  __STDC_VERSION__
+#endif // __C_VERSION
 
 #endif // __STDC_VERSION__
 
@@ -319,6 +342,10 @@ C++语言标准
 #if __cplusplus_date >= 202302L
 #define __HAS_CPP23 1
 #endif // __cplusplus_date
+
+#ifndef __CPP_VERSION
+#define __CPP_VERSION  __cplusplus_date
+#endif // __CPP_VERSION
 
 #endif // __cplusplus
 
