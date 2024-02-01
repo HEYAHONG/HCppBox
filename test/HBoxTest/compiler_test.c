@@ -2,12 +2,19 @@
 #include "stdlib.h"
 #include "string.h"
 #include "hbox.h"
+#ifdef HAVE_STDATOMIC_H
+#include "stdatomic.h"
+#endif // HAVE_STDATOMIC_H
 
 void c_compiler_test()
 {
 #ifdef __HAS_C11
     printf("hcompiler:C11\r\n");
 #endif // __HAS_C11
+
+#ifdef HAVE_STDATOMIC_H
+    printf("hcompiler:have stdatomic.h\r\n");
+#endif // HAVE_STDATOMIC_H
 
 #ifdef __HAS_C17
     printf("hcompiler:C17\r\n");

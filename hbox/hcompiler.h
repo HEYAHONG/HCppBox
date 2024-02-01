@@ -237,12 +237,16 @@ GCC编译器
 //#endif // __GNUC__
 
 /*
-较为通用的宏定义
+未使用，通常用于消除编译器警告(未使用的参数)
 */
 #ifndef UNUSED
 #define UNUSED(x) ((void)x)
 #endif // UNUSED
 
+
+/*
+C语言标准
+*/
 #ifdef __STDC_VERSION__
 
 /*
@@ -267,6 +271,22 @@ GCC编译器
 
 #endif // __STDC_VERSION__
 
+/*
+C11特性
+*/
+#ifdef __HAS_C11
+
+#ifndef __STDC_NO_ATOMICS__
+#ifndef HAVE_STDATOMIC_H
+#define HAVE_STDATOMIC_H 1
+#endif // HAVE_STDATOMIC_H
+#endif // __STDC_NO_ATOMICS__
+
+#endif // __HAS_C11
+
+/*
+C++语言标准
+*/
 #ifdef __cplusplus
 
 #ifdef _MSVC_LANG
@@ -301,5 +321,6 @@ GCC编译器
 #endif // __cplusplus_date
 
 #endif // __cplusplus
+
 
 #endif // HCOMPILER_H_INCLUDED
