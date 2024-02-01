@@ -23,7 +23,7 @@ class hfifo
     lock &m_lock;
     hringbuf_t *m_ringbuf;
 public:
-    hfifo(lock &_lock):m_lock(_lock),m_ringbuf(NULL)
+    hfifo(lock &_lock=hcpprt_global_lock()):m_lock(_lock),m_ringbuf(NULL)
     {
 
     }

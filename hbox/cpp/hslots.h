@@ -73,7 +73,7 @@ class hslots
         }
     }
 public:
-    hslots(lock &_lock,cmemory &_cmemory):m_lock(_lock),m_cmemory(_cmemory),m_slots(NULL)
+    hslots(lock &_lock=hcpprt_global_lock(),cmemory &_cmemory=hcpprt_global_cmemory()):m_lock(_lock),m_cmemory(_cmemory),m_slots(NULL)
     {
     }
 

@@ -141,9 +141,7 @@ static int heventloop_test(int argc,const char *argv[])
 
     {
         //C++测试
-        hlock m_lock;
-        hcmemory cmemory;
-        hloop m_loop(m_lock,cmemory);
+        hloop m_loop;
 
         //添加两个事件(使用无捕获的lambda函数)
         printf("hloop_test:add events\r\n");
@@ -243,9 +241,7 @@ static int heventslots_test(int argc,const char *argv[])
 
     {
         //C++测试
-        hlock m_lock;
-        hcmemory cmemory;
-        hslots m_slots(m_lock,cmemory);
+        hslots m_slots;
 
         //添加槽函数
         printf("hslots_test:add slots\r\n");
@@ -414,9 +410,7 @@ static int heventchain_test(int argc,const char *argv[])
     {
         printf("hchain_test:add chain\r\n");
         //C++测试
-        hlock m_lock;
-        hcmemory cmemory;
-        hchain m_chain(m_lock,cmemory);
+        hchain m_chain;
         m_chain.install_hook([](void *para,void *usr)->bool
         {
             printf("hchain_test:hook 1\r\n");
@@ -1107,8 +1101,7 @@ static int hringbuf_test(int argc,const char *argv[])
 
     {
         //C++测试
-        hlock m_lock;
-        hfifo m_fifo(m_lock);
+        hfifo m_fifo;
         m_fifo.set_buffer(buffer,sizeof(buffer));
         {
             uint8_t buff[256]= {0};

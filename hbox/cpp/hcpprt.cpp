@@ -108,3 +108,14 @@ void operator delete[](void *ptr)
 
 #endif // HCPPRT_NO_NEW_AND_DELETE_OVERRIDE
 
+static hcmemory g_cmemory;
+hcmemory &hcpprt_global_cmemory()
+{
+    return g_cmemory;
+}
+
+static hlock g_lock;
+hlock &hcpprt_global_lock()
+{
+    return g_lock;
+}

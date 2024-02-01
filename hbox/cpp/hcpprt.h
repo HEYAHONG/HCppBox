@@ -53,6 +53,8 @@ public:
     }
 };
 
+hcmemory &hcpprt_global_cmemory();
+
 /*
 锁,可通过继承此类并实现相应虚函数实现自己的锁
 */
@@ -87,6 +89,7 @@ public:
     }
 };
 
+hlock &hcpprt_global_lock();
 
 #ifndef HCPPRT_NO_ATOMIC
 /*
