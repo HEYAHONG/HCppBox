@@ -19,8 +19,8 @@
 
 注意:应当尽可能使用最新版编译器。
 
-- GCC4.8.1及更新:https://gcc.gnu.org/
-- Clang 3.3 及以上版本:https://clang.llvm.org/
+- GCC4.9.0及更新版本:https://gcc.gnu.org/
+- Clang 3.4 及更新版本:https://clang.llvm.org/
 
 # 组件
 
