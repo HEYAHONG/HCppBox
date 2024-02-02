@@ -21,6 +21,7 @@
         -设置软件/硬件看门狗,视看门狗的设置情况不同行为也略有不同。
         -在空闲任务(若有)中喂狗,若不包含操作系统，则需要在主循环中添加喂狗。
         -在需要检查的函数中添加检查。
+        -除了直接添加检查，还可使用软狗，软狗特性与硬件看门狗相似，软狗之间相互独立,每个软狗都需要执行自己的喂狗
 */
 
 #ifdef __cplusplus
@@ -137,6 +138,28 @@ void hwatchdog_add_watch(bool (*check)(hwatchdog_watch_info_t* info),hwatchdog_t
  *
  */
 #define HWATCHDOG_ADD_WATCH(check,timeout_ms,usr) {hwatchdog_watch_info_t info={usr,__FILE__,__LINE__,__FUNCTION__};hwatchdog_add_watch(check,timeout_ms,info);}
+
+typedef struct
+{
+    //标志位,在软狗喂狗时置为true,检查后清除为false.
+    bool flag;
+} hwatchdog_softdog_t;
+
+
+/** \brief 获取软狗
+ *
+ * \param timeout_ms 超时。仅当软件看门狗正确设置后有效
+ * \return hwatchdog_softdog_t* 软狗指针
+ *
+ */
+hwatchdog_softdog_t *hwatchdog_softdog_new(hwatchdog_tick_t timeout_ms);
+
+/** \brief 软狗喂狗
+ *
+ * \param softdog hwatchdog_softdog_t* 软狗指针
+ *
+ */
+void hwatchdog_softdog_feed(hwatchdog_softdog_t * softdog);
 
 #ifdef __cplusplus
 }

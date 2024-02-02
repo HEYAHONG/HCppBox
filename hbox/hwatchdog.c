@@ -255,3 +255,40 @@ void hwatchdog_add_watch(bool (*check)(hwatchdog_watch_info_t *info),hwatchdog_t
     }
 
 }
+
+
+static bool softdog_check(hwatchdog_watch_info_t *info)
+{
+    bool ret=false;
+    if(info!=NULL && info->usr !=NULL)
+    {
+        hwatchdog_softdog_t *softdog=(hwatchdog_softdog_t *)info->usr;
+        ret=softdog->flag;
+        softdog->flag=false;
+    }
+    return ret;
+}
+
+hwatchdog_softdog_t *hwatchdog_softdog_new(hwatchdog_tick_t timeout_ms)
+{
+    check_watchdog_parameter();
+    hwatchdog_softdog_t *ret=(hwatchdog_softdog_t *)hwatchdog_dog.mem_alloc(sizeof(hwatchdog_softdog_t),NULL);
+    if(ret==NULL)
+    {
+        return ret;
+    }
+    if(ret!=NULL)
+    {
+        ret->flag=false;
+        HWATCHDOG_ADD_WATCH(softdog_check,timeout_ms,ret);
+    }
+    return ret;
+}
+
+void hwatchdog_softdog_feed(hwatchdog_softdog_t * softdog)
+{
+    if(softdog!=NULL)
+    {
+        softdog->flag=true;
+    }
+}
