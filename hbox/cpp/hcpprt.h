@@ -8,6 +8,7 @@
  **************************************************************/
 #ifndef HCPPRT_H
 #define HCPPRT_H
+#include "hcompiler.h"
 #include "hdefaults.h"
 
 #ifdef __cplusplus
@@ -26,6 +27,17 @@ void hcpprt_init();
 #endif // __cplusplus
 
 #ifdef __cplusplus
+
+/*
+无C++11
+*/
+#ifndef __HAS_CPP11
+
+#ifndef HCPPRT_NO_ATOMIC
+#define HCPPRT_NO_ATOMIC 1
+#endif // HCPPRT_NO_ATOMIC
+
+#endif // __HAS_CPP11
 
 #ifndef HCPPRT_NO_ATOMIC
 #include <atomic>
