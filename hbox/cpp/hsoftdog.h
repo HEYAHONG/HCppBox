@@ -28,11 +28,11 @@ public:
 
     }
 
-    hsoftdog(hsoftdog &oths):m_timeout_ms(oths.m_timeout_ms)
+    hsoftdog(hsoftdog &oths):m_timeout_ms(oths.m_timeout_ms),softdog(NULL)
     {
 
     }
-    hsoftdog(hsoftdog &&oths):m_timeout_ms(oths.m_timeout_ms)
+    hsoftdog(hsoftdog &&oths):m_timeout_ms(oths.m_timeout_ms),softdog(NULL)
     {
 
     }
