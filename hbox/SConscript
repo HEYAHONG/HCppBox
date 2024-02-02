@@ -6,7 +6,10 @@ import sys
 cwd = GetCurrentDir()
 src = Glob('*.c')
 src += Glob('*.cpp')
-CPPPATH = [cwd]
+CPPPATH = [
+cwd,
+cwd+'/cpp'
+]
 
 group = DefineGroup('HBox', src, depend = [''], CPPPATH = CPPPATH)
 
