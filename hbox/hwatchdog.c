@@ -272,7 +272,7 @@ static bool softdog_check(hwatchdog_watch_info_t *info)
 hwatchdog_softdog_t *hwatchdog_softdog_new(hwatchdog_tick_t timeout_ms)
 {
     check_watchdog_parameter();
-    hwatchdog_softdog_t *ret=(hwatchdog_softdog_t *)hwatchdog_dog.mem_alloc(sizeof(hwatchdog_softdog_t),NULL);
+    hwatchdog_softdog_t *ret=(hwatchdog_softdog_t *)hwatchdog_dog.mem_alloc(sizeof(hwatchdog_softdog_t),hwatchdog_dog.usr);
     if(ret==NULL)
     {
         return ret;
