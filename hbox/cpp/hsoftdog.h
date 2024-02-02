@@ -20,19 +20,19 @@
 class hsoftdog
 {
     hwatchdog_tick_t m_timeout_ms;
-    hwatchdog_softdog_t *softdog;
+    hwatchdog_softdog_t *m_softdog;
 public:
     //默认30S
-    hsoftdog(hwatchdog_tick_t timeout_ms=30000):m_timeout_ms(timeout_ms),softdog(NULL)
+    hsoftdog(hwatchdog_tick_t timeout_ms=30000):m_timeout_ms(timeout_ms),m_softdog(NULL)
     {
 
     }
 
-    hsoftdog(hsoftdog &oths):m_timeout_ms(oths.m_timeout_ms),softdog(NULL)
+    hsoftdog(hsoftdog &oths):m_timeout_ms(oths.m_timeout_ms),m_softdog(NULL)
     {
 
     }
-    hsoftdog(hsoftdog &&oths):m_timeout_ms(oths.m_timeout_ms),softdog(NULL)
+    hsoftdog(hsoftdog &&oths):m_timeout_ms(oths.m_timeout_ms),m_softdog(NULL)
     {
 
     }
@@ -49,16 +49,16 @@ protected:
     //看门狗喂狗，默认只允许子类调用
     void watchdog_feed()
     {
-        if(softdog!=NULL)
+        if(m_softdog!=NULL)
         {
-            hwatchdog_softdog_feed(softdog);
+            hwatchdog_softdog_feed(m_softdog);
         }
         else
         {
-            softdog=hwatchdog_softdog_new(m_timeout_ms);
-            if(softdog != NULL)
+            m_softdog=hwatchdog_softdog_new(m_timeout_ms);
+            if(m_softdog != NULL)
             {
-                hwatchdog_softdog_feed(softdog);
+                hwatchdog_softdog_feed(m_softdog);
             }
         }
     }
