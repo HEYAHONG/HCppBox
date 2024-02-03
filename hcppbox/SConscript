@@ -3,7 +3,7 @@ import os
 import sys
 
 
-if Env["Enable_HCPPBox"] is None:
+if not "Enable_HCPPBox" in Env:
    group = []
    Return('group') 
 

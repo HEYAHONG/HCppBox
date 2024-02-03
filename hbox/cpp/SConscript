@@ -2,7 +2,7 @@ from building import *
 import os
 import sys
 
-if Env["Enable_HBox_CPP"] is None:
+if not "Enable_HBox_CPP" in Env:
    group = []
    Return('group')
 
