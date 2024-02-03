@@ -22,3 +22,9 @@ cmake --build .
 #编译完成后即可在子目录中找到每个测试程序的可执行文件
 ```
 
+# scons
+
+在当前目录执行`scons`可通过[scons](https://scons.org)编译。
+
+注意:scons构建并非主要构建，一般是为了测试[RT-Thread](https://www.rt-thread.org/)的scons构建。
+

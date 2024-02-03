@@ -1,0 +1,24 @@
+import os
+import sys
+
+#采用默认环境，由于未设置相关C/C++参数，均采用编译器默认参数,因此请使用最新版编译器
+env = Environment()
+#添加标志
+env["Enable_HBox_CPP"]=True
+env["Enable_HCPPBox"]=True
+cwd = str(Dir('#'))
+objs = []
+
+from building import *
+
+list = os.listdir(cwd)
+for d in list:
+    path = os.path.join(cwd, d)
+    if os.path.isfile(os.path.join(path, 'SConscript')):
+       target_env=env.Clone()
+       SetEnv(target_env)
+       target_env["OBJPREFIX"]="build/"+d+"/"
+       target_env["SHOBJPREFIX"]="build/"+d+"/"
+       objs = SConscript(os.path.join(path, 'SConscript'))
+       target_env.Program(target="build/"+d,source=objs)
+
