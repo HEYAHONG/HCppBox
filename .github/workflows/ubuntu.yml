@@ -35,3 +35,10 @@ jobs:
       working-directory: ${{github.workspace}}/build
       run: ${{github.workspace}}/build/HBoxTest/HBoxTest && ${{github.workspace}}/build/HRCTest/HRCTest && ${{github.workspace}}/build/HCPPObjectTest/HCPPObjectTest
 
+    - uses: actions/setup-python@v5
+      with:
+            python-version: '3.9'
+    
+    - name: Test scons
+      working-directory: test
+      run:  pip install scons && scons
