@@ -8,7 +8,7 @@ cwd = GetCurrentDir()
 os.chdir(cwd)
 
 #执行g++
-if not sys.platform.startswith("win32"):
+if not sys.platform.startswith("win32") and not sys.platform.startswith("cygwin"):
     Execute("g++ fsgen.cpp -o fsgen")
 
 #生成RC_fs.c
