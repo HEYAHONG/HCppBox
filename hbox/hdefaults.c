@@ -9,6 +9,16 @@
 
 #include "hcompiler.h"
 #include "hdefaults.h"
+
+
+//CYGWIN当作Windows
+#ifdef __CYGWIN__
+#undef __unix__
+#ifndef WIN32
+#define WIN32 1
+#endif // WIN32
+#endif // __CYGWIN__
+
 #ifdef __RTTHREAD__
 #include "rtthread.h"
 #endif // __RTTHREAD__

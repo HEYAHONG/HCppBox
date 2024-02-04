@@ -1,4 +1,4 @@
-#模拟环境
+#模拟(RT-Thread)环境
 Env = None
 
 from SCons.Script import *
