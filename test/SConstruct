@@ -6,6 +6,19 @@ env = Environment()
 #添加标志
 env["Enable_HBox_CPP"]=True
 env["Enable_HCPPBox"]=True
+
+#工具信息
+print("Tools={}".format(env["TOOLS"]))
+
+#msvc设置
+if "msvc" in env["TOOLS"]:
+    env.AppendUnique(CFLAGS='/utf-8')
+    env.AppendUnique(CFLAGS='/std:clatest')
+    env.AppendUnique(CFLAGS='/DWIN32=1')
+    env.AppendUnique(CXXFLAGS='/utf-8')
+    env.AppendUnique(CXXFLAGS='/std:c++latest')
+    env.AppendUnique(CXXFLAGS='/DWIN32=1')
+
 cwd = str(Dir('#'))
 objs = []
 
