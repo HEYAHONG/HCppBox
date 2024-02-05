@@ -1,6 +1,7 @@
 ﻿
 #include <inttypes.h>
 #include <stdint.h>
+#include <thread>
 #include "hbox.h"
 
 static int hcompiler_test(int argc,const char *argv[]);
@@ -71,6 +72,14 @@ static int hcompiler_test(int argc,const char *argv[])
 
 static int hdefaults_test(int argc,const char *argv[])
 {
+
+    {
+        hdefaults_tick_t start=hdefaults_tick_get();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        hdefaults_tick_t end=hdefaults_tick_get();
+        printf("hdefaults_test:tick start=%" PRIu64 ",tick end=%" PRIu64 ",tick interval=20ms\r\n",(uint64_t)start,(uint64_t)end);
+    }
+
     hdefaults_mutex_lock(NULL);
     hdefaults_mutex_unlock(NULL);
     void *ptr=hdefaults_malloc(1024,NULL);

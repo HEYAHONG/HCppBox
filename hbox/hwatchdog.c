@@ -43,6 +43,16 @@ static struct
 } hwatchdog_dog = {0};
 
 
+static hwatchdog_tick_t tick_get()
+{
+    if((sizeof(hwatchdog_tick_t)) > (sizeof(hdefaults_tick_t)))
+    {
+        //不使用默认节拍获取
+        return 0;
+    }
+    return hdefaults_tick_get();
+}
+
 static void check_watchdog_parameter()
 {
     if(hwatchdog_dog.mem_alloc==NULL)
@@ -63,6 +73,11 @@ static void check_watchdog_parameter()
     if(hwatchdog_dog.mutex_unlock==NULL)
     {
         hwatchdog_dog.mutex_unlock=hdefaults_mutex_unlock;
+    }
+
+    if(hwatchdog_dog.sys_tick_ms==NULL)
+    {
+        hwatchdog_dog.sys_tick_ms=tick_get;
     }
 }
 

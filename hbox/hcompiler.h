@@ -350,4 +350,5 @@ C++语言标准
 #endif // __cplusplus
 
 
+
 #endif // HCOMPILER_H_INCLUDED

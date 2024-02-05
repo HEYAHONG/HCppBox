@@ -24,6 +24,35 @@ extern "C"
 #include "string.h"
 #include "stdbool.h"
 
+//CYGWIN当作Windows
+#ifdef __CYGWIN__
+#undef __unix__
+#ifndef WIN32
+#define WIN32 1
+#endif // WIN32
+#endif // __CYGWIN__
+
+//定义操作系统
+#ifdef __RTTHREAD__
+#include "rtthread.h"
+#ifndef HDEFAULTS_OS_RTTHREAD
+#define HDEFAULTS_OS_RTTHREAD 1
+#endif // HDEFAULTS_OS_RTTHREAD
+#endif // __RTTHREAD__
+#ifdef WIN32
+#include "windows.h"
+#ifndef HDEFAULTS_OS_WINDOWS
+#define HDEFAULTS_OS_WINDOWS 1
+#endif // HDEFAULTS_OS_WINDOWS
+#endif // WIN32
+#ifdef __unix__
+#include "pthread.h"
+#ifndef HDEFAULTS_OS_UNIX
+#define HDEFAULTS_OS_UNIX 1
+#endif // HDEFAULTS_OS_UNIX
+#endif // __unix__
+
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif // HAVE_CONFIG_H
@@ -42,6 +71,29 @@ extern "C"
 #endif
 
 
+#ifdef HDEFAULTS_OS_RTTHREAD
+#define hdefaults_tick_t rt_tick_t
+#endif // HDEFAULTS_OS_RTTHREAD
+
+#ifdef HDEFAULTS_OS_WINDOWS
+#define hdefaults_tick_t DWORD
+#endif // HDEFAULTS_OS_WINDOWS
+
+#ifdef HDEFAULTS_OS_UNIX
+#include <time.h>
+#include <sys/time.h>
+#endif // HDEFAULTS_OS_UNIX
+
+#ifndef hdefaults_tick_t
+#define hdefaults_tick_t uint32_t
+#endif // hdefaults_tick_t
+
+/** \brief 获取当前节拍
+ *
+ * \return hdefaults_tick_t 当前节拍(毫秒),注意，并非启动时间
+ *
+ */
+hdefaults_tick_t hdefaults_tick_get(void);
 
 /** \brief 默认内存分配
  *
@@ -73,6 +125,7 @@ void  hdefaults_mutex_lock(void *usr);
  *
  */
 void  hdefaults_mutex_unlock(void *usr);
+
 
 #ifdef __cplusplus
 }

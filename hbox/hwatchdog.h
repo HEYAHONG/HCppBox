@@ -34,6 +34,8 @@ extern "C"
 #include "string.h"
 #include "stdint.h"
 #include "stdbool.h"
+#include "hcompiler.h"
+#include "hdefaults.h"
 
 /*
 定义系统节拍变量位宽，数据位宽越大，容许的超时越长，但需要注意的是，低位宽的看门狗可在高位宽的系统中运行，反之不能，如16位的看门狗系统节拍能在系统节拍为32位的系统中运行，反之不能。
@@ -56,7 +58,7 @@ extern "C"
 
 //默认位宽为32位
 #ifndef hwatchdog_tick_t
-#define hwatchdog_tick_t uint32_t
+#define hwatchdog_tick_t hdefaults_tick_t
 #endif // hwatchdog_tick_t
 
 /** \brief 设置看门狗内存管理。如不设置将使用malloc与free。

@@ -52,6 +52,31 @@ void check_mutex_lock()
 }
 #endif // __unix__
 
+#ifdef HDEFAULTS_TICK_GET
+extern hdefaults_tick_t HDEFAULTS_TICK_GET(void);
+#endif // HDEFAULTS_TICK_GET
+hdefaults_tick_t hdefaults_tick_get(void)
+{
+#ifdef HDEFAULTS_TICK_GET
+    return HDEFAULTS_TICK_GET();
+#elif defined(HDEFAULTS_OS_RTTHREAD)
+    return rt_tick_get_millisecond();
+#elif defined(HDEFAULTS_OS_WINDOWS)
+    return GetTickCount();
+#elif defined(HDEFAULTS_OS_UNIX)
+    {
+        hdefaults_tick_t ret=0;
+        struct timeval tv={0};
+        struct timezone tz={0};
+        gettimeofday(&tv, &tz);
+        ret+=tv.tv_sec*1000;
+        ret+=tv.tv_usec/1000;
+        return ret;
+    }
+#else
+    return 0;//默认永远返回0
+#endif // HDEFAULTS_TICK_GET
+}
 
 #ifdef USING_HMEMORYHEAP
 extern void* hmemoryheap_malloc(size_t nBytes);
