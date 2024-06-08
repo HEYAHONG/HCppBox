@@ -1,5 +1,11 @@
 #ifndef __HCPPOBJECT_H__
 #define __HCPPOBJECT_H__
+/*
+*HCPPOBJECT为基础类，如需添加新功能可修改以下枚举：
+*   Type:对象类型，如有新类型需要添加至此枚举
+*   Flag:对象标志，如有新标志（需要全局使用）需要添加至此枚举
+*
+*/
 
 #ifdef __cplusplus
 #include <mutex>
@@ -88,9 +94,27 @@ public:
         return typeid(*this);
     }
 
+    typedef enum
+    {
+        HCPPOBJECT_FLAG_START=0,//起始,无其它作用，其余标志需在此标志之后
+        HCPPOBJECT_FLAG_NO_CHILD_DELETE,//不删除子对象
+        HCPPOBJECT_FLAG_END,//结束,无其它作用,其余标志需在此标志之前
+    } Flag;
+
+    //设置标志位
+    void SetFlag(Flag flag);
+    //清除标志位
+    void ClearFlag(Flag flag);
+    //判断标志位
+    bool HasFlag(Flag flag);
+
+
 protected:
     //必须在子类重载此函数
     virtual void * getthis()=0;
+
+    //标志位，不同的标志有不同的行为
+    uint8_t flags[(static_cast<size_t>(HCPPOBJECT_FLAG_END)/(8*sizeof(uint8_t)))+1];
 
 };
 #endif // __cplusplus
