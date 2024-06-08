@@ -293,6 +293,9 @@ bool HCPPObject::SetParent(HCPPObject * parent,bool force_update)
 
 void HCPPObject::EnumChild(std::function<void(const HCPPObject * const)> OnEnum)
 {
+    //先进行垃圾回收
+    GC();
+
     if(OnEnum==NULL)
     {
         return;
@@ -381,6 +384,7 @@ void * HCPPObject::GetVoidPtr()
 
 void HCPPObject::SetFlag(Flag flag)
 {
+    std::lock_guard<std::recursive_mutex> lock(*m_lock);
     if(sizeof(flags)*8 > static_cast<size_t>(flag))
     {
         flags[static_cast<size_t>(flag)/8] |= (1UL << (static_cast<size_t>(flag)%8));
@@ -389,6 +393,7 @@ void HCPPObject::SetFlag(Flag flag)
 
 void HCPPObject::ClearFlag(Flag flag)
 {
+    std::lock_guard<std::recursive_mutex> lock(*m_lock);
     if(sizeof(flags)*8 > static_cast<size_t>(flag))
     {
         flags[static_cast<size_t>(flag)/8] &= (~(1UL << (static_cast<size_t>(flag)%8)));
@@ -402,4 +407,25 @@ bool HCPPObject::HasFlag(Flag flag)
         return (flags[static_cast<size_t>(flag)/8] & (1UL << (static_cast<size_t>(flag)%8)))!=0;
     }
     return false;
+}
+
+void HCPPObject::GC()
+{
+    //清理子对象(从子对象列表中删除子对象)
+    std::lock_guard<std::recursive_mutex> lock(*m_lock);
+    auto m_child_list_copy=m_child_list;//由于删除子对象时会修改m_child_list，故使用副本进行遍历
+    for(std::list<HCPPObject*>::iterator it=m_child_list_copy.begin(); it!=m_child_list_copy.end(); it++)
+    {
+        HCPPObject *child=(*it);
+        if(child->HasFlag(HCPPOBJECT_FLAG_TO_BE_DELETED))
+        {
+            //删除子对象
+            delete child;
+        }
+        else
+        {
+            //调用子对象的GC
+            child->GC();
+        }
+    }
 }

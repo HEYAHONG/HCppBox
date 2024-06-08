@@ -99,17 +99,28 @@ public:
     typedef enum
     {
         HCPPOBJECT_FLAG_START=0,//起始,无其它作用，其余标志需在此标志之后
-        HCPPOBJECT_FLAG_NO_CHILD_DELETE,//不删除子对象
+        HCPPOBJECT_FLAG_NO_CHILD_DELETE,//不删除子对象,注意：当此标志被设定后，一旦此对象被删除，其子对象将不存在父对象
+        HCPPOBJECT_FLAG_TO_BE_DELETED,//准备被删除，当此标志位被被置位时，父对象（或其它对象）不应该使用此类的资源,在合适的时机将删除此对象。
         HCPPOBJECT_FLAG_END,//结束,无其它作用,其余标志需在此标志之前
-    } Flag;
+    } Flag;//标志位
 
-    //设置标志位
-    void SetFlag(Flag flag);
-    //清除标志位
-    void ClearFlag(Flag flag);
-    //判断标志位
-    bool HasFlag(Flag flag);
+    //设置标志位,在子类重载此函数时需要在函数末尾调用HCPPObject::SetFlag
+    virtual void SetFlag(Flag flag);
+    //清除标志位,在子类重载此函数时需要在函数末尾调用HCPPObject::ClearFlag
+    virtual void ClearFlag(Flag flag);
+    //判断标志位,在子类重载此函数时需要在函数末尾调用HCPPObject::HasFlag
+    virtual bool HasFlag(Flag flag);
 
+    //稍后删除，在子类重载此函数时需要在函数末尾调用HCPPObject::DeleteLatter()
+    //一般用于多线程，当在一个线程想要删除由另一个线程管理的对象时，可调用此函数通知其管理线程删除此对象
+    virtual void DeleteLatter()
+    {
+        //默认只设置标志位,
+        SetFlag(HCPPOBJECT_FLAG_TO_BE_DELETED);
+    }
+
+    //垃圾回收(清理需要删除的子对象)，一般配合DeleteLatter()使用，在子类重载此函数时需要在函数末尾调用HCPPObject::GC()
+    virtual void GC();
 
 protected:
     //必须在子类重载此函数
@@ -117,6 +128,8 @@ protected:
 
     //标志位，不同的标志有不同的行为
     uint8_t flags[(static_cast<size_t>(HCPPOBJECT_FLAG_END)/(8*sizeof(uint8_t)))+1];
+
+    //
 
 };
 #endif // __cplusplus
