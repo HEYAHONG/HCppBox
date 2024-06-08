@@ -172,6 +172,40 @@ HCPPObject & HCPPObject::operator =(HCPPObject &other)
     return *this;
 }
 
+HCPPObject & HCPPObject::operator =(HCPPObject &&other)
+{
+    if(&other==this)
+    {
+        return *this;
+    }
+
+    SetParent(other.m_parent,true);
+
+    {
+        std::lock_guard<std::recursive_mutex> lock(*m_lock);
+        std::lock_guard<std::recursive_mutex> lock_other(*other.m_lock);
+        auto m_child_list_copy=other.m_child_list;//由于过程中会修改m_child_list，故使用副本进行遍历
+        for(std::list<HCPPObject*>::iterator it=m_child_list_copy.begin(); it!=m_child_list_copy.end(); it++)
+        {
+            HCPPObject *child=(*it);
+            if(child!=NULL)
+            {
+                child->SetParent(this,true);
+            }
+        }
+    }
+
+    {
+        //移动标志位
+        for(size_t i=0; i<sizeof(flags); i++)
+        {
+            flags[i]=other.flags[i];
+        }
+    }
+
+    return *this;
+}
+
 
 HCPPObject::~HCPPObject()
 {

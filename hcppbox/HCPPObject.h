@@ -30,12 +30,14 @@ public:
     HCPPObject(HCPPObject *parent=NULL);
     virtual ~HCPPObject();
 
-    //拷贝构造函数,注意：不复制子对象列表
+    //拷贝构造函数,注意：不复制子对象列表与标志
     HCPPObject(HCPPObject &other);
-    //移动构造函数,注意将移动子对象列表
+    //移动构造函数,注意:将移动子对象列表与标志。当需要移动一个对象时请使用std::move将左值引用转化右值引用。
     HCPPObject(HCPPObject &&other);
-    //赋值操作符,注意：不赋值子对象列表
+    //赋值操作符(左值),注意：不赋值子对象列表与标志
     HCPPObject & operator =(HCPPObject &other);
+    //赋值操作符(右值),注意:将移动子对象列表与标志。当需要移动一个对象时请使用std::move将左值引用转化右值引用。
+    HCPPObject & operator =(HCPPObject &&other);
 
     //获取父对象
     HCPPObject *GetParent();
