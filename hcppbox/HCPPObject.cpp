@@ -120,7 +120,7 @@ HCPPObject::HCPPObject(HCPPObject *parent):m_parent(parent),m_lock(new std::recu
     }
 }
 
-HCPPObject::HCPPObject(HCPPObject &other):m_parent(other.m_parent),m_lock(new std::recursive_mutex)
+HCPPObject::HCPPObject(HCPPObject &other):m_parent(other.m_parent),m_lock(new std::recursive_mutex),flags{{0}}
 {
     if(m_parent!=NULL)
     {
@@ -129,7 +129,7 @@ HCPPObject::HCPPObject(HCPPObject &other):m_parent(other.m_parent),m_lock(new st
     }
 }
 
-HCPPObject::HCPPObject(HCPPObject &&other):m_parent(other.m_parent),m_lock(new std::recursive_mutex)
+HCPPObject::HCPPObject(HCPPObject &&other):m_parent(other.m_parent),m_lock(new std::recursive_mutex),flags{{0}}
 {
     if(m_parent!=NULL)
     {
@@ -148,6 +148,14 @@ HCPPObject::HCPPObject(HCPPObject &&other):m_parent(other.m_parent),m_lock(new s
             {
                 child->SetParent(this,true);
             }
+        }
+    }
+
+    {
+        //移动标志位
+        for(size_t i=0; i<sizeof(flags); i++)
+        {
+            flags[i]=other.flags[i];
         }
     }
 }
