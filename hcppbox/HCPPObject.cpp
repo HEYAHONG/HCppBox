@@ -111,7 +111,7 @@ void HCPPObject::AddToChildList(HCPPObject * child)
     m_child_list.push_back(child);
 }
 
-HCPPObject::HCPPObject(HCPPObject *parent):m_parent(parent),m_lock(new std::recursive_mutex),flags({0})
+HCPPObject::HCPPObject(HCPPObject *parent):m_parent(parent),m_lock(new std::recursive_mutex),flags{{0}}
 {
     if(m_parent!=NULL)
     {
