@@ -101,6 +101,8 @@ public:
         HCPPOBJECT_FLAG_START=0,//起始,无其它作用，其余标志需在此标志之后
         HCPPOBJECT_FLAG_NO_CHILD_DELETE,//不删除子对象,注意：当此标志被设定后，一旦此对象被删除，其子对象将不存在父对象
         HCPPOBJECT_FLAG_TO_BE_DELETED,//准备被删除，当此标志位被被置位时，父对象（或其它对象）不应该使用此类的资源,在合适的时机将删除此对象。
+        HCPPOBJECT_FLAG_RUNABLE,//对象是否可执行,当无此标志时，调用Run成员函数将无效果，当此标志被置位时，将执行内部操作，如InvokeInit与InvokeUpdate
+        HCPPOBJECT_FLAG_RUN_INIT,//对象是否已执行INIT,若置位表示已执行INIT(不再执行InvokeInit函数)
         HCPPOBJECT_FLAG_END,//结束,无其它作用,其余标志需在此标志之前
     } Flag;//标志位
 
@@ -122,14 +124,30 @@ public:
     //垃圾回收(清理需要删除的子对象)，一般配合DeleteLatter()使用，在子类重载此函数时需要在函数末尾调用HCPPObject::GC()
     virtual void GC();
 
+    //执行初始化，由Run调用，通常需要在子类中重载,不可长时间阻塞
+    virtual void InvokeInit()
+    {
+
+    }
+
+
+    //执行更新，由Run调用，通常需要在子类中重载，不可长时间阻塞
+    virtual void InvokeUpdate()
+    {
+
+    }
+
+    //运行此对象（内部不阻塞），可多次调用，在子类重载此函数时需要在函数末尾调用HCPPObject::Run()
+    virtual void Run();
+
 protected:
     //必须在子类重载此函数
     virtual void * getthis()=0;
 
+private:
     //标志位，不同的标志有不同的行为
     uint8_t flags[(static_cast<size_t>(HCPPOBJECT_FLAG_END)/(8*sizeof(uint8_t)))+1];
 
-    //
 
 };
 #endif // __cplusplus

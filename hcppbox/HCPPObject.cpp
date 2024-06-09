@@ -411,7 +411,6 @@ bool HCPPObject::HasFlag(Flag flag)
 
 void HCPPObject::GC()
 {
-    //清理子对象(从子对象列表中删除子对象)
     std::lock_guard<std::recursive_mutex> lock(*m_lock);
     auto m_child_list_copy=m_child_list;//由于删除子对象时会修改m_child_list，故使用副本进行遍历
     for(std::list<HCPPObject*>::iterator it=m_child_list_copy.begin(); it!=m_child_list_copy.end(); it++)
@@ -427,5 +426,39 @@ void HCPPObject::GC()
             //调用子对象的GC
             child->GC();
         }
+    }
+}
+
+void HCPPObject::Run()
+{
+    if(!HasFlag(HCPPOBJECT_FLAG_RUNABLE))
+    {
+        //不可执行直接返回
+        return;
+    }
+
+    std::lock_guard<std::recursive_mutex> lock(*m_lock);
+    if(!HasFlag(HCPPOBJECT_FLAG_RUN_INIT))
+    {
+        //执行初始化
+        InvokeInit();
+        //设置已初始化标志
+        SetFlag(HCPPOBJECT_FLAG_RUN_INIT);
+    }
+    else
+    {
+        //执行更新
+        InvokeUpdate();
+    }
+    {
+        //调用子对象的Run()
+        EnumChild([](const HCPPObject *obj)
+        {
+            if(obj != NULL)
+            {
+                ((HCPPObject *)obj)->Run();
+            }
+        }
+                 );
     }
 }
