@@ -114,6 +114,7 @@ public:
     virtual bool HasFlag(Flag flag);
 
     //设置是否自动删除子对象，在子类重载此函数时需要在函数末尾调用HCPPObject::SetChildDelete
+
     virtual void SetChildDelete(bool childdelete=true)
     {
         if(childdelete)

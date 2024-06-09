@@ -6,6 +6,7 @@
 
 void IsInHeap_IsInThread_main();
 void Parent_main();
+void Thread_main();
 
 int main()
 {
@@ -13,6 +14,8 @@ int main()
     IsInHeap_IsInThread_main();
 
     Parent_main();
+
+    Thread_main();
 #ifdef WIN32
     printf("press any key to exit\n");
     getchar();

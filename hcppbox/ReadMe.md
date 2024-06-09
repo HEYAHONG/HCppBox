@@ -47,3 +47,12 @@
 
 - HCPPObjectPool.cpp  
 - HCPPObjectPool.h
+
+## HCPPThread
+
+本组件主要对标准C++库的线程进行一定封装，使其可用作可执行对象的父对象，并使其自动执行。
+
+### 文件列表
+
+- HCPPThread.cpp
+- HCPPThread.h

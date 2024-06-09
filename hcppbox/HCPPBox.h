@@ -11,5 +11,6 @@
 
 #include "HCPPObject.h"
 #include "HCPPObjectPool.h"
+#include "HCPPThread.h"
 
 #endif // HCPPBOX_H_INCLUDED
