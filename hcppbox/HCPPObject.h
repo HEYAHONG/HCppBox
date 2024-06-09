@@ -1,7 +1,7 @@
 #ifndef __HCPPOBJECT_H__
 #define __HCPPOBJECT_H__
 /*
-*HCPPOBJECT为基础类，如需添加新功能可修改以下枚举：
+*HCPPObject为基础类，如需添加新功能可修改以下枚举：
 *   Type:对象类型，如有新类型需要添加至此枚举
 *   Flag:对象标志，如有新标志（需要全局使用）需要添加至此枚举
 *
@@ -113,6 +113,19 @@ public:
     //判断标志位,在子类重载此函数时需要在函数末尾调用HCPPObject::HasFlag
     virtual bool HasFlag(Flag flag);
 
+    //设置是否自动删除子对象，在子类重载此函数时需要在函数末尾调用HCPPObject::SetChildDelete
+    virtual void SetChildDelete(bool childdelete=true)
+    {
+        if(childdelete)
+        {
+            ClearFlag(HCPPOBJECT_FLAG_NO_CHILD_DELETE);
+        }
+        else
+        {
+            SetFlag(HCPPOBJECT_FLAG_NO_CHILD_DELETE);
+        }
+    }
+
     //稍后删除，在子类重载此函数时需要在函数末尾调用HCPPObject::DeleteLatter()
     //一般用于多线程，当在一个线程想要删除由另一个线程管理的对象时，可调用此函数通知其管理线程删除此对象
     virtual void DeleteLatter()
@@ -139,6 +152,19 @@ public:
 
     //运行此对象（内部不阻塞），可多次调用，在子类重载此函数时需要在函数末尾调用HCPPObject::Run()
     virtual void Run();
+
+    //设置是否可运行，在子类重载此函数时需要在函数末尾调用HCPPObject::SetRunable
+    virtual void SetRunable(bool runable=true)
+    {
+        if(runable)
+        {
+            SetFlag(HCPPOBJECT_FLAG_RUNABLE);
+        }
+        else
+        {
+            ClearFlag(HCPPOBJECT_FLAG_RUNABLE);
+        }
+    }
 
 protected:
     //必须在子类重载此函数
