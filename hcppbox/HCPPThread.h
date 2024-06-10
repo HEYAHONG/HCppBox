@@ -1,3 +1,11 @@
+/***************************************************************
+ * Name:      HCPPThread.h
+ * Purpose:   HCPPThread,为可执行的HCPPObject对象提供执行的线程，实际使用时只需要将HCPPThread对象设置为父对象并将HCPPObject对象设置为可执行。
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-06-10
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
 #ifndef __HCPPTHREAD_H__
 #define __HCPPTHREAD_H__
 
@@ -9,6 +17,8 @@
 #include <thread>
 #include "HCPPObject.h"
 
+/** \brief 线程类，封装std::thread的部分功能
+ */
 class HCPPThread:public HCPPObject,protected std::thread
 {
 private:
@@ -27,12 +37,26 @@ public:
     HCPPThread &operator =(HCPPThread &&oths) = delete;
 
     //创建线程
+    /** \brief 创建线程，线程只可以通过HCPPThread::New()创建，不能使用new HCPPThread创建。
+     *
+     * \return HCPPThread* 线程指针
+     *
+     */
     static HCPPThread *New();
 
     //删除线程，通知删除
+    /** \brief 通知删除，调用此函数后不要在访问线程指针（其随时都可能被删除）
+     *
+     *
+     */
     void DeleteThread();
 
     //设置是否删除子对象
+    /** \brief 设置是否删除子对象
+     *
+     * \param childdelete bool 是否在线程被删除时删除其子对象。
+     *
+     */
     void SetChildDelete(bool childdelete=true);
 
 private:

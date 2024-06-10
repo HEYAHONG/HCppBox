@@ -1,3 +1,12 @@
+/***************************************************************
+ * Name:      HCPPObjectPool.h
+ * Purpose:   HCPPObjectPool,提供一个全局的对象池，提供字符串与HCPPObject*指针之间的转换。\
+                                     其相对于一般的对象池的特点为当HCPPObject*指针所指对象被delete后，将自动从对象池移除其指针。
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-01-24
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
 #ifndef __HCPPOBJECTPOOL_H__
 #define __HCPPOBJECTPOOL_H__
 #ifdef __cplusplus
