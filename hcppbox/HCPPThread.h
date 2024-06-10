@@ -59,6 +59,16 @@ public:
      */
     void SetChildDelete(bool childdelete=true);
 
+    /** \brief 获取类型
+     *
+     * \return Type 类型
+     *
+     */
+    virtual Type GetType()
+    {
+        return HCPPOBJECT_TYPE_THREAD;
+    }
+
 private:
     //运行线程
     void RunThread();
