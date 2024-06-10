@@ -41,7 +41,7 @@ HCPPThread *HCPPThread::New()
     if(ret!=NULL)
     {
         //设定线程信息为新创建的线程,表示线程对象的所有权归属新创建的线程
-        ret->SetThreadId(id(),true);
+        ret->SetThreadId(ret->get_id(),true);
         //设定为可执行对象，此时Run函数开始生效
         ret->SetRunable();
     }
