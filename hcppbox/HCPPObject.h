@@ -1,6 +1,6 @@
 /***************************************************************
  * Name:      HCPPObject.h
- * Purpose:   HCPPObject,对象基础类，提供一些基础的对象功能：父子关系、执行接口(提供通用的接口共子类实现，配合线程类使用)
+ * Purpose:   HCPPObject,对象基础类，提供一些基础的对象功能：父子关系、执行接口(提供通用的接口供子类实现，配合线程类使用)
  * Author:    HYH (hyhsystem.cn)
  * Created:   2023-12-08
  * Copyright: HYH (hyhsystem.cn)
@@ -23,7 +23,7 @@
 #include <functional>
 #include "stdlib.h"
 #include "stdint.h"
-/** \brief 对象基础类，提供一些基础的对象功能：父子关系、执行接口(提供通用的接口共子类实现，配合线程类使用)
+/** \brief 对象基础类，提供一些基础的对象功能：父子关系、执行接口(提供通用的接口供子类实现，配合线程类使用)
  */
 class HCPPObject
 {
