@@ -6,7 +6,8 @@
 
 //对象池操作
 extern void HCPPObjectPool_ObjectDelete(void *ptr);
-
+namespace HCPPObjectGlobal
+{
 class HCPPObjectInfo
 {
     std::thread::id _tid;
@@ -65,34 +66,36 @@ public:
         return false;
     }
 };
-static std::map<void *,HCPPObjectInfo> CPPHeapObjPool;
-static std::recursive_mutex CPPHeapObjPoolLock;
+extern  std::map<void *,HCPPObjectInfo> CPPHeapObjPool;
+extern  std::recursive_mutex CPPHeapObjPoolLock;
+}
+
 static void AddHCPPObject(void *ptr)
 {
-    std::lock_guard<std::recursive_mutex> lock(CPPHeapObjPoolLock);
-    CPPHeapObjPool[ptr]=HCPPObjectInfo();
+    std::lock_guard<std::recursive_mutex> lock(HCPPObjectGlobal::CPPHeapObjPoolLock);
+    HCPPObjectGlobal::CPPHeapObjPool[ptr]=HCPPObjectGlobal::HCPPObjectInfo();
 }
 
 static void RemoveHCPPObject(void *ptr)
 {
     HCPPObjectPool_ObjectDelete(ptr);
-    std::lock_guard<std::recursive_mutex> lock(CPPHeapObjPoolLock);
-    auto it=CPPHeapObjPool.find(ptr);
-    if(it!=CPPHeapObjPool.end())
+    std::lock_guard<std::recursive_mutex> lock(HCPPObjectGlobal::CPPHeapObjPoolLock);
+    auto it=HCPPObjectGlobal::CPPHeapObjPool.find(ptr);
+    if(it!=HCPPObjectGlobal::CPPHeapObjPool.end())
     {
-        CPPHeapObjPool.erase(it);
+        HCPPObjectGlobal::CPPHeapObjPool.erase(it);
     }
 }
-static void UpdateHCPPObject(void *ptr,HCPPObjectInfo &info)
+static void UpdateHCPPObject(void *ptr,HCPPObjectGlobal::HCPPObjectInfo &info)
 {
     RemoveHCPPObject(ptr);
-    std::lock_guard<std::recursive_mutex> lock(CPPHeapObjPoolLock);
-    CPPHeapObjPool[ptr]=info;
+    std::lock_guard<std::recursive_mutex> lock(HCPPObjectGlobal::CPPHeapObjPoolLock);
+    HCPPObjectGlobal::CPPHeapObjPool[ptr]=info;
 }
 
 static bool HasHCPPObject(void *ptr)
 {
-    return CPPHeapObjPool.find(ptr)!=CPPHeapObjPool.end();
+    return HCPPObjectGlobal::CPPHeapObjPool.find(ptr)!=HCPPObjectGlobal::CPPHeapObjPool.end();
 }
 
 void HCPPObject::RemoveFromChildList(HCPPObject * child)
@@ -353,7 +356,7 @@ bool HCPPObject::IsInThread()
 {
     if(HasHCPPObject(GetVoidPtr()))
     {
-        return CPPHeapObjPool[GetVoidPtr()].GetThreadId()==std::this_thread::get_id();
+        return HCPPObjectGlobal::CPPHeapObjPool[GetVoidPtr()].GetThreadId()==std::this_thread::get_id();
     }
     else
     {
@@ -365,7 +368,7 @@ std::thread::id const * const HCPPObject::GetThreadId()
 {
     if(HasHCPPObject(GetVoidPtr()))
     {
-        return &CPPHeapObjPool[GetVoidPtr()].GetThreadId();
+        return &HCPPObjectGlobal::CPPHeapObjPool[GetVoidPtr()].GetThreadId();
     }
     return NULL;
 }
@@ -374,7 +377,7 @@ bool HCPPObject::SetThreadId(std::thread::id _id,bool force_update)
 {
     if(HasHCPPObject(GetVoidPtr()))
     {
-        return CPPHeapObjPool[GetVoidPtr()].SetThreadId(_id,force_update);
+        return HCPPObjectGlobal::CPPHeapObjPool[GetVoidPtr()].SetThreadId(_id,force_update);
     }
     return false;
 }

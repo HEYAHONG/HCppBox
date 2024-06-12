@@ -1,7 +1,9 @@
 #include "HCPPTimer.h"
 #include <mutex>
 
-static class TimerThread
+namespace HCPPTimerGlobal
+{
+extern class TimerThread
 {
     HCPPThread *m_thread;
     std::recursive_mutex m_lock;
@@ -29,6 +31,9 @@ public:
         return m_thread;
     }
 } g_timerthread;
+
+}
+
 
 HCPPTimer::HCPPTimer(HCPPObject *parent,std::chrono::microseconds interval,std::function<void(HCPPTimer *timer)> timeout,bool IsOneShot):HCPPObject(parent),m_interval(interval),m_timeout(timeout),m_IsOneShot(IsOneShot),m_end(std::chrono::steady_clock::time_point::min())
 {
@@ -63,7 +68,7 @@ bool HCPPTimer::SetParent(HCPPObject * parent,bool force_update)
     //定时器必须要求顶层父对象为线程
     if(parent==NULL || parent->GetTopHCPPObject()->GetType() == HCPPOBJECT_TYPE_THREAD)
     {
-        parent=g_timerthread.GetThread();
+        parent=HCPPTimerGlobal::g_timerthread.GetThread();
     }
     return HCPPObject::SetParent(parent,force_update);
 }

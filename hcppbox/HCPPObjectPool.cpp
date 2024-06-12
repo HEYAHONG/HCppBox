@@ -2,9 +2,13 @@
 #include "map"
 #include <mutex>
 
-static std::mutex HCPPObjectPoolLock;
-static std::map<std::string,HCPPObject *> HCPPObjectPool;
-static std::map<void *,std::string> HCPPObjectPoolDeleteHelper;
+namespace  HCPPObjectPoolGlobal
+{
+extern  std::mutex HCPPObjectPoolLock;
+extern  std::map<std::string,HCPPObject *> HCPPObjectPool;
+extern  std::map<void *,std::string> HCPPObjectPoolDeleteHelper;
+}
+
 
 /** \brief 删除对象池的对象(一般用于自动删除)
  *
@@ -13,15 +17,15 @@ static std::map<void *,std::string> HCPPObjectPoolDeleteHelper;
  */
 void HCPPObjectPool_ObjectDelete(void *ptr)
 {
-    std::lock_guard<std::mutex> lock(HCPPObjectPoolLock);
-    if(HCPPObjectPoolDeleteHelper.find(ptr)!=HCPPObjectPoolDeleteHelper.end())
+    std::lock_guard<std::mutex> lock( HCPPObjectPoolGlobal::HCPPObjectPoolLock);
+    if( HCPPObjectPoolGlobal::HCPPObjectPoolDeleteHelper.find(ptr)!= HCPPObjectPoolGlobal::HCPPObjectPoolDeleteHelper.end())
     {
-        std::string id=HCPPObjectPoolDeleteHelper[ptr];
-        if(HCPPObjectPool.find(id)!=HCPPObjectPool.end())
+        std::string id= HCPPObjectPoolGlobal::HCPPObjectPoolDeleteHelper[ptr];
+        if( HCPPObjectPoolGlobal::HCPPObjectPool.find(id)!= HCPPObjectPoolGlobal::HCPPObjectPool.end())
         {
-            HCPPObjectPool.erase(HCPPObjectPool.find(id));
+            HCPPObjectPoolGlobal::HCPPObjectPool.erase(HCPPObjectPoolGlobal::HCPPObjectPool.find(id));
         }
-        HCPPObjectPoolDeleteHelper.erase(HCPPObjectPoolDeleteHelper.find(ptr));
+        HCPPObjectPoolGlobal::HCPPObjectPoolDeleteHelper.erase( HCPPObjectPoolGlobal::HCPPObjectPoolDeleteHelper.find(ptr));
     }
 }
 void HCPPObjectPool_Set(std::string id,HCPPObject *obj)
@@ -31,18 +35,18 @@ void HCPPObjectPool_Set(std::string id,HCPPObject *obj)
         //不接受id为空或obj为NULL
         return;
     }
-    std::lock_guard<std::mutex> lock(HCPPObjectPoolLock);
-    HCPPObjectPool[id]=obj;
-    HCPPObjectPoolDeleteHelper[obj->GetVoidPtr()]=id;
+    std::lock_guard<std::mutex> lock( HCPPObjectPoolGlobal::HCPPObjectPoolLock);
+    HCPPObjectPoolGlobal::HCPPObjectPool[id]=obj;
+    HCPPObjectPoolGlobal::HCPPObjectPoolDeleteHelper[obj->GetVoidPtr()]=id;
 
 }
 
 HCPPObject *HCPPObjectPool_Get(std::string id)
 {
-    std::lock_guard<std::mutex> lock(HCPPObjectPoolLock);
-    if(HCPPObjectPool.find(id)!=HCPPObjectPool.end())
+    std::lock_guard<std::mutex> lock( HCPPObjectPoolGlobal::HCPPObjectPoolLock);
+    if( HCPPObjectPoolGlobal::HCPPObjectPool.find(id)!= HCPPObjectPoolGlobal::HCPPObjectPool.end())
     {
-        return HCPPObjectPool[id];
+        return  HCPPObjectPoolGlobal::HCPPObjectPool[id];
     }
     return NULL;
 }
@@ -98,8 +102,8 @@ void HCPPObjectPool_Enum(std::function<void(std::string,HCPPObject *)> on_enum)
     {
         return;
     }
-    std::lock_guard<std::mutex> lock(HCPPObjectPoolLock);
-    for(std::map<std::string,HCPPObject *>::iterator it=HCPPObjectPool.begin(); it!=HCPPObjectPool.end(); it++)
+    std::lock_guard<std::mutex> lock( HCPPObjectPoolGlobal::HCPPObjectPoolLock);
+    for(std::map<std::string,HCPPObject *>::iterator it= HCPPObjectPoolGlobal::HCPPObjectPool.begin(); it!= HCPPObjectPoolGlobal::HCPPObjectPool.end(); it++)
     {
         on_enum(it->first,it->second);
     }
