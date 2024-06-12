@@ -19,6 +19,7 @@ public:
         {
             m_thread->DeleteThread();
             m_thread=NULL;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
     HCPPThread *GetThread()
