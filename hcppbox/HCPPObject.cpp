@@ -418,8 +418,19 @@ void HCPPObject::GC()
         HCPPObject *child=(*it);
         if(child->HasFlag(HCPPOBJECT_FLAG_TO_BE_DELETED))
         {
-            //删除子对象
-            delete child;
+            if (child->IsInHeap())
+            {
+                //删除子对象
+                delete child;
+            }
+            else
+            {
+                //对于非在堆上分配的对象,不能进行删除
+                child->ClearFlag(HCPPOBJECT_FLAG_TO_BE_DELETED);
+                //设置对象为不可执行(确保不可执行)
+                child->SetRunable(false);
+            }
+            
         }
         else
         {
