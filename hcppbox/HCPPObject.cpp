@@ -66,17 +66,17 @@ public:
     }
 };
 static std::map<void *,HCPPObjectInfo> CPPHeapObjPool;
-static std::mutex CPPHeapObjPoolLock;
+static std::recursive_mutex CPPHeapObjPoolLock;
 static void AddHCPPObject(void *ptr)
 {
-    std::lock_guard<std::mutex> lock(CPPHeapObjPoolLock);
+    std::lock_guard<std::recursive_mutex> lock(CPPHeapObjPoolLock);
     CPPHeapObjPool[ptr]=HCPPObjectInfo();
 }
 
 static void RemoveHCPPObject(void *ptr)
 {
     HCPPObjectPool_ObjectDelete(ptr);
-    std::lock_guard<std::mutex> lock(CPPHeapObjPoolLock);
+    std::lock_guard<std::recursive_mutex> lock(CPPHeapObjPoolLock);
     auto it=CPPHeapObjPool.find(ptr);
     if(it!=CPPHeapObjPool.end())
     {
@@ -86,7 +86,7 @@ static void RemoveHCPPObject(void *ptr)
 static void UpdateHCPPObject(void *ptr,HCPPObjectInfo &info)
 {
     RemoveHCPPObject(ptr);
-    std::lock_guard<std::mutex> lock(CPPHeapObjPoolLock);
+    std::lock_guard<std::recursive_mutex> lock(CPPHeapObjPoolLock);
     CPPHeapObjPool[ptr]=info;
 }
 
@@ -430,7 +430,7 @@ void HCPPObject::GC()
                 //设置对象为不可执行(确保不可执行)
                 child->SetRunable(false);
             }
-            
+
         }
         else
         {
@@ -473,3 +473,4 @@ void HCPPObject::Run()
                  );
     }
 }
+
