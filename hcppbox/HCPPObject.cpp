@@ -224,7 +224,7 @@ HCPPObject::~HCPPObject()
             HCPPObject *child=(*it);
             if(child!=NULL)
             {
-                if(child->IsInHeap() && !HasFlag(HCPPOBJECT_FLAG_NO_CHILD_DELETE))
+                if(child->IsInHeap() && !child->HasFlag(HCPPOBJECT_FLAG_NO_DELETE) && !HasFlag(HCPPOBJECT_FLAG_NO_CHILD_DELETE))
                 {
                     //删除在堆上分配的子对象
                     delete child;
@@ -233,7 +233,7 @@ HCPPObject::~HCPPObject()
                 {
                     //当非堆上分配的对象或不移除子对象，直接移除其父对象指针
                     std::lock_guard<std::recursive_mutex> lock(*child->m_lock);
-                    child->m_parent=NULL;
+                    child->SetParent(NULL,true);
                 }
             }
         }

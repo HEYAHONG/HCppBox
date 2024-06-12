@@ -221,6 +221,7 @@ public:
     {
         HCPPOBJECT_FLAG_START=0,//起始,无其它作用，其余标志需在此标志之后
         HCPPOBJECT_FLAG_NO_CHILD_DELETE,//不删除子对象,注意：当此标志被设定后，一旦此对象被删除，其子对象将不存在父对象
+        HCPPOBJECT_FLAG_NO_DELETE,//不自动删除，注意:当此标志被设置后，父对象析构时将不自动删除此对象，用户主动删除仍然有效
         HCPPOBJECT_FLAG_TO_BE_DELETED,//准备被删除，当此标志位被被置位时，父对象（或其它对象）不应该使用此类的资源,在合适的时机将删除此对象。
         HCPPOBJECT_FLAG_RUNABLE,//对象是否可执行,当无此标志时，调用Run成员函数将无效果，当此标志被置位时，将执行内部操作，如InvokeInit与InvokeUpdate
         HCPPOBJECT_FLAG_RUN_INIT,//对象是否已执行INIT,若置位表示已执行INIT(不再执行InvokeInit函数)
@@ -265,6 +266,24 @@ public:
         else
         {
             SetFlag(HCPPOBJECT_FLAG_NO_CHILD_DELETE);
+        }
+    }
+
+    //设置是否自动删除对象，在子类重载此函数时需要在函数末尾调用HCPPObject::SetDelete
+    /** \brief 设置是否自动删除对象
+     *
+     * \param _delete bool 是否自动删除对象
+     *
+     */
+    virtual void SetDelete(bool _delete=true)
+    {
+        if(_delete)
+        {
+            ClearFlag(HCPPOBJECT_FLAG_NO_DELETE);
+        }
+        else
+        {
+            SetFlag(HCPPOBJECT_FLAG_NO_DELETE);
         }
     }
 
