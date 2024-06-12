@@ -64,7 +64,7 @@ public:
      * \return Type 类型
      *
      */
-    virtual Type GetType()
+    virtual Type GetType() override
     {
         return HCPPOBJECT_TYPE_THREAD;
     }

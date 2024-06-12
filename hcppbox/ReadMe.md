@@ -56,3 +56,12 @@
 
 - HCPPThread.cpp
 - HCPPThread.h
+
+## HCPPTimer
+
+采用线程实现的定时器(非精确定时)。
+
+### 文件列表
+
+- HCPPTimer.cpp
+- HCPPTimer.h

@@ -135,6 +135,7 @@ public:
         HCPPOBJECT_TYPE_BASE=0, /**< HCPPObject基类 */
         HCPPOBJECT_TYPE_SIMPLE, /**< HCPPObjectSimple模板类 */
         HCPPOBJECT_TYPE_THREAD, /**< HCPPThread类 */
+        HCPPOBJECT_TYPE_TIMER, /**< HCPPTimer类 */
         HCPPOBJECT_TYPE_CUSTOM_BASE /**< 自定义类型基址，可使用类似HCPPOBJECT_TYPE_CUSTOM_BASE+0,HCPPOBJECT_TYPE_CUSTOM_BASE+1形式自定义类*/
     } Type;/**< 对象类型 */
 

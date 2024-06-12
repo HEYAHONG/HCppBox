@@ -209,6 +209,8 @@ HCPPObject & HCPPObject::operator =(HCPPObject &&other)
 
 HCPPObject::~HCPPObject()
 {
+    SetRunable(false);
+
     if(m_parent!=NULL)
     {
         //从原有父对象删除
