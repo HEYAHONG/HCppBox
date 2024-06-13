@@ -47,7 +47,7 @@ void HCPPTimer::timeout()
 bool HCPPTimer::SetParent(HCPPObject * parent,bool force_update)
 {
     //定时器必须要求顶层父对象为线程
-    if(parent==NULL || parent->GetTopHCPPObject()->GetType() == HCPPOBJECT_TYPE_THREAD)
+    if(parent==NULL || parent->GetTopHCPPObject()->GetType() != HCPPOBJECT_TYPE_THREAD)
     {
         parent=HCPPTimerGlobal::g_timerthread.GetThread();
     }

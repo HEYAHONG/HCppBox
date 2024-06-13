@@ -6,7 +6,17 @@
 void Timer_main()
 {
     printf(__FILE__  " Start\r\n");
-
+    printf("-----Test 1-----\r\n");
+    HCPPThread *threadhandle=HCPPThread::New();
+    new HCPPTimer(threadhandle,std::chrono::seconds(1),[](HCPPTimer *timer)
+    {
+        static int cnt=0;
+        printf("Period Timer %08X:cnt=%d\r\n",(uint32_t)reinterpret_cast<uintptr_t>(timer),cnt++);
+    },false);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+    threadhandle->DeleteThread();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    printf("-----Test 2-----\r\n");
     new HCPPTimer(NULL,std::chrono::seconds(1),[](HCPPTimer *timer)
     {
         printf("OneShot Timer %08X\r\n",(uint32_t)reinterpret_cast<uintptr_t>(timer));
