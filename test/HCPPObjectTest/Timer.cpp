@@ -29,7 +29,7 @@ void Timer_main()
     {
         static int cnt=0;
         printf("Period Timer %08X:cnt=%d\r\n",(uint32_t)reinterpret_cast<uintptr_t>(timer),cnt++);
-        if(cnt>4)
+        if(cnt>3)
         {
             //不使用定时器时直接删除定时器
             timer->DeleteTimer();
