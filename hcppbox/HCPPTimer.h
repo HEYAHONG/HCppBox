@@ -13,7 +13,7 @@
 #include "HCPPThread.h"
 #include <chrono>
 
-/** \brief 定时器(软件定时器,非精确定时),由于定时器不可用作父对象，故采用保护继承(无法在类外转换为HCPPTimer指针)。当定时器失效时将自动被删除。
+/** \brief 定时器(软件定时器,非精确定时),由于定时器不可用作父对象，故采用保护继承(HCPPTimer指针无法在类外转换为HCPPObject指针)。当定时器失效时将自动被删除。
  */
 class HCPPTimer:protected HCPPObject
 {
