@@ -15,6 +15,7 @@
 */
 
 #include <thread>
+#include <chrono>
 #include "HCPPObject.h"
 
 /** \brief 线程类，封装std::thread的部分功能
@@ -22,6 +23,8 @@
 class HCPPThread:public HCPPObject,protected std::thread
 {
 private:
+    //空闲时睡眠时间
+    std::chrono::milliseconds m_idle_sleep_time;
     //不允许用户直接创建对象,使用New函数
     HCPPThread();
     //不允许用户直接删除对象,使用DeleteThread函数
@@ -67,6 +70,16 @@ public:
     virtual Type GetType() override
     {
         return HCPPOBJECT_TYPE_THREAD;
+    }
+
+    /** \brief 设置线程空闲时睡眠时间
+     *
+     * \param idle_sleep_time std::chrono::milliseconds 空闲时睡眠时间
+     *
+     */
+    void SetIdleSleepTime(std::chrono::milliseconds idle_sleep_time)
+    {
+        m_idle_sleep_time = idle_sleep_time;
     }
 
 private:

@@ -1,6 +1,6 @@
 #include "HCPPThread.h"
 
-HCPPThread::HCPPThread():HCPPObject(NULL),std::thread(std::bind(&HCPPThread::RunThread,this))
+HCPPThread::HCPPThread():HCPPObject(NULL),std::thread(std::bind(&HCPPThread::RunThread,this)),m_idle_sleep_time(std::chrono::milliseconds(1))
 {
 
 }
@@ -17,14 +17,28 @@ void HCPPThread::RunThread()
     while(!HasFlag(HCPPOBJECT_FLAG_RUN_INIT))
     {
         Run();
-        std::this_thread::yield();
+        if (m_idle_sleep_time != std::chrono::milliseconds(0))
+        {
+            std::this_thread::sleep_for(m_idle_sleep_time);
+        }
+        else
+        {
+            std::this_thread::yield();
+        }
     }
 
     //HCPPThread类初始化完成,可使用类中的成员变量
     while(!HasFlag(HCPPOBJECT_FLAG_TO_BE_DELETED))
     {
         Run();
-        std::this_thread::yield();
+        if (m_idle_sleep_time != std::chrono::milliseconds(0))
+        {
+            std::this_thread::sleep_for(m_idle_sleep_time);
+        }
+        else
+        {
+            std::this_thread::yield();
+        }
     }
 
     //分离线程与对象
