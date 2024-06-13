@@ -8,29 +8,9 @@ extern class TimerThread
     HCPPThread *m_thread;
     std::recursive_mutex m_lock;
 public:
-    TimerThread():m_thread(NULL)
-    {
-
-    }
-    ~TimerThread()
-    {
-        std::lock_guard<std::recursive_mutex> lock(m_lock);
-        if(m_thread!=NULL)
-        {
-            m_thread->DeleteThread();
-            m_thread=NULL;
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    }
-    HCPPThread *GetThread()
-    {
-        std::lock_guard<std::recursive_mutex> lock(m_lock);
-        if(m_thread==NULL)
-        {
-            m_thread=HCPPThread::New();
-        }
-        return m_thread;
-    }
+    TimerThread();
+    ~TimerThread();
+    HCPPThread* GetThread();
 } g_timerthread;
 
 }

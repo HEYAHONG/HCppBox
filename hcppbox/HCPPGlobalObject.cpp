@@ -27,60 +27,69 @@ class HCPPObjectInfo
 {
     std::thread::id _tid;
 public:
-    HCPPObjectInfo()
-    {
-        _tid=std::this_thread::get_id();
-    }
-    HCPPObjectInfo(HCPPObjectInfo &&other):_tid(other._tid)
-    {
-
-    }
-    HCPPObjectInfo &operator =(HCPPObjectInfo &&other)
-    {
-        if(this==&other)
-        {
-            return *this;
-        }
-
-        _tid=other._tid;
-
-        return *this;
-    }
-    HCPPObjectInfo(HCPPObjectInfo &other):_tid(other._tid)
-    {
-
-    }
-    HCPPObjectInfo &operator =(HCPPObjectInfo &other)
-    {
-        if(this==&other)
-        {
-            return *this;
-        }
-
-        _tid=other._tid;
-
-        return *this;
-    }
-    std::thread::id &GetThreadId()
-    {
-        return _tid;
-    }
-
-    bool SetThreadId(std::thread::id _id,bool force_update=false)
-    {
-        if(force_update)
-        {
-            _tid=_id;
-            return true;
-        }
-        if(_id==std::this_thread::get_id())
-        {
-            _tid=_id;
-            return true;
-        }
-        return false;
-    }
+    HCPPObjectInfo();
+    HCPPObjectInfo(HCPPObjectInfo&& other);
+    HCPPObjectInfo& operator =(HCPPObjectInfo&& other);
+    HCPPObjectInfo(HCPPObjectInfo& other);
+    HCPPObjectInfo& operator =(HCPPObjectInfo& other);
+    std::thread::id& GetThreadId();
+    bool SetThreadId(std::thread::id _id, bool force_update = false);
 };
+
+HCPPObjectInfo::HCPPObjectInfo()
+{
+    _tid = std::this_thread::get_id();
+}
+HCPPObjectInfo::HCPPObjectInfo(HCPPObjectInfo&& other) :_tid(other._tid)
+{
+
+}
+HCPPObjectInfo& HCPPObjectInfo::operator =(HCPPObjectInfo&& other)
+{
+    if (this == &other)
+    {
+        return *this;
+    }
+
+    _tid = other._tid;
+
+    return *this;
+}
+HCPPObjectInfo::HCPPObjectInfo(HCPPObjectInfo& other) :_tid(other._tid)
+{
+
+}
+HCPPObjectInfo& HCPPObjectInfo::operator =(HCPPObjectInfo& other)
+{
+    if (this == &other)
+    {
+        return *this;
+    }
+
+    _tid = other._tid;
+
+    return *this;
+}
+std::thread::id& HCPPObjectInfo::GetThreadId()
+{
+    return _tid;
+}
+
+bool HCPPObjectInfo::SetThreadId(std::thread::id _id, bool force_update)
+{
+    if (force_update)
+    {
+        _tid = _id;
+        return true;
+    }
+    if (_id == std::this_thread::get_id())
+    {
+        _tid = _id;
+        return true;
+    }
+    return false;
+}
+
 std::map<void *,HCPPObjectInfo> CPPHeapObjPool;
 std::recursive_mutex CPPHeapObjPoolLock;
 }
@@ -98,28 +107,32 @@ class TimerThread
     HCPPThread *m_thread;
     std::recursive_mutex m_lock;
 public:
-    TimerThread():m_thread(NULL)
-    {
-
-    }
-    ~TimerThread()
-    {
-        std::lock_guard<std::recursive_mutex> lock(m_lock);
-        if(m_thread!=NULL)
-        {
-            m_thread->DeleteThread();
-            m_thread=NULL;
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    }
-    HCPPThread *GetThread()
-    {
-        std::lock_guard<std::recursive_mutex> lock(m_lock);
-        if(m_thread==NULL)
-        {
-            m_thread=HCPPThread::New();
-        }
-        return m_thread;
-    }
+    TimerThread();
+    ~TimerThread();
+    HCPPThread* GetThread();
 } g_timerthread;
+
+TimerThread::TimerThread() :m_thread(NULL)
+{
+
+}
+TimerThread::~TimerThread()
+{
+    std::lock_guard<std::recursive_mutex> lock(m_lock);
+    if (m_thread != NULL)
+    {
+        m_thread->DeleteThread();
+        m_thread = NULL;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
+HCPPThread* TimerThread::GetThread()
+{
+    std::lock_guard<std::recursive_mutex> lock(m_lock);
+    if (m_thread == NULL)
+    {
+        m_thread = HCPPThread::New();
+    }
+    return m_thread;
+}
 }

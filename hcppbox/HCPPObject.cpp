@@ -12,59 +12,13 @@ class HCPPObjectInfo
 {
     std::thread::id _tid;
 public:
-    HCPPObjectInfo()
-    {
-        _tid=std::this_thread::get_id();
-    }
-    HCPPObjectInfo(HCPPObjectInfo &&other):_tid(other._tid)
-    {
-
-    }
-    HCPPObjectInfo &operator =(HCPPObjectInfo &&other)
-    {
-        if(this==&other)
-        {
-            return *this;
-        }
-
-        _tid=other._tid;
-
-        return *this;
-    }
-    HCPPObjectInfo(HCPPObjectInfo &other):_tid(other._tid)
-    {
-
-    }
-    HCPPObjectInfo &operator =(HCPPObjectInfo &other)
-    {
-        if(this==&other)
-        {
-            return *this;
-        }
-
-        _tid=other._tid;
-
-        return *this;
-    }
-    std::thread::id &GetThreadId()
-    {
-        return _tid;
-    }
-
-    bool SetThreadId(std::thread::id _id,bool force_update=false)
-    {
-        if(force_update)
-        {
-            _tid=_id;
-            return true;
-        }
-        if(_id==std::this_thread::get_id())
-        {
-            _tid=_id;
-            return true;
-        }
-        return false;
-    }
+    HCPPObjectInfo();
+    HCPPObjectInfo(HCPPObjectInfo&& other);
+    HCPPObjectInfo& operator =(HCPPObjectInfo&& other);
+    HCPPObjectInfo(HCPPObjectInfo& other);
+    HCPPObjectInfo& operator =(HCPPObjectInfo& other);
+    std::thread::id& GetThreadId();
+    bool SetThreadId(std::thread::id _id, bool force_update = false);
 };
 extern  std::map<void *,HCPPObjectInfo> CPPHeapObjPool;
 extern  std::recursive_mutex CPPHeapObjPoolLock;
