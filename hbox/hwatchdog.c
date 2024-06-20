@@ -307,3 +307,29 @@ void hwatchdog_softdog_feed(hwatchdog_softdog_t * softdog)
         softdog->flag=true;
     }
 }
+
+void hwatchdog_cleanup()
+{
+    check_watchdog_parameter();
+    //加锁
+    if(hwatchdog_dog.mutex_lock!=NULL)
+    {
+        hwatchdog_dog.mutex_lock(hwatchdog_dog.usr);
+    }
+
+    hwatchdog_watch_t *watch=hwatchdog_dog.watch_start;
+    hwatchdog_dog.watch_start=NULL;
+
+    while(watch!=NULL)
+    {
+        hwatchdog_watch_t *next=watch->next;
+        hwatchdog_dog.mem_free(watch,hwatchdog_dog.usr);
+        watch=next;
+    }
+
+     //解锁
+    if(hwatchdog_dog.mutex_unlock!=NULL)
+    {
+        hwatchdog_dog.mutex_unlock(hwatchdog_dog.usr);
+    }
+}

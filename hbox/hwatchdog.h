@@ -163,6 +163,12 @@ hwatchdog_softdog_t *hwatchdog_softdog_new(hwatchdog_tick_t timeout_ms);
  */
 void hwatchdog_softdog_feed(hwatchdog_softdog_t * softdog);
 
+/** \brief 看门狗清理,通常在程序退出时执行，一般用于对内存要求比较严格的系统。注意：若在喂狗时调用此函数将导致不可预知的错误。
+ *
+ *
+ */
+void hwatchdog_cleanup();
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
