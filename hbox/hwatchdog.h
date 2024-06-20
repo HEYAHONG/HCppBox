@@ -120,7 +120,7 @@ typedef struct
     void *usr;
     const char *file;
     int line;
-    const char *fuction;
+    const char *function;
 } hwatchdog_watch_info_t;
 
 /** \brief 添加看门狗检查(一般不直接使用此函数,而使用HWATCHDOG_ADD_WATCH)
