@@ -25,7 +25,7 @@ add_custom_command(
                      DEPENDS ${FS_FILES}
 )
 
-add_library(RC STATIC RC.h RC.c ${CMAKE_CURRENT_SOURCE_DIR}/RC_fs.c)
+add_library(RC STATIC EXCLUDE_FROM_ALL RC.h RC.c ${CMAKE_CURRENT_SOURCE_DIR}/RC_fs.c)
 target_include_directories(RC PUBLIC .)
 
 #设置属性

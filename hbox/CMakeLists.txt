@@ -5,7 +5,7 @@ if(MSVC)
     add_compile_options(-utf-8 )
 endif()
 
-add_library(HBox)
+add_library(HBox EXCLUDE_FROM_ALL)
 file(GLOB  HBOX_C_CPP_FILES *.cpp *.hpp *.c *.h cpp/*.cpp cpp/*.hpp cpp/*.c cpp/*.h)
 target_sources(HBox PUBLIC ${HBOX_C_CPP_FILES})
 target_include_directories(HBox PUBLIC ./ )
