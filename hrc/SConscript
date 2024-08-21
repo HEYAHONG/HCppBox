@@ -12,7 +12,10 @@ if not sys.platform.startswith("win32") and not sys.platform.startswith("cygwin"
     Execute("g++ fsgen.cpp -o fsgen")
 
 #生成RC_fs.c
-Execute('PATH=.  &&  fsgen fs RC_fs.c')
+if 'HRC_FS_ROOT_DIR' in os.environ:
+    Execute('PATH=.  &&  fsgen '+os.environ['HRC_FS_ROOT_DIR']+' RC_fs.c')
+else:
+    Execute('PATH=.  &&  fsgen fs RC_fs.c')
 
 cflags=''
 

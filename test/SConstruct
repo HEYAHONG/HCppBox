@@ -7,6 +7,9 @@ env = Environment()
 env["Enable_HBox_CPP"]=True
 env["Enable_HCPPBox"]=True
 
+#设置资源目录
+os.environ['HRC_FS_ROOT_DIR']=os.getcwd()+"/fs"
+
 #工具信息
 print("Tools={}".format(env["TOOLS"]))
 

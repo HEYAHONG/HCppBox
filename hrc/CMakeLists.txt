@@ -17,9 +17,18 @@ else()
                         )
     find_program(FSGEN NAMES fsgen fsgen.exe PATHS . REQUIRED NO_CACHE )
 endif()
-file(GLOB_RECURSE FS_FILES fs/*)
+#当设定了HRC_FS_ROOT_DIR变量时,采用HRC_FS_ROOT_DIR变量指定的内容。
+if(DEFINED ENV{HRC_FS_ROOT_DIR})
+    set(HRC_FS_ROOT_DIR $ENV{HRC_FS_ROOT_DIR})
+endif()
+if(DEFINED  HRC_FS_ROOT_DIR)
+    file(GLOB_RECURSE FS_FILES ${HRC_FS_ROOT_DIR}/*)
+else()
+    file(GLOB_RECURSE FS_FILES fs/*)
+    set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fs)
+endif()
 add_custom_command(
-                     COMMAND ${FSGEN} ${CMAKE_CURRENT_SOURCE_DIR}/fs ${CMAKE_CURRENT_SOURCE_DIR}/RC_fs.c
+                     COMMAND ${FSGEN} ${HRC_FS_ROOT_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/RC_fs.c
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                      OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/RC_fs.c
                      DEPENDS ${FS_FILES}
