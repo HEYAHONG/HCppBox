@@ -12,6 +12,7 @@
 #include "stdint.h"
 #include "stdlib.h"
 #include "limits.h"
+#include "wchar.h"
 /*
 本文件用于处理Unicode的相关辅助函数。
 */

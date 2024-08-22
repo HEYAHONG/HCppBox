@@ -359,6 +359,7 @@ void hunicode_char_to_utf8(char *dest,size_t dest_length,const hunicode_char_t *
                     if((src[i]&(0x01ULL<<(32-bit-1)))!=0)
                     {
                         utf8_char_bits=32-bit;
+                        break;
                     }
                 }
             }

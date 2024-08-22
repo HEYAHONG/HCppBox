@@ -13,6 +13,7 @@ static int hwatchdog_test(int argc,const char *argv[]);
 static int hmemoryheap_test(int argc,const char *argv[]);
 static int hobject_test(int argc,const char *argv[]);
 static int hringbuf_test(int argc,const char *argv[]);
+static int hunicode_test(int argc,const char *argv[]);
 
 static int (*test_cb[])(int,const char *[])=
 {
@@ -25,6 +26,7 @@ static int (*test_cb[])(int,const char *[])=
     hmemoryheap_test,
     hobject_test,
     hringbuf_test,
+    hunicode_test
 };
 
 int main(int argc,const char *argv[])
@@ -1137,6 +1139,37 @@ static int hringbuf_test(int argc,const char *argv[])
         }
 
 
+    }
+    return 0;
+}
+
+static int hunicode_test(int argc,const char *argv[])
+{
+    const char *const ascii_test_string="testtest";
+    const char *const utf8_test_string="test测试";
+    const wchar_t *const wchar_test_string=L"test测试";
+    {
+        printf("hunicode_test:%s %s ascii string,len=%d\r\n",ascii_test_string,hunicode_cchar_string_is_ascii(ascii_test_string)?"is":"is not",(int)hunicode_cchar_string_length(ascii_test_string));
+        printf("hunicode_test:%s %s ascii string\r\n",utf8_test_string,hunicode_cchar_string_is_ascii(utf8_test_string)?"is":"is not");
+        printf("hunicode_test:%s %s utf8 string,len=%d\r\n",ascii_test_string,hunicode_cchar_string_is_utf8(ascii_test_string)?"is":"is not",(int)hunicode_cchar_utf8_string_length(ascii_test_string));
+        printf("hunicode_test:%s %s utf8 string,len=%d\r\n",utf8_test_string,hunicode_cchar_string_is_utf8(utf8_test_string)?"is":"is not",(int)hunicode_cchar_utf8_string_length(utf8_test_string));
+        printf("hunicode_test:wchar string len=%d\r\n",(int)hunicode_wchar_t_string_length(wchar_test_string));
+    }
+    {
+        //测试wchar_t转换
+        hunicode_char_t unicode_string[32]={0};
+        hunicode_char_from_wchar_string(unicode_string,sizeof(unicode_string)/sizeof(unicode_string[0]),wchar_test_string);
+        wchar_t wchar_string[32]={0};
+        hunicode_char_string_to_wchar(wchar_string,sizeof(wchar_string)/sizeof(wchar_string[0]),unicode_string);
+        printf("hunicode_test:wchar_t convert %s\r\n",wcscmp(wchar_string,wchar_test_string)==0?"ok":"failed");
+    }
+    {
+        //测试UTF-8转换
+        hunicode_char_t unicode_string[32]={0};
+        hunicode_char_from_utf8_string(unicode_string,sizeof(unicode_string)/sizeof(unicode_string[0]),utf8_test_string);
+        char utf8_string[32]={0};
+        hunicode_char_string_to_utf8(utf8_string,sizeof(utf8_string)/sizeof(utf8_string[0]),unicode_string);
+        printf("hunicode_test:utf8 convert %s\r\n",strcmp(utf8_string,utf8_test_string)==0?"ok":"failed");
     }
     return 0;
 }
