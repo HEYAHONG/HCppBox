@@ -212,4 +212,4 @@ hbox意为HYH的工具箱。
 
 ## hunicode
 
- 本组件主要用用于辅助处理Unicode编码，主要用用于辅助处理`wchar_t`、UTF-8字符串与Unicode编码之间的转换。
+ 本组件主要用于辅助处理Unicode编码，主要用用于辅助处理`wchar_t`、UTF-8字符串与Unicode编码之间的转换。
