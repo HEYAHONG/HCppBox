@@ -132,7 +132,7 @@ size_t hunicode_cchar_utf8_string_length(const char *utf8_str)
             {
                 for(size_t i=1; i<utf8_char_len; i++)
                 {
-                    if(utf8_char[i]!='\0')
+                    if(utf8_char[i]=='\0')
                     {
                         index+=i;
                         break;
@@ -263,7 +263,7 @@ void hunicode_char_from_utf8_string(hunicode_char_t *dest,size_t dest_length,con
                 hunicode_char_t temp=(utf8_char[0]&((0x80>>utf8_char_len)-1));
                 for(size_t i=1; i<utf8_char_len; i++)
                 {
-                    if(utf8_char[i]!='\0')
+                    if(utf8_char[i]=='\0')
                     {
                         index+=i;
                         break;
