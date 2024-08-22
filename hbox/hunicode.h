@@ -57,6 +57,14 @@ bool hunicode_cchar_string_is_utf8(const char *str);
  */
 size_t hunicode_cchar_string_length(const char *str);
 
+/** \brief 获取char(UTF-8)字符串长度
+ *
+ * \param utf8_str const char* (UTF-8)字符串指针
+ * \return size_t (UTF-8)字符串长度,可获得转换为宽字符字符串需要多少个字符。
+ *
+ */
+size_t hunicode_cchar_utf8_string_length(const char *utf8_str);
+
 /** \brief 获取wchar_t字符串长度
  *
  * \param str const wchar_t* 字符串指针
@@ -92,6 +100,15 @@ void hunicode_char_from_wchar(hunicode_char_t *dest,size_t dest_length,const wch
  */
 void hunicode_char_from_wchar_string(hunicode_char_t *dest,size_t dest_length,const wchar_t *src);
 
+/** \brief 从char(UTF-8)字符串转换到hunicode_char_t
+ *
+ * \param dest hunicode_char_t* hunicode_char_t指针
+ * \param dest_length size_t hunicode_char_t指针所指的缓冲区长度
+ * \param src const char* char(UTF-8)字符串指针
+ *
+ */
+void hunicode_char_from_utf8_string(hunicode_char_t *dest,size_t dest_length,const char *src);
+
 /** \brief 从hunicode_char_t转换到wchar_t
  *
  * \param dest wchar_t* wchar_t指针
@@ -110,6 +127,26 @@ void hunicode_char_to_wchar(wchar_t *dest,size_t dest_length,const hunicode_char
  *
  */
 void hunicode_char_string_to_wchar(wchar_t *dest,size_t dest_length,const hunicode_char_t *src);
+
+/** \brief 从hunicode_char_t转换到char(UTF-8)字符串
+ *
+ * \param dest char* char(UTF-8)字符串缓冲区指针
+ * \param dest_length size_t char(UTF-8)字符串所指的缓冲区长度
+ * \param src const hunicode_char_t* hunicode_char_t指针
+ * \param src_length size_t hunicode_char_t指针所指的缓冲区长度
+ *
+ */
+void hunicode_char_to_utf8(char*dest,size_t dest_length,const hunicode_char_t *src,size_t src_length);
+
+/** \brief 从hunicode_char_t字符串转换到char(UTF-8)字符串
+ *
+ * \param dest char* char(UTF-8)字符串缓冲区指针
+ * \param dest_length size_t char(UTF-8)字符串所指的缓冲区长度
+ * \param src const hunicode_char_t* hunicode_char_t字符串指针
+ *
+ */
+void hunicode_char_string_to_utf8(char *dest,size_t dest_length,const hunicode_char_t *src);
+
 
 #ifdef __cplusplus
 }

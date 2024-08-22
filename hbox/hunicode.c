@@ -107,6 +107,57 @@ bool hunicode_cchar_string_is_ascii(const char *str)
     return ret;
 }
 
+
+size_t hunicode_cchar_utf8_string_length(const char *utf8_str)
+{
+    size_t length=0;
+    if(utf8_str!=NULL)
+    {
+        size_t index=0;
+        while(utf8_str[index]!='\0')
+        {
+            const char *utf8_char=&utf8_str[index];
+            size_t utf8_char_len=utf8_char_length(utf8_char);
+            if(utf8_char_len==0)
+            {
+                break;
+            }
+            if(utf8_char_len==1)
+            {
+                index++;
+                length++;
+                continue;
+            }
+            if(utf8_char_len>1)
+            {
+                for(size_t i=1; i<utf8_char_len; i++)
+                {
+                    if(utf8_char[i]!='\0')
+                    {
+                        index+=i;
+                        break;
+                    }
+                    if(char_zero_bit(utf8_char[i])==1)
+                    {
+                        if(i==(utf8_char_len-1))
+                        {
+                            index+=utf8_char_len;
+                            length++;
+                        }
+                        continue;
+                    }
+                    else
+                    {
+                        index+=i;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return length;
+}
+
 size_t hunicode_cchar_string_length(const char *str)
 {
     size_t length=0;
@@ -178,6 +229,71 @@ void hunicode_char_from_wchar_string(hunicode_char_t *dest,size_t dest_length,co
     }
 }
 
+void hunicode_char_from_utf8_string(hunicode_char_t *dest,size_t dest_length,const char *src)
+{
+    if(dest == NULL || dest_length == 0 || src == NULL)
+    {
+        return;
+    }
+
+    size_t length=0;
+    if(src!=NULL)
+    {
+        size_t index=0;
+        while(src[index]!='\0')
+        {
+            const char *utf8_char=&src[index];
+            size_t utf8_char_len=utf8_char_length(utf8_char);
+            if(utf8_char_len==0)
+            {
+                break;
+            }
+            if(utf8_char_len==1)
+            {
+                index++;
+                if(length<dest_length)
+                {
+                    dest[length]=(hunicode_char_t)(*utf8_char);
+                }
+                length++;
+                continue;
+            }
+            if(utf8_char_len>1)
+            {
+                hunicode_char_t temp=(utf8_char[0]&((0x80>>utf8_char_len)-1));
+                for(size_t i=1; i<utf8_char_len; i++)
+                {
+                    if(utf8_char[i]!='\0')
+                    {
+                        index+=i;
+                        break;
+                    }
+                    if(char_zero_bit(utf8_char[i])==1)
+                    {
+                        temp<<6;
+                        temp|=(utf8_char[i]&0x3F);
+                        if(i==(utf8_char_len-1))
+                        {
+                            index+=utf8_char_len;
+                            if(length<dest_length)
+                            {
+                                dest[length]=temp;
+                            }
+                            length++;
+                        }
+                        continue;
+                    }
+                    else
+                    {
+                        index+=i;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
 void hunicode_char_to_wchar(wchar_t *dest,size_t dest_length,const hunicode_char_t *src,size_t src_length)
 {
     if(dest==NULL || dest_length==0||src==0||src_length==0)
@@ -210,3 +326,72 @@ void hunicode_char_string_to_wchar(wchar_t *dest,size_t dest_length,const hunico
     }
 }
 
+void hunicode_char_to_utf8(char *dest,size_t dest_length,const hunicode_char_t *src,size_t src_length)
+{
+    if(dest == NULL || dest_length == 0 || src == NULL || src_length == 0)
+    {
+        return;
+    }
+    size_t dest_index=0;
+    for(size_t i=0; i<src_length; i++)
+    {
+        if(src[i] < 0x80)
+        {
+            //单字符
+            if(dest_index < dest_length)
+            {
+                dest[dest_index]=(char)src[i];
+                dest_index++;
+            }
+            else
+            {
+                //存储空间不足
+                break;
+            }
+            continue;
+        }
+        {
+            //utf8字符所需位
+            size_t utf8_char_bits=0;
+            {
+                for(size_t bit=0; bit<32; bit++)
+                {
+                    if((src[i]&(0x01ULL<<(32-bit-1)))!=0)
+                    {
+                        utf8_char_bits=32-bit;
+                    }
+                }
+            }
+            if(utf8_char_bits >31)
+            {
+                //非法字符
+                break;
+            }
+            //获取utf8字符所需空间
+            size_t utf8_char_bytes=((utf8_char_bits/6)+((utf8_char_bits%6)<=(8-utf8_char_bytes-1)?1:2));
+            if(dest_index+utf8_char_bytes > dest_length)
+            {
+                //空间不够
+                break;
+            }
+            {
+                //写入utf8字符
+                uint8_t *utf8_char=(uint8_t *)&dest[dest_index];
+                utf8_char[0]=(((0x1ULL<<utf8_char_bytes)-1)<<(8-utf8_char_bytes))+(src[i]>>(6*(utf8_char_bytes-1)));
+                for(size_t j=1; j<utf8_char_bytes; j++)
+                {
+                    utf8_char[j]=0x80+(0x3F&(src[i]>>(6*(utf8_char_bytes-1-j))));
+                }
+            }
+            dest_index+=utf8_char_bytes;
+        }
+    }
+}
+
+
+void hunicode_char_string_to_utf8(char *dest,size_t dest_length,const hunicode_char_t *src)
+{
+    size_t length=hunicode_char_string_length(src);
+    //多拷贝一个\0字符
+    hunicode_char_to_utf8(dest,dest_length,src,length+1);
+}
