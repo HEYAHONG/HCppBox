@@ -2,9 +2,18 @@ from building import *
 import os
 import sys
 
-if not "Enable_HBox_CPP" in Env:
-   group = []
-   Return('group')
+#默认不启用此组件
+Enable_HBox_CPP=False
+
+if  "Enable_HBox_CPP" in Env:
+    Enable_HBox_CPP=True;
+
+if  "Enable_HBox_CPP" in os.environ:
+    Enable_HBox_CPP=True;
+
+if not Enable_HBox_CPP:
+    group = []
+    Return('group')
 
 cwd = GetCurrentDir()
 src = Glob('*.c')

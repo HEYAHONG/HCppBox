@@ -3,9 +3,11 @@ import sys
 
 #采用默认环境，由于未设置相关C/C++参数，均采用编译器默认参数,因此请使用最新版编译器
 env = Environment()
-#添加标志
-env["Enable_HBox_CPP"]=True
-env["Enable_HCPPBox"]=True
+
+#启用HBox_CPP
+os.environ["Enable_HBox_CPP"]="1"
+#启用HCPPBox
+os.environ["Enable_HCPPBox"]="1"
 
 #设置资源目录
 os.environ['HRC_FS_ROOT_DIR']=os.getcwd()+"/fs"

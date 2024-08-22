@@ -2,10 +2,18 @@ from building import *
 import os
 import sys
 
+#默认不启用此组件
+Enable_HCPPBox=False
 
-if not "Enable_HCPPBox" in Env:
+if  "Enable_HCPPBox" in Env:
+    Enable_HCPPBox=True
+
+if  "Enable_HCPPBox" in os.environ:
+    Enable_HCPPBox=True
+
+if not Enable_HCPPBox:
    group = []
-   Return('group') 
+   Return('group')
 
 cwd = GetCurrentDir()
 src = Glob('*.c')
