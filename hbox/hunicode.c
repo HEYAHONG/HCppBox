@@ -270,7 +270,7 @@ void hunicode_char_from_utf8_string(hunicode_char_t *dest,size_t dest_length,con
                     }
                     if(char_zero_bit(utf8_char[i])==1)
                     {
-                        temp<<6;
+                        temp<<=6;
                         temp|=(utf8_char[i]&0x3F);
                         if(i==(utf8_char_len-1))
                         {
@@ -368,7 +368,11 @@ void hunicode_char_to_utf8(char *dest,size_t dest_length,const hunicode_char_t *
                 break;
             }
             //获取utf8字符所需空间
-            size_t utf8_char_bytes=((utf8_char_bits/6)+((utf8_char_bits%6)<=(8-utf8_char_bytes-1)?1:2));
+            size_t utf8_char_bytes=(utf8_char_bits/6)+1;
+            if((utf8_char_bits%6)>(8-utf8_char_bytes-1))
+            {
+                utf8_char_bytes+=1;
+            }
             if(dest_index+utf8_char_bytes > dest_length)
             {
                 //空间不够
@@ -395,3 +399,4 @@ void hunicode_char_string_to_utf8(char *dest,size_t dest_length,const hunicode_c
     //多拷贝一个\0字符
     hunicode_char_to_utf8(dest,dest_length,src,length+1);
 }
+
