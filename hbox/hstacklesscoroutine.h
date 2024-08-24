@@ -10,6 +10,7 @@
 #define __HSTACKLESSCOROUTINE_H_INCLUDED__
 #include "stdint.h"
 #include "stdbool.h"
+#include "stdlib.h"
 #include "limits.h"
 /*
 本文件用于辅助编写简易无栈协程。
