@@ -22,6 +22,7 @@
 #include "hobject.h"
 #include "hringbuf.h"
 #include "hunicode.h"
+#include "hstacklesscoroutine.h"
 
 /*
 由C++编写的组件

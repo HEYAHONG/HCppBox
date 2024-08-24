@@ -14,6 +14,7 @@ static int hmemoryheap_test(int argc,const char *argv[]);
 static int hobject_test(int argc,const char *argv[]);
 static int hringbuf_test(int argc,const char *argv[]);
 static int hunicode_test(int argc,const char *argv[]);
+static int hstacklesscoroutine_test(int argc,const char *argv[]);
 
 static int (*test_cb[])(int,const char *[])=
 {
@@ -26,7 +27,8 @@ static int (*test_cb[])(int,const char *[])=
     hmemoryheap_test,
     hobject_test,
     hringbuf_test,
-    hunicode_test
+    hunicode_test,
+    hstacklesscoroutine_test
 };
 
 int main(int argc,const char *argv[])
@@ -1157,19 +1159,34 @@ static int hunicode_test(int argc,const char *argv[])
     }
     {
         //测试wchar_t转换
-        hunicode_char_t unicode_string[32]={0};
+        hunicode_char_t unicode_string[32]= {0};
         hunicode_char_from_wchar_string(unicode_string,sizeof(unicode_string)/sizeof(unicode_string[0]),wchar_test_string);
-        wchar_t wchar_string[32]={0};
+        wchar_t wchar_string[32]= {0};
         hunicode_char_string_to_wchar(wchar_string,sizeof(wchar_string)/sizeof(wchar_string[0]),unicode_string);
         printf("hunicode_test:wchar_t convert %s\r\n",wcscmp(wchar_string,wchar_test_string)==0?"ok":"failed");
     }
     {
         //测试UTF-8转换
-        hunicode_char_t unicode_string[32]={0};
+        hunicode_char_t unicode_string[32]= {0};
         hunicode_char_from_utf8_string(unicode_string,sizeof(unicode_string)/sizeof(unicode_string[0]),utf8_test_string);
-        char utf8_string[32]={0};
+        char utf8_string[32]= {0};
         hunicode_char_string_to_utf8(utf8_string,sizeof(utf8_string)/sizeof(utf8_string[0]),unicode_string);
         printf("hunicode_test:utf8 convert %s\r\n",strcmp(utf8_string,utf8_test_string)==0?"ok":"failed");
     }
+    return 0;
+}
+
+HSTACKLESSCOROUTINE_DECLARE_COROUTINE(co1_c)
+HSTACKLESSCOROUTINE_DECLARE_COROUTINE(co1_cpp)
+static int hstacklesscoroutine_test(int argc,const char *argv[])
+{
+    printf("hstacklesscoroutine_test:start!\r\n");
+    do
+    {
+        HSTACKLESSCOROUTINE_ENTRY(co1_c);
+        HSTACKLESSCOROUTINE_ENTRY(co1_cpp);
+    }
+    while(!hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)) || !hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_cpp)));
+    printf("hstacklesscoroutine_test:end!\r\n");
     return 0;
 }
