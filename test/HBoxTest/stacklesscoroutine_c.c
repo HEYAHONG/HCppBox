@@ -41,6 +41,7 @@ else
 {
     //等待条件
     hstacklesscoroutine_await(((hstacklesscoroutine_awaiter_t){wait_for_ready,NULL}));
+    printf("co1_c:await end\r\n");
 }
 hstacklesscoroutine_yield_with_label(5);
 printf("co1_c:step 5\r\n");
