@@ -178,6 +178,21 @@ extern void hstacklesscoroutine_##NAME##_entry(void);
  */
 bool hstacklesscoroutine_is_finished(hstacklesscoroutine_control_block_t *ccb);
 
+
+/** \brief 当协程完成后，重新启动协程
+ *
+ * \param ccb hstacklesscoroutine_control_block_t* 协程控制块
+ *
+ */
+void hstacklesscoroutine_coroutine_restart(hstacklesscoroutine_control_block_t *ccb);
+
+/** \brief 强制重新启动协程(不管协程运行状态)
+ *
+ * \param ccb hstacklesscoroutine_control_block_t* 协程控制块
+ *
+ */
+void hstacklesscoroutine_coroutine_force_restart(hstacklesscoroutine_control_block_t *ccb);
+
 /*
  * 协程入口
  */
