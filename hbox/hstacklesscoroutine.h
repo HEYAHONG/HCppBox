@@ -98,7 +98,7 @@ void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(hstacklesscoroutine_c
             ccb->flags|=(0x1ULL<<1);\
         }\
     }\
-    hstacklesscoroutine_break:\
+    hstacklesscoroutine_break:;\
 }\
 
 
