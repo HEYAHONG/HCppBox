@@ -44,7 +44,7 @@ void hstacklesscoroutine_##NAME##_entry_with_event(hstacklesscoroutine_event_t *
 {\
     hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(&g_hstacklesscoroutine_##NAME##_ccb,event);\
 }\
-void hstacklesscoroutine_##NAME##_entry()\
+void hstacklesscoroutine_##NAME##_entry(void)\
 {\
     hstacklesscoroutine_##NAME##_entry_with_event(NULL);\
 }\
@@ -98,7 +98,7 @@ void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(hstacklesscoroutine_c
 extern hstacklesscoroutine_control_block_t g_hstacklesscoroutine_##NAME##_ccb;\
 extern void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(hstacklesscoroutine_control_block_t *ccb,hstacklesscoroutine_event_t *event);\
 extern void hstacklesscoroutine_##NAME##_entry_with_event(hstacklesscoroutine_event_t *event);\
-extern void hstacklesscoroutine_##NAME##_entry();
+extern void hstacklesscoroutine_##NAME##_entry(void);
 
 /** \brief 无栈协程块声明，若协程定义与调用不在同一个文件，则需要将此声明放在调用方文件的全局。
  *
