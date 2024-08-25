@@ -40,8 +40,7 @@ if(co1_step <=5)
 else
 {
     //等待条件
-    hstacklesscoroutine_awaiter_t awaiter= {wait_for_ready,NULL};
-    hstacklesscoroutine_await(awaiter);
+    hstacklesscoroutine_await(((hstacklesscoroutine_awaiter_t){wait_for_ready,NULL}));
 }
 hstacklesscoroutine_yield_with_label(5);
 printf("co1_c:step 5\r\n");

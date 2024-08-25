@@ -98,6 +98,7 @@ void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(hstacklesscoroutine_c
             ccb->flags|=(0x1ULL<<1);\
         }\
     }\
+    hstacklesscoroutine_break:\
 }\
 
 
@@ -170,7 +171,7 @@ extern void hstacklesscoroutine_##NAME##_entry(void);
                                         {\
                                             HSTACKLESSCOROUTINE_GET_CURRENT_CCB()->corevalue=N;\
                                         }\
-                                        break;\
+                                        hstacklesscoroutine_return();\
                                         case N:\
 /** \brief 协程让出控制权,，需要在协程块内使用
  *
@@ -183,13 +184,13 @@ extern void hstacklesscoroutine_##NAME##_entry(void);
  *\param N 标签，大于0的正整数
  *
  */
-#define hstacklesscoroutine_yield_with_label(N) __HSTACKLESSCOROUTINE_YIELD((-((N)+1000)))
+#define hstacklesscoroutine_yield_with_label(N) __HSTACKLESSCOROUTINE_YIELD((-(N)))
 
 /** \brief 协程返回,，需要在协程块内使用
  *
  *
  */
-#define hstacklesscoroutine_return() break
+#define hstacklesscoroutine_return() goto hstacklesscoroutine_break
 
 /** \brief 进入指定的标签,，需要在协程块内使用
  *
@@ -197,7 +198,7 @@ extern void hstacklesscoroutine_##NAME##_entry(void);
  *
  */
 #define hstacklesscoroutine_goto_label(N)  {\
-                                                HSTACKLESSCOROUTINE_GET_CURRENT_CCB()->corevalue=(-((N)+1000));\
+                                                HSTACKLESSCOROUTINE_GET_CURRENT_CCB()->corevalue=(-(N));\
                                            }\
                                            hstacklesscoroutine_return();
 
@@ -207,10 +208,11 @@ extern void hstacklesscoroutine_##NAME##_entry(void);
                                                     HSTACKLESSCOROUTINE_GET_CURRENT_CCB()->corevalue=N;\
                                                     hstacklesscoroutine_coroutine_suspend(HSTACKLESSCOROUTINE_GET_CURRENT_CCB());\
                                                 }\
+                                                hstacklesscoroutine_return();\
                                                 case N:
 
 
-#define hstacklesscoroutine_await(AWAITER)  __HSTACKLESSCOROUTINE_AWAIT(__LINE__,AWAITER)
+#define hstacklesscoroutine_await(AWAITER)  __HSTACKLESSCOROUTINE_AWAIT(__LINE__,(AWAITER))
 
 /** \brief 协程是否完成
  *
