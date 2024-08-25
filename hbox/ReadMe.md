@@ -259,9 +259,10 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 - `HSTACKLESSCOROUTINE_GET_CURRENT_CCB()`：获取当前协程控制块指针
 - `HSTACKLESSCOROUTINE_GET_CURRENT_EVENT()`：获取当前事件指针
 - `hstacklesscoroutine_yield()` ：让出控制权，下次将从此开始运行。
-- `hstacklesscoroutine_yield_with_label(N)`：让出控制权并且使用标签（部分正整数），下次将从此开始运行。
+- `hstacklesscoroutine_yield_with_label(N)`：让出控制权并且使用标签（正整数），下次将从此开始运行。
 - `hstacklesscoroutine_return()`：协程返回，常用于条件不满足时不继续运行，并从上一次让出控制权的地方重新运行。
 - `hstacklesscoroutine_goto_label(N)`：跳转至特定标签，可配合`hstacklesscoroutine_yield_with_label(N)`使用。
+- `hstacklesscoroutine_await(AWAITER)`:协程等待，与协程返回不同，协程等待条件满足前不会再运行任何用户代码
 
 ### 调用协程
 

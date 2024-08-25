@@ -1180,13 +1180,34 @@ HSTACKLESSCOROUTINE_DECLARE_COROUTINE(co1_c)
 HSTACKLESSCOROUTINE_DECLARE_COROUTINE(co1_cpp)
 static int hstacklesscoroutine_test(int argc,const char *argv[])
 {
-    printf("hstacklesscoroutine_test:start!\r\n");
+    printf("hstacklesscoroutine_test1:start!\r\n");
     do
     {
         HSTACKLESSCOROUTINE_ENTRY(co1_c);
         HSTACKLESSCOROUTINE_ENTRY(co1_cpp);
     }
     while(!hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)) || !hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_cpp)));
-    printf("hstacklesscoroutine_test:end!\r\n");
+    printf("hstacklesscoroutine_test1:end!\r\n");
+    printf("hstacklesscoroutine_test2:start!\r\n");
+    hstacklesscoroutine_coroutine_restart(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c));
+    hstacklesscoroutine_coroutine_restart(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_cpp));
+    do
+    {
+        HSTACKLESSCOROUTINE_ENTRY(co1_c);
+        HSTACKLESSCOROUTINE_ENTRY(co1_cpp);
+        if(hstacklesscoroutine_is_suspend(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)))
+        {
+            if(!hstacklesscoroutine_is_await(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)))
+            {
+                hstacklesscoroutine_coroutine_resume(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c));
+            }
+        }
+        else
+        {
+            hstacklesscoroutine_coroutine_suspend(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c));
+        }
+    }
+    while(!hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)) || !hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_cpp)));
+    printf("hstacklesscoroutine_test2:end!\r\n");
     return 0;
 }

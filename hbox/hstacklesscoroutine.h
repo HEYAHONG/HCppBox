@@ -28,14 +28,34 @@ typedef struct
     void *eventparam; /**< 事件参数 */
 } hstacklesscoroutine_event_t;
 
+typedef struct
+{
+    bool (*wait_for_ready)(void *usr,hstacklesscoroutine_event_t *event);/**< 等待准备好,返回true退出等待*/
+    void *usr;/**< 用户参数 */
+} hstacklesscoroutine_awaiter_t;
+
 struct hstacklesscoroutine_control_block;
 typedef struct hstacklesscoroutine_control_block hstacklesscoroutine_control_block_t;
 struct hstacklesscoroutine_control_block
 {
+
+    /*
+     *  0           协程起始
+     *
+     *
+     */
     int corevalue;/**< 核心值，此值用于协程调度，用户不可直接更改*/
+    /*
+     *  位0          运行(取0)/暂停位（取1）
+     *  位1          协程是否完成，1=完成
+     *
+     */
+    int flags;/**< 运行标志,按位区分功能 */
+
+    hstacklesscoroutine_awaiter_t awaiter;/**< 当协程暂停时的等待参数 */
 };
 
-#define HSTACKLESSCOROUTINE_CONTROL_BLOCK_INIT_VALUE {0}
+#define HSTACKLESSCOROUTINE_CONTROL_BLOCK_INIT_VALUE {0,0,NULL,NULL}
 
 #define __HSTACKLESSCOROUTINE_BLOCK_START(NAME) \
 hstacklesscoroutine_control_block_t g_hstacklesscoroutine_##NAME##_ccb = HSTACKLESSCOROUTINE_CONTROL_BLOCK_INIT_VALUE;\
@@ -50,8 +70,20 @@ void hstacklesscoroutine_##NAME##_entry(void)\
 }\
 void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(hstacklesscoroutine_control_block_t *ccb,hstacklesscoroutine_event_t *event)\
 {\
-    if(ccb==NULL || ccb->corevalue == -1)\
+    if(ccb==NULL || (ccb->flags&(0x1ULL<<1))!=0)\
     {\
+        return;\
+    }\
+    if((hstacklesscoroutine_is_suspend(ccb))!=0)\
+    {\
+        if(ccb->awaiter.wait_for_ready!=NULL)\
+        {\
+            if(ccb->awaiter.wait_for_ready(ccb->awaiter.usr,event))\
+            {\
+                ccb->awaiter.wait_for_ready=NULL;\
+                hstacklesscoroutine_coroutine_resume(ccb);\
+            }\
+        }\
         return;\
     }\
     switch(ccb->corevalue)\
@@ -60,10 +92,10 @@ void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(hstacklesscoroutine_c
 
 
 #define __HSTACKLESSCOROUTINE_BLOCK_END(NAME) \
-        ccb->corevalue=-1;\
+        ccb->flags|=(0x1ULL<<1);\
         default:\
         {\
-            ccb->corevalue=-1;\
+            ccb->flags|=(0x1ULL<<1);\
         }\
     }\
 }\
@@ -148,7 +180,7 @@ extern void hstacklesscoroutine_##NAME##_entry(void);
 
 /** \brief 协程让出控制权(带标签),，需要在协程块内使用
  *
- *\param N 标签，大于0小于(INT_MAX-1000)的正整数
+ *\param N 标签，大于0的正整数
  *
  */
 #define hstacklesscoroutine_yield_with_label(N) __HSTACKLESSCOROUTINE_YIELD((-((N)+1000)))
@@ -161,7 +193,7 @@ extern void hstacklesscoroutine_##NAME##_entry(void);
 
 /** \brief 进入指定的标签,，需要在协程块内使用
  *
- *\param N 标签，大于0小于(INT_MAX-1000)的正整数
+ *\param N 标签，大于0的正整数
  *
  */
 #define hstacklesscoroutine_goto_label(N)  {\
@@ -169,6 +201,16 @@ extern void hstacklesscoroutine_##NAME##_entry(void);
                                            }\
                                            hstacklesscoroutine_return();
 
+
+#define __HSTACKLESSCOROUTINE_AWAIT(N,AWAITER)  {\
+                                                    HSTACKLESSCOROUTINE_GET_CURRENT_CCB()->awaiter=AWAITER;\
+                                                    HSTACKLESSCOROUTINE_GET_CURRENT_CCB()->corevalue=N;\
+                                                    hstacklesscoroutine_coroutine_suspend(HSTACKLESSCOROUTINE_GET_CURRENT_CCB());\
+                                                }\
+                                                case N:
+
+
+#define hstacklesscoroutine_await(AWAITER)  __HSTACKLESSCOROUTINE_AWAIT(__LINE__,AWAITER)
 
 /** \brief 协程是否完成
  *
@@ -192,6 +234,37 @@ void hstacklesscoroutine_coroutine_restart(hstacklesscoroutine_control_block_t *
  *
  */
 void hstacklesscoroutine_coroutine_force_restart(hstacklesscoroutine_control_block_t *ccb);
+
+/** \brief 协程是否被暂停
+ *
+ * \param ccb hstacklesscoroutine_control_block_t* 协程控制块
+ * \return bool 是否被暂停
+ *
+ */
+bool hstacklesscoroutine_is_suspend(hstacklesscoroutine_control_block_t *ccb);
+
+/** \brief 暂停协程
+ *
+ * \param ccb hstacklesscoroutine_control_block_t* 协程控制块
+ *
+ */
+void hstacklesscoroutine_coroutine_suspend(hstacklesscoroutine_control_block_t *ccb);
+
+
+/** \brief 恢复协程
+ *
+ * \param ccb hstacklesscoroutine_control_block_t* 协程控制块
+ *
+ */
+void hstacklesscoroutine_coroutine_resume(hstacklesscoroutine_control_block_t *ccb);
+
+/** \brief 协程是否在等待
+ *
+ * \param ccb hstacklesscoroutine_control_block_t* 协程控制块
+ * \return bool 是否在等待
+ *
+ */
+bool hstacklesscoroutine_is_await(hstacklesscoroutine_control_block_t *ccb);
 
 /*
  * 协程入口
