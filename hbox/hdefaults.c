@@ -66,8 +66,8 @@ hdefaults_tick_t hdefaults_tick_get(void)
 #elif defined(HDEFAULTS_OS_UNIX)
     {
         hdefaults_tick_t ret=0;
-        struct timeval tv={0};
-        struct timezone tz={0};
+        struct timeval tv= {0};
+        struct timezone tz= {0};
         gettimeofday(&tv, &tz);
         ret+=tv.tv_sec*1000;
         ret+=tv.tv_usec/1000;

@@ -308,7 +308,7 @@ void hwatchdog_softdog_feed(hwatchdog_softdog_t * softdog)
     }
 }
 
-void hwatchdog_cleanup()
+void hwatchdog_cleanup(void)
 {
     check_watchdog_parameter();
     //加锁
@@ -327,7 +327,7 @@ void hwatchdog_cleanup()
         watch=next;
     }
 
-     //解锁
+    //解锁
     if(hwatchdog_dog.mutex_unlock!=NULL)
     {
         hwatchdog_dog.mutex_unlock(hwatchdog_dog.usr);

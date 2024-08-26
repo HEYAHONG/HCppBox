@@ -167,7 +167,7 @@ void hwatchdog_softdog_feed(hwatchdog_softdog_t * softdog);
  *
  *
  */
-void hwatchdog_cleanup();
+void hwatchdog_cleanup(void);
 
 #ifdef __cplusplus
 }
