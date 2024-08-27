@@ -28,13 +28,13 @@ else()
     set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fs)
 endif()
 add_custom_command(
-                     COMMAND ${FSGEN} ${HRC_FS_ROOT_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/RC_fs.c
+                     COMMAND ${FSGEN} ${HRC_FS_ROOT_DIR} "${CMAKE_CURRENT_BINARY_DIR}/RC_fs.c"
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                     OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/RC_fs.c
+                     OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/RC_fs.c"
                      DEPENDS ${FS_FILES}
 )
 
-add_library(RC STATIC EXCLUDE_FROM_ALL RC.h RC.c ${CMAKE_CURRENT_SOURCE_DIR}/RC_fs.c)
+add_library(RC STATIC EXCLUDE_FROM_ALL RC.h RC.c "${CMAKE_CURRENT_BINARY_DIR}/RC_fs.c")
 target_include_directories(RC PUBLIC .)
 
 #设置属性

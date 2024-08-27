@@ -5,26 +5,36 @@ from building import *
 # get current directory
 cwd = GetCurrentDir()
 
+#默认文件路径
+if not os.path.isdir(os.getcwd()+"/build/"):
+    os.mkdir(os.getcwd()+"/build/")
+
+HRC_RC_FS_PATH=os.getcwd()+"/build/RC_fs.c"
+
+oldcwd=os.getcwd();
+
+#改变目录
 os.chdir(cwd)
 
 #执行g++
 if not sys.platform.startswith("win32") and not sys.platform.startswith("cygwin"):
     Execute("g++ fsgen.cpp -o fsgen")
 
+
 #生成RC_fs.c
 if 'HRC_FS_ROOT_DIR' in os.environ:
-    Execute('PATH=.  &&  fsgen '+os.environ['HRC_FS_ROOT_DIR']+' RC_fs.c')
+    Execute('PATH=.  &&  fsgen '+os.environ['HRC_FS_ROOT_DIR']+' '+HRC_RC_FS_PATH)
 else:
-    Execute('PATH=.  &&  fsgen fs RC_fs.c')
+    Execute('PATH=.  &&  fsgen fs '+HRC_RC_FS_PATH)
+
+#恢复目录
+os.chdir(oldcwd)
 
 cflags=''
 
 # The set of source files associated with this SConscript file.
-src = Split("""
-RC.c
-RC_fs.c
-""")
-
+src = Glob("RC.c")
+src+= Glob(HRC_RC_FS_PATH)
 
 path = [cwd, str(Dir('#'))]
 
