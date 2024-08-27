@@ -16,10 +16,11 @@
 
 ### 宏定义
 
-| 宏定义                              | 说明                         | 备注 |
-| ----------------------------------- | ---------------------------- | ---- |
-| `HCPPRT_NO_NEW_AND_DELETE_OVERRIDE` | 不重载new与delete,默认不定义 |      |
-| `HCPPRT_NO_ATOMIC`                  | 不支持atomic头文件           |      |
+| 宏定义                              | 说明                                  | 备注 |
+| ----------------------------------- | ------------------------------------- | ---- |
+| `HCPPRT_NO_NEW_AND_DELETE_OVERRIDE` | 不重载new与delete,默认不定义          |      |
+| `HCPPRT_NO_ATOMIC`                  | 不支持atomic头文件                    |      |
+| `HCPPRT_USE_CTORS`                  | 启用构造（调用`hcpprt_init()`时构造） |      |
 
 ### 类
 
