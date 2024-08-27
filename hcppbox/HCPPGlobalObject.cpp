@@ -28,10 +28,10 @@ class HCPPObjectInfo
     std::thread::id _tid;
 public:
     HCPPObjectInfo();
-    HCPPObjectInfo(HCPPObjectInfo&& other);
-    HCPPObjectInfo& operator =(HCPPObjectInfo&& other);
-    HCPPObjectInfo(HCPPObjectInfo& other);
-    HCPPObjectInfo& operator =(HCPPObjectInfo& other);
+    HCPPObjectInfo(const HCPPObjectInfo&& other);
+    HCPPObjectInfo& operator =(const HCPPObjectInfo&& other);
+    HCPPObjectInfo(const HCPPObjectInfo& other);
+    HCPPObjectInfo& operator =(const HCPPObjectInfo& other);
     std::thread::id& GetThreadId();
     bool SetThreadId(std::thread::id _id, bool force_update = false);
 };
@@ -40,11 +40,11 @@ HCPPObjectInfo::HCPPObjectInfo()
 {
     _tid = std::this_thread::get_id();
 }
-HCPPObjectInfo::HCPPObjectInfo(HCPPObjectInfo&& other) :_tid(other._tid)
+HCPPObjectInfo::HCPPObjectInfo(const HCPPObjectInfo&& other) :_tid(other._tid)
 {
 
 }
-HCPPObjectInfo& HCPPObjectInfo::operator =(HCPPObjectInfo&& other)
+HCPPObjectInfo& HCPPObjectInfo::operator =(const HCPPObjectInfo&& other)
 {
     if (this == &other)
     {
@@ -55,11 +55,11 @@ HCPPObjectInfo& HCPPObjectInfo::operator =(HCPPObjectInfo&& other)
 
     return *this;
 }
-HCPPObjectInfo::HCPPObjectInfo(HCPPObjectInfo& other) :_tid(other._tid)
+HCPPObjectInfo::HCPPObjectInfo(const HCPPObjectInfo& other) :_tid(other._tid)
 {
 
 }
-HCPPObjectInfo& HCPPObjectInfo::operator =(HCPPObjectInfo& other)
+HCPPObjectInfo& HCPPObjectInfo::operator =(const HCPPObjectInfo& other)
 {
     if (this == &other)
     {
