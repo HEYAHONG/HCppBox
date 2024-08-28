@@ -2,7 +2,20 @@ cmake_minimum_required(VERSION 3.16)
 if(MSVC)
     add_compile_options(-utf-8 )
 endif()
-find_program(FSGEN NAMES fsgen  PATHS . NO_CACHE )
+if(CYGWIN)
+    find_program(G++ NAMES g++  c++ REQUIRED)
+    if(NOT EXISTS ${G++})
+        message(FATAL_ERROR "g++ is not found")
+    endif()
+    execute_process(
+                        COMMAND ${G++} "${CMAKE_CURRENT_SOURCE_DIR}/fsgen.cpp" -o fsgen_cygwin
+                        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+                        )
+    find_program(FSGEN NAMES fsgen_cygwin fsgen_cygwin.exe PATHS .  "${CMAKE_CURRENT_BINARY_DIR}" REQUIRED NO_CACHE )
+endif()
+if(NOT DEFINED FSGEN)
+    find_program(FSGEN NAMES fsgen  PATHS . NO_CACHE )
+endif()
 if(EXISTS ${FSGEN})
     message("rc fsgen:${FSGEN}")
 else()
@@ -12,10 +25,10 @@ else()
         message(FATAL_ERROR "g++ is not found")
     endif()
     execute_process(
-                        COMMAND ${G++} -static -static-libgcc -static fsgen.cpp -o fsgen
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                        COMMAND ${G++} -static -static-libgcc -static "${CMAKE_CURRENT_SOURCE_DIR}/fsgen.cpp" -o fsgen_custom
+                        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
                         )
-    find_program(FSGEN NAMES fsgen fsgen.exe PATHS . REQUIRED NO_CACHE )
+    find_program(FSGEN NAMES fsgen_custom fsgen_custom.exe  PATHS . "${CMAKE_CURRENT_BINARY_DIR}" REQUIRED NO_CACHE )
 endif()
 #当设定了HRC_FS_ROOT_DIR变量时,采用HRC_FS_ROOT_DIR变量指定的内容。
 if(DEFINED ENV{HRC_FS_ROOT_DIR})
@@ -28,8 +41,8 @@ else()
     set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fs)
 endif()
 add_custom_command(
-                     COMMAND ${FSGEN} ${HRC_FS_ROOT_DIR} "${CMAKE_CURRENT_BINARY_DIR}/RC_fs.c"
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                     COMMAND ${FSGEN} "${HRC_FS_ROOT_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/RC_fs.c"
+                     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
                      OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/RC_fs.c"
                      DEPENDS ${FS_FILES}
 )
