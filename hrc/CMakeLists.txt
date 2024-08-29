@@ -16,9 +16,7 @@ endif()
 if(NOT DEFINED FSGEN)
     find_program(FSGEN NAMES fsgen  PATHS . NO_CACHE )
 endif()
-if(EXISTS ${FSGEN})
-    message("rc fsgen:${FSGEN}")
-else()
+if(NOT EXISTS ${FSGEN})
     message("fsgen is not found,try to compile!")
     find_program(G++ NAMES g++  c++ REQUIRED)
     if(NOT EXISTS ${G++})
@@ -46,6 +44,9 @@ add_custom_command(
                      OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/RC_fs.c"
                      DEPENDS ${FS_FILES}
 )
+message(STATUS "FSGEN:${FSGEN}")
+message(STATUS "FS_ROOT:${HRC_FS_ROOT_DIR}")
+message(STATUS "RC_fs.c:${CMAKE_CURRENT_BINARY_DIR}/RC_fs.c")
 
 add_library(RC STATIC EXCLUDE_FROM_ALL RC.h RC.c "${CMAKE_CURRENT_BINARY_DIR}/RC_fs.c")
 target_include_directories(RC PUBLIC .)
