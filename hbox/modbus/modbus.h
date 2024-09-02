@@ -92,7 +92,7 @@ extern "C" {
  * TCP MODBUS ADU = 253 bytes +7 bytes(MBAP) = 260 bytes
  */
 #ifndef MODBUS_TCP_MAX_ADU_LENGTH
-#define MODBUS_TCP_MAX_ADU_LENGTH 256
+#define MODBUS_TCP_MAX_ADU_LENGTH 260
 #endif
 
 
