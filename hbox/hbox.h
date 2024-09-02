@@ -23,6 +23,7 @@
 #include "hringbuf.h"
 #include "hunicode.h"
 #include "hstacklesscoroutine.h"
+#include "hmodbus.h"
 
 /*
 由C++编写的组件
