@@ -1,6 +1,6 @@
 #include "modbus.h"
 
-static uint16_t CRC16(uint8_t *arr_buff,size_t len)
+static uint16_t CRC16(const uint8_t *arr_buff,size_t len)
 {
     uint16_t crc=0xFFFF;
     size_t  i, j;
@@ -30,7 +30,7 @@ static uint16_t CRC16(uint8_t *arr_buff,size_t len)
  * \return CRC是否通过
  *
  */
-bool modbus_rtu_adu_check_crc(uint8_t *adu,size_t adu_length)
+bool modbus_rtu_adu_check_crc(const uint8_t *adu,size_t adu_length)
 {
     if(adu_length<=2 || adu==NULL)
     {
