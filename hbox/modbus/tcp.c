@@ -30,7 +30,7 @@ bool modbus_tcp_get_pdu_from_adu(const uint8_t *adu,size_t adu_length,modbus_tcp
 
     uint8_t node_address=adu[6];
 
-    if(PId != 0 || Length+6 != adu_length)
+    if(PId != 0 || (Length+6 != adu_length))
     {
         return false;
     }

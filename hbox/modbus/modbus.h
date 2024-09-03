@@ -192,7 +192,95 @@ bool modbus_tcp_get_pdu_from_adu(const uint8_t *adu,size_t adu_length,modbus_tcp
 size_t modbus_tcp_set_pdu_to_adu(uint8_t *adu,size_t adu_length,uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length);
 
 
+/*
+ *  功能码
+ */
+#ifndef MODBUS_FC_READ_COILS
+#define MODBUS_FC_READ_COILS               0x01
+#endif
+#ifndef MODBUS_FC_READ_DISCRETE_INPUTS
+#define MODBUS_FC_READ_DISCRETE_INPUTS     0x02
+#endif
+#ifndef MODBUS_FC_READ_HOLDING_REGISTERS
+#define MODBUS_FC_READ_HOLDING_REGISTERS   0x03
+#endif
+#ifndef MODBUS_FC_READ_INPUT_REGISTERS
+#define MODBUS_FC_READ_INPUT_REGISTERS     0x04
+#endif
+#ifndef MODBUS_FC_WRITE_SINGLE_COIL
+#define MODBUS_FC_WRITE_SINGLE_COIL        0x05
+#endif
+#ifndef MODBUS_FC_WRITE_SINGLE_REGISTER
+#define MODBUS_FC_WRITE_SINGLE_REGISTER    0x06
+#endif
+#ifndef MODBUS_FC_READ_EXCEPTION_STATUS
+#define MODBUS_FC_READ_EXCEPTION_STATUS    0x07
+#endif
+#ifndef MODBUS_FC_WRITE_MULTIPLE_COILS
+#define MODBUS_FC_WRITE_MULTIPLE_COILS     0x0F
+#endif
+#ifndef MODBUS_FC_WRITE_MULTIPLE_REGISTERS
+#define MODBUS_FC_WRITE_MULTIPLE_REGISTERS 0x10
+#endif
+#ifndef MODBUS_FC_MASK_WRITE_REGISTER
+#define MODBUS_FC_MASK_WRITE_REGISTER      0x16
+#endif
+#ifndef MODBUS_FC_WRITE_AND_READ_REGISTERS
+#define MODBUS_FC_WRITE_AND_READ_REGISTERS 0x17
+#endif
 
+#ifndef MODBUS_FC_EXCEPTION_BASE
+/*
+ *  对于异常的功能码，其功能码为 原功能码+MODBUS_FC_EXCEPTION_BASE,正常的功能码均小于 MODBUS_FC_EXCEPTION_BASE。
+ */
+#define MODBUS_FC_EXCEPTION_BASE 0x80
+#endif
+
+/*
+ *  异常代码
+ */
+#ifndef MODBUS_EXCEPTION_ILLEGAL_FUNCITON
+#define MODBUS_EXCEPTION_ILLEGAL_FUNCITON                           0x01
+#endif
+#ifndef MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS
+#define MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS                       0x02
+#endif
+#ifndef MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE
+#define MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE                         0x03
+#endif
+#ifndef MODBUS_EXCEPTION_SERVER_DEVICE_FAILURE
+#define MODBUS_EXCEPTION_SERVER_DEVICE_FAILURE                      0x04
+#endif
+#ifndef MODBUS_EXCEPTION_ACKNOWLEDGE
+#define MODBUS_EXCEPTION_ACKNOWLEDGE                                0x05
+#endif
+#ifndef MODBUS_EXCEPTION_SERVER_DEVICE_BUSY
+#define MODBUS_EXCEPTION_SERVER_DEVICE_BUSY                         0x06
+#endif
+#ifndef MODBUS_EXCEPTION_NON_ACKNOWLEDGE
+#define MODBUS_EXCEPTION_NON_ACKNOWLEDGE                            0x07
+#endif
+#ifndef MODBUS_EXCEPTION_MEMORY_PARITY_ERROR
+#define MODBUS_EXCEPTION_MEMORY_PARITY_ERROR                        0x08
+#endif
+#ifndef MODBUS_EXCEPTION_GATEWAY_PATH_UNAVAILABLE
+#define MODBUS_EXCEPTION_GATEWAY_PATH_UNAVAILABLE                   0x0A
+#endif
+#ifndef MODBUS_EXCEPTION_GATEWAY_TARGET_DEVICE_FAILED_TO_RESPOND
+#define MODBUS_EXCEPTION_GATEWAY_TARGET_DEVICE_FAILED_TO_RESPOND    0x0B
+#endif
+
+/*
+ *  modbus数据地址，地址范围0～0xFFFF，起始值为0
+ */
+
+typedef uint16_t modbus_data_address_t;
+
+/*
+ *  对于标准的modbus而言，数据的ID是从1开始的，其与数据地址一一对应，其使用场景为工业组态，本库编程时为了方便一般不使用从1开始的数据ID。
+ */
+#define MODBUS_DATA_ID_GET_ID_FROM_ADDRESS(addr)    ((addr)+1)
+#define MODBUS_DATA_ID_GET_ADDRESS_FROM_ID(id)      ((id)-1)
 
 #ifdef __cplusplus
 }

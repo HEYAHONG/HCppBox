@@ -65,3 +65,5 @@ bool modbus_rtu_adu_append_crc(uint8_t *adu,size_t adu_length)
 }
 
 
+
+
