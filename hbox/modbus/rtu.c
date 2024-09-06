@@ -50,7 +50,10 @@ size_t modbus_rtu_set_pdu_to_adu(uint8_t *adu,size_t adu_length,uint8_t node_add
 
     adu[0]=node_address;
 
-    memcpy(&adu[1],pdu,pdu_length);
+    if(&adu[1]!=pdu)
+    {
+        memcpy(&adu[1],pdu,pdu_length);
+    }
 
     modbus_rtu_adu_append_crc(adu,pdu_length+3);
 

@@ -68,7 +68,10 @@ size_t modbus_tcp_set_pdu_to_adu(uint8_t *adu,size_t adu_length,uint16_t TId,uin
     adu[4]=((pdu_length+1)>>8);
     adu[5]=((pdu_length+1)&0xFF);
     adu[6]=node_address;//一般用于转发
-    memcpy(&adu[7],pdu,pdu_length);
+    if(&adu[7]!=pdu)
+    {
+        memcpy(&adu[7],pdu,pdu_length);
+    }
     return pdu_length+7;
 }
 
