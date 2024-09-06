@@ -302,7 +302,7 @@ static bool pdu_process_unicast(modbus_rtu_slave_tiny_context_t* ctx,uint8_t nod
                 }
                 for(size_t i=0; i<cnt; i++)
                 {
-                    ctx->write_holding_register(ctx,addr+i,modbus_data_get_uint16_t(pdu,6+2*i,pdu_length));
+                    ctx->write_holding_register(ctx,addr+i,modbus_data_get_uint16_t(pdu,10+2*i,pdu_length));
                 }
             }
         }
