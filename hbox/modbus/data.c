@@ -8,7 +8,7 @@
  * \return uint16_t 读取的数据
  *
  */
-uint16_t modbus_data_get_uint16_t(uint8_t *data,size_t offset,size_t data_length)
+uint16_t modbus_data_get_uint16_t(const uint8_t *data,size_t offset,size_t data_length)
 {
     uint16_t ret=0;
     if(data!=NULL && ((offset + 2) <= data_length))
