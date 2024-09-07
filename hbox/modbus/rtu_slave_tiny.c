@@ -39,6 +39,19 @@ static bool pdu_process_broadcast(modbus_rtu_slave_tiny_context_t* ctx,const uin
         }
     }
     break;
+    case MODBUS_FC_MASK_WRITE_REGISTER:
+    {
+        modbus_data_address_t  addr=modbus_data_get_uint16_t(pdu,1,pdu_length);
+        modbus_data_register_t and_mask=modbus_data_get_uint16_t(pdu,3,pdu_length);
+        modbus_data_register_t or_mask=modbus_data_get_uint16_t(pdu,5,pdu_length);
+        if(ctx->read_holding_register!=NULL && ctx->write_holding_register!=NULL )
+        {
+            ret=true;
+            modbus_data_register_t value=ctx->read_holding_register(ctx,addr);
+            ctx->write_holding_register(ctx,addr,(value & and_mask)|(or_mask & (~and_mask)));
+        }
+    }
+    break;
     default:
     {
 
