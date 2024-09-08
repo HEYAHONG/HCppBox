@@ -60,4 +60,24 @@ size_t modbus_rtu_set_pdu_to_adu(uint8_t *adu,size_t adu_length,uint8_t node_add
     return pdu_length+3;
 }
 
+/** \brief 向RTU的ADU数据中设置异常PDU数据
+ *
+ * \param adu uint8_t* ADU数据指针
+ * \param adu_length size_t ADU长度
+ * \param TId uint16_t 传输ID，用于区分请求与响应是否为一对
+ * \param node_address uint8_t 节点地址
+ * \param function_code uint8_t 功能码
+ * \param exception_code uint8_t 异常代码
+ * \return size_t 实际ADU长度
+ *
+ */
+size_t modbus_rtu_set_exception_pdu_to_adu(uint8_t *adu,size_t adu_length,uint8_t node_address,uint8_t function_code,uint8_t exception_code)
+{
+    uint8_t pdu[2]= {function_code,exception_code};
+    if(pdu[0] < MODBUS_FC_EXCEPTION_BASE)
+    {
+        pdu[0] += MODBUS_FC_EXCEPTION_BASE;
+    }
+    return modbus_rtu_set_pdu_to_adu(adu,adu_length,node_address,pdu,sizeof(pdu));
+}
 
