@@ -282,5 +282,21 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 
 协程的全局协程控制块可使用`HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(NAME)`获取，可使用协程控制块获取协程是否完成。
 
+## hmodbus
 
+本组件用于辅助实现[modbus](https://modbus.org),标准文档为[Modbus_Application_Protocol_V1_1b3.pdf](https://modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf)。
 
+现可实现以下功能：
+
+- 精简版modbus rtu从机:实现简单的modbus从机功能，仅实现线圈、离散输入、输入寄存器、保持寄存器相关功能。
+
+[modbus](https://modbus.org)支持以下数据类型：
+
+| 名称       | 说明                  | 备注                                   |
+| ---------- | --------------------- | -------------------------------------- |
+| 线圈       | 可读写的位（1bit）    |                                        |
+| 离散输入   | 只读的位（1bit）      |                                        |
+| 保持寄存器 | 可读写的数据（16bit） | 超过16位的数据通常需要多个寄存器组合。 |
+| 输入寄存器 | 只读的数据（16bit）   | 超过16位的数据通常需要多个寄存器组合。 |
+
+实际应用中，需要将这些数据类型映射到实际的功能上。
