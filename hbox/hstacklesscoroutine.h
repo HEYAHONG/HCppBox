@@ -93,6 +93,7 @@ void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(hstacklesscoroutine_c
 
 #define __HSTACKLESSCOROUTINE_BLOCK_END(NAME) \
         ccb->flags|=(0x1ULL<<1);\
+        goto hstacklesscoroutine_break;\
         default:\
         {\
             ccb->flags|=(0x1ULL<<1);\
