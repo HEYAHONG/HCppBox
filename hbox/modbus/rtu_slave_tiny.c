@@ -358,6 +358,21 @@ static bool pdu_process(modbus_rtu_slave_tiny_context_t* ctx,uint8_t node_addres
     {
         node_address=ctx->addr;
     }
+    if(node_address==MODBUS_ANYCAST_WITH_CONDITION_ADDRESS)
+    {
+        if(ctx->check_anycast_condition!=NULL)
+        {
+            if(ctx->check_anycast_condition(ctx))
+            {
+                node_address=ctx->addr;
+            }
+            else
+            {
+                //仅当有检查函数且检查失败才返回false
+                return false;
+            }
+        }
+    }
     if(node_address==MODBUS_BROADCAST_ADDRESS)
     {
         return pdu_process_broadcast(ctx,pdu,pdu_length);

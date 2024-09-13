@@ -23,6 +23,17 @@ extern "C"
 #define MODBUS_ANYCAST_ADDRESS  (MODBUS_NODE_ADDRESS_RESERVED_MAX)
 #endif
 
+/*
+ *  带条件的任播地址，与任播地址功能类似.其区别为节点可自行选择是否响应。
+ *  此地址可用于多从机网络，其主要用法为当某些保持寄存器满足条件后才选择响应请求。
+ *  此地址的主要用法为使用扩展地址（位于保持寄存器中），主要用法如下：
+ *      -当主机需要对特定从机进行请求时，需要先通过广播向所有从机的保持寄存器写入扩展地址(位于保持寄存器中)
+ *      -然后在使用此地址进行请求操作，这样就突破了modbus从机地址只有1字节的限制。
+ */
+#ifndef MODBUS_ANYCAST_WITH_CONDITION_ADDRESS
+#define MODBUS_ANYCAST_WITH_CONDITION_ADDRESS  (MODBUS_NODE_ADDRESS_RESERVED_MAX-1)
+#endif
+
 #ifdef __cplusplus
 }
 #endif

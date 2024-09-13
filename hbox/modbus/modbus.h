@@ -380,6 +380,7 @@ struct modbus_rtu_slave_tiny_context
     modbus_data_register_t  (*read_input_register)(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr);//读输入寄存器
     void    (*write_coil)(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,bool value);//写线圈
     void    (*write_holding_register)(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,modbus_data_register_t value);//写保持寄存器
+    bool    (*check_anycast_condition)(modbus_rtu_slave_tiny_context_t* ctx);//检查任播条件，标准modbus无此功能，由本库扩展
 };
 
 /** \brief  解析输入并返回
