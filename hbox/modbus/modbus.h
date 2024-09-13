@@ -397,4 +397,7 @@ bool modbus_rtu_slave_tiny_parse_input(modbus_rtu_slave_tiny_context_t* ctx,uint
 }
 #endif
 
+//导入用户扩展定义(由标准文档保留但被本库使用的定义)头文件
+#include "modbususerextend.h"
+
 #endif // MODBUS_H_INCLUDED

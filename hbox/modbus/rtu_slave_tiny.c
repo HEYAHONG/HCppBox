@@ -354,6 +354,10 @@ static bool pdu_process_unicast(modbus_rtu_slave_tiny_context_t* ctx,uint8_t nod
 
 static bool pdu_process(modbus_rtu_slave_tiny_context_t* ctx,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,uint8_t *buffer,size_t buffer_length)
 {
+    if(node_address==MODBUS_ANYCAST_ADDRESS)
+    {
+        node_address=ctx->addr;
+    }
     if(node_address==MODBUS_BROADCAST_ADDRESS)
     {
         return pdu_process_broadcast(ctx,pdu,pdu_length);
