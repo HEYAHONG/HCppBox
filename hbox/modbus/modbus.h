@@ -11,25 +11,41 @@ extern "C" {
 #endif
 
 /*
- *广播地址,从机不予回答，一般只用于写
+ *广播地址,从机不予回答，一般只用于写,见Modbus_over_serial_line_V1_02.pdf 2.2节
  */
 #ifndef MODBUS_BROADCAST_ADDRESS
 #define MODBUS_BROADCAST_ADDRESS 0
 #endif
 
 /*
- *节点地址(最小值)
+ *节点地址(最小值),见Modbus_over_serial_line_V1_02.pdf 2.2节
  */
 #ifndef MODBUS_NODE_ADDRESS_MIN
 #define MODBUS_NODE_ADDRESS_MIN 1
 #endif
 
 /*
- *节点地址(最大值)
+ *节点地址(最大值),见Modbus_over_serial_line_V1_02.pdf 2.2节
  */
 #ifndef MODBUS_NODE_ADDRESS_MAX
 #define MODBUS_NODE_ADDRESS_MAX 247
 #endif
+
+
+/*
+ *节点保留地址(最小值),见Modbus_over_serial_line_V1_02.pdf 2.2节
+ */
+#ifndef MODBUS_NODE_ADDRESS_RESERVED_MIN
+#define MODBUS_NODE_ADDRESS_RESERVED_MIN    248
+#endif // MODBUS_NODE_ADDRESS_RESERVED_MIN
+
+/*
+ *节点保留地址(最大值),见Modbus_over_serial_line_V1_02.pdf 2.2节
+ */
+#ifndef MODBUS_NODE_ADDRESS_RESERVED_MAX
+#define MODBUS_NODE_ADDRESS_RESERVED_MAX    255
+#endif // MODBUS_NODE_ADDRESS_RESERVED_MAX
+
 
 /*
  *节点地址(默认值)
