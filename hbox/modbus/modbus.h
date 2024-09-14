@@ -358,13 +358,14 @@ typedef uint16_t modbus_data_register_t;
 #define MODBUS_DATA_ID_GET_ADDRESS_FROM_ID(id)      ((id)-1)
 
 /*
- *  精简的modbus协议,特点如下：
- *      -无异常处理，失败直接返回(不发送任何信息)
+ *  精简的modbus rtu协议,特点如下：
+ *      -无异常处理，失败直接返回(不发送任何信息,可用于多种协议兼容（如当modbus协议失败后可执行其它协议,如AT协议）)
  *      -只支持0x01、0x02、0x03、0x04、0x06、0x0F、0x10、0x16、0x17功能码。
  *  适用场景如下：
  *      -资源极其有限的单片机。
  *  注意：
  *      -对未使用的结构体成员一定要初始化为0或NULL
+ *      -多线程使用时需要加锁
  */
 struct modbus_rtu_slave_tiny_context;
 typedef struct modbus_rtu_slave_tiny_context modbus_rtu_slave_tiny_context_t;
@@ -383,7 +384,7 @@ struct modbus_rtu_slave_tiny_context
     bool    (*check_anycast_condition)(modbus_rtu_slave_tiny_context_t* ctx);//检查任播条件，标准modbus无此功能，由本库扩展
 };
 
-/** \brief  解析输入并返回
+/** \brief  modbus rtu解析输入并返回
  *          注意:本操作未加锁，应当避免在多个线程中使用同一个上下文调用此函数。
  *
  * \param ctx modbus_rtu_slave_tiny_context_t*上下文指针
@@ -393,6 +394,38 @@ struct modbus_rtu_slave_tiny_context
  *
  */
 bool modbus_rtu_slave_tiny_parse_input(modbus_rtu_slave_tiny_context_t* ctx,uint8_t *adu,size_t adu_length);
+
+
+/*
+ *  modbus tcp gateway server,特点如下`：
+ *      -用于将modbus tcp server转化为modbus rtu salve.
+ *  注意：
+ *      -对未使用的结构体成员一定要初始化为0或NULL
+ *      -多线程使用时需要加锁
+ */
+
+struct modbus_tcp_gateway_server_context;
+typedef struct modbus_tcp_gateway_server_context modbus_tcp_gateway_server_context_t;
+struct modbus_tcp_gateway_server_context
+{
+    uint16_t TId;//发送标识，需要以此区分是否为同一对请求,由内部使用，用户设置无效
+    uint8_t *tcp_buffer;//TCP缓冲，长度为MODBUS_TCP_MAX_ADU_LENGTH，当缓冲为NULL时，采用栈作为缓冲，此时栈要足够大。
+    uint8_t *rtu_buffer;//RTU缓冲，长度为MODBUS_RTU_MAX_ADU_LENGTH，当缓冲为NULL时，采用栈作为缓冲，此时栈要足够大。
+    void    *usr;//用户指针，由用户确定使用场景
+    void    (*reply)(modbus_tcp_gateway_server_context_t* ctx,const uint8_t *adu,size_t adu_length);//数据输出，通常直接输出TCP数据，此函数的ADU主要指modbus tcp的ADU
+    bool    (*rtu_request)(modbus_tcp_gateway_server_context_t *ctx,const uint8_t *adu,size_t adu_length,bool (*rtu_reply)(modbus_tcp_gateway_server_context_t* ctx,const uint8_t *adu,size_t adu_length));//modbus rtu请求,不可为NULL,此函数的ADU主要指modbus rtu的ADU
+};
+
+/** \brief  modbus gateway server解析输入并返回
+ *          注意:本操作未加锁，应当避免在多个线程中使用同一个上下文调用此函数。
+ *
+ * \param ctx modbus_tcp_gateway_server_context_t*上下文指针
+ * \param adu uint8_t* modbus tcp请求数据包地址
+ * \param adu_length size_t modbus tcp请求数据包长度
+ * \return bool 是否成功处理
+ *
+ */
+bool modbus_tcp_gateway_server_parse_input(modbus_tcp_gateway_server_context_t* ctx,uint8_t *adu,size_t adu_length);
 
 #ifdef __cplusplus
 }
