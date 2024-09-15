@@ -1,6 +1,18 @@
 
 cmake_minimum_required(VERSION 3.21)
 
+find_package(Git)
+
+if(GIT_FOUND)
+	message(STATUS "Git found:${GIT_EXECUTABLE}")
+	execute_process(COMMAND ${GIT_EXECUTABLE} pull
+							 WORKING_DIRECTORY	${CMAKE_SOURCE_DIR})
+	execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+		  					WORKING_DIRECTORY 	${CMAKE_SOURCE_DIR}
+		 					OUTPUT_VARIABLE PROJECT_VERSION)
+	message(STATUS "Project Version:${PROJECT_VERSION}")
+endif()
+
 project(test C CXX ASM)
 
 #设定HRC文件系统目录为fs
