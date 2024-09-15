@@ -22,7 +22,11 @@ CPPPATH = [
 cwd,
 ]
 
-group = DefineGroup('HCPPBox', src, depend = [''], CPPPATH = CPPPATH)
+LIBS=[]
+if  sys.platform.startswith("win32"):
+    LIBS += ["ws2_32"]
+
+group = DefineGroup('HCPPBox', src, depend = [''], CPPPATH = CPPPATH,LIBS=LIBS)
 
 list = os.listdir(cwd)
 for item in list:

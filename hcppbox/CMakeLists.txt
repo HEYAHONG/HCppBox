@@ -15,6 +15,11 @@ target_include_directories(HCppBox PUBLIC ./ )
 find_package(Threads REQUIRED)
 target_link_libraries(HCppBox  ${CMAKE_THREAD_LIBS_INIT})
 
+#链接ws2_32库
+if(WIN32)
+	target_link_libraries(HCppBox ws2_32)
+endif()
+
 #链接hbox
 hbox_enable(HCppBox)
 
