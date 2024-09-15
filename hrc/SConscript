@@ -16,16 +16,19 @@ oldcwd=os.getcwd();
 #改变目录
 os.chdir(cwd)
 
+HRC_FSGEN="fsgen"
+
 #执行g++
-if not sys.platform.startswith("win32") and not sys.platform.startswith("cygwin"):
-    Execute("g++ fsgen.cpp -o fsgen")
+if not sys.platform.startswith("win32"):
+    Execute("g++ fsgen.cpp -o fsgen_custom")
+    HRC_FSGEN="fsgen_custom"	
 
 
 #生成RC_fs.c
 if 'HRC_FS_ROOT_DIR' in os.environ:
-    Execute('PATH=.  &&  fsgen '+os.environ['HRC_FS_ROOT_DIR']+' '+HRC_RC_FS_PATH)
+    Execute('PATH=.  &&  '+HRC_FSGEN+' '+os.environ['HRC_FS_ROOT_DIR']+' '+HRC_RC_FS_PATH)
 else:
-    Execute('PATH=.  &&  fsgen fs '+HRC_RC_FS_PATH)
+    Execute('PATH=.  &&  '+HRC_FSGEN+' fs '+HRC_RC_FS_PATH)
 
 #恢复目录
 os.chdir(oldcwd)
