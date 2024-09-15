@@ -20,7 +20,7 @@ HRC_FSGEN="fsgen"
 
 #执行g++
 if not sys.platform.startswith("win32"):
-    Execute("g++ fsgen.cpp -o fsgen_custom")
+    Execute("g++ fsgen.cpp -static -static-libgcc  -o fsgen_custom")
     HRC_FSGEN="fsgen_custom"	
 
 
