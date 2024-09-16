@@ -184,6 +184,25 @@ public:
     {
 
     }
+
+    HCPPSocketAddressAuto & operator =(HCPPSocketAddressAuto &oths)
+    {
+        if(&oths!=this)
+        {
+            addr=oths.addr;
+        }
+        return *this;
+    }
+
+    HCPPSocketAddressAuto & operator =(HCPPSocketAddressAuto &&oths)
+    {
+        if(&oths!=this)
+        {
+            addr=oths.addr;
+        }
+        return *this;
+    }
+
     virtual ~HCPPSocketAddressAuto()
     {
 
@@ -192,6 +211,19 @@ public:
     {
         return (HCPPSocketAddress *)(void *)addr.pad;
     }
+
+    HCPPSocketAddressAuto(HCPPSocketAddress &_addr)
+    {
+        memset(&addr,0,sizeof(addr));
+        memcpy(&addr,&_addr,sizeof(_addr));
+    }
+
+    HCPPSocketAddressAuto(HCPPSocketAddress &&_addr)
+    {
+        memset(&addr,0,sizeof(addr));
+        memcpy(&addr,&_addr,sizeof(_addr));
+    }
+
 #ifdef  HCPPSOCKET_HAVE_SOCKET_IPV4
     operator HCPPSocketAddressIPV4 *()
     {
@@ -204,6 +236,19 @@ public:
             return NULL;
         }
     }
+
+    HCPPSocketAddressAuto(HCPPSocketAddressIPV4 &_addr)
+    {
+        memset(&addr,0,sizeof(addr));
+        memcpy(&addr,&_addr,sizeof(_addr));
+    }
+
+    HCPPSocketAddressAuto(HCPPSocketAddressIPV4 &&_addr)
+    {
+        memset(&addr,0,sizeof(addr));
+        memcpy(&addr,&_addr,sizeof(_addr));
+    }
+
 #endif
 
 #ifdef  HCPPSOCKET_HAVE_SOCKET_IPV6
@@ -218,6 +263,19 @@ public:
             return NULL;
         }
     }
+
+    HCPPSocketAddressAuto(HCPPSocketAddressIPV6 &_addr)
+    {
+        memset(&addr,0,sizeof(addr));
+        memcpy(&addr,&_addr,sizeof(_addr));
+    }
+
+    HCPPSocketAddressAuto(HCPPSocketAddressIPV6 &&_addr)
+    {
+        memset(&addr,0,sizeof(addr));
+        memcpy(&addr,&_addr,sizeof(_addr));
+    }
+
 #endif
 
 #ifdef  HCPPSOCKET_HAVE_SOCKET_UNIX
@@ -232,6 +290,19 @@ public:
             return NULL;
         }
     }
+
+    HCPPSocketAddressAuto(HCPPSocketAddressUNIX &_addr)
+    {
+        memset(&addr,0,sizeof(addr));
+        memcpy(&addr,&_addr,sizeof(_addr));
+    }
+
+    HCPPSocketAddressAuto(HCPPSocketAddressUNIX &&_addr)
+    {
+        memset(&addr,0,sizeof(addr));
+        memcpy(&addr,&_addr,sizeof(_addr));
+    }
+
 #endif
 
     HCPPSocketAddressLength Length()
