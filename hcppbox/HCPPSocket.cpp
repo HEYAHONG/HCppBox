@@ -14,8 +14,19 @@ public:
     socket_manager()
     {
 #ifdef WIN32
-        static WSADATA wsaData;
-        WSAStartup((1 << 8) | 1, &wsaData);
+        WSADATA wsaData;
+        const WORD VersionList[]=
+        {
+            (2 << 8) | 2,
+            (1 << 8) | 1,
+        };
+        for(size_t i=0;i<sizeof(VersionList)/sizeof(VersionList[0]);i++)
+        {
+            if(WSAStartup(VersionList[i],&wsaData)==0)
+            {
+                break;
+            }
+        }
 #endif
     }
     ~socket_manager()
@@ -32,6 +43,8 @@ int closesocket(SOCKET s)
     return close(s);
 }
 #endif
+
+
 
 #endif // HCPPBOX_HAVE_SOCKET
 
