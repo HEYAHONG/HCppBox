@@ -1,5 +1,5 @@
 /***************************************************************
- * Name:      HCPPSocket.h
+ * Name:      HCPPSocket.cpp
  * Purpose:   HCPPSocket实现，辅助套接字调用,套接字依赖操作系统实现，在windows下需要链接ws2_32库。。
  * Author:    HYH (hyhsystem.cn)
  * Created:   2024-09-15
@@ -25,5 +25,13 @@ public:
 #endif
     }
 } g_socket_manager;
+
+#ifndef WIN32
+int closesocket(SOCKET s)
+{
+    return close(s);
+}
+#endif
+
 #endif // HCPPBOX_HAVE_SOCKET
 
