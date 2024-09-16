@@ -10,16 +10,35 @@
 #define __HCPPSOCKET_H__
 
 #if defined(__unix__) || defined(__linux__)
-#ifndef HCPPBOX_HAVE_SOCKET
-#define HCPPBOX_HAVE_SOCKET 1
+#ifndef HCPPSOCKET_HAVE_SOCKET
+#define HCPPSOCKET_HAVE_SOCKET 1
+#endif
+#ifndef HCPPSOCKET_HAVE_SOCKET_IPV4
+#define HCPPSOCKET_HAVE_SOCKET_IPV4 1
+#endif
+#ifndef HCPPSOCKET_HAVE_SOCKET_IPV6
+#define HCPPSOCKET_HAVE_SOCKET_IPV6 1
+#endif
+#ifndef HCPPSOCKET_HAVE_SOCKET_UNIX
+#define HCPPSOCKET_HAVE_SOCKET_UNIX 1
 #endif
 #endif
+
+
 #ifdef WIN32
-#ifndef HCPPBOX_HAVE_SOCKET
-#define HCPPBOX_HAVE_SOCKET 1
+#ifndef HCPPSOCKET_HAVE_SOCKET
+#define HCPPSOCKET_HAVE_SOCKET 1
+#endif
+#ifndef HCPPSOCKET_HAVE_SOCKET_IPV4
+#define HCPPSOCKET_HAVE_SOCKET_IPV4 1
+#endif
+#ifndef HCPPSOCKET_HAVE_SOCKET_IPV6
+#define HCPPSOCKET_HAVE_SOCKET_IPV6 1
 #endif
 #endif
-#ifdef HCPPBOX_HAVE_SOCKET
+
+
+#ifdef HCPPSOCKET_HAVE_SOCKET
 
 /*
  *  unix/linux头文件
@@ -99,6 +118,8 @@ int closesocket(SOCKET s);
 #ifdef __cplusplus
 }
 #endif
+
+
 
 #endif
 

@@ -7,7 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "HCPPSocket.h"
-#ifdef HCPPBOX_HAVE_SOCKET
+#ifdef HCPPSOCKET_HAVE_SOCKET
 static class socket_manager
 {
 public:
@@ -46,5 +46,5 @@ int closesocket(SOCKET s)
 
 
 
-#endif // HCPPBOX_HAVE_SOCKET
+#endif // HCPPSOCKET_HAVE_SOCKET
 
