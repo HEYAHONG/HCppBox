@@ -572,6 +572,6 @@ void hmemoryheap_free(void *ptr)
 #endif // HMEMORYHEAP_DEFAULT_POOL_SIZE
     if(default_pool!=NULL)
     {
-        return hmemoryheap_pool_free(default_pool,ptr);
+        hmemoryheap_pool_free(default_pool,ptr);
     }
 }
