@@ -8,6 +8,7 @@ void IsInHeap_IsInThread_main();
 void Parent_main();
 void Thread_main();
 void Timer_main();
+void Socket_main();
 
 int main()
 {
@@ -19,6 +20,9 @@ int main()
     Thread_main();
 
     Timer_main();
+
+    Socket_main();
+
 #ifdef WIN32
     printf("press any key to exit\n");
     getchar();

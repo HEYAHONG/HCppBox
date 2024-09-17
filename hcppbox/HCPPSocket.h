@@ -81,7 +81,7 @@
 
 
 /*
- *  公共头文件
+ *  公共头文件(C/C++标准库)
  */
 #include <assert.h>
 #include <errno.h>
@@ -89,6 +89,9 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#ifdef __cplusplus
+#include <functional>
+#endif
 
 
 /*
@@ -130,6 +133,15 @@ typedef struct sockaddr_in HCPPSocketAddressIPV4;
 #undef  HCPPSOCKETADDRESS_MAX_LENGTH
 #define HCPPSOCKETADDRESS_MAX_LENGTH (sizeof(HCPPSocketAddressIPV4))
 
+/*
+ * 通过主机名查询ip(IPV4)地址,通常用于connect
+ */
+bool HCPPSocketNslookup(const char* hostname, void (*reslut)(const char* hostname,const char *addr_string,HCPPSocketAddressIPV4* addr,void *usr),void *usr);
+#ifdef __cplusplus
+bool HCPPSocketNslookup(const char* hostname, std::function<void (const char*, const char*, HCPPSocketAddressIPV4*,void *)> result,void *usr);
+#endif
+
+
 #endif
 
 #ifdef HCPPSOCKET_HAVE_SOCKET_IPV6
@@ -143,6 +155,14 @@ typedef struct sockaddr_in6 HCPPSocketAddressIPV6;
  */
 #undef  HCPPSOCKETADDRESS_MAX_LENGTH
 #define HCPPSOCKETADDRESS_MAX_LENGTH (sizeof(HCPPSocketAddressIPV6))
+
+/*
+ * 通过主机名查询ip(IPV6)地址,通常用于connect
+ */
+bool HCPPSocketNslookup6(const char* hostname, void (*reslut)(const char* hostname, const char* addr_string, HCPPSocketAddressIPV6* addr, void* usr), void* usr);
+#ifdef __cplusplus
+bool HCPPSocketNslookup6(const char* hostname, std::function<void(const char*, const char*, HCPPSocketAddressIPV6*, void*)> result, void* usr);
+#endif
 
 #endif
 
