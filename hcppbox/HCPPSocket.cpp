@@ -84,9 +84,9 @@ bool HCPPSocketNslookup(const char* hostname, std::function<void(const char*, co
         ret = false;
     }
 
-    return true;
-}
+    return ret;
 
+}
 #endif
 
 #ifdef HCPPSOCKET_HAVE_SOCKET_IPV6
@@ -129,7 +129,7 @@ bool HCPPSocketNslookup6(const char* hostname, std::function<void(const char*, c
         ret = false;
     }
 
-    return true;
+    return ret;
 }
 
 #endif
