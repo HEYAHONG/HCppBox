@@ -1,6 +1,6 @@
 /***************************************************************
  * Name:      HCPPSocket.h
- * Purpose:   HCPPSocket接口，辅助套接字调用,套接字依赖操作系统实现，在windows下需要链接ws2_32库。
+ * Purpose:   HCPPSocket接口，辅助套接字调用,套接字依赖操作系统实现.套接字事实上可移植性很好，大多数接口可在多种平台通用。在windows下需要链接ws2_32库。
  * Author:    HYH (hyhsystem.cn)
  * Created:   2024-09-15
  * Copyright: HYH (hyhsystem.cn)
@@ -136,7 +136,14 @@ typedef struct sockaddr_in HCPPSocketAddressIPV4;
 /*
  * 通过主机名查询ip(IPV4)地址,通常用于connect
  */
+ #ifdef __cplusplus
+extern "C"
+{
+#endif
 bool HCPPSocketNslookup(const char* hostname, void (*reslut)(const char* hostname,const char *addr_string,HCPPSocketAddressIPV4* addr,void *usr),void *usr);
+#ifdef __cplusplus
+}
+#endif
 #ifdef __cplusplus
 bool HCPPSocketNslookup(const char* hostname, std::function<void (const char*, const char*, HCPPSocketAddressIPV4*,void *)> result,void *usr);
 #endif
@@ -159,7 +166,14 @@ typedef struct sockaddr_in6 HCPPSocketAddressIPV6;
 /*
  * 通过主机名查询ip(IPV6)地址,通常用于connect
  */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 bool HCPPSocketNslookup6(const char* hostname, void (*reslut)(const char* hostname, const char* addr_string, HCPPSocketAddressIPV6* addr, void* usr), void* usr);
+#ifdef __cplusplus
+}
+#endif
 #ifdef __cplusplus
 bool HCPPSocketNslookup6(const char* hostname, std::function<void(const char*, const char*, HCPPSocketAddressIPV6*, void*)> result, void* usr);
 #endif

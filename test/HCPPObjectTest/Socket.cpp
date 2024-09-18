@@ -5,6 +5,7 @@
 
 void Socket_main()
 {
+#ifdef HCPPSOCKET_HAVE_SOCKET
     printf(__FILE__  " Start\r\n");
     {
         printf("-----Test IPV4 Nslookup-----\r\n");
@@ -29,5 +30,6 @@ void Socket_main()
             printf("name:%s,ip:%s\r\n", hostname, addr_string);
         }, NULL);
     }
+#endif
     printf(__FILE__  " END\r\n");
 }
