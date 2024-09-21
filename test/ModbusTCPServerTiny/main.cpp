@@ -135,6 +135,9 @@ static void server_thread()
 
 int main()
 {
+    //初始化套接字
+    HCPPSocketInit();
+
     {
         //TODO:初始化modbus上下文
     }

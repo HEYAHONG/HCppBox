@@ -6,6 +6,8 @@
 void Socket_main()
 {
 #ifdef HCPPSOCKET_HAVE_SOCKET
+    //初始化套接字
+    HCPPSocketInit();
     printf(__FILE__  " Start\r\n");
     {
         printf("-----Test IPV4 Nslookup-----\r\n");

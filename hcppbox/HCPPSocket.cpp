@@ -37,6 +37,11 @@ public:
     }
 } g_socket_manager;
 
+void *HCPPSocketInit()
+{
+    return &g_socket_manager;
+}
+
 #ifndef WIN32
 int closesocket(SOCKET s)
 {
