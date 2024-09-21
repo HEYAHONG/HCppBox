@@ -458,9 +458,10 @@ struct modbus_tcp_gateway_server_context_with_modbus_rtu_tiny;
 typedef struct modbus_tcp_gateway_server_context_with_modbus_rtu_tiny modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t;
 struct modbus_tcp_gateway_server_context_with_modbus_rtu_tiny
 {
-    modbus_tcp_gateway_server_context_t gateway;/**< 网关，此变量需要放在第一位，注意：内部的变量(如usr、rtu_request)被库使用，用户的设置无效，其余变量仍需用户设置*/
+    modbus_tcp_gateway_server_context_t gateway;/**< 网关，此变量需要放在第一位，注意：内部的变量(如usr、reply、rtu_request)被库使用，用户的设置无效，其余变量仍需用户设置*/
     modbus_rtu_slave_tiny_context_t     slave;/**<  从机，注意：内部的变量(如usr、reply)被库使用，用户的设置无效,其余变量仍需用户设置*/
-    void *usr;/**< 用户指针，用户可使用此指针传递用户数据 */
+    void    *usr;/**< 用户指针，用户可使用此指针传递用户数据 */
+    void    (*reply)(modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t* ctx,const uint8_t *adu,size_t adu_length);//数据输出，通常直接输出TCP数据，此函数的ADU主要指modbus tcp的ADU
 };
 
 /** \brief modbus tcp gateway server(使用精简modbus协议)默认上下文，用于初始化上下文

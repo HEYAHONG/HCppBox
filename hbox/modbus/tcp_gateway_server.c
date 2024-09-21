@@ -162,10 +162,23 @@ static bool modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request(m
     return false;
 }
 
+static void  modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_reply(modbus_tcp_gateway_server_context_t* _ctx,const uint8_t *adu,size_t adu_length)
+{
+    if(_ctx!=NULL)
+    {
+        modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t* ctx=(modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t*)_ctx;
+        if(ctx->reply!=NULL)
+        {
+            ctx->reply(ctx,adu,adu_length);
+        }
+    }
+}
+
 bool modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_parse_input(modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t* ctx,uint8_t *adu,size_t adu_length)
 {
     if(ctx!=NULL)
     {
+        ctx->gateway.reply=modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_reply;
         ctx->gateway.rtu_request=modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request;
     }
     return modbus_tcp_gateway_server_parse_input((modbus_tcp_gateway_server_context_t*) ctx,adu,adu_length);
