@@ -52,7 +52,7 @@ static void server_thread()
                 struct timeval  tv;
                 tv.tv_sec = 0;
                 tv.tv_usec = 5*1000;
-                setsockopt(connection_fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+                setsockopt(connection_fd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof(tv));
             }
             bool is_running=true;
             while(is_running)
