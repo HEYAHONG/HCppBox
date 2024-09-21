@@ -449,7 +449,7 @@ bool modbus_tcp_gateway_server_parse_input(modbus_tcp_gateway_server_context_t* 
 
 /*
  *  modbus tcp gateway server(使用精简modbus协议),特点如下`：
- *      -用于间接实现简易tcp gateway server
+ *      -用于间接实现简易tcp server,用于资源较为有限的TCP网络环境
  *  注意：
  *      -对未使用的结构体成员一定要初始化为0或NULL,结构体
  *      -多线程使用时需要加锁
