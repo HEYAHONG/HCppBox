@@ -114,7 +114,15 @@
  * \return void* 返回套接字管理器地址
  *
  */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 void *HCPPSocketInit();
+#ifdef __cplusplus
+}
+#endif
+
 
 /*
  *  套接字地址,此地址一般不直接使用，一般由具体的套接字地址(HCPPSocketAddress*)指针转化为本类型的指针（其作用类似void*）调用API（如bind）
@@ -144,7 +152,7 @@ typedef struct sockaddr_in HCPPSocketAddressIPV4;
 /*
  * 通过主机名查询ip(IPV4)地址,通常用于connect
  */
- #ifdef __cplusplus
+#ifdef __cplusplus
 extern "C"
 {
 #endif
