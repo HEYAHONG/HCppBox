@@ -58,7 +58,7 @@ static void server_thread()
             while(is_running)
             {
                 uint8_t packet[MODBUS_TCP_MAX_ADU_LENGTH*2];//缓冲稍大于实际需要
-                int recvlen=recv(connection_fd,packet,sizeof(packet),0);
+                int recvlen=recv(connection_fd,(char *)packet,sizeof(packet),0);
                 if(recvlen>0)
                 {
                     //接收到正确的数据
@@ -80,7 +80,7 @@ static void server_thread()
                         size_t offset=0;
                         do
                         {
-                            int sendlen=send(connection_fd,adu+offset,adu_length-offset,0);
+                            int sendlen=send(connection_fd,(const char *)(adu+offset),adu_length-offset,0);
                             if(sendlen>0)
                             {
                                 offset+=sendlen;
