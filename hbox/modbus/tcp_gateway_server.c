@@ -104,5 +104,70 @@ bool modbus_tcp_gateway_server_parse_input(modbus_tcp_gateway_server_context_t* 
     return modbus_tcp_get_pdu_from_adu(adu,adu_length,pdu_process,ctx);
 }
 
+/** \brief 默认modbus_tcp_gateway_server上下文,用于初始化上下文
+ *          注意：默认情况下使用栈作为缓冲，需要确保栈足够大
+ *
+ * \return modbus_tcp_gateway_server_context_t modbus_tcp_gateway_server上下文
+ *
+ */
+modbus_tcp_gateway_server_context_t modbus_tcp_gateway_server_context_default()
+{
+    modbus_tcp_gateway_server_context_t ctx= {0};
+    return ctx;
+}
 
+/** \brief modbus tcp gateway server(使用精简modbus协议)默认上下文，用于初始化上下文
+ *
+ * \return modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t modbus tcp gateway server(使用精简modbus协议)上下文
+ *
+ */
+modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_context_default()
+{
+    modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t ctx= {0};
+    ctx.gateway=modbus_tcp_gateway_server_context_default();
+    ctx.slave=modbus_rtu_slave_tiny_context_default();
+    return ctx;
+}
+
+static void   modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request_reply(modbus_rtu_slave_tiny_context_t* ctx,const uint8_t *adu,size_t adu_length)
+{
+    if(ctx!=NULL)
+    {
+        //获取传递的参数
+        void **usrptr=(void **)ctx->usr;
+        if(usrptr!=NULL)
+        {
+            modbus_tcp_gateway_server_context_t* ctx=(modbus_tcp_gateway_server_context_t*)usrptr[0];
+            bool (*rtu_reply)(modbus_tcp_gateway_server_context_t*,const uint8_t *,size_t)=(bool (*)(modbus_tcp_gateway_server_context_t*,const uint8_t *,size_t))usrptr[1];
+            if(ctx!=NULL && rtu_reply!=NULL)
+            {
+                //RTU返回给网关
+                rtu_reply(ctx,adu,adu_length);
+            }
+        }
+    }
+}
+
+static bool modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request(modbus_tcp_gateway_server_context_t *_ctx,const uint8_t *adu,size_t adu_length,bool (*rtu_reply)(modbus_tcp_gateway_server_context_t* ctx,const uint8_t *adu,size_t adu_length))
+{
+    if(_ctx!=NULL)
+    {
+        modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t* ctx=(modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t*)_ctx;
+        void *usrptr[]= {ctx,rtu_reply};
+        //使用usr指针传递参数
+        ctx->slave.usr=(void *)usrptr;
+        ctx->slave.reply=modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request_reply;
+        return modbus_rtu_slave_tiny_parse_input(&ctx->slave,(uint8_t *)adu,adu_length);
+    }
+    return false;
+}
+
+bool modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_parse_input(modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t* ctx,uint8_t *adu,size_t adu_length)
+{
+    if(ctx!=NULL)
+    {
+        ctx->gateway.rtu_request=modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request;
+    }
+    return modbus_tcp_gateway_server_parse_input((modbus_tcp_gateway_server_context_t*) ctx,adu,adu_length);
+}
 

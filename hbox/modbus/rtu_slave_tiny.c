@@ -406,3 +406,78 @@ bool modbus_rtu_slave_tiny_parse_input(modbus_rtu_slave_tiny_context_t* ctx,uint
     return modbus_rtu_get_pdu_from_adu(adu,adu_length,modbus_rtu_pdu,ctx);
 }
 
+
+static bool    read_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+{
+    (void)ctx;
+    //返回地址是否奇数
+    return addr%2!=0;
+}
+static bool    read_discrete_input(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+{
+    (void)ctx;
+    //返回地址是否偶数
+    return addr%2==0;
+}
+static modbus_data_register_t  read_holding_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+{
+    (void)ctx;
+    //返回 0xDEADBEEF;
+    if(addr%2==0)
+    {
+        return 0xDEAD;
+    }
+    else
+    {
+        return 0xBEEF;
+    }
+}
+static modbus_data_register_t  read_input_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+{
+    (void)ctx;
+    //返回 0xBEEFDEAD;
+    if(addr%2!=0)
+    {
+        return 0xDEAD;
+    }
+    else
+    {
+        return 0xBEEF;
+    }
+}
+static void    write_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,bool value)
+{
+    (void)ctx;
+    (void)addr;
+    (void)value;
+    //啥也不做
+}
+static void    write_holding_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,modbus_data_register_t value)
+{
+    (void)ctx;
+    (void)addr;
+    (void)value;
+    //啥也不做
+}
+static bool    check_anycast_condition(modbus_rtu_slave_tiny_context_t* ctx)
+{
+    (void)ctx;
+    //默认不回应
+    return false;
+}
+
+modbus_rtu_slave_tiny_context_t modbus_rtu_slave_tiny_context_default()
+{
+    modbus_rtu_slave_tiny_context_t ctx= {0};
+    ctx.addr=MODBUS_NODE_ADDRESS_DEFAULT;
+    ctx.read_coil=read_coil;
+    ctx.read_discrete_input=read_discrete_input;
+    ctx.read_holding_register=read_holding_register;
+    ctx.read_input_register=read_input_register;
+    ctx.write_coil=write_coil;
+    ctx.write_holding_register=write_holding_register;
+    ctx.check_anycast_condition=check_anycast_condition;
+    ctx.buffer=NULL;
+    return ctx;
+}
+
