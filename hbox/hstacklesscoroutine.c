@@ -71,3 +71,23 @@ bool hstacklesscoroutine_is_await(hstacklesscoroutine_control_block_t *ccb)
     }
     return false;
 }
+
+
+int hstacklesscoroutine_coroutine_get_current_nested(hstacklesscoroutine_control_block_t *ccb)
+{
+    if(ccb!=NULL)
+    {
+        return ccb->nested;
+    }
+    return 0;
+}
+
+
+void hstacklesscoroutine_coroutine_set_max_nested(hstacklesscoroutine_control_block_t *ccb,int max_nested)
+{
+    if(ccb!=NULL &&max_nested > 0)
+    {
+        ccb->max_nested=max_nested;
+    }
+}
+

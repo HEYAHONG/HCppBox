@@ -52,14 +52,32 @@ struct hstacklesscoroutine_control_block
      */
     int flags;/**< 运行标志,按位区分功能 */
 
+
+    int nested;//当前嵌套参数
+
+    int max_nested;//最大嵌套层数
+
     hstacklesscoroutine_awaiter_t awaiter;/**< 当协程暂停时的等待参数 */
 };
 
-#define HSTACKLESSCOROUTINE_CONTROL_BLOCK_INIT_VALUE {0,0,NULL,NULL}
+#define HSTACKLESSCOROUTINE_CONTROL_BLOCK_INIT_VALUE {0,0,0,1,NULL,NULL}
 
 #define __HSTACKLESSCOROUTINE_BLOCK_START(NAME) \
 hstacklesscoroutine_control_block_t g_hstacklesscoroutine_##NAME##_ccb = HSTACKLESSCOROUTINE_CONTROL_BLOCK_INIT_VALUE;\
-void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(hstacklesscoroutine_control_block_t *ccb,hstacklesscoroutine_event_t *event);\
+static void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event_impl(hstacklesscoroutine_control_block_t *ccb,hstacklesscoroutine_event_t *event);\
+void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(hstacklesscoroutine_control_block_t *ccb,hstacklesscoroutine_event_t *event)\
+{\
+    if(ccb==NULL)\
+    {\
+        return;\
+    }\
+    ccb->nested++;\
+    if(ccb->nested<=ccb->max_nested)\
+    {\
+        hstacklesscoroutine_##NAME##_entry_with_ccb_and_event_impl(ccb,event);\
+    }\
+    ccb->nested--;\
+}\
 void hstacklesscoroutine_##NAME##_entry_with_event(hstacklesscoroutine_event_t *event)\
 {\
     hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(&g_hstacklesscoroutine_##NAME##_ccb,event);\
@@ -68,7 +86,7 @@ void hstacklesscoroutine_##NAME##_entry(void)\
 {\
     hstacklesscoroutine_##NAME##_entry_with_event(NULL);\
 }\
-void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(hstacklesscoroutine_control_block_t *ccb,hstacklesscoroutine_event_t *event)\
+static void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event_impl(hstacklesscoroutine_control_block_t *ccb,hstacklesscoroutine_event_t *event)\
 {\
     if(ccb==NULL || (ccb->flags&(0x1ULL<<1))!=0)\
     {\
@@ -268,6 +286,22 @@ void hstacklesscoroutine_coroutine_resume(hstacklesscoroutine_control_block_t *c
  *
  */
 bool hstacklesscoroutine_is_await(hstacklesscoroutine_control_block_t *ccb);
+
+/** \brief 获取协程嵌套层数
+ *
+ * \param ccb hstacklesscoroutine_control_block_t* 协程控制块
+ * \return int 嵌套层数，0为无效
+ *
+ */
+int hstacklesscoroutine_coroutine_get_current_nested(hstacklesscoroutine_control_block_t *ccb);
+
+/** \brief 获取最大嵌套层数
+ *
+ * \param ccb hstacklesscoroutine_control_block_t* 协程控制块
+ * \param max_nested int 最大嵌套层数，0为无效，默认为1（即不允许嵌套）
+ *
+ */
+void hstacklesscoroutine_coroutine_set_max_nested(hstacklesscoroutine_control_block_t *ccb,int max_nested);
 
 /*
  * 协程入口

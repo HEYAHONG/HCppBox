@@ -34,7 +34,7 @@ static void server_thread()
         printf("socket on 0.0.0.0:502 bind success!\r\n");
     }
 
-    //默认只队列中只有一个客户端
+    //默认队列中只有一个客户端
     if(listen(server_fd,1)!=0)
     {
         printf("listen socket error!\r\n");
