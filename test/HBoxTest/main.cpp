@@ -1178,13 +1178,24 @@ static int hunicode_test(int argc,const char *argv[])
 
 HSTACKLESSCOROUTINE_DECLARE_COROUTINE(co1_c)
 HSTACKLESSCOROUTINE_DECLARE_COROUTINE(co1_cpp)
+HSTACKLESSCOROUTINE_GROUP_BLOCK_START(main)
+HSTACKLESSCOROUTINE_GROUP_BLOCK_ITEM(co1_c)
+HSTACKLESSCOROUTINE_GROUP_BLOCK_ITEM(co1_cpp)
+HSTACKLESSCOROUTINE_GROUP_BLOCK_END(main)
 static int hstacklesscoroutine_test(int argc,const char *argv[])
 {
+    printf("hstacklesscoroutine:display coroutine!\r\n");
+    {
+        auto enum_cb=[](hstacklesscoroutine_entry_t entry)
+        {
+            printf("hstacklesscoroutine:%08X\r\n",(int)(intptr_t)entry);
+        };
+        HSTACKLESSCOROUTINE_GROUP_FOREACH(main,enum_cb)
+    }
     printf("hstacklesscoroutine_test1:start!\r\n");
     do
     {
-        HSTACKLESSCOROUTINE_ENTRY(co1_c);
-        HSTACKLESSCOROUTINE_ENTRY(co1_cpp);
+        HSTACKLESSCOROUTINE_GROUP_ENTRY(main,NULL);
     }
     while(!hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)) || !hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_cpp)));
     printf("hstacklesscoroutine_test1:end!\r\n");

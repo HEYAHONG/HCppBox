@@ -53,7 +53,7 @@ struct hstacklesscoroutine_control_block
     int flags;/**< 运行标志,按位区分功能 */
 
 
-    int nested;//当前嵌套参数
+    int nested;//当前嵌套层数
 
     int max_nested;//最大嵌套层数
 
@@ -126,12 +126,9 @@ static void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event_impl(hstackles
  * \param NAME 协程变量名,需要符合C语言中关于变量名命名的条件。
  *
  */
-#ifdef __cplusplus
-#define HSTACKLESSCOROUTINE_BLOCK_START(NAME)   extern "C" {\
+#define HSTACKLESSCOROUTINE_BLOCK_START(NAME)   HSTACKLESSCOROUTINE_DECLARE_COROUTINE(NAME)\
                                                 __HSTACKLESSCOROUTINE_BLOCK_START(NAME)
-#else
-#define HSTACKLESSCOROUTINE_BLOCK_START(NAME)   __HSTACKLESSCOROUTINE_BLOCK_START(NAME)
-#endif
+
 
 
 /** \brief 无栈协程块结束，需要放在全局（不可放在函数体或命名空间内）
@@ -139,12 +136,8 @@ static void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event_impl(hstackles
  * \param NAME 协程变量名,需要符合C语言中关于变量名命名的条件。
  *
  */
-#ifdef __cplusplus
-#define HSTACKLESSCOROUTINE_BLOCK_END(NAME) __HSTACKLESSCOROUTINE_BLOCK_END(NAME)\
-                                            }
-#else
 #define HSTACKLESSCOROUTINE_BLOCK_END(NAME) __HSTACKLESSCOROUTINE_BLOCK_END(NAME)
-#endif
+
 
 #define __HSTACKLESSCOROUTINE_DECLARE_COROUTINE(NAME) \
 extern hstacklesscoroutine_control_block_t g_hstacklesscoroutine_##NAME##_ccb;\
@@ -306,20 +299,108 @@ void hstacklesscoroutine_coroutine_set_max_nested(hstacklesscoroutine_control_bl
 /*
  * 协程入口
  */
-#define HSTACKLESSCOROUTINE_ENTRY(NAME) {\
-                                            hstacklesscoroutine_##NAME##_entry();\
-                                        }\
+#define HSTACKLESSCOROUTINE_ENTRY(NAME) \
+{\
+    hstacklesscoroutine_##NAME##_entry();\
+}
 
-#define HSTACKLESSCOROUTINE_ENTRY_WITH_EVENT(NAME,EVENT)    {\
-                                                                hstacklesscoroutine_##NAME##_entry_with_event(EVENT);\
-                                                            }\
-
-
-#define HSTACKLESSCOROUTINE_ENTRY_WITH_CCB_AND_EVENT(NAME,CCB,EVENT)    {\
-                                                                            hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(CCB,EVENT);\
-                                                                        }\
+#define HSTACKLESSCOROUTINE_ENTRY_WITH_EVENT(NAME,EVENT)  \
+{\
+    hstacklesscoroutine_##NAME##_entry_with_event(EVENT);\
+}
 
 
+#define HSTACKLESSCOROUTINE_ENTRY_WITH_CCB_AND_EVENT(NAME,CCB,EVENT)    \
+{\
+    hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(CCB,EVENT);\
+}
+
+
+/*
+ * 协程组表示一组协程，它们通常可输入相同的事件。
+ */
+typedef void (*hstacklesscoroutine_entry_t)(hstacklesscoroutine_event_t *event);
+#define __HSTACKLESSCOROUTINE_DECLARE_COROUTINE_GROUP(NAME) \
+extern hstacklesscoroutine_entry_t g_hstacklesscoroutine_##NAME##__entry_group[];
+
+/** \brief 声明协程组
+ *
+ * \param NAME 协程组名称
+ *
+ */
+#ifdef __cplusplus
+#define HSTACKLESSCOROUTINE_DECLARE_COROUTINE_GROUP(NAME) \
+extern "C"\
+{\
+    __HSTACKLESSCOROUTINE_DECLARE_COROUTINE_GROUP(NAME)\
+}
+#else
+#define HSTACKLESSCOROUTINE_DECLARE_COROUTINE_GROUP(NAME) __HSTACKLESSCOROUTINE_DECLARE_COROUTINE_GROUP(NAME)
+#endif
+
+/** \brief 协程组块起始,需要放到全局
+ *
+ * \param NAME 协程组名称
+ *
+ */
+#define HSTACKLESSCOROUTINE_GROUP_BLOCK_START(NAME) \
+HSTACKLESSCOROUTINE_DECLARE_COROUTINE_GROUP(NAME)\
+hstacklesscoroutine_entry_t g_hstacklesscoroutine_##NAME##__entry_group[]=\
+{
+
+/** \brief 协程组块结束，需要放到全局
+ *
+ * \param NAME 协程组名称
+ *
+ */
+#define HSTACKLESSCOROUTINE_GROUP_BLOCK_END(NAME) \
+NULL\
+};
+
+/** \brief 协程，需要放在协程组起始与协程组结束之间，注意：放入前需要声明协程。
+ *
+ * \param COROUTINENAME 协程名称
+ *
+ */
+#define HSTACKLESSCOROUTINE_GROUP_BLOCK_ITEM(COROUTINENAME) \
+hstacklesscoroutine_##COROUTINENAME##_entry_with_event,
+
+/** \brief 枚举协程组
+ *
+ * \param NAME 协程组名称
+ * \param ENUM_CB 枚举回调函数
+ *
+ */
+typedef void (*hstacklesscoroutine_group_enum_entry_t)(hstacklesscoroutine_entry_t entry);
+#define HSTACKLESSCOROUTINE_GROUP_FOREACH(NAME,ENUM_CB) \
+{\
+    hstacklesscoroutine_group_enum_entry_t hstacklesscoroutine_group_enum_callback=(ENUM_CB);\
+    if(hstacklesscoroutine_group_enum_callback!=NULL)\
+    {\
+        hstacklesscoroutine_entry_t *current=g_hstacklesscoroutine_##NAME##__entry_group;\
+        while((*current)!=NULL)\
+        {\
+            hstacklesscoroutine_group_enum_callback(*current);\
+            current++;\
+        }\
+    }\
+}
+
+/** \brief 协程组入口
+ *
+ * \param NAME 协程组名称
+ * \param EVENT 事件
+ *
+ */
+#define HSTACKLESSCOROUTINE_GROUP_ENTRY(NAME,EVENT) \
+{\
+    hstacklesscoroutine_entry_t *current=g_hstacklesscoroutine_##NAME##__entry_group;\
+    while((*current)!=NULL)\
+    {\
+            (*current)(EVENT);\
+            current++;\
+    }\
+}
 
 #ifdef __cplusplus
 }
