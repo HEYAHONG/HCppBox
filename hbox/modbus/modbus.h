@@ -482,6 +482,30 @@ modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t modbus_tcp_gateway_serv
  */
 bool modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_parse_input(modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t* ctx,uint8_t *adu,size_t adu_length);
 
+/*
+ *  用于modbus rtu主机/tcp客户端的IO接口定义
+ */
+struct modbus_io_interface;
+typedef struct modbus_io_interface modbus_io_interface_t;
+struct modbus_io_interface
+{
+    void *usr; /**< 用户指针，用户可使用此指针传递用户数据 */
+    size_t (*send)(modbus_io_interface_t *io,const uint8_t *adu,size_t adu_length); /**< 发送数据,注意:用户必须在此函数中将一帧数据发送完并且返回已发送的数据长度 */
+    size_t (*recv)(modbus_io_interface_t *io,uint8_t *buffer,size_t buffer_length); /**< 接收数据,注意:用户必须在此函数中将一帧数据接收完并且返回已接收的数据长度 */
+};
+typedef modbus_io_interface_t modbus_rtu_master_io_interface_t;
+typedef modbus_io_interface_t modbus_tcp_client_io_interface_t;
+
+/** \brief 默认io接口,用于初始化接口
+ *
+ * \return modbus_io_interface_t io接口
+ *
+ */
+modbus_io_interface_t modbus_io_interface_default();
+
+
+
+
 #ifdef __cplusplus
 }
 #endif
