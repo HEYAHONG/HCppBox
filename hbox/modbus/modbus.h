@@ -503,8 +503,60 @@ typedef modbus_io_interface_t modbus_tcp_client_io_interface_t;
  */
 modbus_io_interface_t modbus_io_interface_default();
 
+typedef enum
+{
+    MODBUS_IO_INTERFACE_TCP_CLIENT=0,       //TCP Client请求(modbus tcp，不支持串口功能码)
+    MODBUS_IO_INTERFACE_RTU_MASTER,         //RTU Master请求((modbus tcp)
+    MODBUS_IO_INTERFACE_TCP_GATEWAY_CLIENT  //TCP Gateway Client请求(modbus tcp,支持串口功能码)
+} modbus_io_interface_request_t;
 
 
+/** \brief IO请求(rtu主机或者tcp客户端)
+ *          注意：此函数对栈的要求较高，需要保证栈足够大
+ *
+ * \param type modbus_io_interface_request_t 请求类型
+ * \param io modbus_io_interface_t* IO接口
+ * \param function_code uint8_t 功能码，见MODBUS_FC_*
+ * \param context void* 上下文，根据功能码的不同而不同
+ * \param context_length size_t 上下文长度
+ * \return bool 是否成功请求
+ *
+ */
+bool modbus_io_interface_request(modbus_io_interface_request_t type,modbus_io_interface_t *io,uint8_t function_code,void *context,size_t context_length);
+
+
+/** \brief modbus rtu主机请求
+ *
+ * \param io modbus_rtu_master_io_interface_t* IO接口
+ * \param function_code uint8_t 功能码，见MODBUS_FC_*
+ * \param context void* 上下文，根据功能码的不同而不同
+ * \param context_length size_t 上下文长度
+ * \return bool 是否成功请求
+ *
+ */
+bool modbus_rtu_master_request(modbus_rtu_master_io_interface_t *io,uint8_t function_code,void *context,size_t context_length);
+
+/** \brief modbus tcp客户端请求
+ *
+ * \param io modbus_tcp_client_io_interface_t* IO接口
+ * \param function_code uint8_t 功能码，见MODBUS_FC_*
+ * \param context void* 上下文，根据功能码的不同而不同
+ * \param context_length size_t 上下文长度
+ * \return bool 是否成功请求
+ *
+ */
+bool modbus_tcp_client_request(modbus_tcp_client_io_interface_t *io,uint8_t function_code,void *context,size_t context_length);
+
+/** \brief modbus tcp客户端(请求网关)请求
+ *
+ * \param io modbus_tcp_client_io_interface_t* IO接口
+ * \param function_code uint8_t 功能码，见MODBUS_FC_*
+ * \param context void* 上下文，根据功能码的不同而不同
+ * \param context_length size_t 上下文长度
+ * \return bool 是否成功请求
+ *
+ */
+bool modbus_tcp_client_request_gateway(modbus_tcp_client_io_interface_t *io,uint8_t function_code,void *context,size_t context_length);
 
 #ifdef __cplusplus
 }
