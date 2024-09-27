@@ -311,6 +311,7 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 现有以下第三方库：
 
 - [cJSON](https://github.com/DaveGamble/cJSON/tree/master)
+- [printf](https://github.com/mpaland/printf.git)
 
  提供的配置宏定义如下：
 

@@ -9,6 +9,8 @@
 #ifndef __H3RDPARTY_H__
 #define __H3RDPARTY_H__
 
+#include "stdarg.h"
+
 /*
  *  此模块引入第三方库
  */
@@ -34,6 +36,48 @@ extern "C"
  *
  */
 void h3rdparty_init(void);
+
+/*
+ * 内嵌printf,为保证打印代码输出的一致性，可使用此系列函数进行打印操作
+ */
+
+/** \brief 设置hprintf输出的回调函数
+ *
+ * \param cb void (*)(char c) 回调函数
+ *
+ */
+void hprintf_set_callback(void (*cb)(char c));
+
+/** \brief 类似printf
+ *
+ *
+ */
+int hprintf(const char* format, ...);
+/** \brief 类似sprintf
+ *
+ *
+ */
+int hsprintf(char* buffer, const char* format, ...);
+/** \brief 类似snprintf
+ *
+ *
+ */
+int hsnprintf(char* buffer, size_t count, const char* format, ...);
+/** \brief 类似vsnprintf
+ *
+ *
+ */
+int hvsnprintf_(char* buffer, size_t count, const char* format, va_list va);
+/** \brief 类似vprintf
+ *
+ *
+ */
+int hvprintf_(const char* format, va_list va);
+/** \brief 用于使用自定义输出函数(out)输出打印
+ *
+ *
+ */
+int hfctprintf(void (*out)(char character, void* arg), void* arg, const char* format, ...);
 
 #ifdef __cplusplus
 }
