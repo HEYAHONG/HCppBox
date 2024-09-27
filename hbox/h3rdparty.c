@@ -9,9 +9,6 @@
 #include "h3rdparty.h"
 #include "hdefaults.h"
 
-#ifndef  H3RDPARTY_USING_SYSTEM_CJSON
-#include "3rdparty/cJSON/cJSON.c"
-#endif // H3RDPARTY_USING_SYSTEM_CJSON
 
 
 static void *h3rdparty_malloc(size_t len)

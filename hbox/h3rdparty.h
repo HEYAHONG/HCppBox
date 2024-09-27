@@ -18,10 +18,7 @@
  */
 #ifndef H3RDPARTY_USING_SYSTEM_CJSON
 #include "3rdparty/cJSON/cJSON.h"
-/*
- * 如需cJSON_Utils请单独添加cJSON_Utils.h与cJSON_Utils.c
- */
-//#include "3rdparty/cJSON/cJSON_Utils.h"
+#include "3rdparty/cJSON/cJSON_Utils.h"
 #else
 #include "cJSON.h"
 #include "cJSON_Utils.h"
