@@ -67,12 +67,12 @@ int hsnprintf(char* buffer, size_t count, const char* format, ...);
  *
  *
  */
-int hvsnprintf_(char* buffer, size_t count, const char* format, va_list va);
+int hvsnprintf(char* buffer, size_t count, const char* format, va_list va);
 /** \brief 类似vprintf
  *
  *
  */
-int hvprintf_(const char* format, va_list va);
+int hvprintf(const char* format, va_list va);
 /** \brief 用于使用自定义输出函数(out)输出打印
  *
  *
