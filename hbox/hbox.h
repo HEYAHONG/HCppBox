@@ -10,6 +10,11 @@
 #define HBOX_H_INCLUDED
 
 /*
+ * 第三方库
+ */
+#include "h3rdparty.h"
+
+/*
 由C语言编写的组件
 */
 #include "hcompiler.h"
