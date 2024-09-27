@@ -9,16 +9,13 @@
 #ifndef HBOX_H_INCLUDED
 #define HBOX_H_INCLUDED
 
-/*
- * 第三方库
- */
-#include "h3rdparty.h"
 
 /*
 由C语言编写的组件
 */
 #include "hcompiler.h"
 #include "hdefaults.h"
+#include "h3rdparty.h" //第三方库
 #include "heventloop.h"
 #include "heventslots.h"
 #include "heventchain.h"
