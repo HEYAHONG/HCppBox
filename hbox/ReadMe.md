@@ -306,7 +306,7 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 
 有很多成熟的第三方库也适合本库的应用场景，在此模块上添加这些库。
 
-第三方库的源代码及其许可见[3rdparty](3rdparty)目录（注意：此目录的源代码无需添加构建的源代码列表，由[h3rdparty.c](h3rdparty.c)引入）。
+第三方库的源代码及其许可见[3rdparty](3rdparty)目录（注意：此目录的源代码无需添加构建的源代码列表，由h3rdparty_*.c引入）。
 
 现有以下第三方库：
 
