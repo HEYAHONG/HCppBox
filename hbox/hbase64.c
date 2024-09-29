@@ -142,7 +142,16 @@ size_t hbase64_decode(uint8_t *value,size_t value_length,const char *encoding,si
     {
         if(value!=NULL && ((cur_cnt+1)*3 <= value_length))
         {
-            len+=hbase64_single_decode(&value[cur_cnt*3],value_length-(cur_cnt*3),&encoding[cur_cnt*4],encoding_length-cur_cnt*4);
+            hbase64_single_decode(&value[cur_cnt*3],value_length-(cur_cnt*3),&encoding[cur_cnt*4],encoding_length-cur_cnt*4);
+        }
+        len+=3;
+        if(encoding[cur_cnt*4+3]=='=')
+        {
+            len-=1;
+            if(encoding[cur_cnt*4+2]=='=')
+            {
+                len-=1;
+            }
         }
         cur_cnt++;
     }
