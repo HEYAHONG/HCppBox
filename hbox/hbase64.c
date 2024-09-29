@@ -19,7 +19,7 @@ static uint8_t hbase64_get_value_by_encoding(char encoding)
     }
     if(encoding >= '0' && encoding <= '9')
     {
-        return 52+encoding-'a';
+        return 52+encoding-'0';
     }
     if(encoding == '+')
     {
