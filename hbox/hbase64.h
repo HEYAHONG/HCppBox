@@ -39,6 +39,25 @@ size_t hbase64_decode(uint8_t *value,size_t value_length,const char *encoding,si
  */
 size_t hbase64_encode(char *encoding,size_t encoding_length,const uint8_t*value,size_t value_length);
 
+/** \brief 编码
+ *
+ * \param encoding char* 编码数据缓冲区
+ * \param encoding_length size_t 编码数据缓冲区长度
+ * \param uint8_t*value const 待编码数据缓冲区
+ * \param value_length size_t 待编码数据缓冲区长度
+ * \return size_t 编码长度(含'\0')
+ *
+ */
+size_t hbase64_encode_with_null_terminator(char *encoding,size_t encoding_length,const uint8_t*value,size_t value_length);
+
+/** \brief 获取base64编码字符串长度，通常用于解码
+ *
+ * \param encoding const char* base64编码字符串（以'\0'结尾的字符串）
+ * \return size_t base64编码字符串长度
+ *
+ */
+size_t hbase64_get_encoding_length(const char *encoding);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

@@ -181,3 +181,32 @@ size_t hbase64_encode(char *encoding,size_t encoding_length,const uint8_t*value,
     }
     return cur_cnt*4;
 }
+
+size_t hbase64_encode_with_null_terminator(char *encoding,size_t encoding_length,const uint8_t*value,size_t value_length)
+{
+    size_t len=hbase64_encode(encoding,encoding_length,value,value_length);
+    len+=1;//添加'\0'字符长度
+    if(len > encoding_length)
+    {
+        len=encoding_length;
+    }
+    if(encoding!=NULL)
+    {
+        encoding[len-1]='\0';
+    }
+    return len;
+}
+
+size_t hbase64_get_encoding_length(const char *encoding)
+{
+    size_t ret=0;
+    if(encoding!=NULL)
+    {
+        while((*encoding)!='\0')
+        {
+            encoding++;
+            ret++;
+        }
+    }
+    return ret;
+}
