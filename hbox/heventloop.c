@@ -26,14 +26,7 @@ struct heventloop
 {
     //用户参数
     void *usr;
-    //获取内存,第一个参数为待获取的内存大小,第二个参数为用户参数。
-    void *(*mem_alloc)(size_t,void *);
-    //释放内存,第一个参数为待释放的内存指针,第二个参数为用户参数。
-    void (*mem_free)(void *,void *);
-    //锁,参数为用户参数。
-    void (*mutex_lock)(void *);
-    //解锁,参数为用户参数。
-    void (*mutex_unlock)(void *);
+    hdefaults_api_table_t api;
     //事件单向链表起始指针
     heventloop_event_t *event_start;
     //事件数量
@@ -51,7 +44,7 @@ heventloop_t * heventloop_new_with_memmang_and_lock(void *usr,void *(*mem_alloc)
     }
     else
     {
-        loop=(struct heventloop *)malloc(sizeof(struct heventloop));
+        loop=(struct heventloop *)hdefaults_get_api_table()->mem_alloc(sizeof(struct heventloop),usr);
     }
 
     if(loop==NULL)
@@ -61,11 +54,12 @@ heventloop_t * heventloop_new_with_memmang_and_lock(void *usr,void *(*mem_alloc)
 
     memset(loop,0,sizeof(struct heventloop));
 
+    loop->api=(*hdefaults_get_api_table());
     loop->usr=usr;
-    loop->mem_alloc=mem_alloc;
-    loop->mem_free=mem_free;
-    loop->mutex_lock=mutex_lock;
-    loop->mutex_unlock=mutex_unlock;
+    loop->api.mem_alloc=mem_alloc;
+    loop->api.mem_free=mem_free;
+    loop->api.mutex_lock=mutex_lock;
+    loop->api.mutex_unlock=mutex_unlock;
     loop->event_start=NULL;
     loop->event_number=0;
     loop->max_event_number=0;
@@ -108,13 +102,13 @@ void heventloop_free(heventloop_t *loop)
         heventloop_process_event(loop);
     }
 
-    if(loop->mem_free!=NULL)
+    if(loop->api.mem_free!=NULL)
     {
-        loop->mem_free(loop,loop->usr);
+        loop->api.mem_free(loop,loop->usr);
     }
     else
     {
-        free(loop);
+        hdefaults_free(loop,loop->usr);
     }
 }
 
@@ -139,9 +133,9 @@ void heventloop_process_event(heventloop_t *loop)
     while(heventloop_has_events(loop))
     {
         //加锁
-        if(loop->mutex_lock!=NULL)
+        if(loop->api.mutex_lock!=NULL)
         {
-            loop->mutex_lock(loop->usr);
+            loop->api.mutex_lock(loop->usr);
         }
 
         heventloop_event_t *current=loop->event_start;
@@ -153,9 +147,9 @@ void heventloop_process_event(heventloop_t *loop)
         }
 
         //释放锁
-        if(loop->mutex_unlock!=NULL)
+        if(loop->api.mutex_unlock!=NULL)
         {
-            loop->mutex_unlock(loop->usr);
+            loop->api.mutex_unlock(loop->usr);
         }
 
         if(current!=NULL)
@@ -168,13 +162,13 @@ void heventloop_process_event(heventloop_t *loop)
             {
                 current->event_onfree(current->usr);
             }
-            if(loop->mem_free!=NULL)
+            if(loop->api.mem_free!=NULL)
             {
-                loop->mem_free(current,loop->usr);
+                loop->api.mem_free(current,loop->usr);
             }
             else
             {
-                free(current);
+                hdefaults_get_api_table()->mem_free(current,loop->usr);
             }
         }
     }
@@ -197,13 +191,13 @@ bool heventloop_add_event(heventloop_t *loop,void *event_usr,void(*event_process
     }
 
     heventloop_event_t *event=NULL;
-    if(loop->mem_alloc!=NULL)
+    if(loop->api.mem_alloc!=NULL)
     {
-        event=(heventloop_event_t *)loop->mem_alloc(sizeof(heventloop_event_t),loop->usr);
+        event=(heventloop_event_t *)loop->api.mem_alloc(sizeof(heventloop_event_t),loop->usr);
     }
     else
     {
-        event=(heventloop_event_t *)malloc(sizeof(heventloop_event_t));
+        event=(heventloop_event_t *)hdefaults_get_api_table()->mem_alloc(sizeof(heventloop_event_t),loop->usr);
     }
 
     if(event==NULL)
@@ -217,9 +211,9 @@ bool heventloop_add_event(heventloop_t *loop,void *event_usr,void(*event_process
     event->next=NULL;
 
     //加锁
-    if(loop->mutex_lock!=NULL)
+    if(loop->api.mutex_lock!=NULL)
     {
-        loop->mutex_lock(loop->usr);
+        loop->api.mutex_lock(loop->usr);
     }
 
     heventloop_event_t *loop_event=loop->event_start;
@@ -244,9 +238,9 @@ bool heventloop_add_event(heventloop_t *loop,void *event_usr,void(*event_process
 
 
     //释放锁
-    if(loop->mutex_unlock!=NULL)
+    if(loop->api.mutex_unlock!=NULL)
     {
-        loop->mutex_unlock(loop->usr);
+        loop->api.mutex_unlock(loop->usr);
     }
 
     return true;
@@ -286,13 +280,13 @@ static void heventloop_event_ex1_onfree(void * usr)
         event_ex1->event_onfree(event_ex1->event_usr,event_ex1->loop);
     }
 
-    if(event_ex1->loop->mem_free!=NULL)
+    if(event_ex1->loop->api.mem_free!=NULL)
     {
-        event_ex1->loop->mem_free(event_ex1,event_ex1->loop->usr);
+        event_ex1->loop->api.mem_free(event_ex1,event_ex1->loop->usr);
     }
     else
     {
-        free(event_ex1);
+        hdefaults_get_api_table()->mem_free(event_ex1,event_ex1->loop->usr);
     }
 
 }
@@ -305,13 +299,13 @@ bool heventloop_add_event_ex1(heventloop_t *loop,void *event_usr,void(*event_pro
     }
 
     heventloop_event_ex1_t *event_ex1=NULL;
-    if(loop->mem_alloc!=NULL)
+    if(loop->api.mem_alloc!=NULL)
     {
-        event_ex1=(heventloop_event_ex1_t *)loop->mem_alloc(sizeof(heventloop_event_ex1_t),loop->usr);
+        event_ex1=(heventloop_event_ex1_t *)loop->api.mem_alloc(sizeof(heventloop_event_ex1_t),loop->usr);
     }
     else
     {
-        event_ex1=(heventloop_event_ex1_t *)malloc(sizeof(heventloop_event_ex1_t));
+        event_ex1=(heventloop_event_ex1_t *)hdefaults_get_api_table()->mem_alloc(sizeof(heventloop_event_ex1_t),loop->usr);
     }
 
     if(event_ex1==NULL)
@@ -326,13 +320,13 @@ bool heventloop_add_event_ex1(heventloop_t *loop,void *event_usr,void(*event_pro
 
     if(!heventloop_add_event(loop,event_ex1,heventloop_event_ex1_process,heventloop_event_ex1_onfree))
     {
-        if(loop->mem_free!=NULL)
+        if(loop->api.mem_free!=NULL)
         {
-            loop->mem_free(event_ex1,loop->usr);
+            loop->api.mem_free(event_ex1,loop->usr);
         }
         else
         {
-            free(event_ex1);
+            hdefaults_get_api_table()->mem_free(event_ex1,loop->usr);
         }
 
         return false;

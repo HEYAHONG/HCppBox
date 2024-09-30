@@ -30,14 +30,7 @@ struct heventchain
 {
     //用户参数
     void *usr;
-    //获取内存,第一个参数为待获取的内存大小,第二个参数为用户参数。
-    void *(*mem_alloc)(size_t,void *);
-    //释放内存,第一个参数为待释放的内存指针,第二个参数为用户参数。
-    void (*mem_free)(void *,void *);
-    //锁,参数为用户参数。
-    void (*mutex_lock)(void *);
-    //解锁,参数为用户参数。
-    void (*mutex_unlock)(void *);
+    hdefaults_api_table_t api;
     //钩子单向链表指针
     heventchain_hook_t *hook_start;
     //下一个钩子id
@@ -53,7 +46,7 @@ heventchain_t * heventchain_new_with_memmang_and_lock(void *usr,void *(*mem_allo
     }
     else
     {
-        chain=(struct heventchain *)malloc(sizeof(struct heventchain));
+        chain=(struct heventchain *)hdefaults_get_api_table()->mem_alloc(sizeof(struct heventchain),usr);
     }
 
     if(chain==NULL)
@@ -63,11 +56,12 @@ heventchain_t * heventchain_new_with_memmang_and_lock(void *usr,void *(*mem_allo
 
     memset(chain,0,sizeof(struct heventchain));
 
+    chain->api=(*hdefaults_get_api_table());
     chain->usr=usr;
-    chain->mem_alloc=mem_alloc;
-    chain->mem_free=mem_free;
-    chain->mutex_lock=mutex_lock;
-    chain->mutex_unlock=mutex_unlock;
+    chain->api.mem_alloc=mem_alloc;
+    chain->api.mem_free=mem_free;
+    chain->api.mutex_lock=mutex_lock;
+    chain->api.mutex_unlock=mutex_unlock;
     chain->hook_start=NULL;
     chain->hook_next_id=1;
 
@@ -104,13 +98,13 @@ void heventchain_free(heventchain_t *chain)
 
     heventchain_uninstall_all_hook(chain);
 
-    if(chain->mem_free!=NULL)
+    if(chain->api.mem_free!=NULL)
     {
-        chain->mem_free(chain,chain->usr);
+        chain->api.mem_free(chain,chain->usr);
     }
     else
     {
-        free(chain);
+        hdefaults_get_api_table()->mem_free(chain,chain->usr);
     }
 }
 
@@ -124,9 +118,9 @@ bool heventchain_start(heventchain_t *chain,void *parameter)
     }
 
     //加锁
-    if(chain->mutex_lock!=NULL)
+    if(chain->api.mutex_lock!=NULL)
     {
-        chain->mutex_lock(chain->usr);
+        chain->api.mutex_lock(chain->usr);
     }
 
     heventchain_hook_t *hook=chain->hook_start;
@@ -146,9 +140,9 @@ bool heventchain_start(heventchain_t *chain,void *parameter)
     }
 
     //解锁
-    if(chain->mutex_unlock!=NULL)
+    if(chain->api.mutex_unlock!=NULL)
     {
-        chain->mutex_unlock(chain->usr);
+        chain->api.mutex_unlock(chain->usr);
     }
 
 
@@ -164,13 +158,13 @@ uint32_t heventchain_install_hook(heventchain_t *chain,uint32_t priority,void *h
 
     heventchain_hook_t *hook=NULL;
 
-    if(chain->mem_alloc!=NULL)
+    if(chain->api.mem_alloc!=NULL)
     {
-        hook=(heventchain_hook_t *)chain->mem_alloc(sizeof(heventchain_hook_t),chain->usr);
+        hook=(heventchain_hook_t *)chain->api.mem_alloc(sizeof(heventchain_hook_t),chain->usr);
     }
     else
     {
-        hook=(heventchain_hook_t *)malloc(sizeof(heventchain_hook_t));
+        hook=(heventchain_hook_t *)hdefaults_get_api_table()->mem_alloc(sizeof(heventchain_hook_t),chain->usr);
     }
 
     if(hook==NULL)
@@ -191,9 +185,9 @@ uint32_t heventchain_install_hook(heventchain_t *chain,uint32_t priority,void *h
     }
 
     //加锁
-    if(chain->mutex_lock!=NULL)
+    if(chain->api.mutex_lock!=NULL)
     {
-        chain->mutex_lock(chain->usr);
+        chain->api.mutex_lock(chain->usr);
     }
 
     heventchain_hook_t *chain_hook=chain->hook_start;
@@ -232,9 +226,9 @@ uint32_t heventchain_install_hook(heventchain_t *chain,uint32_t priority,void *h
 
 
     //解锁
-    if(chain->mutex_unlock!=NULL)
+    if(chain->api.mutex_unlock!=NULL)
     {
-        chain->mutex_unlock(chain->usr);
+        chain->api.mutex_unlock(chain->usr);
     }
 
     return hook->id;
@@ -248,9 +242,9 @@ void heventchain_uninstall_hook(heventchain_t *chain,uint32_t id)
     }
 
     //加锁
-    if(chain->mutex_lock!=NULL)
+    if(chain->api.mutex_lock!=NULL)
     {
-        chain->mutex_lock(chain->usr);
+        chain->api.mutex_lock(chain->usr);
     }
 
     heventchain_hook_t *chain_hook=chain->hook_start;
@@ -262,13 +256,13 @@ void heventchain_uninstall_hook(heventchain_t *chain,uint32_t id)
         {
             chain_hook->onfree(chain_hook->usr);
         }
-        if(chain->mem_free!=NULL)
+        if(chain->api.mem_free!=NULL)
         {
-            chain->mem_free(chain_hook,chain->usr);
+            chain->api.mem_free(chain_hook,chain->usr);
         }
         else
         {
-            free(chain_hook);
+            hdefaults_get_api_table()->mem_free(chain_hook,chain->usr);
         }
         chain->hook_start=hook;
         chain_hook=NULL;
@@ -289,13 +283,13 @@ void heventchain_uninstall_hook(heventchain_t *chain,uint32_t id)
             {
                 hook->onfree(hook->usr);
             }
-            if(chain->mem_free!=NULL)
+            if(chain->api.mem_free!=NULL)
             {
-                chain->mem_free(hook,chain->usr);
+                chain->api.mem_free(hook,chain->usr);
             }
             else
             {
-                free(hook);
+                hdefaults_get_api_table()->mem_free(hook,chain->usr);
             }
             break;
         }
@@ -305,9 +299,9 @@ void heventchain_uninstall_hook(heventchain_t *chain,uint32_t id)
 
 
     //解锁
-    if(chain->mutex_unlock!=NULL)
+    if(chain->api.mutex_unlock!=NULL)
     {
-        chain->mutex_unlock(chain->usr);
+        chain->api.mutex_unlock(chain->usr);
     }
 
 }
@@ -320,9 +314,9 @@ void heventchain_uninstall_all_hook(heventchain_t *chain)
     }
 
     //加锁
-    if(chain->mutex_lock!=NULL)
+    if(chain->api.mutex_lock!=NULL)
     {
-        chain->mutex_lock(chain->usr);
+        chain->api.mutex_lock(chain->usr);
     }
 
     heventchain_hook_t *hook=chain->hook_start;
@@ -334,13 +328,13 @@ void heventchain_uninstall_all_hook(heventchain_t *chain)
         {
             hook->onfree(hook->usr);
         }
-        if(chain->mem_free!=NULL)
+        if(chain->api.mem_free!=NULL)
         {
-            chain->mem_free(hook,chain->usr);
+            chain->api.mem_free(hook,chain->usr);
         }
         else
         {
-            free(hook);
+            hdefaults_get_api_table()->mem_free(hook,chain->usr);
         }
         hook=next_hook;
     }
@@ -348,9 +342,9 @@ void heventchain_uninstall_all_hook(heventchain_t *chain)
     chain->hook_next_id=1;
 
     //解锁
-    if(chain->mutex_unlock!=NULL)
+    if(chain->api.mutex_unlock!=NULL)
     {
-        chain->mutex_unlock(chain->usr);
+        chain->api.mutex_unlock(chain->usr);
     }
 
 }

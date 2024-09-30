@@ -163,3 +163,16 @@ void  hdefaults_mutex_unlock(void *usr)
 #warning "hdefaults_mutex_unlock is  invalid!"
 #endif
 }
+
+const hdefaults_api_table_t defalut_table=
+{
+    hdefaults_tick_get,
+    hdefaults_malloc,
+    hdefaults_free,
+    hdefaults_mutex_lock,
+    hdefaults_mutex_unlock,
+};
+const hdefaults_api_table_t * hdefaults_get_api_table(void)
+{
+    return &defalut_table;
+}

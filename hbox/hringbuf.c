@@ -45,7 +45,7 @@ hringbuf_t *hringbuf_get(uint8_t *buff,size_t length)
         ptr->buff_length=ringbuf_length;
         ptr->data_start=0;
         ptr->data_end=0;
-        hringbuf_set_lock(ptr,NULL,hdefaults_mutex_lock,hdefaults_mutex_unlock);
+        hringbuf_set_lock(ptr,NULL,hdefaults_get_api_table()->mutex_lock,hdefaults_get_api_table()->mutex_unlock);
     }
     return ptr;
 }

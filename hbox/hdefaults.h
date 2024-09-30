@@ -126,6 +126,24 @@ void  hdefaults_mutex_lock(void *usr);
  */
 void  hdefaults_mutex_unlock(void *usr);
 
+/*
+ *  hdefaults默认API表
+ */
+typedef struct hdefaults_api_table
+{
+    hdefaults_tick_t (*tick_get)(void);
+    void *(*mem_alloc)(size_t,void *);
+    void (*mem_free)(void *,void *);
+    void (*mutex_lock)(void *);
+    void (*mutex_unlock)(void *);
+} hdefaults_api_table_t;
+
+/** \brief 默认API表
+ *
+ * \return const hdefaults_api_table_t*
+ *
+ */
+const hdefaults_api_table_t * hdefaults_get_api_table(void);
 
 #ifdef __cplusplus
 }

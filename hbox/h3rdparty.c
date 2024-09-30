@@ -13,12 +13,12 @@
 
 static void *h3rdparty_malloc(size_t len)
 {
-    return hdefaults_malloc(len,NULL);
+    return hdefaults_get_api_table()->mem_alloc(len,NULL);
 }
 
 static void h3rdparty_free(void *ptr)
 {
-    hdefaults_free(ptr,NULL);
+    hdefaults_get_api_table()->mem_free(ptr,NULL);
 }
 
 void h3rdparty_init(void)

@@ -28,14 +28,7 @@ struct heventslots
 {
     //用户参数
     void *usr;
-    //获取内存,第一个参数为待获取的内存大小,第二个参数为用户参数。
-    void *(*mem_alloc)(size_t,void *);
-    //释放内存,第一个参数为待释放的内存指针,第二个参数为用户参数。
-    void (*mem_free)(void *,void *);
-    //锁,参数为用户参数。
-    void (*mutex_lock)(void *);
-    //解锁,参数为用户参数。
-    void (*mutex_unlock)(void *);
+    hdefaults_api_table_t api;
     //槽单向链表指针
     heventslots_slot_t *slot_start;
     //下一个槽id
@@ -51,7 +44,7 @@ heventslots_t * heventslots_new_with_memmang_and_lock(void *usr,void *(*mem_allo
     }
     else
     {
-        slots=(struct heventslots *)malloc(sizeof(struct heventslots));
+        slots=(struct heventslots *)hdefaults_get_api_table()->mem_alloc(sizeof(struct heventslots),usr);
     }
 
     if(slots==NULL)
@@ -62,10 +55,11 @@ heventslots_t * heventslots_new_with_memmang_and_lock(void *usr,void *(*mem_allo
     memset(slots,0,sizeof(struct heventslots));
 
     slots->usr=usr;
-    slots->mem_alloc=mem_alloc;
-    slots->mem_free=mem_free;
-    slots->mutex_lock=mutex_lock;
-    slots->mutex_unlock=mutex_unlock;
+    slots->api=(*hdefaults_get_api_table());
+    slots->api.mem_alloc=mem_alloc;
+    slots->api.mem_free=mem_free;
+    slots->api.mutex_lock=mutex_lock;
+    slots->api.mutex_unlock=mutex_unlock;
     slots->slot_start=NULL;
     slots->slot_next_id=1;
 
@@ -102,13 +96,13 @@ void heventslots_free(heventslots_t *slots)
 
     heventslots_unregister_all_slot(slots);
 
-    if(slots->mem_free!=NULL)
+    if(slots->api.mem_free!=NULL)
     {
-        slots->mem_free(slots,slots->usr);
+        slots->api.mem_free(slots,slots->usr);
     }
     else
     {
-        free(slots);
+        hdefaults_get_api_table()->mem_free(slots,slots->usr);
     }
 }
 
@@ -121,9 +115,9 @@ void heventslots_emit_signal(heventslots_t *slots,void *signal)
     }
 
     //加锁
-    if(slots->mutex_lock!=NULL)
+    if(slots->api.mutex_lock!=NULL)
     {
-        slots->mutex_lock(slots->usr);
+        slots->api.mutex_lock(slots->usr);
     }
 
     heventslots_slot_t *slot=slots->slot_start;
@@ -138,9 +132,9 @@ void heventslots_emit_signal(heventslots_t *slots,void *signal)
     }
 
     //解锁
-    if(slots->mutex_unlock!=NULL)
+    if(slots->api.mutex_unlock!=NULL)
     {
-        slots->mutex_unlock(slots->usr);
+        slots->api.mutex_unlock(slots->usr);
     }
 }
 
@@ -153,13 +147,13 @@ uint32_t heventslots_register_slot(heventslots_t *slots,void *slot_usr,void (*on
 
     heventslots_slot_t *slot=NULL;
 
-    if(slots->mem_alloc!=NULL)
+    if(slots->api.mem_alloc!=NULL)
     {
-        slot=(heventslots_slot_t *)slots->mem_alloc(sizeof(heventslots_slot_t),slots->usr);
+        slot=(heventslots_slot_t *)slots->api.mem_alloc(sizeof(heventslots_slot_t),slots->usr);
     }
     else
     {
-        slot=(heventslots_slot_t *)malloc(sizeof(heventslots_slot_t));
+        slot=(heventslots_slot_t *)hdefaults_get_api_table()->mem_alloc(sizeof(heventslots_slot_t),slots->usr);
     }
 
     if(slot==NULL)
@@ -179,9 +173,9 @@ uint32_t heventslots_register_slot(heventslots_t *slots,void *slot_usr,void (*on
     }
 
     //加锁
-    if(slots->mutex_lock!=NULL)
+    if(slots->api.mutex_lock!=NULL)
     {
-        slots->mutex_lock(slots->usr);
+        slots->api.mutex_lock(slots->usr);
     }
 
     heventslots_slot_t *slots_slot=slots->slot_start;
@@ -202,9 +196,9 @@ uint32_t heventslots_register_slot(heventslots_t *slots,void *slot_usr,void (*on
     }
 
     //解锁
-    if(slots->mutex_unlock!=NULL)
+    if(slots->api.mutex_unlock!=NULL)
     {
-        slots->mutex_unlock(slots->usr);
+        slots->api.mutex_unlock(slots->usr);
     }
 
     return slot->id;
@@ -218,9 +212,9 @@ void heventslots_unregister_slot(heventslots_t *slots,uint32_t id)
     }
 
     //加锁
-    if(slots->mutex_lock!=NULL)
+    if(slots->api.mutex_lock!=NULL)
     {
-        slots->mutex_lock(slots->usr);
+        slots->api.mutex_lock(slots->usr);
     }
 
     heventslots_slot_t *slots_slot=slots->slot_start;
@@ -232,13 +226,13 @@ void heventslots_unregister_slot(heventslots_t *slots,uint32_t id)
         {
             slots_slot->onfree(slots_slot->usr);
         }
-        if(slots->mem_free!=NULL)
+        if(slots->api.mem_free!=NULL)
         {
-            slots->mem_free(slots_slot,slots->usr);
+            slots->api.mem_free(slots_slot,slots->usr);
         }
         else
         {
-            free(slots_slot);
+            hdefaults_get_api_table()->mem_free(slots_slot,slots->usr);
         }
         slots->slot_start=slot;
         slots_slot=NULL;
@@ -259,13 +253,13 @@ void heventslots_unregister_slot(heventslots_t *slots,uint32_t id)
             {
                 slot->onfree(slot->usr);
             }
-            if(slots->mem_free!=NULL)
+            if(slots->api.mem_free!=NULL)
             {
-                slots->mem_free(slot,slots->usr);
+                slots->api.mem_free(slot,slots->usr);
             }
             else
             {
-                free(slot);
+                hdefaults_get_api_table()->mem_free(slot,slots->usr);
             }
             break;
         }
@@ -275,9 +269,9 @@ void heventslots_unregister_slot(heventslots_t *slots,uint32_t id)
 
 
     //解锁
-    if(slots->mutex_unlock!=NULL)
+    if(slots->api.mutex_unlock!=NULL)
     {
-        slots->mutex_unlock(slots->usr);
+        slots->api.mutex_unlock(slots->usr);
     }
 
 }
@@ -290,9 +284,9 @@ void heventslots_unregister_all_slot(heventslots_t *slots)
     }
 
     //加锁
-    if(slots->mutex_lock!=NULL)
+    if(slots->api.mutex_lock!=NULL)
     {
-        slots->mutex_lock(slots->usr);
+        slots->api.mutex_lock(slots->usr);
     }
 
     heventslots_slot_t *slot=slots->slot_start;
@@ -304,13 +298,13 @@ void heventslots_unregister_all_slot(heventslots_t *slots)
         {
             slot->onfree(slot->usr);
         }
-        if(slots->mem_free!=NULL)
+        if(slots->api.mem_free!=NULL)
         {
-            slots->mem_free(slot,slots->usr);
+            slots->api.mem_free(slot,slots->usr);
         }
         else
         {
-            free(slot);
+            hdefaults_get_api_table()->mem_free(slot,slots->usr);
         }
         slot=next_slot;
     }
@@ -318,9 +312,8 @@ void heventslots_unregister_all_slot(heventslots_t *slots)
     slots->slot_next_id=1;
 
     //解锁
-    if(slots->mutex_unlock!=NULL)
+    if(slots->api.mutex_unlock!=NULL)
     {
-        slots->mutex_unlock(slots->usr);
+        slots->api.mutex_unlock(slots->usr);
     }
-
 }
