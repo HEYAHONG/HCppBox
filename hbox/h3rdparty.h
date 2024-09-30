@@ -83,6 +83,19 @@ int hfctprintf(void (*out)(char character, void* arg), void* arg, const char* fo
 }
 #endif // __cplusplus
 
+/*
+ *  引入nanopb库
+ */
+#ifndef H3RDPARTY_USING_SYSTEM_NANOPB
+#include "3rdparty/nanopb/pb.h"
+#include "3rdparty/nanopb/pb_encode.h"
+#include "3rdparty/nanopb/pb_decode.h"
+#else
+#include "pb.h"
+#include "pb_encode.h"
+#include "pb_decode.h"
+#endif
+
 #endif // __H3RDPARTY_H__
 
 

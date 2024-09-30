@@ -310,14 +310,16 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 
 现有以下第三方库：
 
-- [cJSON](https://github.com/DaveGamble/cJSON/tree/master)
-- [printf](https://github.com/mpaland/printf.git)
+- [cJSON](https://github.com/DaveGamble/cJSON/tree/master):JSON 解析器。
+- [printf](https://github.com/mpaland/printf.git)：嵌入式系统sprintf/printf实现。
+- [nanopb](https://github.com/nanopb/nanopb.git)：嵌入式系统Protocol Buffers。
 
  提供的配置宏定义如下：
 
-|             宏定义             |      说明       |                         备注                         |
-| :----------------------------: | :-------------: | :--------------------------------------------------: |
-| `H3RDPARTY_USING_SYSTEM_CJSON` | 使用系统cJSON库 | 需要手动引入第三方库，只定义此宏定义可能不能通过编译 |
+|             宏定义              |       说明       |                         备注                         |
+| :-----------------------------: | :--------------: | :--------------------------------------------------: |
+| `H3RDPARTY_USING_SYSTEM_CJSON`  | 使用系统cJSON库  | 需要手动引入第三方库，只定义此宏定义可能不能通过编译 |
+| `H3RDPARTY_USING_SYSTEM_NANOPB` | 使用系统nanopb库 | 需要手动引入第三方库，只定义此宏定义可能不能通过编译 |
 
 ## hbase64
 
