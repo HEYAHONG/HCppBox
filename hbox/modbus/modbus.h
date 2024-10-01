@@ -518,6 +518,48 @@ typedef enum
     MODBUS_IO_INTERFACE_TCP_GATEWAY_CLIENT  //TCP Gateway Client请求(modbus tcp,支持串口功能码)
 } modbus_io_interface_request_t;
 
+/*
+ * IO接口上下文（基类）
+ */
+struct modbus_io_interface_context_base;
+typedef struct modbus_io_interface_context_base modbus_io_interface_context_base_t;
+struct modbus_io_interface_context_base
+{
+    uint8_t slave_addr;//从机地址，RTU与TCP均有效
+    uint16_t Tid;//发送标识，TCP有效，可由用户设置单次请求的发送标识，每请求一次便自增一。对于RTU而言，仅有计数作用
+    void *usr;//用户指针，由用户确定使用场景
+    void (*on_exception)(modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code);//异常处理，注意功能码为异常功能码（大于MODBUS_FC_EXCEPTION_BASE）
+};
+
+
+/** \brief 获取接口上下文（基类）
+ *
+ * \return modbus_io_interface_context_base_t modbus_io_interface_context_base_t 接口上下文（基类）
+ *
+ */
+modbus_io_interface_context_base_t modbus_io_interface_context_base_default();
+
+/*
+ *  读取线圈上下文
+ */
+struct modbus_io_interface_context_read_coils;
+typedef struct modbus_io_interface_context_read_coils modbus_io_interface_context_read_coils_t;
+struct modbus_io_interface_context_read_coils
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void (*on_read_coils)(modbus_io_interface_context_read_coils_t *ctx,modbus_data_address_t addr,bool value);
+    modbus_data_address_t   starting_address;//起始地址
+    modbus_data_register_t  quantity_of_coils;//不超过MODBUS_MAX_READ_BITS且至少为1
+};
+
+/** \brief  读取线圈上下文
+ *
+ * \return modbus_io_interface_context_read_coils_t 读取线圈上下文
+ *
+ */
+modbus_io_interface_context_read_coils_t modbus_io_interface_context_read_coils_default();
+
 
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大
@@ -534,6 +576,7 @@ bool modbus_io_interface_request(modbus_io_interface_request_t type,modbus_io_in
 
 
 /** \brief modbus rtu主机请求
+ *          注意：此函数对栈的要求较高，需要保证栈足够大
  *
  * \param io modbus_rtu_master_io_interface_t* IO接口
  * \param function_code uint8_t 功能码，见MODBUS_FC_*
@@ -545,6 +588,7 @@ bool modbus_io_interface_request(modbus_io_interface_request_t type,modbus_io_in
 bool modbus_rtu_master_request(modbus_rtu_master_io_interface_t *io,uint8_t function_code,void *context,size_t context_length);
 
 /** \brief modbus tcp客户端请求
+ *          注意：此函数对栈的要求较高，需要保证栈足够大
  *
  * \param io modbus_tcp_client_io_interface_t* IO接口
  * \param function_code uint8_t 功能码，见MODBUS_FC_*
@@ -556,6 +600,7 @@ bool modbus_rtu_master_request(modbus_rtu_master_io_interface_t *io,uint8_t func
 bool modbus_tcp_client_request(modbus_tcp_client_io_interface_t *io,uint8_t function_code,void *context,size_t context_length);
 
 /** \brief modbus tcp客户端(请求网关)请求
+ *          注意：此函数对栈的要求较高，需要保证栈足够大
  *
  * \param io modbus_tcp_client_io_interface_t* IO接口
  * \param function_code uint8_t 功能码，见MODBUS_FC_*
@@ -565,6 +610,7 @@ bool modbus_tcp_client_request(modbus_tcp_client_io_interface_t *io,uint8_t func
  *
  */
 bool modbus_tcp_client_request_gateway(modbus_tcp_client_io_interface_t *io,uint8_t function_code,void *context,size_t context_length);
+
 
 #ifdef __cplusplus
 }
