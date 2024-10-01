@@ -30,7 +30,7 @@ modbus_io_interface_context_read_coils_t modbus_io_interface_context_read_coils_
 
 modbus_io_interface_context_read_discrete_inputs_t modbus_io_interface_context_read_discrete_inputs_default()
 {
-    modbus_io_interface_context_read_discrete_inputs_t ctx={0};
+    modbus_io_interface_context_read_discrete_inputs_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
     ctx.quantity_of_inputs=1;
     return ctx;
