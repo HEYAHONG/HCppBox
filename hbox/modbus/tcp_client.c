@@ -1,3 +1,11 @@
+/***************************************************************
+ * Name:      tcp_client.c
+ * Purpose:   modbus tcp 客户端
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-09-02
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
 #include "modbus.h"
 
 

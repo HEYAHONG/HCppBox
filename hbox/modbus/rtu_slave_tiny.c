@@ -1,3 +1,11 @@
+/***************************************************************
+ * Name:      rtu_slave_tiny.c
+ * Purpose:   modbus rtu 从机（精简版）
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-09-02
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
 #include "modbus.h"
 
 

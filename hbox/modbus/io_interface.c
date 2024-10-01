@@ -1,3 +1,11 @@
+/***************************************************************
+ * Name:      io_interface.c
+ * Purpose:   io接口，通常用于主机
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-09-02
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
 #include "modbus.h"
 
 modbus_io_interface_t modbus_io_interface_default()

@@ -1,3 +1,11 @@
+/***************************************************************
+ * Name:      modbus.h
+ * Purpose:   modbus接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-09-02
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
 #ifndef __MODBUS_MODBUS_H_INCLUDED__
 #define __MODBUS_MODBUS_H_INCLUDED__
 

@@ -1,3 +1,11 @@
+/***************************************************************
+ * Name:      tcp_gateway_server.c
+ * Purpose:   modbus 网关服务器
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-09-02
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
 #include "modbus.h"
 
 static bool tcp_reply(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)

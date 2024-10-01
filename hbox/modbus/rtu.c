@@ -1,3 +1,11 @@
+/***************************************************************
+ * Name:      rtu.c
+ * Purpose:   modbus rtu
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-09-02
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
 #include "modbus.h"
 
 /** \brief 从RTU的ADU数据中提取PDU数据

@@ -1,3 +1,11 @@
+/***************************************************************
+ * Name:      modbususerextend.h
+ * Purpose:   modbus用户扩展接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-09-02
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
 #ifndef __MODBUS_MODBUSUSEREXTEND_H__
 #define __MODBUS_MODBUSUSEREXTEND_H__
 #include "modbus.h"

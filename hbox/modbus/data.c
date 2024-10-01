@@ -1,3 +1,11 @@
+/***************************************************************
+ * Name:      data.c
+ * Purpose:   modbus 数据处理
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-09-02
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
 #include "modbus.h"
 
 /** \brief 从数据帧中获取uint16_t数据

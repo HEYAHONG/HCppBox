@@ -1,3 +1,11 @@
+/***************************************************************
+ * Name:      tcp.c
+ * Purpose:   modbus tcp
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-09-02
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
 #include "modbus.h"
 
 /** \brief 从TCP的ADU数据中提取PDU数据
