@@ -17,6 +17,7 @@ modbus_io_interface_t modbus_io_interface_default()
 modbus_io_interface_context_base_t modbus_io_interface_context_base_default()
 {
     modbus_io_interface_context_base_t ctx= {0};
+    ctx.slave_addr=MODBUS_NODE_ADDRESS_DEFAULT;
     return ctx;
 }
 
