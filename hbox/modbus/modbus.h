@@ -560,6 +560,27 @@ struct modbus_io_interface_context_read_coils
  */
 modbus_io_interface_context_read_coils_t modbus_io_interface_context_read_coils_default();
 
+/*
+ *  读取离散输入上下文
+ */
+struct modbus_io_interface_context_read_discrete_inputs;
+typedef struct modbus_io_interface_context_read_discrete_inputs modbus_io_interface_context_read_discrete_inputs_t;
+struct modbus_io_interface_context_read_discrete_inputs
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void (*on_read_discrete_inputs)(modbus_io_interface_context_read_discrete_inputs_t *ctx,modbus_data_address_t addr,bool value);
+    modbus_data_address_t   starting_address;//起始地址
+    modbus_data_register_t  quantity_of_inputs;//不超过MODBUS_MAX_READ_BITS且至少为1
+};
+
+/** \brief  读取离散输入上下文
+ *
+ * \return modbus_io_interface_context_read_discrete_inputs_t 读取离散输入上下文
+ *
+ */
+modbus_io_interface_context_read_discrete_inputs_t modbus_io_interface_context_read_discrete_inputs_default();
+
 
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大
