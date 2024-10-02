@@ -644,6 +644,27 @@ struct modbus_io_interface_context_write_single_coil
  */
 modbus_io_interface_context_write_single_coil_t modbus_io_interface_context_write_single_coil_default();
 
+/*
+ *  写单个寄存器上下文
+ */
+struct modbus_io_interface_context_write_single_register;
+typedef struct modbus_io_interface_context_write_single_register modbus_io_interface_context_write_single_register_t;
+struct modbus_io_interface_context_write_single_register
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void (*on_write_single_register)(modbus_io_interface_context_write_single_register_t *ctx,modbus_data_address_t addr,modbus_data_register_t value);
+    modbus_data_address_t   output_address;//地址
+    modbus_data_register_t output_value;//值，注意：回调函数仅用于用户检查输出值，再调用回调函数前此值将被更新。
+};
+
+/** \brief  写单个寄存器上下文
+ *
+ * \return modbus_io_interface_context_write_single_register_t 写单个寄存器上下文
+ *
+ */
+modbus_io_interface_context_write_single_register_t modbus_io_interface_context_write_single_register_default();
+
 
 
 /** \brief IO请求(rtu主机或者tcp客户端)
