@@ -666,7 +666,7 @@ struct modbus_io_interface_context_write_single_register
 modbus_io_interface_context_write_single_register_t modbus_io_interface_context_write_single_register_default();
 
 /*
- *  读异常代码上下文
+ *  读异常代码上下文(注意：此处的异常更类似设备的状态码，按位定义，而非modbus通信异常代码。)
  */
 struct modbus_io_interface_context_read_exception_status;
 typedef struct modbus_io_interface_context_read_exception_status modbus_io_interface_context_read_exception_status_t;
@@ -684,6 +684,26 @@ struct modbus_io_interface_context_read_exception_status
  */
 modbus_io_interface_context_read_exception_status_t modbus_io_interface_context_read_exception_status_default();
 
+/*
+ *  诊断上下文（用于检查通信系统）
+ */
+struct modbus_io_interface_context_diagnostics;
+typedef struct modbus_io_interface_context_diagnostics modbus_io_interface_context_diagnostics_t;
+struct modbus_io_interface_context_diagnostics
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    uint16_t sub_function;//子功能码，见Modbus_Application_Protocol_V1_1b3.pdf 6.8
+    size_t  (*request_data)(modbus_io_interface_context_diagnostics_t *ctx,uint8_t *data,size_t max_data_length);//设置请求数据
+    bool    (*response_data)(modbus_io_interface_context_diagnostics_t *ctx,const uint8_t *data,size_t data_length);//处理响应数据
+};
+
+/** \brief  诊断上下文
+ *
+ * \return modbus_io_interface_context_diagnostics_t 诊断上下文
+ *
+ */
+modbus_io_interface_context_diagnostics_t modbus_io_interface_context_diagnostics_default();
 
 
 /** \brief IO请求(rtu主机或者tcp客户端)
