@@ -81,6 +81,13 @@ modbus_io_interface_context_diagnostics_t modbus_io_interface_context_diagnostic
     return ctx;
 }
 
+modbus_io_interface_context_get_comm_event_counter_t modbus_io_interface_context_get_comm_event_counter_default()
+{
+    modbus_io_interface_context_get_comm_event_counter_t ctx= {0};
+    ctx.base=modbus_io_interface_context_base_default();
+    return ctx;
+}
+
 static bool modbus_io_interface_is_serialline_only_function_code(uint8_t function_code)
 {
     bool ret=false;
@@ -521,6 +528,52 @@ static bool diagnostics_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const
     return false;
 }
 
+static bool get_comm_event_counter_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+{
+    modbus_io_interface_context_get_comm_event_counter_t *fc_ctx=(modbus_io_interface_context_get_comm_event_counter_t*)usr;
+    if(pdu!=NULL && pdu_length > 1)
+    {
+        uint8_t function_code=pdu[0];
+        if((function_code&0x7F)!=MODBUS_FC_SERIAL_GET_COMM_EVENT_COUNTER)
+        {
+            return false;
+        }
+        if(function_code>MODBUS_FC_EXCEPTION_BASE)
+        {
+            if(pdu_length>=2)
+            {
+                uint8_t exception=pdu[1];
+                if(fc_ctx->base.on_exception!=NULL)
+                {
+                    fc_ctx->base.on_exception(&fc_ctx->base,function_code,exception);
+                    //用户处理了异常，视为成功
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            if(pdu_length>=5)
+            {
+                uint16_t status=modbus_data_get_uint16_t(pdu,1,pdu_length);
+                uint16_t event_count=modbus_data_get_uint16_t(pdu,3,pdu_length);
+                if(fc_ctx->on_get_comm_event_counter!=NULL)
+                {
+                    fc_ctx->on_get_comm_event_counter(fc_ctx,status,event_count);
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+static bool get_comm_event_counter_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+{
+    return get_comm_event_counter_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
+}
+
+
 static bool diagnostics_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return diagnostics_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
@@ -711,6 +764,26 @@ static bool modbus_io_interface_request_rtu(modbus_io_interface_t *io,uint8_t fu
             if(resp_len>0)
             {
                 return modbus_rtu_get_pdu_from_adu(buffer,resp_len,diagnostics_rtu_pdu_callback,fc_ctx);
+            }
+        }
+    }
+    break;
+    case MODBUS_FC_SERIAL_GET_COMM_EVENT_COUNTER:
+    {
+        if(context_length!=sizeof(modbus_io_interface_context_get_comm_event_counter_t))
+        {
+            return false;
+        }
+        modbus_io_interface_context_get_comm_event_counter_t *fc_ctx=(modbus_io_interface_context_get_comm_event_counter_t*)ctx;
+        size_t pdu_length=1;//1字节功能码
+        pdu[0]=function_code;
+        size_t req_len=modbus_rtu_set_pdu_to_adu(buffer,sizeof(buffer),ctx->slave_addr,pdu,pdu_length);
+        if(req_len==io->send(io,buffer,req_len))
+        {
+            size_t resp_len=io->recv(io,buffer,sizeof(buffer));
+            if(resp_len>0)
+            {
+                return modbus_rtu_get_pdu_from_adu(buffer,resp_len,get_comm_event_counter_rtu_pdu_callback,fc_ctx);
             }
         }
     }
@@ -914,6 +987,26 @@ static bool modbus_io_interface_request_tcp(modbus_io_interface_t *io,uint8_t fu
             if(resp_len>0)
             {
                 return modbus_tcp_get_pdu_from_adu(buffer,resp_len,diagnostics_tcp_pdu_callback,fc_ctx);
+            }
+        }
+    }
+    break;
+    case MODBUS_FC_SERIAL_GET_COMM_EVENT_COUNTER:
+    {
+        if(context_length!=sizeof(modbus_io_interface_context_get_comm_event_counter_t))
+        {
+            return false;
+        }
+        modbus_io_interface_context_get_comm_event_counter_t *fc_ctx=(modbus_io_interface_context_get_comm_event_counter_t*)ctx;
+        size_t pdu_length=1;//1字节功能码
+        pdu[0]=function_code;
+        size_t req_len=modbus_tcp_set_pdu_to_adu(buffer,sizeof(buffer),Tid,ctx->slave_addr,pdu,pdu_length);
+        if(req_len==io->send(io,buffer,req_len))
+        {
+            size_t resp_len=io->recv(io,buffer,sizeof(buffer));
+            if(resp_len>0)
+            {
+                return modbus_tcp_get_pdu_from_adu(buffer,resp_len,get_comm_event_counter_tcp_pdu_callback,fc_ctx);
             }
         }
     }

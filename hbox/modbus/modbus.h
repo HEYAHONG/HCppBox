@@ -706,6 +706,26 @@ struct modbus_io_interface_context_diagnostics
 modbus_io_interface_context_diagnostics_t modbus_io_interface_context_diagnostics_default();
 
 
+/*
+ *  获取通信事件计数器上下文
+ */
+struct modbus_io_interface_context_get_comm_event_counter;
+typedef struct modbus_io_interface_context_get_comm_event_counter modbus_io_interface_context_get_comm_event_counter_t;
+struct modbus_io_interface_context_get_comm_event_counter
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void (*on_get_comm_event_counter)(modbus_io_interface_context_get_comm_event_counter_t *ctx,uint16_t status,uint16_t event_count);
+};
+
+/** \brief  获取通信事件计数器上下文
+ *
+ * \return modbus_io_interface_context_get_comm_event_counter_t 获取通信事件计数器上下文
+ *
+ */
+modbus_io_interface_context_get_comm_event_counter_t modbus_io_interface_context_get_comm_event_counter_default();
+
+
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大
  *
