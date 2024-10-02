@@ -634,7 +634,7 @@ struct modbus_io_interface_context_write_single_coil
     void *usr;//用户指针，由用户确定使用场景
     void (*on_write_single_coil)(modbus_io_interface_context_write_single_coil_t *ctx,modbus_data_address_t addr,modbus_data_register_t value);
     modbus_data_address_t   output_address;//地址
-    bool output_value;//值，注意：回调函数仅用于用户检查输出值，再调用回调函数前此值将被更新。
+    bool output_value;//值，注意：回调函数仅用于用户检查输出值，在调用回调函数前此值将被更新。
 };
 
 /** \brief  写单个线圈上下文
@@ -655,7 +655,7 @@ struct modbus_io_interface_context_write_single_register
     void *usr;//用户指针，由用户确定使用场景
     void (*on_write_single_register)(modbus_io_interface_context_write_single_register_t *ctx,modbus_data_address_t addr,modbus_data_register_t value);
     modbus_data_address_t   output_address;//地址
-    modbus_data_register_t output_value;//值，注意：回调函数仅用于用户检查输出值，再调用回调函数前此值将被更新。
+    modbus_data_register_t output_value;//值，注意：回调函数仅用于用户检查输出值，在调用回调函数前此值将被更新。
 };
 
 /** \brief  写单个寄存器上下文
@@ -664,6 +664,25 @@ struct modbus_io_interface_context_write_single_register
  *
  */
 modbus_io_interface_context_write_single_register_t modbus_io_interface_context_write_single_register_default();
+
+/*
+ *  读异常代码上下文
+ */
+struct modbus_io_interface_context_read_exception_status;
+typedef struct modbus_io_interface_context_read_exception_status modbus_io_interface_context_read_exception_status_t;
+struct modbus_io_interface_context_read_exception_status
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void (*on_read_exception_status)(modbus_io_interface_context_read_exception_status_t *ctx,uint8_t exception_code);
+};
+
+/** \brief  读异常代码上下文
+ *
+ * \return modbus_io_interface_context_read_exception_status_t 读异常代码上下文
+ *
+ */
+modbus_io_interface_context_read_exception_status_t modbus_io_interface_context_read_exception_status_default();
 
 
 
