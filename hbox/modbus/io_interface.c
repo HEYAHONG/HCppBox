@@ -135,7 +135,7 @@ static bool read_coils_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const 
                 {
                     for(size_t i=0; i<length; i++)
                     {
-                        if((data[i/8]&(1<<(i%8))!=0))
+                        if((data[i/8]&(1<<(i%8)))!=0)
                         {
                             fc_ctx->on_read_coils(fc_ctx,addr+i,true);
                         }
@@ -195,7 +195,7 @@ static bool read_discrete_inputs_tcp_pdu_callback(uint16_t TId,uint8_t node_addr
                 {
                     for(size_t i=0; i<length; i++)
                     {
-                        if((data[i/8]&(1<<(i%8))!=0))
+                        if((data[i/8]&(1<<(i%8)))!=0)
                         {
                             fc_ctx->on_read_discrete_inputs(fc_ctx,addr+i,true);
                         }
