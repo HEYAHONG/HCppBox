@@ -767,6 +767,28 @@ struct modbus_io_interface_context_write_multiple_coils
  */
 modbus_io_interface_context_write_multiple_coils_t modbus_io_interface_context_write_multiple_coils_default();
 
+/*
+ *  写多个寄存器上下文
+ */
+struct modbus_io_interface_context_write_multiple_registers;
+typedef struct modbus_io_interface_context_write_multiple_registers modbus_io_interface_context_write_multiple_registers_t;
+struct modbus_io_interface_context_write_multiple_registers
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void (*register_value)(modbus_io_interface_context_write_multiple_registers_t *ctx,modbus_data_address_t addr,modbus_data_register_t *value);//寄存器值,此回调函数应当提供具体待写入的值
+    void (*on_write_multiple_registers)(modbus_io_interface_context_write_multiple_registers_t *ctx,modbus_data_address_t addr,modbus_data_register_t length);
+    modbus_data_address_t starting_address;//待写入的起始地址
+    modbus_data_register_t quantity_of_output;//输出的数量，需要不超过MODBUS_MAX_WRITE_REGISTERS且至少为1
+};
+
+/** \brief  写多个寄存器上下文
+ *
+ * \return modbus_io_interface_context_write_multiple_registers_t 写多个寄存器上下文
+ *
+ */
+modbus_io_interface_context_write_multiple_registers_t modbus_io_interface_context_write_multiple_registers_default();
+
 
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大

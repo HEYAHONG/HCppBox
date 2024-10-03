@@ -103,6 +103,14 @@ modbus_io_interface_context_write_multiple_coils_t modbus_io_interface_context_w
     return ctx;
 }
 
+modbus_io_interface_context_write_multiple_registers_t modbus_io_interface_context_write_multiple_registers_default()
+{
+    modbus_io_interface_context_write_multiple_registers_t ctx= {0};
+    ctx.base=modbus_io_interface_context_base_default();
+    ctx.quantity_of_output=1;
+    return ctx;
+}
+
 static bool modbus_io_interface_is_serialline_only_function_code(uint8_t function_code)
 {
     bool ret=false;
@@ -686,6 +694,51 @@ static bool write_multiple_coils_rtu_pdu_callback(uint8_t node_address,const uin
     return write_multiple_coils_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
+static bool write_multiple_registers_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+{
+    modbus_io_interface_context_write_multiple_registers_t *fc_ctx=(modbus_io_interface_context_write_multiple_registers_t*)usr;
+    if(pdu!=NULL && pdu_length > 1)
+    {
+        uint8_t function_code=pdu[0];
+        if((function_code&0x7F)!=MODBUS_FC_WRITE_MULTIPLE_REGISTERS)
+        {
+            return false;
+        }
+        if(function_code>MODBUS_FC_EXCEPTION_BASE)
+        {
+            if(pdu_length>=2)
+            {
+                uint8_t exception=pdu[1];
+                if(fc_ctx->base.on_exception!=NULL)
+                {
+                    fc_ctx->base.on_exception(&fc_ctx->base,function_code,exception);
+                    //用户处理了异常，视为成功
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            if(pdu_length>=5)
+            {
+                uint16_t addr=modbus_data_get_uint16_t(pdu,1,pdu_length);
+                uint16_t length=modbus_data_get_uint16_t(pdu,3,pdu_length);
+                if(fc_ctx->on_write_multiple_registers!=NULL)
+                {
+                    fc_ctx->on_write_multiple_registers(fc_ctx,addr,length);
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+static bool write_multiple_registers_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+{
+    return write_multiple_registers_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
+}
+
 
 static bool modbus_io_interface_request_rtu(modbus_io_interface_t *io,uint8_t function_code,void *context,size_t context_length)
 {
@@ -932,7 +985,7 @@ static bool modbus_io_interface_request_rtu(modbus_io_interface_t *io,uint8_t fu
             fc_ctx->quantity_of_output=MODBUS_MAX_WRITE_BITS;
         }
         size_t byte_count=fc_ctx->quantity_of_output/8+((fc_ctx->quantity_of_output%8!=0)?1:0);
-        size_t pdu_length=6+byte_count;//1字节功能码
+        size_t pdu_length=6+byte_count;//1字节功能码+2字节起始地址+2字节数量+1字节字节长度+数据
         pdu[0]=function_code;
         modbus_data_set_uint16_t(pdu,1,pdu_length,fc_ctx->starting_address);
         modbus_data_set_uint16_t(pdu,3,pdu_length,fc_ctx->quantity_of_output);
@@ -965,6 +1018,47 @@ static bool modbus_io_interface_request_rtu(modbus_io_interface_t *io,uint8_t fu
             if(resp_len>0)
             {
                 return modbus_rtu_get_pdu_from_adu(buffer,resp_len,write_multiple_coils_rtu_pdu_callback,fc_ctx);
+            }
+        }
+    }
+    break;
+    case MODBUS_FC_WRITE_MULTIPLE_REGISTERS:
+    {
+        if(context_length!=sizeof(modbus_io_interface_context_write_multiple_registers_t))
+        {
+            return false;
+        }
+        modbus_io_interface_context_write_multiple_registers_t *fc_ctx=(modbus_io_interface_context_write_multiple_registers_t*)ctx;
+        if(fc_ctx->register_value==NULL || fc_ctx->quantity_of_output == 0 )
+        {
+            return false;
+        }
+        if(fc_ctx->quantity_of_output > MODBUS_MAX_WRITE_REGISTERS)
+        {
+            fc_ctx->quantity_of_output=MODBUS_MAX_WRITE_REGISTERS;
+        }
+        size_t byte_count=fc_ctx->quantity_of_output*2;
+        size_t pdu_length=6+byte_count;//1字节功能码+2字节起始地址+2字节数量+1字节字节长度+数据
+        pdu[0]=function_code;
+        modbus_data_set_uint16_t(pdu,1,pdu_length,fc_ctx->starting_address);
+        modbus_data_set_uint16_t(pdu,3,pdu_length,fc_ctx->quantity_of_output);
+        pdu[5]=byte_count;
+        {
+            uint8_t *data=&pdu[6];
+            for(size_t i=0; i<fc_ctx->quantity_of_output; i++)
+            {
+                modbus_data_register_t value=0;
+                fc_ctx->register_value(fc_ctx,fc_ctx->starting_address+i,&value);
+                modbus_data_set_uint16_t(data,i*2,byte_count,value);
+            }
+        }
+        size_t req_len=modbus_rtu_set_pdu_to_adu(buffer,sizeof(buffer),ctx->slave_addr,pdu,pdu_length);
+        if(req_len==io->send(io,buffer,req_len))
+        {
+            size_t resp_len=io->recv(io,buffer,sizeof(buffer));
+            if(resp_len>0)
+            {
+                return modbus_rtu_get_pdu_from_adu(buffer,resp_len,write_multiple_registers_rtu_pdu_callback,fc_ctx);
             }
         }
     }
@@ -1228,7 +1322,7 @@ static bool modbus_io_interface_request_tcp(modbus_io_interface_t *io,uint8_t fu
             fc_ctx->quantity_of_output=MODBUS_MAX_WRITE_BITS;
         }
         size_t byte_count=fc_ctx->quantity_of_output/8+((fc_ctx->quantity_of_output%8!=0)?1:0);
-        size_t pdu_length=6+byte_count;//1字节功能码
+        size_t pdu_length=6+byte_count;//1字节功能码+2字节起始地址+2字节数量+1字节字节长度+数据
         pdu[0]=function_code;
         modbus_data_set_uint16_t(pdu,1,pdu_length,fc_ctx->starting_address);
         modbus_data_set_uint16_t(pdu,3,pdu_length,fc_ctx->quantity_of_output);
@@ -1261,6 +1355,47 @@ static bool modbus_io_interface_request_tcp(modbus_io_interface_t *io,uint8_t fu
             if(resp_len>0)
             {
                 return modbus_tcp_get_pdu_from_adu(buffer,resp_len,write_multiple_coils_tcp_pdu_callback,fc_ctx);
+            }
+        }
+    }
+    break;
+    case MODBUS_FC_WRITE_MULTIPLE_REGISTERS:
+    {
+        if(context_length!=sizeof(modbus_io_interface_context_write_multiple_registers_t))
+        {
+            return false;
+        }
+        modbus_io_interface_context_write_multiple_registers_t *fc_ctx=(modbus_io_interface_context_write_multiple_registers_t*)ctx;
+        if(fc_ctx->register_value==NULL || fc_ctx->quantity_of_output == 0 )
+        {
+            return false;
+        }
+        if(fc_ctx->quantity_of_output > MODBUS_MAX_WRITE_REGISTERS)
+        {
+            fc_ctx->quantity_of_output=MODBUS_MAX_WRITE_REGISTERS;
+        }
+        size_t byte_count=fc_ctx->quantity_of_output*2;
+        size_t pdu_length=6+byte_count;//1字节功能码+2字节起始地址+2字节数量+1字节字节长度+数据
+        pdu[0]=function_code;
+        modbus_data_set_uint16_t(pdu,1,pdu_length,fc_ctx->starting_address);
+        modbus_data_set_uint16_t(pdu,3,pdu_length,fc_ctx->quantity_of_output);
+        pdu[5]=byte_count;
+        {
+            uint8_t *data=&pdu[6];
+            for(size_t i=0; i<fc_ctx->quantity_of_output; i++)
+            {
+                modbus_data_register_t value=0;
+                fc_ctx->register_value(fc_ctx,fc_ctx->starting_address+i,&value);
+                modbus_data_set_uint16_t(data,i*2,byte_count,value);
+            }
+        }
+        size_t req_len=modbus_tcp_set_pdu_to_adu(buffer,sizeof(buffer),Tid,ctx->slave_addr,pdu,pdu_length);
+        if(req_len==io->send(io,buffer,req_len))
+        {
+            size_t resp_len=io->recv(io,buffer,sizeof(buffer));
+            if(resp_len>0)
+            {
+                return modbus_tcp_get_pdu_from_adu(buffer,resp_len,write_multiple_registers_tcp_pdu_callback,fc_ctx);
             }
         }
     }
