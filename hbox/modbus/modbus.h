@@ -808,6 +808,27 @@ struct modbus_io_interface_context_report_server_id
  */
 modbus_io_interface_context_report_server_id_t modbus_io_interface_context_report_server_id_default();
 
+/*
+ *  读取文件记录上下文
+ */
+struct modbus_io_interface_context_read_file_record;
+typedef struct modbus_io_interface_context_read_file_record modbus_io_interface_context_read_file_record_t;
+struct modbus_io_interface_context_read_file_record
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void    (*file_record)(modbus_io_interface_context_read_file_record_t *ctx,size_t x,uint8_t *reference_type,uint16_t *file_number,uint16_t *record_number,uint16_t *record_length);//此回调提供文件记录信息
+    void    (*on_read_file_record)(modbus_io_interface_context_read_file_record_t *ctx,size_t x,uint8_t reference_type,const uint8_t *data,size_t data_length);//读取回调，注意此处的数据（data）指（16位,大端模式）寄存器的数据缓冲，长度为record_length的两倍。
+    size_t  x_max;//子请求长度,小于35且至少为1
+};
+
+/** \brief  读取文件记录上下文
+ *
+ * \return modbus_io_interface_context_read_file_record_t 读取文件记录上下文
+ *
+ */
+modbus_io_interface_context_read_file_record_t modbus_io_interface_context_read_file_record_default();
+
 
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大
