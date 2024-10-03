@@ -789,6 +789,25 @@ struct modbus_io_interface_context_write_multiple_registers
  */
 modbus_io_interface_context_write_multiple_registers_t modbus_io_interface_context_write_multiple_registers_default();
 
+/*
+ *  报告服务器ID上下文(注意：本上下文中server_id由设备自定义,包含所有modbus字段（包含服务器id、运行状态指示、额外数据）)
+ */
+struct modbus_io_interface_context_report_server_id;
+typedef struct modbus_io_interface_context_report_server_id modbus_io_interface_context_report_server_id_t;
+struct modbus_io_interface_context_report_server_id
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void (*on_report_server_id)(modbus_io_interface_context_report_server_id_t *ctx,const uint8_t *server_id,size_t server_id_length);
+};
+
+/** \brief  报告服务器ID上下文
+ *
+ * \return modbus_io_interface_context_report_server_id_t 报告服务器ID上下文
+ *
+ */
+modbus_io_interface_context_report_server_id_t modbus_io_interface_context_report_server_id_default();
+
 
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大
