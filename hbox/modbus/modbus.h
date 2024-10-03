@@ -745,6 +745,29 @@ struct modbus_io_interface_context_get_comm_event_log
 modbus_io_interface_context_get_comm_event_log_t modbus_io_interface_context_get_comm_event_log_default();
 
 
+/*
+ *  写多个线圈上下文
+ */
+struct modbus_io_interface_context_write_multiple_coils;
+typedef struct modbus_io_interface_context_write_multiple_coils modbus_io_interface_context_write_multiple_coils_t;
+struct modbus_io_interface_context_write_multiple_coils
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void (*coil_value)(modbus_io_interface_context_write_multiple_coils_t *ctx,modbus_data_address_t addr,bool *value);//线圈值,此回调函数应当提供具体待写入的值
+    void (*on_write_multiple_coils)(modbus_io_interface_context_write_multiple_coils_t *ctx,modbus_data_address_t addr,modbus_data_register_t length);
+    modbus_data_address_t starting_address;//待写入的起始地址
+    modbus_data_register_t quantity_of_output;//输出的数量，需要不超过MODBUS_MAX_WRITE_BITS且至少为1
+};
+
+/** \brief  写多个线圈上下文
+ *
+ * \return modbus_io_interface_context_write_multiple_coils_t 写多个线圈上下文
+ *
+ */
+modbus_io_interface_context_write_multiple_coils_t modbus_io_interface_context_write_multiple_coils_default();
+
+
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大
  *
