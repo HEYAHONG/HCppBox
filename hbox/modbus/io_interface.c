@@ -126,6 +126,14 @@ modbus_io_interface_context_read_file_record_t modbus_io_interface_context_read_
     return ctx;
 }
 
+modbus_io_interface_context_write_file_record_t modbus_io_interface_context_write_file_record_default()
+{
+    modbus_io_interface_context_write_file_record_t ctx= {0};
+    ctx.base=modbus_io_interface_context_base_default();
+    ctx.x_max=1;
+    return ctx;
+}
+
 static bool modbus_io_interface_is_serialline_only_function_code(uint8_t function_code)
 {
     bool ret=false;
@@ -852,6 +860,61 @@ static bool read_file_record_rtu_pdu_callback(uint8_t node_address,const uint8_t
 }
 
 
+static bool write_file_record_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+{
+    modbus_io_interface_context_write_file_record_t *fc_ctx=(modbus_io_interface_context_write_file_record_t*)usr;
+    if(pdu!=NULL && pdu_length > 1)
+    {
+        uint8_t function_code=pdu[0];
+        if((function_code&0x7F)!=MODBUS_FC_WRITE_FILE_RECORD)
+        {
+            return false;
+        }
+        if(function_code>MODBUS_FC_EXCEPTION_BASE)
+        {
+            if(pdu_length>=2)
+            {
+                uint8_t exception=pdu[1];
+                if(fc_ctx->base.on_exception!=NULL)
+                {
+                    fc_ctx->base.on_exception(&fc_ctx->base,function_code,exception);
+                    //用户处理了异常，视为成功
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            if(pdu_length>=2)
+            {
+                int byte_count=pdu[1];
+                int byte_read=0;
+                if(fc_ctx->on_write_file_record!=NULL)
+                {
+                    size_t x=0;
+                    while(byte_count>byte_read)
+                    {
+                        const uint8_t *sub_req=&pdu[2+byte_read];
+                        uint8_t reference_type=sub_req[0];
+                        uint16_t file_number=modbus_data_get_uint16_t(sub_req,1,byte_count-byte_read);
+                        uint16_t record_number=modbus_data_get_uint16_t(sub_req,3,byte_count-byte_read);
+                        uint16_t record_length=modbus_data_get_uint16_t(sub_req,5,byte_count-byte_read);
+                        fc_ctx->on_write_file_record(fc_ctx,x,reference_type,file_number,record_number,&sub_req[7],record_length*2);
+                        byte_read+=(7+record_length*2);
+                    }
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+static bool write_file_record_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+{
+    return write_file_record_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
+}
+
 static bool modbus_io_interface_request_rtu(modbus_io_interface_t *io,uint8_t function_code,void *context,size_t context_length)
 {
     modbus_io_interface_context_base_t *ctx=(modbus_io_interface_context_base_t *)context;
@@ -1234,6 +1297,50 @@ static bool modbus_io_interface_request_rtu(modbus_io_interface_t *io,uint8_t fu
             if(resp_len>0)
             {
                 return modbus_rtu_get_pdu_from_adu(buffer,resp_len,read_file_record_rtu_pdu_callback,fc_ctx);
+            }
+        }
+    }
+    break;
+    case MODBUS_FC_WRITE_FILE_RECORD:
+    {
+        if(context_length!=sizeof(modbus_io_interface_context_write_file_record_t))
+        {
+            return false;
+        }
+        modbus_io_interface_context_write_file_record_t *fc_ctx=(modbus_io_interface_context_write_file_record_t*)ctx;
+        if(fc_ctx->file_record==NULL || fc_ctx->x_max==0)
+        {
+            return false;
+        }
+        uint8_t byte_count=0;
+        for(size_t i=0; i<fc_ctx->x_max; i++)
+        {
+            if(byte_count+2+7 > MODBUS_MAX_PDU_LENGTH)
+            {
+                //超过最大PDU长度
+                break;
+            }
+            uint8_t *sub_req=&pdu[2+byte_count];
+            uint8_t reference_type=0x06;
+            uint16_t file_number=0;
+            uint16_t record_number=0;
+            size_t len=fc_ctx->file_record(fc_ctx,i,&reference_type,&file_number,&record_number,&sub_req[7],MODBUS_MAX_PDU_LENGTH-7-(2+byte_count));
+            sub_req[0]=reference_type;
+            modbus_data_set_uint16_t(sub_req,1,7,file_number);
+            modbus_data_set_uint16_t(sub_req,3,7,record_number);
+            modbus_data_set_uint16_t(sub_req,5,7,len/2);
+            byte_count+=(7+len/2*2);//增加的长度为7+寄存器长度的整倍数
+        }
+        size_t pdu_length=2+byte_count;//1字节功能码+1字节字节长度+子请求
+        pdu[0]=function_code;
+        pdu[1]=byte_count;
+        size_t req_len=modbus_rtu_set_pdu_to_adu(buffer,sizeof(buffer),ctx->slave_addr,pdu,pdu_length);
+        if(req_len==io->send(io,buffer,req_len))
+        {
+            size_t resp_len=io->recv(io,buffer,sizeof(buffer));
+            if(resp_len>0)
+            {
+                return modbus_rtu_get_pdu_from_adu(buffer,resp_len,write_file_record_rtu_pdu_callback,fc_ctx);
             }
         }
     }
@@ -1634,6 +1741,50 @@ static bool modbus_io_interface_request_tcp(modbus_io_interface_t *io,uint8_t fu
             if(resp_len>0)
             {
                 return modbus_tcp_get_pdu_from_adu(buffer,resp_len,read_file_record_tcp_pdu_callback,fc_ctx);
+            }
+        }
+    }
+    break;
+    case MODBUS_FC_WRITE_FILE_RECORD:
+    {
+        if(context_length!=sizeof(modbus_io_interface_context_write_file_record_t))
+        {
+            return false;
+        }
+        modbus_io_interface_context_write_file_record_t *fc_ctx=(modbus_io_interface_context_write_file_record_t*)ctx;
+        if(fc_ctx->file_record==NULL || fc_ctx->x_max==0)
+        {
+            return false;
+        }
+        uint8_t byte_count=0;
+        for(size_t i=0; i<fc_ctx->x_max; i++)
+        {
+            if(byte_count+2+7 > MODBUS_MAX_PDU_LENGTH)
+            {
+                //超过最大PDU长度
+                break;
+            }
+            uint8_t *sub_req=&pdu[2+byte_count];
+            uint8_t reference_type=0x06;
+            uint16_t file_number=0;
+            uint16_t record_number=0;
+            size_t len=fc_ctx->file_record(fc_ctx,i,&reference_type,&file_number,&record_number,&sub_req[7],MODBUS_MAX_PDU_LENGTH-7-(2+byte_count));
+            sub_req[0]=reference_type;
+            modbus_data_set_uint16_t(sub_req,1,7,file_number);
+            modbus_data_set_uint16_t(sub_req,3,7,record_number);
+            modbus_data_set_uint16_t(sub_req,5,7,len/2);
+            byte_count+=(7+len/2*2);//增加的长度为7+寄存器长度的整倍数
+        }
+        size_t pdu_length=2+byte_count;//1字节功能码+1字节字节长度+子请求
+        pdu[0]=function_code;
+        pdu[1]=byte_count;
+        size_t req_len=modbus_tcp_set_pdu_to_adu(buffer,sizeof(buffer),Tid,ctx->slave_addr,pdu,pdu_length);
+        if(req_len==io->send(io,buffer,req_len))
+        {
+            size_t resp_len=io->recv(io,buffer,sizeof(buffer));
+            if(resp_len>0)
+            {
+                return modbus_tcp_get_pdu_from_adu(buffer,resp_len,write_file_record_tcp_pdu_callback,fc_ctx);
             }
         }
     }

@@ -819,7 +819,7 @@ struct modbus_io_interface_context_read_file_record
     void *usr;//用户指针，由用户确定使用场景
     void    (*file_record)(modbus_io_interface_context_read_file_record_t *ctx,size_t x,uint8_t *reference_type,uint16_t *file_number,uint16_t *record_number,uint16_t *record_length);//此回调提供文件记录信息
     void    (*on_read_file_record)(modbus_io_interface_context_read_file_record_t *ctx,size_t x,uint8_t reference_type,const uint8_t *data,size_t data_length);//读取回调，注意此处的数据（data）指（16位,大端模式）寄存器的数据缓冲，长度为record_length的两倍。
-    size_t  x_max;//子请求长度,小于35且至少为1
+    size_t  x_max;//子请求长度,不超过35且至少为1
 };
 
 /** \brief  读取文件记录上下文
@@ -828,6 +828,27 @@ struct modbus_io_interface_context_read_file_record
  *
  */
 modbus_io_interface_context_read_file_record_t modbus_io_interface_context_read_file_record_default();
+
+/*
+ *  写入文件记录上下文
+ */
+struct modbus_io_interface_context_write_file_record;
+typedef struct modbus_io_interface_context_write_file_record modbus_io_interface_context_write_file_record_t;
+struct modbus_io_interface_context_write_file_record
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    size_t  (*file_record)(modbus_io_interface_context_write_file_record_t *ctx,size_t x,uint8_t *reference_type,uint16_t *file_number,uint16_t *record_number,uint8_t *data,size_t data_max_length);//此回调提供文件记录信息,注意此处的数据（data）指（16位,大端模式）寄存器的数据缓冲，返回的长度为record_length的两倍。
+    void    (*on_write_file_record)(modbus_io_interface_context_write_file_record_t *ctx,size_t x,uint8_t reference_type,uint16_t file_number,uint16_t record_number,const uint8_t *data,size_t data_length);//此回调提供文件记录信息,注意此处的数据（data）指（16位,大端模式）寄存器的数据缓冲，长度为record_length的两倍。
+    size_t  x_max;//子请求长度,至少为1,所有子请求加起来的pdu长度不可大于MODBUS_MAX_PDU_LENGTH
+};
+
+/** \brief  写入文件记录上下文
+ *
+ * \return modbus_io_interface_context_write_file_record_t 写入文件记录上下文
+ *
+ */
+modbus_io_interface_context_write_file_record_t modbus_io_interface_context_write_file_record_default();
 
 
 /** \brief IO请求(rtu主机或者tcp客户端)
