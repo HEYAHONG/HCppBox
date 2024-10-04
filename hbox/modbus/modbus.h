@@ -872,6 +872,30 @@ struct modbus_io_interface_context_mask_write_register
  */
 modbus_io_interface_context_mask_write_register_t modbus_io_interface_context_mask_write_register_default();
 
+/*
+ *  读写多个寄存器上下文
+ */
+struct modbus_io_interface_context_read_write_multiple_registers;
+typedef struct modbus_io_interface_context_read_write_multiple_registers modbus_io_interface_context_read_write_multiple_registers_t;
+struct modbus_io_interface_context_read_write_multiple_registers
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void (*write_register_value)(modbus_io_interface_context_read_write_multiple_registers_t *ctx,modbus_data_address_t addr,modbus_data_register_t *value);//此回调函数用于提供待写入的寄存器值
+    void (*on_read_multiple_registers)(modbus_io_interface_context_read_write_multiple_registers_t *ctx,modbus_data_address_t addr,modbus_data_register_t value);
+    modbus_data_address_t read_starting_address;
+    modbus_data_register_t quantity_to_read;//待读取的寄存器，不超过MODBUS_MAX_WR_READ_REGISTERS且至少为1
+    modbus_data_address_t write_starting_address;
+    modbus_data_register_t quantity_to_write;//待写入的寄存器，不超过MODBUS_MAX_WR_WRITE_REGISTERS且至少为1
+};
+
+/** \brief  读写多个寄存器上下文
+ *
+ * \return modbus_io_interface_context_read_write_multiple_registers_t 读写多个寄存器上下文
+ *
+ */
+modbus_io_interface_context_read_write_multiple_registers_t modbus_io_interface_context_read_write_multiple_registers_default();
+
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大
  *
