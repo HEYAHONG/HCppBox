@@ -43,15 +43,7 @@ static struct
 } hwatchdog_dog = {0};
 
 
-static hwatchdog_tick_t tick_get()
-{
-    if((sizeof(hwatchdog_tick_t)) > (sizeof(hdefaults_tick_t)))
-    {
-        //不使用默认节拍获取
-        return 0;
-    }
-    return hdefaults_tick_get();
-}
+
 
 static void check_watchdog_parameter()
 {

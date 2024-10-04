@@ -1070,7 +1070,7 @@ static bool read_fifo_queue_tcp_pdu_callback(uint16_t TId,uint8_t node_address,c
                 uint16_t byte_count=modbus_data_get_uint16_t(pdu,1,pdu_length);
                 uint16_t fifo_count=modbus_data_get_uint16_t(pdu,3,pdu_length);
                 const uint8_t *data=&pdu[5];
-                if(fc_ctx->on_read_fifo_queue!=NULL)
+                if(fc_ctx->on_read_fifo_queue!=NULL && byte_count==(fifo_count*2+2))
                 {
                     fc_ctx->on_read_fifo_queue(fc_ctx,data,fifo_count*2);
                     return true;
