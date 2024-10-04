@@ -41,22 +41,8 @@ extern "C"
 定义系统节拍变量位宽，数据位宽越大，容许的超时越长，但需要注意的是，低位宽的看门狗可在高位宽的系统中运行，反之不能，如16位的看门狗系统节拍能在系统节拍为32位的系统中运行，反之不能。
 */
 
-//64位
-#ifdef HWATCHDOG_USING_64_TICK
-#define hwatchdog_tick_t uint64_t
-#endif // HWATCHDOG_USING_64_TICK
 
-//32位
-#ifdef HWATCHDOG_USING_32_TICK
-#define hwatchdog_tick_t uint32_t
-#endif // HWATCHDOG_USING_32_TICK
-
-//16位
-#ifdef HWATCHDOG_USING_16_TICK
-#define hwatchdog_tick_t uint16_t
-#endif // HWATCHDOG_USING_16_TICK
-
-//默认位宽为32位
+//默认位宽由hdefaults组件定义
 #ifndef hwatchdog_tick_t
 #define hwatchdog_tick_t hdefaults_tick_t
 #endif // hwatchdog_tick_t

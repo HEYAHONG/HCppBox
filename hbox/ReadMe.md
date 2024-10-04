@@ -126,14 +126,6 @@ hbox意为HYH的工具箱。
 
 本组件通常用于辅助实现看门狗,包括软件实现的看门狗及硬件看门狗喂狗。
 
-可配置的宏定义如下:
-
-|          宏定义           |                 说明                 | 备注 |
-| :-----------------------: | :----------------------------------: | :--: |
-| `HWATCHDOG_USING_64_TICK` | `hwatchdog_tick_t`使用64位无符号整数 |      |
-| `HWATCHDOG_USING_32_TICK` | `hwatchdog_tick_t`使用32位无符号整数 |      |
-| `HWATCHDOG_USING_16_TICK` | `hwatchdog_tick_t`使用16位无符号整数 |      |
-
 需要使用看门狗时需要使用`HWATCHDOG_ADD_WATCH(check,timeout_ms,usr)`在需要检查的地方添加看门狗检查,当看门狗喂狗被调用时将执行检查函数。
 
 喂狗操作通过调用`HWATCHDOG_FEED()`完成。
