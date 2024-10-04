@@ -1092,7 +1092,7 @@ static bool encapsulated_interface_transport_tcp_pdu_callback(uint16_t TId,uint8
     if(pdu!=NULL && pdu_length > 1)
     {
         uint8_t function_code=pdu[0];
-        if((function_code&0x7F)!=MODBUS_FC_READ_FIFO_QUEUE)
+        if((function_code&0x7F)!=MODBUS_FC_ENCAPSULATED_INTERFACE_TRANSPORT)
         {
             return false;
         }
