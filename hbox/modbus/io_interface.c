@@ -157,6 +157,13 @@ modbus_io_interface_context_read_fifo_queue_t modbus_io_interface_context_read_f
     return ctx;
 }
 
+modbus_io_interface_context_encapsulated_interface_transport_t modbus_io_interface_context_encapsulated_interface_transport_default()
+{
+    modbus_io_interface_context_encapsulated_interface_transport_t ctx= {0};
+    ctx.base=modbus_io_interface_context_base_default();
+    return ctx;
+}
+
 static bool modbus_io_interface_is_serialline_only_function_code(uint8_t function_code)
 {
     bool ret=false;
@@ -1066,6 +1073,7 @@ static bool read_fifo_queue_tcp_pdu_callback(uint16_t TId,uint8_t node_address,c
                 if(fc_ctx->on_read_fifo_queue!=NULL)
                 {
                     fc_ctx->on_read_fifo_queue(fc_ctx,data,fifo_count*2);
+                    return true;
                 }
             }
         }
@@ -1078,6 +1086,50 @@ static bool read_fifo_queue_rtu_pdu_callback(uint8_t node_address,const uint8_t 
     return read_fifo_queue_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
+static bool encapsulated_interface_transport_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+{
+    modbus_io_interface_context_encapsulated_interface_transport_t *fc_ctx=(modbus_io_interface_context_encapsulated_interface_transport_t*)usr;
+    if(pdu!=NULL && pdu_length > 1)
+    {
+        uint8_t function_code=pdu[0];
+        if((function_code&0x7F)!=MODBUS_FC_READ_FIFO_QUEUE)
+        {
+            return false;
+        }
+        if(function_code>MODBUS_FC_EXCEPTION_BASE)
+        {
+            if(pdu_length>=2)
+            {
+                uint8_t exception=pdu[1];
+                if(fc_ctx->base.on_exception!=NULL)
+                {
+                    fc_ctx->base.on_exception(&fc_ctx->base,function_code,exception);
+                    //用户处理了异常，视为成功
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            if(pdu_length>=2)
+            {
+                uint8_t mei_type=pdu[1];
+                fc_ctx->mei_type=mei_type;
+                if(fc_ctx->mei_response!=NULL)
+                {
+                    fc_ctx->mei_response(fc_ctx,&pdu[2],pdu_length-2);
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+static bool encapsulated_interface_transport_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+{
+    return encapsulated_interface_transport_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
+}
 
 static bool modbus_io_interface_request_rtu(modbus_io_interface_t *io,uint8_t function_code,void *context,size_t context_length)
 {
@@ -1595,6 +1647,34 @@ static bool modbus_io_interface_request_rtu(modbus_io_interface_t *io,uint8_t fu
             if(resp_len>0)
             {
                 return modbus_rtu_get_pdu_from_adu(buffer,resp_len,read_fifo_queue_rtu_pdu_callback,fc_ctx);
+            }
+        }
+    }
+    break;
+    case MODBUS_FC_ENCAPSULATED_INTERFACE_TRANSPORT:
+    {
+        if(context_length!=sizeof(modbus_io_interface_context_encapsulated_interface_transport_t))
+        {
+            return false;
+        }
+        modbus_io_interface_context_encapsulated_interface_transport_t *fc_ctx=(modbus_io_interface_context_encapsulated_interface_transport_t*)ctx;
+        size_t pdu_length=2;//1字节功能码+1字节mei_type
+        pdu[0]=function_code;
+        pdu[1]=fc_ctx->mei_type;
+        {
+            //添加封装数据
+            if(fc_ctx->mei_request!=NULL)
+            {
+                pdu_length+=fc_ctx->mei_request(fc_ctx,&pdu[pdu_length],MODBUS_MAX_PDU_LENGTH-pdu_length);
+            }
+        }
+        size_t req_len=modbus_rtu_set_pdu_to_adu(buffer,sizeof(buffer),ctx->slave_addr,pdu,pdu_length);
+        if(req_len==io->send(io,buffer,req_len))
+        {
+            size_t resp_len=io->recv(io,buffer,sizeof(buffer));
+            if(resp_len>0)
+            {
+                return modbus_rtu_get_pdu_from_adu(buffer,resp_len,encapsulated_interface_transport_rtu_pdu_callback,fc_ctx);
             }
         }
     }
@@ -2129,6 +2209,34 @@ static bool modbus_io_interface_request_tcp(modbus_io_interface_t *io,uint8_t fu
             if(resp_len>0)
             {
                 return modbus_tcp_get_pdu_from_adu(buffer,resp_len,read_fifo_queue_tcp_pdu_callback,fc_ctx);
+            }
+        }
+    }
+    break;
+    case MODBUS_FC_ENCAPSULATED_INTERFACE_TRANSPORT:
+    {
+        if(context_length!=sizeof(modbus_io_interface_context_encapsulated_interface_transport_t))
+        {
+            return false;
+        }
+        modbus_io_interface_context_encapsulated_interface_transport_t *fc_ctx=(modbus_io_interface_context_encapsulated_interface_transport_t*)ctx;
+        size_t pdu_length=2;//1字节功能码+1字节mei_type
+        pdu[0]=function_code;
+        pdu[1]=fc_ctx->mei_type;
+        {
+            //添加封装数据
+            if(fc_ctx->mei_request!=NULL)
+            {
+                pdu_length+=fc_ctx->mei_request(fc_ctx,&pdu[pdu_length],MODBUS_MAX_PDU_LENGTH-pdu_length);
+            }
+        }
+        size_t req_len=modbus_tcp_set_pdu_to_adu(buffer,sizeof(buffer),Tid,ctx->slave_addr,pdu,pdu_length);
+        if(req_len==io->send(io,buffer,req_len))
+        {
+            size_t resp_len=io->recv(io,buffer,sizeof(buffer));
+            if(resp_len>0)
+            {
+                return modbus_tcp_get_pdu_from_adu(buffer,resp_len,encapsulated_interface_transport_tcp_pdu_callback,fc_ctx);
             }
         }
     }

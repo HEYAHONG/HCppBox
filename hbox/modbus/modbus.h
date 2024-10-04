@@ -916,6 +916,27 @@ struct modbus_io_interface_context_read_fifo_queue
  */
 modbus_io_interface_context_read_fifo_queue_t modbus_io_interface_context_read_fifo_queue_default();
 
+/*
+ *  封装传输上下文（注意：此上下文使用时需要根据MEI（modbus封装接口）不同而处理不同数据）
+ */
+struct modbus_io_interface_context_encapsulated_interface_transport;
+typedef struct modbus_io_interface_context_encapsulated_interface_transport modbus_io_interface_context_encapsulated_interface_transport_t;
+struct modbus_io_interface_context_encapsulated_interface_transport
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    size_t  (*mei_request)(modbus_io_interface_context_encapsulated_interface_transport_t *ctx,uint8_t *mei_data,size_t mei_data_max_length);//设置请求数据
+    void    (*mei_response)(modbus_io_interface_context_encapsulated_interface_transport_t *ctx,const uint8_t *mei_data,size_t mei_data_length);//处理响应数据
+    uint8_t mei_type;
+};
+
+/** \brief  封装传输上下文
+ *
+ * \return modbus_io_interface_context_encapsulated_interface_transport_t 封装传输上下文
+ *
+ */
+modbus_io_interface_context_encapsulated_interface_transport_t modbus_io_interface_context_encapsulated_interface_transport_default();
+
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大
  *
