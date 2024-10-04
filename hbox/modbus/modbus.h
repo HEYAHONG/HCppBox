@@ -850,6 +850,27 @@ struct modbus_io_interface_context_write_file_record
  */
 modbus_io_interface_context_write_file_record_t modbus_io_interface_context_write_file_record_default();
 
+/*
+ *  掩码写寄存器上下文
+ */
+struct modbus_io_interface_context_mask_write_register;
+typedef struct modbus_io_interface_context_mask_write_register modbus_io_interface_context_mask_write_register_t;
+struct modbus_io_interface_context_mask_write_register
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void (*on_mask_write_register)(modbus_io_interface_context_mask_write_register_t *ctx,modbus_data_address_t addr,modbus_data_register_t and_mask,modbus_data_register_t or_mask);
+    modbus_data_address_t reference_address;
+    modbus_data_register_t and_mask;
+    modbus_data_register_t or_mask;
+};
+
+/** \brief  掩码写寄存器上下文
+ *
+ * \return modbus_io_interface_context_mask_write_register_t 掩码写寄存器上下文
+ *
+ */
+modbus_io_interface_context_mask_write_register_t modbus_io_interface_context_mask_write_register_default();
 
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大
