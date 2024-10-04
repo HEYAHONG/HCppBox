@@ -896,6 +896,26 @@ struct modbus_io_interface_context_read_write_multiple_registers
  */
 modbus_io_interface_context_read_write_multiple_registers_t modbus_io_interface_context_read_write_multiple_registers_default();
 
+/*
+ *  读取FIFO队列上下文
+ */
+struct modbus_io_interface_context_read_fifo_queue;
+typedef struct modbus_io_interface_context_read_fifo_queue modbus_io_interface_context_read_fifo_queue_t;
+struct modbus_io_interface_context_read_fifo_queue
+{
+    modbus_io_interface_context_base_t base;
+    void *usr;//用户指针，由用户确定使用场景
+    void  (*on_read_fifo_queue)(modbus_io_interface_context_read_fifo_queue_t *ctx,const uint8_t *data,size_t data_length);//注意此处的数据（data）指（16位,大端模式）寄存器的数据缓冲，长度为fifo_count的两倍。
+    modbus_data_address_t fifo_pointer_address;
+};
+
+/** \brief  读取FIFO队列上下文
+ *
+ * \return modbus_io_interface_context_read_fifo_queue_t 读取FIFO队列上下文
+ *
+ */
+modbus_io_interface_context_read_fifo_queue_t modbus_io_interface_context_read_fifo_queue_default();
+
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大
  *
