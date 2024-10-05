@@ -1,12 +1,78 @@
 #include "HCPPBox.h"
 #include "hbox.h"
 #include <thread>
+#include <map>
 
 /*
  * tcp_server上下文
  */
 modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t tcp_server_tiny=modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_context_default();
 
+
+typedef struct
+{
+    std::map<modbus_data_address_t,bool> coils;
+    std::map<modbus_data_address_t,modbus_data_register_t> registers;
+} modbus_data_t;
+static std::map<modbus_rtu_slave_tiny_context_t*,modbus_data_t> mb_data;
+static bool    read_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+{
+    if(mb_data.find(ctx)!=mb_data.end())
+    {
+        if(mb_data[ctx].coils.find(addr)!=mb_data[ctx].coils.end())
+        {
+            return mb_data[ctx].coils[addr];
+        }
+    }
+    return false;
+}
+static bool    read_discrete_input(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+{
+    return !read_coil(ctx,addr);
+}
+static modbus_data_register_t  read_holding_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+{
+    if(mb_data.find(ctx)!=mb_data.end())
+    {
+        if(mb_data[ctx].registers.find(addr)!=mb_data[ctx].registers.end())
+        {
+            return mb_data[ctx].registers[addr];
+        }
+    }
+    return 0xDEAD;
+}
+static modbus_data_register_t  read_input_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+{
+    return ~ read_holding_register(ctx, addr);
+}
+static void    write_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,bool value)
+{
+    if(mb_data.find(ctx)!=mb_data.end())
+    {
+        mb_data[ctx].coils[addr]=value;
+    }
+}
+static void    write_holding_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,modbus_data_register_t value)
+{
+    if(mb_data.find(ctx)!=mb_data.end())
+    {
+        mb_data[ctx].registers[addr]=value;
+    }
+}
+static void modbus_init_ctx(modbus_rtu_slave_tiny_context_t* ctx)
+{
+    if(ctx==NULL)
+    {
+        return;
+    }
+    mb_data[ctx]=modbus_data_t();
+    ctx->read_coil=read_coil;
+    ctx->read_discrete_input=read_discrete_input;
+    ctx->read_holding_register=read_input_register;
+    ctx->read_input_register=read_input_register;
+    ctx->write_coil=write_coil;
+    ctx->write_holding_register=write_holding_register;
+}
 
 static void server_thread()
 {
@@ -140,6 +206,7 @@ int main()
 
     {
         //TODO:初始化modbus上下文
+        modbus_init_ctx(&tcp_server_tiny.slave);
     }
 
     //启动服务线程
