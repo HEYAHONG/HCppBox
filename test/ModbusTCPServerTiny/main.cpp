@@ -68,7 +68,7 @@ static void modbus_init_ctx(modbus_rtu_slave_tiny_context_t* ctx)
     mb_data[ctx]=modbus_data_t();
     ctx->read_coil=read_coil;
     ctx->read_discrete_input=read_discrete_input;
-    ctx->read_holding_register=read_input_register;
+    ctx->read_holding_register=read_holding_register;
     ctx->read_input_register=read_input_register;
     ctx->write_coil=write_coil;
     ctx->write_holding_register=write_holding_register;
