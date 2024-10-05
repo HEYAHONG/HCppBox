@@ -17,3 +17,12 @@ hbox_enable(ModbusTCPServerTiny)
 #添加源代码
 file(GLOB  MODBUSTCPSERVERTINY_CPP_C_FILES *.cpp *.CPP *.c *.C *.h)
 target_sources(ModbusTCPServerTiny PUBLIC ${MODBUSTCPSERVERTINY_CPP_C_FILES})
+
+include(FindPkgConfig)
+if(PKG_CONFIG_FOUND)
+pkg_check_modules(READLINE IMPORTED_TARGET readline)
+if(READLINE_FOUND)
+target_link_libraries(ModbusTCPServerTiny PkgConfig::READLINE)
+add_definitions(-DHAVE_READLINE=1)
+endif()
+endif()

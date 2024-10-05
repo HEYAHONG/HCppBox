@@ -2,6 +2,11 @@
 #include "hbox.h"
 #include <thread>
 #include <map>
+#include <mutex>
+#ifdef HAVE_READLINE
+#include <readline/readline.h>
+#include <readline/history.h>
+#endif
 
 /*
  * tcp_server上下文
@@ -85,25 +90,25 @@ static void server_thread()
     SOCKET server_fd=socket(AF_INET,SOCK_STREAM,0);
     if(server_fd==INVALID_SOCKET)
     {
-        printf("new socket error!\r\n");
+        hprintf("new socket error!\r\n");
         exit(-1);
     }
 
     if(bind(server_fd,(HCPPSocketAddress *)&addr,sizeof(addr))!=0)
     {
-        printf("bind socket error!\r\n");
+        hprintf("bind socket error!\r\n");
         closesocket(server_fd);
         exit(-1);
     }
     else
     {
-        printf("socket on 0.0.0.0:502 bind success!\r\n");
+        hprintf("socket on 0.0.0.0:502 bind success!\r\n");
     }
 
     //默认队列中只有一个客户端
     if(listen(server_fd,1)!=0)
     {
-        printf("listen socket error!\r\n");
+        hprintf("listen socket error!\r\n");
         closesocket(server_fd);
         exit(-1);
     }
@@ -112,7 +117,7 @@ static void server_thread()
         SOCKET connection_fd=INVALID_SOCKET;
         while((connection_fd=accept(server_fd,NULL,0))!=-1)
         {
-            printf("new connection %d!\r\n",connection_fd);
+            hprintf("new connection %d!\r\n",connection_fd);
             {
                 //设定接收超时5ms
                 struct timeval  tv;
@@ -135,12 +140,12 @@ static void server_thread()
                             return;
                         }
                         {
-                            printf("server send:");
+                            hprintf("server send:");
                             for(size_t i=0; i<adu_length; i++)
                             {
                                 printf("%02X ",(uint8_t)adu[i]);
                             }
-                            printf("\r\n");
+                            hprintf("\r\n");
                         }
                         SOCKET connection_fd=(SOCKET)(intptr_t)ctx->usr;
                         size_t offset=0;
@@ -163,12 +168,12 @@ static void server_thread()
                     tcp_server_tiny.reply=reply;
                     tcp_server_tiny.usr=(void *)(intptr_t)connection_fd;
                     {
-                        printf("server recv:");
+                        hprintf("server recv:");
                         for(size_t i=0; i<recvlen; i++)
                         {
-                            printf("%02X ",(uint8_t)packet[i]);
+                            hprintf("%02X ",(uint8_t)packet[i]);
                         }
-                        printf("\r\n");
+                        hprintf("\r\n");
                     }
                     modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_parse_input(&tcp_server_tiny,packet,recvlen);
                 }
@@ -194,15 +199,32 @@ static void server_thread()
     }
 
     closesocket(server_fd);
-    printf("socket exit!\r\n");
+    hprintf("socket exit!\r\n");
     exit(-1);
 
 }
 
+#ifdef HAVE_READLINE
+void cmd_help()
+{
+    hprintf("--------\r\n");
+    hprintf("help:\r\n");
+    hprintf("\texit\texit the program\r\n");
+    hprintf("--------\r\n");
+}
+#endif // HAVE_READLINE
+
+static std::recursive_mutex printf_lock;
 int main()
 {
     //初始化套接字
     HCPPSocketInit();
+
+    hprintf_set_callback([](char c)
+    {
+        std::lock_guard<std::recursive_mutex> lock(printf_lock);
+        putchar(c);
+    });
 
     {
         //TODO:初始化modbus上下文
@@ -212,9 +234,39 @@ int main()
     //启动服务线程
     std::thread server(server_thread);
     server.detach();
-
+#ifdef HAVE_READLINE
+    {
+        //打印帮助
+        std::lock_guard<std::recursive_mutex> lock(printf_lock);
+        cmd_help();
+    }
+    while(true)
+    {
+        char *s=readline("modbus>");
+        if(s!=NULL)
+        {
+            std::lock_guard<std::recursive_mutex> lock(printf_lock);
+            //处理命令
+            {
+                //输入exit退出
+                if(strcmp(s,"exit")==0)
+                {
+                    break;
+                }
+                //输入help打印帮助
+                if(strcmp(s,"help")==0)
+                {
+                    cmd_help();
+                }
+            }
+            add_history(s);
+            free(s);
+        }
+    }
+#else
     //等待用户敲击键盘结束
     getchar();
+#endif
     return 0;
 }
 
