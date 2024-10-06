@@ -204,13 +204,29 @@ static void server_thread()
 
 }
 
-#ifdef HAVE_READLINE
+
 void cmd_help()
 {
     hprintf("--------\r\n");
     hprintf("help:\r\n");
     hprintf("\texit\texit the program\r\n");
     hprintf("--------\r\n");
+}
+
+#ifndef HAVE_READLINE
+static char *readline(const char *prompt)
+{
+    if(prompt!=NULL)
+    {
+        hprintf("%s",prompt);
+    }
+    const size_t max_len=4096;
+    char *str=(char *)malloc(max_len);
+#if defined(__HAS_C11) || defined(__HAS_CPP11)
+    return gets_s(str,max_len);
+#else
+    return gets(str);
+#endif // __HAS_C11
 }
 #endif // HAVE_READLINE
 
@@ -234,7 +250,6 @@ int main()
     //启动服务线程
     std::thread server(server_thread);
     server.detach();
-#ifdef HAVE_READLINE
     {
         //打印帮助
         std::lock_guard<std::recursive_mutex> lock(printf_lock);
@@ -259,14 +274,12 @@ int main()
                     cmd_help();
                 }
             }
+#ifdef HAVE_READLINE
             add_history(s);
+#endif // HAVE_READLINE
             free(s);
         }
     }
-#else
-    //等待用户敲击键盘结束
-    getchar();
-#endif
     return 0;
 }
 
