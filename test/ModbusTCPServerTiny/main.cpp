@@ -222,11 +222,7 @@ static char *readline(const char *prompt)
     }
     const size_t max_len=4096;
     char *str=(char *)malloc(max_len);
-#if defined(__HAS_C11) || defined(__HAS_CPP11)
-    return gets_s(str,max_len);
-#else
-    return gets(str);
-#endif // __HAS_C11
+    return fgets(str,max_len,stdin);
 }
 #endif // HAVE_READLINE
 
