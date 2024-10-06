@@ -689,6 +689,9 @@ int main()
         char *s=readline("modbus>");
         if(s!=NULL)
         {
+#ifdef HAVE_READLINE
+            add_history(s);
+#endif // HAVE_READLINE
             std::lock_guard<std::recursive_mutex> lock(printf_lock);
             //处理命令
             {
@@ -700,9 +703,6 @@ int main()
                 //执行行，将修改字符串s
                 execute_line(s);
             }
-#ifdef HAVE_READLINE
-            add_history(s);
-#endif // HAVE_READLINE
             free(s);
         }
     }
