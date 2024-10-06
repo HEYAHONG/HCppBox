@@ -17,11 +17,15 @@ modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t tcp_server_tiny=modbus_
 typedef struct
 {
     std::map<modbus_data_address_t,bool> coils;
+    std::map<modbus_data_address_t,bool> discrete_inputs;
     std::map<modbus_data_address_t,modbus_data_register_t> registers;
+    std::map<modbus_data_address_t,modbus_data_register_t> input_registers;
 } modbus_data_t;
 static std::map<modbus_rtu_slave_tiny_context_t*,modbus_data_t> mb_data;
+static std::recursive_mutex mb_data_lock;
 static bool    read_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
 {
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
     if(mb_data.find(ctx)!=mb_data.end())
     {
         if(mb_data[ctx].coils.find(addr)!=mb_data[ctx].coils.end())
@@ -33,10 +37,19 @@ static bool    read_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_addres
 }
 static bool    read_discrete_input(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
 {
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
+    if(mb_data.find(ctx)!=mb_data.end())
+    {
+        if(mb_data[ctx].discrete_inputs.find(addr)!=mb_data[ctx].discrete_inputs.end())
+        {
+            return mb_data[ctx].discrete_inputs[addr];
+        }
+    }
     return !read_coil(ctx,addr);
 }
 static modbus_data_register_t  read_holding_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
 {
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
     if(mb_data.find(ctx)!=mb_data.end())
     {
         if(mb_data[ctx].registers.find(addr)!=mb_data[ctx].registers.end())
@@ -48,10 +61,19 @@ static modbus_data_register_t  read_holding_register(modbus_rtu_slave_tiny_conte
 }
 static modbus_data_register_t  read_input_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
 {
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
+    if(mb_data.find(ctx)!=mb_data.end())
+    {
+        if(mb_data[ctx].input_registers.find(addr)!=mb_data[ctx].input_registers.end())
+        {
+            return mb_data[ctx].input_registers[addr];
+        }
+    }
     return ~ read_holding_register(ctx, addr);
 }
 static void    write_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,bool value)
 {
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
     if(mb_data.find(ctx)!=mb_data.end())
     {
         mb_data[ctx].coils[addr]=value;
@@ -59,6 +81,7 @@ static void    write_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_addre
 }
 static void    write_holding_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,modbus_data_register_t value)
 {
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
     if(mb_data.find(ctx)!=mb_data.end())
     {
         mb_data[ctx].registers[addr]=value;
@@ -238,6 +261,14 @@ static char *readline(const char *prompt)
 
 static int cmd_exit(int argc,const char *argv[]);
 static int cmd_help(int argc,const char *argv[]);
+static int cmd_getc(int argc,const char *argv[]);
+static int cmd_getdi(int argc,const char *argv[]);
+static int cmd_gethr(int argc,const char *argv[]);
+static int cmd_getir(int argc,const char *argv[]);
+static int cmd_setc(int argc,const char *argv[]);
+static int cmd_setdi(int argc,const char *argv[]);
+static int cmd_sethr(int argc,const char *argv[]);
+static int cmd_setir(int argc,const char *argv[]);
 static struct
 {
     const char * cmd;
@@ -252,10 +283,54 @@ static struct
     }
     ,
     {
+        "getc",
+        cmd_getc,
+        "getc  [addr(hex)]\tget coil"
+    },
+    {
+        "getdi",
+        cmd_getdi,
+        "getdi [addr(hex)]\tget discrete input"
+    }
+    ,
+    {
+        "gethr",
+        cmd_gethr,
+        "gethr [addr(hex)]\tget holding register"
+    },
+    {
+        "getir",
+        cmd_getir,
+        "getir [addr(hex)]\tget input register"
+    },
+    {
+        "setc",
+        cmd_setc,
+        "setc  [addr(hex)] [value(0 or 1)]\tset coil"
+    },
+    {
+        "setdi",
+        cmd_setdi,
+        "setdi [addr(hex)] [value(0 or 1)]\tset discrete input"
+    }
+    ,
+    {
+        "sethr",
+        cmd_sethr,
+        "sethr [addr(hex)] [value(hex)]\tset holding register"
+    },
+    {
+        "setir",
+        cmd_setir,
+        "setir [addr(hex)] [value(hex)]\tset input register"
+    }
+    ,
+    {
         "exit",
         cmd_exit,
-        "exit\texit the program!"
+        "exit\texit the program"
     }
+
 };
 
 static int cmd_exit(int argc,const char *argv[])
@@ -287,6 +362,241 @@ static int cmd_help(int argc,const char *argv[])
     }
     return 0;
 }
+
+
+static int cmd_getc(int argc,const char *argv[])
+{
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
+    {
+        modbus_rtu_slave_tiny_context_t*ctx=&tcp_server_tiny.slave;
+        if(argc == 1)
+        {
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                auto data=mb_data[ctx].coils;
+                for(auto it=data.begin(); it!=data.end(); it++)
+                {
+                    hprintf("%04X=%04X\r\n",(int)it->first,it->second?1:0);
+                }
+            }
+        }
+        if(argc >= 2)
+        {
+            modbus_data_address_t addr=strtoll(argv[1],NULL,16);
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                auto data=mb_data[ctx].coils;
+                if(data.find(addr)!=data.end())
+                {
+                    hprintf("%04X=%04X\r\n",(int)addr,data[addr]?1:0);
+                }
+            }
+
+        }
+    }
+    return 0;
+}
+static int cmd_getdi(int argc,const char *argv[])
+{
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
+    {
+        modbus_rtu_slave_tiny_context_t*ctx=&tcp_server_tiny.slave;
+        if(argc == 1)
+        {
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                auto data=mb_data[ctx].discrete_inputs;
+                for(auto it=data.begin(); it!=data.end(); it++)
+                {
+                    hprintf("%04X=%04X\r\n",(int)it->first,it->second?1:0);
+                }
+            }
+        }
+        if(argc >= 2)
+        {
+            modbus_data_address_t addr=strtoll(argv[1],NULL,16);
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                auto data=mb_data[ctx].discrete_inputs;
+                if(data.find(addr)!=data.end())
+                {
+                    hprintf("%04X=%04X\r\n",(int)addr,data[addr]?1:0);
+                }
+            }
+
+        }
+    }
+    return 0;
+}
+static int cmd_gethr(int argc,const char *argv[])
+{
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
+    {
+        modbus_rtu_slave_tiny_context_t*ctx=&tcp_server_tiny.slave;
+        if(argc == 1)
+        {
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                auto data=mb_data[ctx].registers;
+                for(auto it=data.begin(); it!=data.end(); it++)
+                {
+                    hprintf("%04X=%04X\r\n",(int)it->first,(int)it->second);
+                }
+            }
+        }
+        if(argc >= 2)
+        {
+            modbus_data_address_t addr=strtoll(argv[1],NULL,16);
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                auto data=mb_data[ctx].registers;
+                if(data.find(addr)!=data.end())
+                {
+                    hprintf("%04X=%04X\r\n",(int)addr,(int)data[addr]);
+                }
+            }
+
+        }
+    }
+    return 0;
+}
+static int cmd_getir(int argc,const char *argv[])
+{
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
+    {
+        modbus_rtu_slave_tiny_context_t*ctx=&tcp_server_tiny.slave;
+        if(argc == 1)
+        {
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                auto data=mb_data[ctx].input_registers;
+                for(auto it=data.begin(); it!=data.end(); it++)
+                {
+                    hprintf("%04X=%04X\r\n",(int)it->first,(int)it->second);
+                }
+            }
+        }
+        if(argc >= 2)
+        {
+            modbus_data_address_t addr=strtoll(argv[1],NULL,16);
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                auto data=mb_data[ctx].input_registers;
+                if(data.find(addr)!=data.end())
+                {
+                    hprintf("%04X=%04X\r\n",(int)addr,data[addr]);
+                }
+            }
+
+        }
+    }
+    return 0;
+}
+static int cmd_setc(int argc,const char *argv[])
+{
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
+    {
+        modbus_rtu_slave_tiny_context_t*ctx=&tcp_server_tiny.slave;
+        if(argc >= 2)
+        {
+            modbus_data_address_t addr=strtoll(argv[1],NULL,16);
+            modbus_data_register_t value=0;
+            if(argc >= 3)
+            {
+                value=strtoll(argv[2],NULL,16);
+            }
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                mb_data[ctx].coils[addr]=value!=0;
+                auto data=mb_data[ctx].coils;
+                {
+                    hprintf("%04X=%04X\r\n",(int)addr,data[addr]?1:0);
+                }
+            }
+
+        }
+    }
+    return 0;
+}
+static int cmd_setdi(int argc,const char *argv[])
+{
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
+    {
+        modbus_rtu_slave_tiny_context_t*ctx=&tcp_server_tiny.slave;
+        if(argc >= 2)
+        {
+            modbus_data_address_t addr=strtoll(argv[1],NULL,16);
+            modbus_data_register_t value=0;
+            if(argc >= 3)
+            {
+                value=strtoll(argv[2],NULL,16);
+            }
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                mb_data[ctx].discrete_inputs[addr]=value!=0;
+                auto data=mb_data[ctx].discrete_inputs;
+                {
+                    hprintf("%04X=%04X\r\n",(int)addr,data[addr]?1:0);
+                }
+            }
+
+        }
+    }
+    return 0;
+}
+static int cmd_sethr(int argc,const char *argv[])
+{
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
+    {
+        modbus_rtu_slave_tiny_context_t*ctx=&tcp_server_tiny.slave;
+        if(argc >= 2)
+        {
+            modbus_data_address_t addr=strtoll(argv[1],NULL,16);
+            modbus_data_register_t value=0;
+            if(argc >= 3)
+            {
+                value=strtoll(argv[2],NULL,16);
+            }
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                mb_data[ctx].registers[addr]=value;
+                auto data=mb_data[ctx].registers;
+                {
+                    hprintf("%04X=%04X\r\n",(int)addr,data[addr]);
+                }
+            }
+
+        }
+    }
+    return 0;
+}
+static int cmd_setir(int argc,const char *argv[])
+{
+    std::lock_guard<std::recursive_mutex> lock(mb_data_lock);
+    {
+        modbus_rtu_slave_tiny_context_t*ctx=&tcp_server_tiny.slave;
+        if(argc >= 2)
+        {
+            modbus_data_address_t addr=strtoll(argv[1],NULL,16);
+            modbus_data_register_t value=0;
+            if(argc >= 3)
+            {
+                value=strtoll(argv[2],NULL,16);
+            }
+            if(mb_data.find(ctx)!=mb_data.end())
+            {
+                mb_data[ctx].input_registers[addr]=value;
+                auto data=mb_data[ctx].input_registers;
+                {
+                    hprintf("%04X=%04X\r\n",(int)addr,data[addr]);
+                }
+            }
+
+        }
+    }
+    return 0;
+}
+
 static void execute_line(char *line)
 {
     if(line == NULL || line[0] == '\0')
@@ -335,9 +645,11 @@ static void execute_line(char *line)
                 if(cmd_list[i].cmd_entry!=NULL)
                 {
                     cmd_list[i].cmd_entry(argc,argv);
+                    return;
                 }
             }
         }
+        hprintf("cmd %s is not found!\r\n",argv[0]);
     }
 
 }
