@@ -3,6 +3,7 @@
 #include <thread>
 #include <map>
 #include <mutex>
+#include <exception>
 #ifdef HAVE_READLINE
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -102,6 +103,10 @@ static void modbus_init_ctx(modbus_rtu_slave_tiny_context_t* ctx)
     ctx->write_holding_register=write_holding_register;
 }
 
+static void exit_program(int code)
+{
+    std::terminate();
+}
 static void server_thread()
 {
     HCPPSocketAddressIPV4 addr= {0};
@@ -114,14 +119,14 @@ static void server_thread()
     if(server_fd==INVALID_SOCKET)
     {
         hprintf("new socket error!\r\n");
-        exit(-1);
+        exit_program(-1);
     }
 
     if(bind(server_fd,(HCPPSocketAddress *)&addr,sizeof(addr))!=0)
     {
         hprintf("bind socket error!\r\n");
         closesocket(server_fd);
-        exit(-1);
+        exit_program(-1);
     }
     else
     {
@@ -133,7 +138,7 @@ static void server_thread()
     {
         hprintf("listen socket error!\r\n");
         closesocket(server_fd);
-        exit(-1);
+        exit_program(-1);
     }
 
     {
@@ -223,8 +228,7 @@ static void server_thread()
 
     closesocket(server_fd);
     hprintf("socket exit!\r\n");
-    exit(-1);
-
+    exit_program(-1);
 }
 
 
