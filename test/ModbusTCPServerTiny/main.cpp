@@ -320,7 +320,7 @@ static void execute_line(char *line)
             }
 
         }
-        while((*line) !='\0' || argc > max_argc);
+        while((*line) !='\0' && argc < max_argc);
         if((*argv[argc-1])=='\0')
         {
             argc--;
