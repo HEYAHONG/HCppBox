@@ -222,7 +222,18 @@ static char *readline(const char *prompt)
     }
     const size_t max_len=4096;
     char *str=(char *)malloc(max_len);
-    return fgets(str,max_len,stdin);
+    memset(str,0,max_len);
+    char *ret=fgets(str,max_len,stdin);
+    {
+        //去除末尾的空格回车换行
+        size_t len=strlen(ret);
+        while(ret[len-1]==' ' || ret[len-1]=='\r' ||ret[len-1]=='\n')
+        {
+            ret[len-1]='\0';
+            len=strlen(ret);
+        }
+    }
+    return ret;
 }
 #endif // HAVE_READLINE
 
