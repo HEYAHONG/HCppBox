@@ -205,11 +205,10 @@ static void server_thread()
 }
 
 
-void cmd_help()
+static void banner()
 {
     hprintf("--------\r\n");
-    hprintf("help:\r\n");
-    hprintf("\texit\texit the program\r\n");
+    hprintf("type help to get cmd help!\r\n");
     hprintf("--------\r\n");
 }
 
@@ -237,6 +236,112 @@ static char *readline(const char *prompt)
 }
 #endif // HAVE_READLINE
 
+static int cmd_exit(int argc,const char *argv[]);
+static int cmd_help(int argc,const char *argv[]);
+static struct
+{
+    const char * cmd;
+    int (*cmd_entry)(int argc,const char *argv[]);
+    const char * help;
+} cmd_list[]=
+{
+    {
+        "help",
+        cmd_help,
+        "help [cmd]\tget cmd help"
+    }
+    ,
+    {
+        "exit",
+        cmd_exit,
+        "exit\texit the program!"
+    }
+};
+
+static int cmd_exit(int argc,const char *argv[])
+{
+    //啥也不做,在主循环中处理退出命令
+    return 0;
+}
+
+static int cmd_help(int argc,const char *argv[])
+{
+    if(argc == 1)
+    {
+        for(size_t i=0; i<sizeof(cmd_list)/sizeof(cmd_list[0]); i++)
+        {
+            hprintf("%s\t%s\r\n",cmd_list[i].cmd,cmd_list[i].help);
+        }
+    }
+    if(argc > 1)
+    {
+        for(size_t i=0; i<sizeof(cmd_list)/sizeof(cmd_list[0]); i++)
+        {
+            if(strcmp(cmd_list[i].cmd,argv[1])==0)
+            {
+                hprintf("%s\t%s\r\n",cmd_list[i].cmd,cmd_list[i].help);
+                return 0;
+            }
+        }
+        hprintf("cmd %s is not found!\r\n",argv[1]);
+    }
+    return 0;
+}
+static void execute_line(char *line)
+{
+    if(line == NULL || line[0] == '\0')
+    {
+        return;
+    }
+    const size_t max_argc=32;
+    const char *argv[max_argc]= {0};
+    size_t argc=0;
+    {
+        //处理参数
+        do
+        {
+            {
+                //去除开头的空格
+                while((*line)==' ')
+                {
+                    line++;
+                }
+            }
+            argv[argc++]=line;
+            while((*line)!='\0')
+            {
+                line++;
+                if((*line)==' ')
+                {
+                    (*line)='\0';
+                    line++;
+                    break;
+                }
+            }
+
+        }
+        while((*line) !='\0' || argc > max_argc);
+        if((*argv[argc-1])=='\0')
+        {
+            argc--;
+        }
+    }
+
+    {
+        for(size_t i=0; i<sizeof(cmd_list)/sizeof(cmd_list[0]); i++)
+        {
+            if(strcmp(argv[0],cmd_list[i].cmd)==0)
+            {
+                if(cmd_list[i].cmd_entry!=NULL)
+                {
+                    cmd_list[i].cmd_entry(argc,argv);
+                }
+            }
+        }
+    }
+
+}
+
 static std::recursive_mutex printf_lock;
 int main()
 {
@@ -254,14 +359,19 @@ int main()
         modbus_init_ctx(&tcp_server_tiny.slave);
     }
 
-    //启动服务线程
-    std::thread server(server_thread);
-    server.detach();
     {
-        //打印帮助
+        //打印信息
         std::lock_guard<std::recursive_mutex> lock(printf_lock);
-        cmd_help();
+        banner();
     }
+
+    {
+        //启动服务线程
+        std::thread server(server_thread);
+        server.detach();
+    }
+
+    getchar();
     while(true)
     {
         char *s=readline("modbus>");
@@ -275,11 +385,8 @@ int main()
                 {
                     break;
                 }
-                //输入help打印帮助
-                if(strcmp(s,"help")==0)
-                {
-                    cmd_help();
-                }
+                //执行行，将修改字符串s
+                execute_line(s);
             }
 #ifdef HAVE_READLINE
             add_history(s);
