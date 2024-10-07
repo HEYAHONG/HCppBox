@@ -21,6 +21,24 @@ static bool pdu_process_broadcast(modbus_rtu_slave_tiny_context_t* ctx,const uin
     uint8_t function_code=pdu[0];
     switch(function_code)
     {
+    case MODBUS_FC_WRITE_SINGLE_COIL:
+    {
+        modbus_data_address_t addr=modbus_data_get_uint16_t(pdu,1,pdu_length);
+        modbus_data_register_t value=modbus_data_get_uint16_t(pdu,3,pdu_length);
+        if(ctx->write_coil!=NULL)
+        {
+            ret=true;
+            if(value==0xFF00)
+            {
+                ctx->write_coil(ctx,addr,true);
+            }
+            if(value==0x0000)
+            {
+                ctx->write_coil(ctx,addr,false);
+            }
+        }
+    }
+    break;
     case MODBUS_FC_WRITE_SINGLE_REGISTER:
     {
         modbus_data_address_t addr=modbus_data_get_uint16_t(pdu,1,pdu_length);
@@ -29,6 +47,32 @@ static bool pdu_process_broadcast(modbus_rtu_slave_tiny_context_t* ctx,const uin
         {
             ret=true;
             ctx->write_holding_register(ctx,addr,value);
+        }
+    }
+    break;
+    case MODBUS_FC_WRITE_MULTIPLE_COILS:
+    {
+        modbus_data_address_t addr=modbus_data_get_uint16_t(pdu,1,pdu_length);
+        modbus_data_register_t cnt=modbus_data_get_uint16_t(pdu,3,pdu_length);
+        if(cnt <= MODBUS_MAX_WRITE_BITS && cnt > 0 && ctx->write_coil != NULL)
+        {
+            uint8_t byte_cnt=pdu[5];
+            if((byte_cnt+6)!=pdu_length)
+            {
+                break;
+            }
+            ret=true;
+            for(size_t i=0; i<cnt; i++)
+            {
+                if((pdu[6+i/8]&(0x01<<(i%8)))!=0)
+                {
+                    ctx->write_coil(ctx,addr+i,true);
+                }
+                else
+                {
+                    ctx->write_coil(ctx,addr+i,false);
+                }
+            }
         }
     }
     break;
