@@ -277,62 +277,73 @@ static struct
 {
     const char * cmd;
     int (*cmd_entry)(int argc,const char *argv[]);
+    const char * usage;
     const char * help;
 } cmd_list[]=
 {
     {
         "help",
         cmd_help,
-        "help [cmd]\tget cmd help"
+        "help [cmd]",
+        "get cmd help"
     }
     ,
     {
         "getc",
         cmd_getc,
-        "getc  [addr(hex)]\tget coil"
+        "getc  [addr(hex)]",
+        "get coil"
     },
     {
         "getdi",
         cmd_getdi,
-        "getdi [addr(hex)]\tget discrete input"
+        "getdi [addr(hex)]",
+        "get discrete input"
     }
     ,
     {
         "gethr",
         cmd_gethr,
-        "gethr [addr(hex)]\tget holding register"
+        "gethr [addr(hex)]",
+        "get holding register"
     },
     {
         "getir",
         cmd_getir,
-        "getir [addr(hex)]\tget input register"
+        "getir [addr(hex)]",
+        "get input register"
     },
     {
         "setc",
         cmd_setc,
-        "setc  [addr(hex)] [value(0 or 1)]\tset coil"
+        "setc  [addr(hex)] [value(0 or 1)]",
+        "set coil"
     },
     {
         "setdi",
         cmd_setdi,
-        "setdi [addr(hex)] [value(0 or 1)]\tset discrete input"
+        "setdi [addr(hex)] [value(0 or 1)]",
+        "set discrete input"
     }
     ,
     {
         "sethr",
         cmd_sethr,
-        "sethr [addr(hex)] [value(hex)]\tset holding register"
+        "sethr [addr(hex)] [value(hex)]",
+        "set holding register"
     },
     {
         "setir",
         cmd_setir,
-        "setir [addr(hex)] [value(hex)]\tset input register"
+        "setir [addr(hex)] [value(hex)]",
+        "set input register"
     }
     ,
     {
         "exit",
         cmd_exit,
-        "exit\texit the program"
+        "exit",
+        "exit the program"
     }
 
 };
@@ -345,11 +356,55 @@ static int cmd_exit(int argc,const char *argv[])
 
 static int cmd_help(int argc,const char *argv[])
 {
+    const size_t cmd_max_len=16;
+    const size_t usage_max_len=64;
+    {
+        //打印标题栏
+        for(size_t i=0; i<cmd_max_len; i++)
+        {
+            hprintf("%s","-");
+        }
+        hprintf("\t");
+        for(size_t i=0; i<usage_max_len; i++)
+        {
+            hprintf("%s","-");
+        }
+        hprintf("\r\n");
+    }
     if(argc == 1)
     {
         for(size_t i=0; i<sizeof(cmd_list)/sizeof(cmd_list[0]); i++)
         {
-            hprintf("%s\t%s\r\n",cmd_list[i].cmd,cmd_list[i].help);
+            {
+                //打印cmd
+                hprintf("%s",cmd_list[i].cmd);
+                int cmd_pad_len=(int)cmd_max_len-strlen(cmd_list[i].cmd);
+                if(cmd_pad_len > 0)
+                {
+                    for(size_t i=0; i<cmd_pad_len; i++)
+                    {
+                        hprintf(" ");
+                    }
+                }
+            }
+            hprintf("\t");
+            {
+                //打印usage
+                hprintf("%s",cmd_list[i].usage);
+                int usage_pad_len=(int)usage_max_len-strlen(cmd_list[i].usage);
+                if(usage_pad_len > 0)
+                {
+                    for(size_t i=0; i<usage_pad_len; i++)
+                    {
+                        hprintf(" ");
+                    }
+                }
+            }
+            hprintf("\t");
+            {
+                hprintf("%s",cmd_list[i].help);
+            }
+            hprintf("\r\n");
         }
     }
     if(argc > 1)
@@ -358,7 +413,36 @@ static int cmd_help(int argc,const char *argv[])
         {
             if(strcmp(cmd_list[i].cmd,argv[1])==0)
             {
-                hprintf("%s\t%s\r\n",cmd_list[i].cmd,cmd_list[i].help);
+                {
+                    //打印cmd
+                    hprintf("%s",cmd_list[i].cmd);
+                    int cmd_pad_len=(int)cmd_max_len-strlen(cmd_list[i].cmd);
+                    if(cmd_pad_len > 0)
+                    {
+                        for(size_t i=0; i<cmd_pad_len; i++)
+                        {
+                            hprintf(" ");
+                        }
+                    }
+                }
+                hprintf("\t");
+                {
+                    //打印usage
+                    hprintf("%s",cmd_list[i].usage);
+                    int usage_pad_len=(int)usage_max_len-strlen(cmd_list[i].usage);
+                    if(usage_pad_len > 0)
+                    {
+                        for(size_t i=0; i<usage_pad_len; i++)
+                        {
+                            hprintf(" ");
+                        }
+                    }
+                }
+                hprintf("\t");
+                {
+                    hprintf("%s",cmd_list[i].help);
+                }
+                hprintf("\r\n");
                 return 0;
             }
         }
