@@ -22,6 +22,17 @@
 - GCC4.9.0及更新版本:https://gcc.gnu.org/
 - Clang 3.4 及更新版本:https://clang.llvm.org/
 
+### 可测试的其他编译器/IDE环境
+
+通过CMake,可生成其它编译器/IDE环境的工程文件，如MSVC。
+
+#### MSVC
+
+MSVC的编译器对C/C++标准支持随着版本的升级而逐渐完善，较为古老的IDE环境可能不支持本工程。
+
+- 推荐测试需要C99标准的IDE：VS2015及更新版本的IDE。
+- 推荐测试需要C++11标准的IDE：VS 2019 16.8及更新版本的IDE.
+
 # 组件
 
 ## hbox
