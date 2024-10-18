@@ -107,13 +107,18 @@ static void exit_program(int code)
 {
     std::terminate();
 }
+
+#ifndef MODBUS_TCP_PORT
+#define MODBUS_TCP_PORT 502
+#endif // MODBUS_TCP_PORT
+
 static void server_thread()
 {
     HCPPSocketAddressIPV4 addr= {0};
     {
         //默认addr为0.0.0.0：502
         addr.sin_family=AF_INET;
-        addr.sin_port=htons(502);
+        addr.sin_port=htons(MODBUS_TCP_PORT);
     }
     SOCKET server_fd=socket(AF_INET,SOCK_STREAM,0);
     if(server_fd==INVALID_SOCKET)
@@ -130,7 +135,7 @@ static void server_thread()
     }
     else
     {
-        hprintf("socket on 0.0.0.0:502 bind success!\r\n");
+        hprintf("socket on 0.0.0.0:%d bind success!\r\n",(int)MODBUS_TCP_PORT);
     }
 
     //默认队列中只有一个客户端
