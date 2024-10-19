@@ -308,7 +308,7 @@ static int cmd_rc(int argc,const char *argv[])
     ctx.on_read_coils=[](modbus_io_interface_context_read_coils_t *ctx,modbus_data_address_t addr,bool value)
     {
         (void)ctx;
-        hprintf("%d=%d\r\n",(int)addr,(int)value?0x0001:0x0000);
+        hprintf("%04x=%d\r\n",(int)addr,(int)value?0x0001:0x0000);
     };
     if(!modbus_tcp_client_request_gateway(&io,MODBUS_FC_READ_COILS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx)))
     {
