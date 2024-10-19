@@ -44,6 +44,7 @@ static int cmd_exit(int argc,const char *argv[]);
 static int cmd_help(int argc,const char *argv[]);
 static int cmd_con(int argc,const char *argv[]);
 static int cmd_discon(int argc,const char *argv[]);
+static int cmd_rc(int argc,const char *argv[]);
 static struct
 {
     const char * cmd;
@@ -71,6 +72,13 @@ static struct
         cmd_discon,
         "discon",
         "disconnect"
+    }
+    ,
+    {
+        "rc",
+        cmd_rc,
+        "rc [addr(hex)] [len[dec]]",
+        "read coils"
     }
     ,
     {
@@ -275,6 +283,39 @@ static int cmd_discon(int argc,const char *argv[])
     return 0;
 }
 
+static int cmd_rc(int argc,const char *argv[])
+{
+    if(!Io.IsConnected())
+    {
+        hprintf("please connect first!\r\n");
+        return 0;
+    }
+    modbus_tcp_client_io_interface_t io=Io.GetIoInterface();
+    modbus_io_interface_context_read_coils_t ctx=modbus_io_interface_context_read_coils_default();
+    if(argc > 1)
+    {
+        ctx.starting_address=strtoll(argv[1],NULL,16);
+    }
+    if(argc > 2)
+    {
+        ctx.quantity_of_coils=strtoll(argv[2],NULL,10);
+    }
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        (void)ctx;
+        hprintf("exception:func=%d,code=%d\r\n",(int)function_code,(int)exception_code);
+    };
+    ctx.on_read_coils=[](modbus_io_interface_context_read_coils_t *ctx,modbus_data_address_t addr,bool value)
+    {
+        (void)ctx;
+        hprintf("%d=%d\r\n",(int)addr,(int)value?0x0001:0x0000);
+    };
+    if(!modbus_tcp_client_request_gateway(&io,MODBUS_FC_READ_COILS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx)))
+    {
+        hprintf("failed\r\n");
+    }
+    return 0;
+}
 
 static std::recursive_mutex printf_lock;
 int main()
