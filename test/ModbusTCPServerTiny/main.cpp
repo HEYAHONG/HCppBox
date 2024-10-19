@@ -451,7 +451,7 @@ static int cmd_help(int argc,const char *argv[])
                 return 0;
             }
         }
-        hprintf("cmd %s is not found!\r\n",argv[1]);
+        hprintf("\r\ncmd %s is not found!\r\n",argv[1]);
     }
     return 0;
 }
@@ -791,6 +791,7 @@ int main()
                 //输入exit退出
                 if(strcmp(s,"exit")==0)
                 {
+                    free(s);
                     break;
                 }
                 //执行行，将修改字符串s
