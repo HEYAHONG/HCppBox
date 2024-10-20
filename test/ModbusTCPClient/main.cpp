@@ -45,6 +45,11 @@ static int cmd_help(int argc,const char *argv[]);
 static int cmd_con(int argc,const char *argv[]);
 static int cmd_discon(int argc,const char *argv[]);
 static int cmd_rc(int argc,const char *argv[]);
+static int cmd_rdi(int argc,const char *argv[]);
+static int cmd_rhr(int argc,const char *argv[]);
+static int cmd_rir(int argc,const char *argv[]);
+static int cmd_wsc(int argc,const char *argv[]);
+static int cmd_wsr(int argc,const char *argv[]);
 static struct
 {
     const char * cmd;
@@ -79,6 +84,41 @@ static struct
         cmd_rc,
         "rc [addr(hex)] [len[dec]]",
         "read coils"
+    }
+    ,
+    {
+        "rdi",
+        cmd_rdi,
+        "rdi [addr(hex)] [len[dec]]",
+        "read discrete inputs"
+    }
+    ,
+    {
+        "rhr",
+        cmd_rhr,
+        "rhr [addr(hex)] [len[dec]]",
+        "read holding registers"
+    }
+    ,
+    {
+        "rir",
+        cmd_rir,
+        "rir [addr(hex)] [len[dec]]",
+        "read input registers"
+    }
+    ,
+    {
+        "wsc",
+        cmd_wsc,
+        "wsc [addr(hex)] [value[hex]]",
+        "write single coil"
+    }
+    ,
+    {
+        "wsr",
+        cmd_wsr,
+        "wsr [addr(hex)] [value[hex]]",
+        "write single register"
     }
     ,
     {
@@ -308,7 +348,7 @@ static int cmd_rc(int argc,const char *argv[])
     ctx.on_read_coils=[](modbus_io_interface_context_read_coils_t *ctx,modbus_data_address_t addr,bool value)
     {
         (void)ctx;
-        hprintf("%04x=%d\r\n",(int)addr,(int)value?0x0001:0x0000);
+        hprintf("%04x=%d\r\n",(int)addr,(int)(value?0x0001:0x0000));
     };
     if(!modbus_tcp_client_request_gateway(&io,MODBUS_FC_READ_COILS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx)))
     {
@@ -316,6 +356,177 @@ static int cmd_rc(int argc,const char *argv[])
     }
     return 0;
 }
+
+static int cmd_rdi(int argc,const char *argv[])
+{
+    if(!Io.IsConnected())
+    {
+        hprintf("please connect first!\r\n");
+        return 0;
+    }
+    modbus_tcp_client_io_interface_t io=Io.GetIoInterface();
+    modbus_io_interface_context_read_discrete_inputs_t ctx=modbus_io_interface_context_read_discrete_inputs_default();
+    if(argc > 1)
+    {
+        ctx.starting_address=strtoll(argv[1],NULL,16);
+    }
+    if(argc > 2)
+    {
+        ctx.quantity_of_inputs=strtoll(argv[2],NULL,10);
+    }
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        (void)ctx;
+        hprintf("exception:func=%d,code=%d\r\n",(int)function_code,(int)exception_code);
+    };
+    ctx.on_read_discrete_inputs=[](modbus_io_interface_context_read_discrete_inputs_t *ctx,modbus_data_address_t addr,bool value)
+    {
+        (void)ctx;
+        hprintf("%04x=%d\r\n",(int)addr,(int)(value?0x0001:0x0000));
+    };
+    if(!modbus_tcp_client_request_gateway(&io,MODBUS_FC_READ_DISCRETE_INPUTS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx)))
+    {
+        hprintf("failed\r\n");
+    }
+    return 0;
+}
+
+static int cmd_rhr(int argc,const char *argv[])
+{
+    if(!Io.IsConnected())
+    {
+        hprintf("please connect first!\r\n");
+        return 0;
+    }
+    modbus_tcp_client_io_interface_t io=Io.GetIoInterface();
+    modbus_io_interface_context_read_holding_registers_t ctx=modbus_io_interface_context_read_holding_registers_default();
+    if(argc > 1)
+    {
+        ctx.starting_address=strtoll(argv[1],NULL,16);
+    }
+    if(argc > 2)
+    {
+        ctx.quantity_of_registers=strtoll(argv[2],NULL,10);
+    }
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        (void)ctx;
+        hprintf("exception:func=%d,code=%d\r\n",(int)function_code,(int)exception_code);
+    };
+    ctx.on_read_holding_registers=[](modbus_io_interface_context_read_holding_registers_t *ctx,modbus_data_address_t addr,modbus_data_register_t value)
+    {
+        (void)ctx;
+        hprintf("%04x=%04x\r\n",(int)addr,(int)(value));
+    };
+    if(!modbus_tcp_client_request_gateway(&io,MODBUS_FC_READ_HOLDING_REGISTERS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx)))
+    {
+        hprintf("failed\r\n");
+    }
+    return 0;
+}
+
+static int cmd_rir(int argc,const char *argv[])
+{
+    if(!Io.IsConnected())
+    {
+        hprintf("please connect first!\r\n");
+        return 0;
+    }
+    modbus_tcp_client_io_interface_t io=Io.GetIoInterface();
+    modbus_io_interface_context_read_input_registers_t ctx=modbus_io_interface_context_read_input_registers_default();
+    if(argc > 1)
+    {
+        ctx.starting_address=strtoll(argv[1],NULL,16);
+    }
+    if(argc > 2)
+    {
+        ctx.quantity_of_registers=strtoll(argv[2],NULL,10);
+    }
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        (void)ctx;
+        hprintf("exception:func=%d,code=%d\r\n",(int)function_code,(int)exception_code);
+    };
+    ctx.on_read_input_registers=[](modbus_io_interface_context_read_input_registers_t *ctx,modbus_data_address_t addr,modbus_data_register_t value)
+    {
+        (void)ctx;
+        hprintf("%04x=%04x\r\n",(int)addr,(int)(value));
+    };
+    if(!modbus_tcp_client_request_gateway(&io,MODBUS_FC_READ_INPUT_REGISTERS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx)))
+    {
+        hprintf("failed\r\n");
+    }
+    return 0;
+}
+
+static int cmd_wsc(int argc,const char *argv[])
+{
+    if(!Io.IsConnected())
+    {
+        hprintf("please connect first!\r\n");
+        return 0;
+    }
+    modbus_tcp_client_io_interface_t io=Io.GetIoInterface();
+    modbus_io_interface_context_write_single_coil_t ctx=modbus_io_interface_context_write_single_coil_default();
+    if(argc > 1)
+    {
+        ctx.output_address=strtoll(argv[1],NULL,16);
+    }
+    if(argc > 2)
+    {
+        ctx.output_value=(strtoll(argv[2],NULL,16)!=0);
+    }
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        (void)ctx;
+        hprintf("exception:func=%d,code=%d\r\n",(int)function_code,(int)exception_code);
+    };
+    ctx.on_write_single_coil=[](modbus_io_interface_context_write_single_coil_t *ctx,modbus_data_address_t addr,modbus_data_register_t value)
+    {
+        (void)ctx;
+        hprintf("%04x=%04x\r\n",(int)addr,(int)(value));
+    };
+    if(!modbus_tcp_client_request_gateway(&io,MODBUS_FC_WRITE_SINGLE_COIL,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx)))
+    {
+        hprintf("failed\r\n");
+    }
+    return 0;
+}
+
+static int cmd_wsr(int argc,const char *argv[])
+{
+    if(!Io.IsConnected())
+    {
+        hprintf("please connect first!\r\n");
+        return 0;
+    }
+    modbus_tcp_client_io_interface_t io=Io.GetIoInterface();
+    modbus_io_interface_context_write_single_register_t ctx=modbus_io_interface_context_write_single_register_default();
+    if(argc > 1)
+    {
+        ctx.output_address=strtoll(argv[1],NULL,16);
+    }
+    if(argc > 2)
+    {
+        ctx.output_value=strtoll(argv[2],NULL,16);
+    }
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        (void)ctx;
+        hprintf("exception:func=%d,code=%d\r\n",(int)function_code,(int)exception_code);
+    };
+    ctx.on_write_single_register=[](modbus_io_interface_context_write_single_register_t *ctx,modbus_data_address_t addr,modbus_data_register_t value)
+    {
+        (void)ctx;
+        hprintf("%04x=%04x\r\n",(int)addr,(int)(value));
+    };
+    if(!modbus_tcp_client_request_gateway(&io,MODBUS_FC_WRITE_SINGLE_REGISTER,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx)))
+    {
+        hprintf("failed\r\n");
+    }
+    return 0;
+}
+
 
 static std::recursive_mutex printf_lock;
 int main()
