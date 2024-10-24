@@ -349,6 +349,19 @@ C++语言标准
 
 #endif // __cplusplus
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
 
+/*
+ * 在C++代码中，可能不能获取到C编译器C语言版本(编译库时)，定义一个函数获取__STDC_VERSION__
+ */
+
+long hcompiler_get_stdc_version();
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // HCOMPILER_H_INCLUDED

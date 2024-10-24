@@ -49,6 +49,9 @@ extern "C" void c_compiler_test();
 static int hcompiler_test(int argc,const char *argv[])
 {
     c_compiler_test();
+
+    printf("hcompiler:C Compiler __SDTC_VERSION__=%d\r\n",(int)hcompiler_get_stdc_version());
+
 #ifdef __HAS_CPP11
     printf("hcompiler:C++11\r\n");
 #endif // __HAS_CPP11

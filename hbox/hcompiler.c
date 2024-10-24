@@ -8,4 +8,15 @@
  **************************************************************/
 
 #include "hcompiler.h"
+#include "stdlib.h"
+#include "stdio.h"
+
+long hcompiler_get_stdc_version()
+{
+#ifdef __STDC_VERSION__
+    return __STDC_VERSION__;
+#else
+    return 199409L;
+#endif // __STDC_VERSION__
+}
 
