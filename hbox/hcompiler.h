@@ -358,7 +358,68 @@ extern "C"
  * 在C++代码中，可能不能获取到C编译器C语言版本(编译库时)，定义一个函数获取__STDC_VERSION__
  */
 
+/** \brief  获取C语言版本
+ *
+ * \return long C语言版本
+ *
+ */
 long hcompiler_get_stdc_version();
+
+/** \brief 获取编译日期
+ *
+ * \return const char* 日期
+ *
+ */
+const char * hcompiler_get_date();
+
+/** \brief 获取日期年
+ *
+ * \return int 年
+ *
+ */
+int hcompiler_get_date_year();
+
+/** \brief 获取日期月
+ *
+ * \return int 月 1-12
+ *
+ */
+int hcompiler_get_date_month();
+
+/** \brief  获取日期日
+ *
+ * \return int 日
+ *
+ */
+int hcompiler_get_date_day();
+
+/** \brief 获取编译时间
+ *
+ * \return const char* 时间
+ *
+ */
+const char * hcompiler_get_time();
+
+/** \brief 获取编译时间时
+ *
+ * \return int 时
+ *
+ */
+int hcompiler_get_time_hour();
+
+/** \brief 获取编译时间分
+ *
+ * \return int 分
+ *
+ */
+int hcompiler_get_time_minute();
+
+/** \brief 获取编译时间秒
+ *
+ * \return int 秒
+ *
+ */
+int hcompiler_get_time_second();
 
 #ifdef __cplusplus
 }

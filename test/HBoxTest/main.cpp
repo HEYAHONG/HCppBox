@@ -52,6 +52,8 @@ static int hcompiler_test(int argc,const char *argv[])
 
     printf("hcompiler:C Compiler __SDTC_VERSION__=%d\r\n",(int)hcompiler_get_stdc_version());
 
+    printf("hcompiler:build time %04d/%02d/%02d %02d:%02d:%02d\r\n",hcompiler_get_date_year(),hcompiler_get_date_month(),hcompiler_get_date_day(),hcompiler_get_time_hour(),hcompiler_get_time_minute(),hcompiler_get_time_second());
+
 #ifdef __HAS_CPP11
     printf("hcompiler:C++11\r\n");
 #endif // __HAS_CPP11
