@@ -71,7 +71,7 @@ public:
             return false;
         }
         bool ret=false;
-        socket_fd=socket(AF_INET,SOCK_STREAM,0);
+        socket_fd=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
         if(socket_fd!=INVALID_SOCKET)
         {
             HCPPSocketAddressIPV4 addr= {0};
