@@ -138,8 +138,8 @@ static int cmd_exit(int argc,const char *argv[])
 
 static int cmd_help(int argc,const char *argv[])
 {
-    const size_t cmd_max_len=16;
-    const size_t usage_max_len=64;
+    const size_t cmd_max_len=8;
+    const size_t usage_max_len=32;
     {
         //打印标题栏
         for(size_t i=0; i<cmd_max_len; i++)
