@@ -4,6 +4,7 @@
 #include <map>
 #include <mutex>
 #include <exception>
+#include <stdarg.h>
 #ifdef HAVE_READLINE
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -112,6 +113,20 @@ static void exit_program(int code)
 #define MODBUS_TCP_PORT 502
 #endif // MODBUS_TCP_PORT
 
+static bool is_server_thread_printf_enabled=true;
+static int server_thread_printf(const char *fmt,...)
+{
+    int ret=0;
+    va_list va;
+    va_start(va,fmt);
+    if(is_server_thread_printf_enabled)
+    {
+        ret=hvprintf(fmt,va);
+    }
+    va_end(va);
+    return ret;
+}
+
 static void server_thread()
 {
     HCPPSocketAddressIPV4 addr= {0};
@@ -123,25 +138,25 @@ static void server_thread()
     SOCKET server_fd=socket(AF_INET,SOCK_STREAM,0);
     if(server_fd==INVALID_SOCKET)
     {
-        hprintf("new socket error!\r\n");
+        server_thread_printf("new socket error!\r\n");
         exit_program(-1);
     }
 
     if(bind(server_fd,(HCPPSocketAddress *)&addr,sizeof(addr))!=0)
     {
-        hprintf("bind socket error!\r\n");
+        server_thread_printf("bind socket error!\r\n");
         closesocket(server_fd);
         exit_program(-1);
     }
     else
     {
-        hprintf("socket on 0.0.0.0:%d bind success!\r\n",(int)MODBUS_TCP_PORT);
+        server_thread_printf("socket on 0.0.0.0:%d bind success!\r\n",(int)MODBUS_TCP_PORT);
     }
 
     //默认队列中只有一个客户端
     if(listen(server_fd,1)!=0)
     {
-        hprintf("listen socket error!\r\n");
+        server_thread_printf("listen socket error!\r\n");
         closesocket(server_fd);
         exit_program(-1);
     }
@@ -150,7 +165,7 @@ static void server_thread()
         SOCKET connection_fd=INVALID_SOCKET;
         while((connection_fd=accept(server_fd,NULL,0))!=-1)
         {
-            hprintf("new connection %d!\r\n",connection_fd);
+            server_thread_printf("new connection %d!\r\n",connection_fd);
             {
                 //设定接收超时5ms
                 struct timeval  tv;
@@ -173,12 +188,12 @@ static void server_thread()
                             return;
                         }
                         {
-                            hprintf("server send:");
+                            server_thread_printf("server send:");
                             for(size_t i=0; i<adu_length; i++)
                             {
-                                printf("%02X ",(uint8_t)adu[i]);
+                                server_thread_printf("%02X ",(uint8_t)adu[i]);
                             }
-                            hprintf("\r\n");
+                            server_thread_printf("\r\n");
                         }
                         SOCKET connection_fd=(SOCKET)(intptr_t)ctx->usr;
                         size_t offset=0;
@@ -201,12 +216,12 @@ static void server_thread()
                     tcp_server_tiny.reply=reply;
                     tcp_server_tiny.usr=(void *)(intptr_t)connection_fd;
                     {
-                        hprintf("server recv:");
+                        server_thread_printf("server recv:");
                         for(size_t i=0; i<recvlen; i++)
                         {
-                            hprintf("%02X ",(uint8_t)packet[i]);
+                            server_thread_printf("%02X ",(uint8_t)packet[i]);
                         }
-                        hprintf("\r\n");
+                        server_thread_printf("\r\n");
                     }
                     modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_parse_input(&tcp_server_tiny,packet,recvlen);
                 }
@@ -228,11 +243,12 @@ static void server_thread()
                 }
             }
             closesocket(connection_fd);
+            server_thread_printf("connection %d close!\r\n",connection_fd);
         }
     }
 
     closesocket(server_fd);
-    hprintf("socket exit!\r\n");
+    server_thread_printf("socket exit!\r\n");
     exit_program(-1);
 }
 
@@ -268,6 +284,7 @@ static char *readline(const char *prompt)
 }
 #endif // HAVE_READLINE
 
+static int cmd_log(int argc,const char *argv[]);
 static int cmd_exit(int argc,const char *argv[]);
 static int cmd_help(int argc,const char *argv[]);
 static int cmd_getc(int argc,const char *argv[]);
@@ -345,6 +362,13 @@ static struct
     }
     ,
     {
+        "log",
+        cmd_log,
+        "log [ on | off ]",
+        "turn on/off log"
+    }
+    ,
+    {
         "exit",
         cmd_exit,
         "exit",
@@ -352,6 +376,23 @@ static struct
     }
 
 };
+
+static int cmd_log(int argc,const char *argv[])
+{
+    if(argc > 1)
+    {
+        if(strcmp(argv[1],"on")==0)
+        {
+            is_server_thread_printf_enabled=true;
+        }
+        if(strcmp(argv[1],"off")==0)
+        {
+            is_server_thread_printf_enabled=false;
+        }
+    }
+    hprintf("log %s\r\n",is_server_thread_printf_enabled?"on":"off");
+    return 0;
+}
 
 static int cmd_exit(int argc,const char *argv[])
 {
@@ -777,6 +818,7 @@ int main()
     }
 
     getchar();
+    is_server_thread_printf_enabled=false;
     while(true)
     {
         char *s=readline("modbus>");
