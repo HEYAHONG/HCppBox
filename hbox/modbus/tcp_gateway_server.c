@@ -118,7 +118,7 @@ bool modbus_tcp_gateway_server_parse_input(modbus_tcp_gateway_server_context_t* 
  * \return modbus_tcp_gateway_server_context_t modbus_tcp_gateway_server上下文
  *
  */
-modbus_tcp_gateway_server_context_t modbus_tcp_gateway_server_context_default()
+modbus_tcp_gateway_server_context_t modbus_tcp_gateway_server_context_default(void)
 {
     modbus_tcp_gateway_server_context_t ctx= {0};
     return ctx;
@@ -129,7 +129,7 @@ modbus_tcp_gateway_server_context_t modbus_tcp_gateway_server_context_default()
  * \return modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t modbus tcp gateway server(使用精简modbus协议)上下文
  *
  */
-modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_context_default()
+modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_context_default(void)
 {
     modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t ctx= {0};
     ctx.gateway=modbus_tcp_gateway_server_context_default();

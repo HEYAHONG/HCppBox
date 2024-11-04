@@ -11,7 +11,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 
-long hcompiler_get_stdc_version()
+long hcompiler_get_stdc_version(void)
 {
 #ifdef __STDC_VERSION__
     return __STDC_VERSION__;
@@ -21,13 +21,13 @@ long hcompiler_get_stdc_version()
 }
 
 
-const char * hcompiler_get_date()
+const char * hcompiler_get_date(void)
 {
     return __DATE__;
 }
 
 
-const char * hcompiler_get_time()
+const char * hcompiler_get_time(void)
 {
     return __TIME__;
 }
@@ -72,14 +72,14 @@ static int month_strcmp(const char *str1,const char *str2)
     return 0;
 }
 
-int hcompiler_get_date_year()
+int hcompiler_get_date_year(void)
 {
     const char *date=hcompiler_get_date();
     return (date[7]-'0')*1000+(date[8]-'0')*100+(date[9]-'0')*10+(date[10]-'0');
 }
 
 
-int hcompiler_get_date_month()
+int hcompiler_get_date_month(void)
 {
     for(size_t i=0; i<sizeof(Month_Name)/sizeof(Month_Name[0]); i++)
     {
@@ -92,27 +92,27 @@ int hcompiler_get_date_month()
 }
 
 
-int hcompiler_get_date_day()
+int hcompiler_get_date_day(void)
 {
     const char *date=hcompiler_get_date();
     return (date[4]-'0')*10+(date[5]-'0');
 }
 
-int hcompiler_get_time_hour()
+int hcompiler_get_time_hour(void)
 {
     const char *timestr=hcompiler_get_time();
     return (timestr[0]-'0')*10+(timestr[1]-'0');
 }
 
 
-int hcompiler_get_time_minute()
+int hcompiler_get_time_minute(void)
 {
     const char *timestr=hcompiler_get_time();
     return (timestr[3]-'0')*10+(timestr[4]-'0');
 }
 
 
-int hcompiler_get_time_second()
+int hcompiler_get_time_second(void)
 {
     const char *timestr=hcompiler_get_time();
     return (timestr[6]-'0')*10+(timestr[7]-'0');

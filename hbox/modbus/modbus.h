@@ -400,7 +400,7 @@ struct modbus_rtu_slave_tiny_context
  * \return modbus_rtu_slave_tiny_context_t 上下文，可用于初始化精简modubus rtu上下文
  *
  */
-modbus_rtu_slave_tiny_context_t modbus_rtu_slave_tiny_context_default();
+modbus_rtu_slave_tiny_context_t modbus_rtu_slave_tiny_context_default(void);
 
 
 /** \brief  modbus rtu解析输入并返回
@@ -441,7 +441,7 @@ struct modbus_tcp_gateway_server_context
  * \return modbus_tcp_gateway_server_context_t modbus_tcp_gateway_server上下文
  *
  */
-modbus_tcp_gateway_server_context_t modbus_tcp_gateway_server_context_default();
+modbus_tcp_gateway_server_context_t modbus_tcp_gateway_server_context_default(void);
 
 
 /** \brief  modbus gateway server解析输入并返回
@@ -477,7 +477,7 @@ struct modbus_tcp_gateway_server_context_with_modbus_rtu_tiny
  * \return modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t modbus tcp gateway server(使用精简modbus协议)上下文
  *
  */
-modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_context_default();
+modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_context_default(void);
 
 /** \brief  modbus gateway server（(使用精简modbus协议)）解析输入并返回
  *          注意:本操作未加锁，应当避免在多个线程中使用同一个上下文调用此函数。
@@ -509,7 +509,7 @@ typedef modbus_io_interface_t modbus_tcp_client_io_interface_t;
  * \return modbus_io_interface_t io接口
  *
  */
-modbus_io_interface_t modbus_io_interface_default();
+modbus_io_interface_t modbus_io_interface_default(void);
 
 typedef enum
 {
@@ -537,7 +537,7 @@ struct modbus_io_interface_context_base
  * \return modbus_io_interface_context_base_t modbus_io_interface_context_base_t 接口上下文（基类）
  *
  */
-modbus_io_interface_context_base_t modbus_io_interface_context_base_default();
+modbus_io_interface_context_base_t modbus_io_interface_context_base_default(void);
 
 /*
  *  读取线圈上下文
@@ -558,7 +558,7 @@ struct modbus_io_interface_context_read_coils
  * \return modbus_io_interface_context_read_coils_t 读取线圈上下文
  *
  */
-modbus_io_interface_context_read_coils_t modbus_io_interface_context_read_coils_default();
+modbus_io_interface_context_read_coils_t modbus_io_interface_context_read_coils_default(void);
 
 /*
  *  读取离散输入上下文
@@ -579,7 +579,7 @@ struct modbus_io_interface_context_read_discrete_inputs
  * \return modbus_io_interface_context_read_discrete_inputs_t 读取离散输入上下文
  *
  */
-modbus_io_interface_context_read_discrete_inputs_t modbus_io_interface_context_read_discrete_inputs_default();
+modbus_io_interface_context_read_discrete_inputs_t modbus_io_interface_context_read_discrete_inputs_default(void);
 
 /*
  *  读取保持寄存器上下文
@@ -600,7 +600,7 @@ struct modbus_io_interface_context_read_holding_registers
  * \return modbus_io_interface_context_read_holding_registers_t 读取保持寄存器上下文
  *
  */
-modbus_io_interface_context_read_holding_registers_t modbus_io_interface_context_read_holding_registers_default();
+modbus_io_interface_context_read_holding_registers_t modbus_io_interface_context_read_holding_registers_default(void);
 
 /*
  *  读取输入寄存器上下文
@@ -621,7 +621,7 @@ struct modbus_io_interface_context_read_input_registers
  * \return modbus_io_interface_context_read_input_registers_t 读取输入寄存器上下文
  *
  */
-modbus_io_interface_context_read_input_registers_t modbus_io_interface_context_read_input_registers_default();
+modbus_io_interface_context_read_input_registers_t modbus_io_interface_context_read_input_registers_default(void);
 
 /*
  *  写单个线圈上下文
@@ -642,7 +642,7 @@ struct modbus_io_interface_context_write_single_coil
  * \return modbus_io_interface_context_write_single_coil_t 写单个线圈上下文
  *
  */
-modbus_io_interface_context_write_single_coil_t modbus_io_interface_context_write_single_coil_default();
+modbus_io_interface_context_write_single_coil_t modbus_io_interface_context_write_single_coil_default(void);
 
 /*
  *  写单个寄存器上下文
@@ -663,7 +663,7 @@ struct modbus_io_interface_context_write_single_register
  * \return modbus_io_interface_context_write_single_register_t 写单个寄存器上下文
  *
  */
-modbus_io_interface_context_write_single_register_t modbus_io_interface_context_write_single_register_default();
+modbus_io_interface_context_write_single_register_t modbus_io_interface_context_write_single_register_default(void);
 
 /*
  *  读异常代码上下文(注意：此处的异常更类似设备的状态码，按位定义，而非modbus通信异常代码。)
@@ -682,7 +682,7 @@ struct modbus_io_interface_context_read_exception_status
  * \return modbus_io_interface_context_read_exception_status_t 读异常代码上下文
  *
  */
-modbus_io_interface_context_read_exception_status_t modbus_io_interface_context_read_exception_status_default();
+modbus_io_interface_context_read_exception_status_t modbus_io_interface_context_read_exception_status_default(void);
 
 /*
  *  诊断上下文（用于检查通信系统）
@@ -703,7 +703,7 @@ struct modbus_io_interface_context_diagnostics
  * \return modbus_io_interface_context_diagnostics_t 诊断上下文
  *
  */
-modbus_io_interface_context_diagnostics_t modbus_io_interface_context_diagnostics_default();
+modbus_io_interface_context_diagnostics_t modbus_io_interface_context_diagnostics_default(void);
 
 
 /*
@@ -723,7 +723,7 @@ struct modbus_io_interface_context_get_comm_event_counter
  * \return modbus_io_interface_context_get_comm_event_counter_t 获取通信事件计数器上下文
  *
  */
-modbus_io_interface_context_get_comm_event_counter_t modbus_io_interface_context_get_comm_event_counter_default();
+modbus_io_interface_context_get_comm_event_counter_t modbus_io_interface_context_get_comm_event_counter_default(void);
 
 /*
  *  获取通信事件记录上下文
@@ -742,7 +742,7 @@ struct modbus_io_interface_context_get_comm_event_log
  * \return modbus_io_interface_context_get_comm_event_log_t 获取通信事件记录上下文
  *
  */
-modbus_io_interface_context_get_comm_event_log_t modbus_io_interface_context_get_comm_event_log_default();
+modbus_io_interface_context_get_comm_event_log_t modbus_io_interface_context_get_comm_event_log_default(void);
 
 
 /*
@@ -765,7 +765,7 @@ struct modbus_io_interface_context_write_multiple_coils
  * \return modbus_io_interface_context_write_multiple_coils_t 写多个线圈上下文
  *
  */
-modbus_io_interface_context_write_multiple_coils_t modbus_io_interface_context_write_multiple_coils_default();
+modbus_io_interface_context_write_multiple_coils_t modbus_io_interface_context_write_multiple_coils_default(void);
 
 /*
  *  写多个寄存器上下文
@@ -787,7 +787,7 @@ struct modbus_io_interface_context_write_multiple_registers
  * \return modbus_io_interface_context_write_multiple_registers_t 写多个寄存器上下文
  *
  */
-modbus_io_interface_context_write_multiple_registers_t modbus_io_interface_context_write_multiple_registers_default();
+modbus_io_interface_context_write_multiple_registers_t modbus_io_interface_context_write_multiple_registers_default(void);
 
 /*
  *  报告服务器ID上下文(注意：本上下文中server_id由设备自定义,包含所有modbus字段（包含服务器id、运行状态指示、额外数据）)
@@ -806,7 +806,7 @@ struct modbus_io_interface_context_report_server_id
  * \return modbus_io_interface_context_report_server_id_t 报告服务器ID上下文
  *
  */
-modbus_io_interface_context_report_server_id_t modbus_io_interface_context_report_server_id_default();
+modbus_io_interface_context_report_server_id_t modbus_io_interface_context_report_server_id_default(void);
 
 /*
  *  读取文件记录上下文
@@ -827,7 +827,7 @@ struct modbus_io_interface_context_read_file_record
  * \return modbus_io_interface_context_read_file_record_t 读取文件记录上下文
  *
  */
-modbus_io_interface_context_read_file_record_t modbus_io_interface_context_read_file_record_default();
+modbus_io_interface_context_read_file_record_t modbus_io_interface_context_read_file_record_default(void);
 
 /*
  *  写入文件记录上下文
@@ -848,7 +848,7 @@ struct modbus_io_interface_context_write_file_record
  * \return modbus_io_interface_context_write_file_record_t 写入文件记录上下文
  *
  */
-modbus_io_interface_context_write_file_record_t modbus_io_interface_context_write_file_record_default();
+modbus_io_interface_context_write_file_record_t modbus_io_interface_context_write_file_record_default(void);
 
 /*
  *  掩码写寄存器上下文
@@ -870,7 +870,7 @@ struct modbus_io_interface_context_mask_write_register
  * \return modbus_io_interface_context_mask_write_register_t 掩码写寄存器上下文
  *
  */
-modbus_io_interface_context_mask_write_register_t modbus_io_interface_context_mask_write_register_default();
+modbus_io_interface_context_mask_write_register_t modbus_io_interface_context_mask_write_register_default(void);
 
 /*
  *  读写多个寄存器上下文
@@ -894,7 +894,7 @@ struct modbus_io_interface_context_read_write_multiple_registers
  * \return modbus_io_interface_context_read_write_multiple_registers_t 读写多个寄存器上下文
  *
  */
-modbus_io_interface_context_read_write_multiple_registers_t modbus_io_interface_context_read_write_multiple_registers_default();
+modbus_io_interface_context_read_write_multiple_registers_t modbus_io_interface_context_read_write_multiple_registers_default(void);
 
 /*
  *  读取FIFO队列上下文
@@ -914,7 +914,7 @@ struct modbus_io_interface_context_read_fifo_queue
  * \return modbus_io_interface_context_read_fifo_queue_t 读取FIFO队列上下文
  *
  */
-modbus_io_interface_context_read_fifo_queue_t modbus_io_interface_context_read_fifo_queue_default();
+modbus_io_interface_context_read_fifo_queue_t modbus_io_interface_context_read_fifo_queue_default(void);
 
 /*
  *  封装传输上下文（注意：此上下文使用时需要根据MEI（modbus封装接口）不同而处理不同数据）
@@ -935,7 +935,7 @@ struct modbus_io_interface_context_encapsulated_interface_transport
  * \return modbus_io_interface_context_encapsulated_interface_transport_t 封装传输上下文
  *
  */
-modbus_io_interface_context_encapsulated_interface_transport_t modbus_io_interface_context_encapsulated_interface_transport_default();
+modbus_io_interface_context_encapsulated_interface_transport_t modbus_io_interface_context_encapsulated_interface_transport_default(void);
 
 /** \brief IO请求(rtu主机或者tcp客户端)
  *          注意：此函数对栈的要求较高，需要保证栈足够大

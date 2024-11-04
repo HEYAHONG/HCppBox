@@ -363,63 +363,63 @@ extern "C"
  * \return long C语言版本
  *
  */
-long hcompiler_get_stdc_version();
+long hcompiler_get_stdc_version(void);
 
 /** \brief 获取编译日期
  *
  * \return const char* 日期
  *
  */
-const char * hcompiler_get_date();
+const char * hcompiler_get_date(void);
 
 /** \brief 获取日期年
  *
  * \return int 年
  *
  */
-int hcompiler_get_date_year();
+int hcompiler_get_date_year(void);
 
 /** \brief 获取日期月
  *
  * \return int 月 1-12
  *
  */
-int hcompiler_get_date_month();
+int hcompiler_get_date_month(void);
 
 /** \brief  获取日期日
  *
  * \return int 日
  *
  */
-int hcompiler_get_date_day();
+int hcompiler_get_date_day(void);
 
 /** \brief 获取编译时间
  *
  * \return const char* 时间
  *
  */
-const char * hcompiler_get_time();
+const char * hcompiler_get_time(void);
 
 /** \brief 获取编译时间时
  *
  * \return int 时
  *
  */
-int hcompiler_get_time_hour();
+int hcompiler_get_time_hour(void);
 
 /** \brief 获取编译时间分
  *
  * \return int 分
  *
  */
-int hcompiler_get_time_minute();
+int hcompiler_get_time_minute(void);
 
 /** \brief 获取编译时间秒
  *
  * \return int 秒
  *
  */
-int hcompiler_get_time_second();
+int hcompiler_get_time_second(void);
 
 #ifdef __cplusplus
 }

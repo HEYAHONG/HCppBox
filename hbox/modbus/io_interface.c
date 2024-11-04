@@ -8,20 +8,20 @@
  **************************************************************/
 #include "modbus.h"
 
-modbus_io_interface_t modbus_io_interface_default()
+modbus_io_interface_t modbus_io_interface_default(void)
 {
     modbus_io_interface_t io= {0};
     return io;
 }
 
-modbus_io_interface_context_base_t modbus_io_interface_context_base_default()
+modbus_io_interface_context_base_t modbus_io_interface_context_base_default(void)
 {
     modbus_io_interface_context_base_t ctx= {0};
     ctx.slave_addr=MODBUS_NODE_ADDRESS_DEFAULT;
     return ctx;
 }
 
-modbus_io_interface_context_read_coils_t modbus_io_interface_context_read_coils_default()
+modbus_io_interface_context_read_coils_t modbus_io_interface_context_read_coils_default(void)
 {
     modbus_io_interface_context_read_coils_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
@@ -29,7 +29,7 @@ modbus_io_interface_context_read_coils_t modbus_io_interface_context_read_coils_
     return ctx;
 }
 
-modbus_io_interface_context_read_discrete_inputs_t modbus_io_interface_context_read_discrete_inputs_default()
+modbus_io_interface_context_read_discrete_inputs_t modbus_io_interface_context_read_discrete_inputs_default(void)
 {
     modbus_io_interface_context_read_discrete_inputs_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
@@ -37,7 +37,7 @@ modbus_io_interface_context_read_discrete_inputs_t modbus_io_interface_context_r
     return ctx;
 }
 
-modbus_io_interface_context_read_holding_registers_t modbus_io_interface_context_read_holding_registers_default()
+modbus_io_interface_context_read_holding_registers_t modbus_io_interface_context_read_holding_registers_default(void)
 {
     modbus_io_interface_context_read_holding_registers_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
@@ -45,7 +45,7 @@ modbus_io_interface_context_read_holding_registers_t modbus_io_interface_context
     return ctx;
 }
 
-modbus_io_interface_context_read_input_registers_t modbus_io_interface_context_read_input_registers_default()
+modbus_io_interface_context_read_input_registers_t modbus_io_interface_context_read_input_registers_default(void)
 {
     modbus_io_interface_context_read_input_registers_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
@@ -53,49 +53,49 @@ modbus_io_interface_context_read_input_registers_t modbus_io_interface_context_r
     return ctx;
 }
 
-modbus_io_interface_context_write_single_coil_t modbus_io_interface_context_write_single_coil_default()
+modbus_io_interface_context_write_single_coil_t modbus_io_interface_context_write_single_coil_default(void)
 {
     modbus_io_interface_context_write_single_coil_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
     return ctx;
 }
 
-modbus_io_interface_context_write_single_register_t modbus_io_interface_context_write_single_register_default()
+modbus_io_interface_context_write_single_register_t modbus_io_interface_context_write_single_register_default(void)
 {
     modbus_io_interface_context_write_single_register_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
     return ctx;
 }
 
-modbus_io_interface_context_read_exception_status_t modbus_io_interface_context_read_exception_status_default()
+modbus_io_interface_context_read_exception_status_t modbus_io_interface_context_read_exception_status_default(void)
 {
     modbus_io_interface_context_read_exception_status_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
     return ctx;
 }
 
-modbus_io_interface_context_diagnostics_t modbus_io_interface_context_diagnostics_default()
+modbus_io_interface_context_diagnostics_t modbus_io_interface_context_diagnostics_default(void)
 {
     modbus_io_interface_context_diagnostics_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
     return ctx;
 }
 
-modbus_io_interface_context_get_comm_event_counter_t modbus_io_interface_context_get_comm_event_counter_default()
+modbus_io_interface_context_get_comm_event_counter_t modbus_io_interface_context_get_comm_event_counter_default(void)
 {
     modbus_io_interface_context_get_comm_event_counter_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
     return ctx;
 }
 
-modbus_io_interface_context_get_comm_event_log_t modbus_io_interface_context_get_comm_event_log_default()
+modbus_io_interface_context_get_comm_event_log_t modbus_io_interface_context_get_comm_event_log_default(void)
 {
     modbus_io_interface_context_get_comm_event_log_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
     return ctx;
 }
 
-modbus_io_interface_context_write_multiple_coils_t modbus_io_interface_context_write_multiple_coils_default()
+modbus_io_interface_context_write_multiple_coils_t modbus_io_interface_context_write_multiple_coils_default(void)
 {
     modbus_io_interface_context_write_multiple_coils_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
@@ -103,7 +103,7 @@ modbus_io_interface_context_write_multiple_coils_t modbus_io_interface_context_w
     return ctx;
 }
 
-modbus_io_interface_context_write_multiple_registers_t modbus_io_interface_context_write_multiple_registers_default()
+modbus_io_interface_context_write_multiple_registers_t modbus_io_interface_context_write_multiple_registers_default(void)
 {
     modbus_io_interface_context_write_multiple_registers_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
@@ -111,14 +111,14 @@ modbus_io_interface_context_write_multiple_registers_t modbus_io_interface_conte
     return ctx;
 }
 
-modbus_io_interface_context_report_server_id_t modbus_io_interface_context_report_server_id_default()
+modbus_io_interface_context_report_server_id_t modbus_io_interface_context_report_server_id_default(void)
 {
     modbus_io_interface_context_report_server_id_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
     return ctx;
 }
 
-modbus_io_interface_context_read_file_record_t modbus_io_interface_context_read_file_record_default()
+modbus_io_interface_context_read_file_record_t modbus_io_interface_context_read_file_record_default(void)
 {
     modbus_io_interface_context_read_file_record_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
@@ -126,7 +126,7 @@ modbus_io_interface_context_read_file_record_t modbus_io_interface_context_read_
     return ctx;
 }
 
-modbus_io_interface_context_write_file_record_t modbus_io_interface_context_write_file_record_default()
+modbus_io_interface_context_write_file_record_t modbus_io_interface_context_write_file_record_default(void)
 {
     modbus_io_interface_context_write_file_record_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
@@ -134,14 +134,14 @@ modbus_io_interface_context_write_file_record_t modbus_io_interface_context_writ
     return ctx;
 }
 
-modbus_io_interface_context_mask_write_register_t modbus_io_interface_context_mask_write_register_default()
+modbus_io_interface_context_mask_write_register_t modbus_io_interface_context_mask_write_register_default(void)
 {
     modbus_io_interface_context_mask_write_register_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
     return ctx;
 }
 
-modbus_io_interface_context_read_write_multiple_registers_t modbus_io_interface_context_read_write_multiple_registers_default()
+modbus_io_interface_context_read_write_multiple_registers_t modbus_io_interface_context_read_write_multiple_registers_default(void)
 {
     modbus_io_interface_context_read_write_multiple_registers_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
@@ -150,14 +150,14 @@ modbus_io_interface_context_read_write_multiple_registers_t modbus_io_interface_
     return ctx;
 }
 
-modbus_io_interface_context_read_fifo_queue_t modbus_io_interface_context_read_fifo_queue_default()
+modbus_io_interface_context_read_fifo_queue_t modbus_io_interface_context_read_fifo_queue_default(void)
 {
     modbus_io_interface_context_read_fifo_queue_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();
     return ctx;
 }
 
-modbus_io_interface_context_encapsulated_interface_transport_t modbus_io_interface_context_encapsulated_interface_transport_default()
+modbus_io_interface_context_encapsulated_interface_transport_t modbus_io_interface_context_encapsulated_interface_transport_default(void)
 {
     modbus_io_interface_context_encapsulated_interface_transport_t ctx= {0};
     ctx.base=modbus_io_interface_context_base_default();

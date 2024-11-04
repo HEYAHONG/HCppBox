@@ -518,7 +518,7 @@ static bool    check_anycast_condition(modbus_rtu_slave_tiny_context_t* ctx)
     return false;
 }
 
-modbus_rtu_slave_tiny_context_t modbus_rtu_slave_tiny_context_default()
+modbus_rtu_slave_tiny_context_t modbus_rtu_slave_tiny_context_default(void)
 {
     modbus_rtu_slave_tiny_context_t ctx= {0};
     ctx.addr=MODBUS_NODE_ADDRESS_DEFAULT;
