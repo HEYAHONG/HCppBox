@@ -15,6 +15,11 @@ if not Enable_HBox_CPP:
     group = []
     Return('group')
 
+#HBOX的LOCAL_CXXFLAGS,一般用于keil5设置c++11(--cpp11)
+HBOX_LOCAL_CXXFLAGS = ''
+if  "HBOX_LOCAL_CXXFLAGS" in os.environ:
+    HBOX_LOCAL_CXXFLAGS = os.environ["HBOX_LOCAL_CXXFLAGS"]
+
 cwd = GetCurrentDir()
 src = Glob('*.c')
 src += Glob('*.cpp')
@@ -22,7 +27,7 @@ CPPPATH = [
 cwd
 ]
 
-group = DefineGroup('HBox_CPP', src, depend = [''], CPPPATH = CPPPATH)
+group = DefineGroup('HBox_CPP', src, depend = [''], CPPPATH = CPPPATH,LOCAL_CXXFLAGS=HBOX_LOCAL_CXXFLAGS)
 
 list = os.listdir(cwd)
 for item in list:
