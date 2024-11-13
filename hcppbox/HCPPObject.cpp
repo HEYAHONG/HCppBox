@@ -4,6 +4,7 @@
 #include <mutex>
 #include <algorithm>
 
+
 //对象池操作
 extern void HCPPObjectPool_ObjectDelete(void *ptr);
 namespace HCPPObjectGlobal
@@ -68,8 +69,12 @@ void HCPPObject::AddToChildList(HCPPObject * child)
     m_child_list.push_back(child);
 }
 
-HCPPObject::HCPPObject(HCPPObject *parent):m_parent(parent),m_lock(new std::recursive_mutex),flags{{0}}
+HCPPObject::HCPPObject(HCPPObject *parent):m_parent(parent),m_lock(new std::recursive_mutex)
 {
+    for(size_t i=0; i<sizeof(flags)/sizeof(flags[0]); i++)
+    {
+        flags[i]=0;
+    }
     if(m_parent!=NULL)
     {
         //添加到父对象
@@ -77,8 +82,12 @@ HCPPObject::HCPPObject(HCPPObject *parent):m_parent(parent),m_lock(new std::recu
     }
 }
 
-HCPPObject::HCPPObject(HCPPObject &other):m_parent(other.m_parent),m_lock(new std::recursive_mutex),flags{{0}}
+HCPPObject::HCPPObject(HCPPObject &other):m_parent(other.m_parent),m_lock(new std::recursive_mutex)
 {
+    for(size_t i=0; i<sizeof(flags)/sizeof(flags[0]); i++)
+    {
+        flags[i]=0;
+    }
     if(m_parent!=NULL)
     {
         //添加到父对象
@@ -86,8 +95,12 @@ HCPPObject::HCPPObject(HCPPObject &other):m_parent(other.m_parent),m_lock(new st
     }
 }
 
-HCPPObject::HCPPObject(HCPPObject &&other):m_parent(other.m_parent),m_lock(new std::recursive_mutex),flags{{0}}
+HCPPObject::HCPPObject(HCPPObject &&other):m_parent(other.m_parent),m_lock(new std::recursive_mutex)
 {
+    for(size_t i=0; i<sizeof(flags)/sizeof(flags[0]); i++)
+    {
+        flags[i]=0;
+    }
     if(m_parent!=NULL)
     {
         //添加到父对象

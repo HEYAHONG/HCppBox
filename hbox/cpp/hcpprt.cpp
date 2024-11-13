@@ -107,15 +107,24 @@ void *operator new(size_t size)
 {
     return hdefaults_malloc(size,NULL);
 }
+
 void *operator new[](size_t size)
 {
     return hdefaults_malloc(size,NULL);
 }
+
 void operator delete(void *ptr)
+#ifdef __clang__
+throw()
+#endif
 {
     hdefaults_free(ptr,NULL);
 }
+
 void operator delete[](void *ptr)
+#ifdef __clang__
+throw()
+#endif
 {
     hdefaults_free(ptr,NULL);
 }

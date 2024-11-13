@@ -60,7 +60,7 @@ public:
      * \param childdelete bool 是否在线程被删除时删除其子对象。
      *
      */
-    void SetChildDelete(bool childdelete=true);
+    void SetChildDelete(bool childdelete=true) override;
 
     /** \brief 获取类型
      *
