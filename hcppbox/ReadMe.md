@@ -65,3 +65,12 @@
 
 - HCPPTimer.cpp
 - HCPPTimer.h
+
+## HCPPInit
+
+辅助实现动态注册初始化函数且按照一定顺序初始化。
+
+### 文件列表
+
+- HCPPInit.cpp
+- HCPPInit.h

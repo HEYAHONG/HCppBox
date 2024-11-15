@@ -136,3 +136,14 @@ HCPPThread* TimerThread::GetThread()
     return m_thread;
 }
 }
+
+//HCPPInit,为保证可靠性，此组件需要放在最后
+#include <mutex>
+#include <string>
+#include <queue>
+#include <functional>
+namespace HCPPInitGlobal
+{
+std::recursive_mutex m_lock;
+std::map<std::string,std::queue<std::function<void(void)>>> *m_map=NULL;
+}

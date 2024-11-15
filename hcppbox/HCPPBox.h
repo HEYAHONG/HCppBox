@@ -14,5 +14,6 @@
 #include "HCPPThread.h"
 #include "HCPPTimer.h"
 #include "HCPPSocket.h"
+#include "HCPPInit.h"
 
 #endif // HCPPBOX_H_INCLUDED

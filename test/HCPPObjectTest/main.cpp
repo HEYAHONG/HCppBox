@@ -9,6 +9,7 @@ void Parent_main();
 void Thread_main();
 void Timer_main();
 void Socket_main();
+void Init_main();
 
 int main()
 {
@@ -22,6 +23,8 @@ int main()
     Timer_main();
 
     Socket_main();
+
+    Init_main();
 
 #ifdef WIN32
     printf("press any key to exit\n");
