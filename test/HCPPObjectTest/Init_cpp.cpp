@@ -1,23 +1,23 @@
 #include "HCPPInit.h"
 #include "stdio.h"
-static void init_blank()
+static void init_blank(void)
 {
     printf("Init_cpp init (blank)\r\n");
 }
 
-static void init_0()
+static void init_0(void)
 {
     printf("Init_cpp init 0\r\n");
 }
 
-static void init_1()
+static void init_1(void)
 {
     printf("Init_cpp init 1\r\n");
 }
 
-static void init_2()
+static void init_2(void)
 {
-    printf("Init_cpp init 1\r\n");
+    printf("Init_cpp init 2\r\n");
 }
 
 static void Init_cpp_early_init()
