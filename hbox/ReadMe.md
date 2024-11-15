@@ -282,6 +282,9 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 
 - 精简版modbus rtu从机:实现简单的modbus从机功能，仅实现线圈、离散输入、输入寄存器、保持寄存器相关功能。
 - modbus tcp网关服务器：实现modbus tcp到modbus rtu的转换。
+- modbus tcp客户端：实现对modbus tcp服务器的访问。
+
+注意：本组件只包含对相应模式（如 modbus tcp、modbus rtu）下的数据包的处理，不包含具体io操作(如串口读写、tcp读写)。
 
 [modbus](https://modbus.org)支持以下数据类型：
 
