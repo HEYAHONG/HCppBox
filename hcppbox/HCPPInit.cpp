@@ -1,8 +1,8 @@
 /***************************************************************
  * Name:      HCPPInit.cpp
- * Purpose:   HCPPInit对外接口。
+ * Purpose:   HCPPInit接口实现。
  * Author:    HYH (hyhsystem.cn)
- * Created:   2024-01-18
+ * Created:   2024-11-15
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
