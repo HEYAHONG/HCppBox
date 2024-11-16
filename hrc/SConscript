@@ -5,11 +5,18 @@ from building import *
 # get current directory
 cwd = GetCurrentDir()
 
+#RC_FS的编号（同一次构建中多个程序需要hrc组件时保证资源文件不重复,通常用于test目录中的程序）
+HRC_RC_FS_PATH_NUM="1"
+if  'HRC_RC_FS_PATH_NUM' in os.environ:
+    HRC_RC_FS_PATH_NUM=os.environ['HRC_RC_FS_PATH_NUM']
+os.environ['HRC_RC_FS_PATH_NUM']=str(int(HRC_RC_FS_PATH_NUM)+1)
+
+
 #默认文件路径
 if not os.path.isdir(os.getcwd()+"/build/"):
     os.mkdir(os.getcwd()+"/build/")
 
-HRC_RC_FS_PATH=os.getcwd()+"/build/RC_fs.c"
+HRC_RC_FS_PATH=os.getcwd()+"/build/RC_fs_"+HRC_RC_FS_PATH_NUM+".c"
 
 oldcwd=os.getcwd();
 
