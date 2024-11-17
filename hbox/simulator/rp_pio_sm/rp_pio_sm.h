@@ -178,7 +178,7 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
 /** \brief 状态机节拍,由于pio对时序要求比较高，推荐在定时器中调用此函数。注意：此函数不是线程安全的，必要时需要加锁。
  *
  * \param sm hs_rp_pio_sm_t* 状态机
- * \param cycles size_t 周期数,0等于无效
+ * \param cycles size_t 周期数,0等于无效,如需精确的时序，通常使用1作为周期数，并使用定时器调用此函数。
  *
  */
 void hs_rp_pio_sm_tick(hs_rp_pio_sm_t *sm,size_t cycles);
