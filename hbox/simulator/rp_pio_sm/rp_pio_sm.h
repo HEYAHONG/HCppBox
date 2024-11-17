@@ -102,7 +102,7 @@ typedef union
     uint16_t Instruction;
     struct
     {
-        uint16_t :8;
+        uint16_t resv:8;
         uint16_t Delay_SideSet:5;
         uint16_t Instruction_Class:3;//HS_RP_PIO_SM_INS_CLASS_*
     };
@@ -110,44 +110,44 @@ typedef union
     {
         uint16_t Address:5;
         uint16_t Condition:3;
-        uint16_t :8;//见Delay_SideSet与Ins_Class,下同
+        uint16_t resv:8;//见Delay_SideSet与Ins_Class,下同
     } JMP;
     struct
     {
         uint16_t Index:5;
         uint16_t Source:2;
         uint16_t Pol:1;
-        uint16_t :8;
+        uint16_t resv:8;
     } WAIT;
     struct
     {
         uint16_t Bit_count:5;
         uint16_t Source:3;
-        uint16_t :8;
+        uint16_t resv:8;
     } IN;
     struct
     {
         uint16_t Bit_count:5;
         uint16_t Destination:3;
-        uint16_t :8;
+        uint16_t resv:8;
     } OUT;
     struct
     {
         uint16_t Index:2;//MOV指令
-        uint16_t :1;
+        uint16_t resv1:1;
         uint16_t Idxl:1;//MOV指令
         uint16_t Mov:1;//1=MOV指令,0=Push/Pull指令
         uint16_t Blk:1;//PUSH/PULL指令
         uint16_t ifF_ifE:1;//PUSH/PULL指令
         uint16_t Pull:1;//1=Pull,0=Push/Mov
-        uint16_t :8;
+        uint16_t resv2:8;
     } PUSH_MOV_PULL;
     struct
     {
         uint16_t Source:3;
         uint16_t Op:2;
         uint16_t Destination:3;
-        uint16_t :8;
+        uint16_t resv:8;
     } MOV;
     struct
     {
@@ -155,14 +155,14 @@ typedef union
         uint16_t IdxMode:2;
         uint16_t Wait:1;
         uint16_t Clr:1;
-        uint16_t :1;
-        uint16_t :8;
+        uint16_t resv1:1;
+        uint16_t resv2:8;
     } IRQ;
     struct
     {
         uint16_t Data:5;
         uint16_t Destination:3;
-        uint16_t :8;
+        uint16_t resv:8;
     } SET;
 } hs_rp_pio_sm_instruction_t;
 
