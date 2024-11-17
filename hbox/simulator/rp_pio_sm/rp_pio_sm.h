@@ -111,26 +111,26 @@ typedef union
         uint16_t Address:5;
         uint16_t Condition:3;
         uint16_t resv:8;//见Delay_SideSet与Ins_Class,下同
-    } JMP;
+    } INS_JMP;
     struct
     {
         uint16_t Index:5;
         uint16_t Source:2;
         uint16_t Pol:1;
         uint16_t resv:8;
-    } WAIT;
+    } INS_WAIT;
     struct
     {
         uint16_t Bit_count:5;
         uint16_t Source:3;
         uint16_t resv:8;
-    } IN;
+    } INS_IN;
     struct
     {
         uint16_t Bit_count:5;
         uint16_t Destination:3;
         uint16_t resv:8;
-    } OUT;
+    } INS_OUT;
     struct
     {
         uint16_t Index:2;//MOV指令
@@ -141,14 +141,14 @@ typedef union
         uint16_t ifF_ifE:1;//PUSH/PULL指令
         uint16_t Pull:1;//1=Pull,0=Push/Mov
         uint16_t resv2:8;
-    } PUSH_MOV_PULL;
+    } INS_PUSH_MOV_PULL;
     struct
     {
         uint16_t Source:3;
         uint16_t Op:2;
         uint16_t Destination:3;
         uint16_t resv:8;
-    } MOV;
+    } INS_MOV;
     struct
     {
         uint16_t Index:3;
@@ -157,13 +157,13 @@ typedef union
         uint16_t Clr:1;
         uint16_t resv1:1;
         uint16_t resv2:8;
-    } IRQ;
+    } INS_IRQ;
     struct
     {
         uint16_t Data:5;
         uint16_t Destination:3;
         uint16_t resv:8;
-    } SET;
+    } INS_SET;
 } hs_rp_pio_sm_instruction_t;
 
 /** \brief 状态机执行指令，注意：此函数不是线程安全的，必要时需要加锁。
