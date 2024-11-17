@@ -114,13 +114,17 @@ void hs_rp_pio_sm_tick(hs_rp_pio_sm_t *sm,size_t cycles)
 {
     if(sm!=0&&sm->io!=NULL)
     {
-        hs_rp_pio_sm_instruction_t instruction;
+
+        while(cycles--!=0)
         {
-            uint32_t val=sm->pc;
-            sm->io(sm,HS_RP_PIO_SM_IO_READ_INSTRUCTION,&val,sm->usr);
-            instruction.Instruction=val;
+            hs_rp_pio_sm_instruction_t instruction;
+            {
+                uint32_t val=sm->pc;
+                sm->io(sm,HS_RP_PIO_SM_IO_READ_INSTRUCTION,&val,sm->usr);
+                instruction.Instruction=val;
+            }
+            hs_rp_pio_sm_exec(sm,instruction);
         }
-        hs_rp_pio_sm_exec(sm,instruction);
     }
 }
 
