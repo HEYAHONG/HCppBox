@@ -117,6 +117,13 @@ void hs_rp_pio_sm_tick(hs_rp_pio_sm_t *sm,size_t cycles)
 
         while(cycles--!=0)
         {
+            if(sm->delay!=0)
+            {
+                sm->delay--;
+                //等待延时结束
+                continue;
+            }
+
             hs_rp_pio_sm_instruction_t instruction;
             {
                 uint32_t val=sm->pc;
