@@ -27,6 +27,7 @@
 #include "hstacklesscoroutine.h"
 #include "hmodbus.h"
 #include "hbase64.h"
+#include "hsimulator.h"
 
 /*
 由C++编写的组件
