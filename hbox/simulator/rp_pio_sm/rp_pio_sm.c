@@ -416,7 +416,147 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
     break;
     case HS_RP_PIO_SM_INS_CLASS_PUSH_MOV_PULL: //PUSH、MOV、PULL指令
     {
+        if(instruction.INS_PUSH_MOV_PULL.Mov)
+        {
+            if(instruction.INS_PUSH_MOV_PULL.Pull)
+            {
+                //MOV(From RX)
+                uint8_t index=0;
+                if(instruction.INS_PUSH_MOV_PULL.Idxl)
+                {
+                    index=(instruction.INS_PUSH_MOV_PULL.Index&0x3);
+                }
+                else
+                {
+                    index=(sm->y&0x3);
+                }
+                uint32_t val=0;
+                sm->io(sm,HS_RP_PIO_SM_IO_READ_MOV_RX_FIFO_0+index,&val,sm->usr);
+                sm->osr=val;
+                sm->osr_shift_cnt=0;
+            }
+            else
+            {
+                //MOV(To RX)
+                uint8_t index=0;
+                if(instruction.INS_PUSH_MOV_PULL.Idxl)
+                {
+                    index=(instruction.INS_PUSH_MOV_PULL.Index&0x3);
+                }
+                else
+                {
+                    index=(sm->y&0x3);
+                }
+                uint32_t val=sm->isr;
+                sm->io(sm,HS_RP_PIO_SM_IO_WRITE_MOV_RX_FIFO_0+index,&val,sm->usr);
+            }
+            sm->pc++;
+        }
+        else
+        {
+            //Pull Push
+            if(instruction.INS_PUSH_MOV_PULL.Pull)
+            {
+                //Pull
+                if(instruction.INS_PUSH_MOV_PULL.ifF_ifE)
+                {
+                    uint8_t thresh=sm->pull_thresh;
+                    if(thresh==0)
+                    {
+                        thresh=32;
+                    }
+                    if(sm->osr_shift_cnt < thresh)
+                    {
+                        sm->pc++;
+                        //do nothing
+                        break;
+                    }
+                }
 
+                if(instruction.INS_PUSH_MOV_PULL.Blk)
+                {
+                    //block
+                    uint32_t val=0;
+                    if(sm->io(sm,HS_RP_PIO_SM_IO_PULL_TX_FIFO,&val,sm->usr))
+                    {
+                        sm->osr=val;
+                        sm->osr_shift_cnt=0;
+                        sm->pc++;
+                        sm->stall=0;
+                    }
+                    else
+                    {
+                        sm->stall=1;
+                    }
+                }
+                else
+                {
+                    //noblock
+                    uint32_t val=0;
+                    if(sm->io(sm,HS_RP_PIO_SM_IO_PULL_TX_FIFO,&val,sm->usr))
+                    {
+                        sm->osr=val;
+                        sm->osr_shift_cnt=0;
+                        sm->pc++;
+                        sm->stall=0;
+                    }
+                    else
+                    {
+                        //读取X的值
+                        sm->osr=sm->x;
+                        sm->osr_shift_cnt=0;
+                        sm->pc++;
+                        sm->stall=0;
+                    }
+                }
+
+            }
+            else
+            {
+                //Push
+                if(instruction.INS_PUSH_MOV_PULL.ifF_ifE)
+                {
+                    uint8_t thresh=sm->push_thresh;
+                    if(thresh==0)
+                    {
+                        thresh=32;
+                    }
+                    if(sm->isr_shift_cnt < thresh)
+                    {
+                        sm->pc++;
+                        //do nothing
+                        break;
+                    }
+                }
+
+                if(instruction.INS_PUSH_MOV_PULL.Blk)
+                {
+                    //block
+                    if(sm->io(sm,HS_RP_PIO_SM_IO_PUSH_RX_FIFO,&sm->isr,sm->usr))
+                    {
+                        sm->isr=0;
+                        sm->isr_shift_cnt=0;
+                        sm->pc++;
+                        sm->stall=0;
+                    }
+                    else
+                    {
+                        sm->stall=1;
+                    }
+                }
+                else
+                {
+                    //noblock
+                    sm->io(sm,HS_RP_PIO_SM_IO_PUSH_RX_FIFO,&sm->isr,sm->usr);
+                    {
+                        sm->isr=0;
+                        sm->isr_shift_cnt=0;
+                        sm->pc++;
+                        sm->stall=0;
+                    }
+                }
+            }
+        }
     }
     break;
     case HS_RP_PIO_SM_INS_CLASS_MOV:           //MOV指令
