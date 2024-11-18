@@ -29,17 +29,18 @@ size_t hs_rp_pio_sm_size(void);
 typedef enum
 {
     HS_RP_PIO_SM_IO_READ_INSTRUCTION,//指令读取，传入PC的值(通过*val访问)，传出指令（低16位）
-    HS_RP_PIO_SM_IO_PUSH_RX_FIFO,//写RX_FIFO
-    HS_RP_PIO_SM_IO_PULL_TX_FIFO,//读TX_FIFO
-    HS_RP_PIO_SM_IO_READ_PINS,//读PINS,低位有效
-    HS_RP_PIO_SM_IO_READ_JMP_PIN,//读取用于JMP的PIN,低位有效
-    HS_RP_PIO_SM_IO_WRITE_PINS,//写PINS,低位有效
+    HS_RP_PIO_SM_IO_PUSH_RX_FIFO,//写RX_FIFO，写32位数据
+    HS_RP_PIO_SM_IO_PULL_TX_FIFO,//读TX_FIFO，读32位数据
+    HS_RP_PIO_SM_IO_READ_PINS,//读PINS,32位数据，每一位表示一个PIN
+    HS_RP_PIO_SM_IO_READ_JMP_PIN,//读取用于JMP的PIN,32位数据，每一位表示一个PIN，位0表示JMP指令使用的PIN
+    HS_RP_PIO_SM_IO_READ_GPIO,//读GPIO(未经映射)，32位数据，每一位表示一个GPIO。
+    HS_RP_PIO_SM_IO_WRITE_PINS,//写PINS,32位数据，每一位表示一个PIN
     HS_RP_PIO_SM_IO_READ_PINDIR,//读PINDIR,低位有效
     HS_RP_PIO_SM_IO_WRITE_PINDIR,//写PINDIR,低位有效
     HS_RP_PIO_SM_IO_WRITE_SIDESET,//SIDESET可参考HS_RP_PIO_SM_IO_WRITE_PINS,低位有效
-    HS_RP_PIO_SM_IO_READ_STATUS,//读STATUS,通常是全0或者全1，由MOV指令使用
-    HS_RP_PIO_SM_IO_READ_IRQ,//读IRQ,低位有效，值由IdxMode(2bit)+Index(3bit)+Val(1bit)组成,占用低6位
-    HS_RP_PIO_SM_IO_WRITE_IRQ,//写IRQ,低位有效，值由IdxMode(2bit)+Index(3bit)+Val(1bit)组成,占用低6位,通常用于清除中断。
+    HS_RP_PIO_SM_IO_READ_STATUS,//读STATUS,32位数据，通常是全0或者全1，由MOV指令使用
+    HS_RP_PIO_SM_IO_READ_IRQ,//读IRQ,32位数据，位地址由IdxMode(2bit)+Index(3bit)组成
+    HS_RP_PIO_SM_IO_WRITE_IRQ,//写IRQ,32位数据，位地址由IdxMode(2bit)+Index(3bit)组成,通常用于清除中断。
 
 } hs_rp_pio_sm_io_opt_t;
 

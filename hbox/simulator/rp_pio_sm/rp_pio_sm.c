@@ -289,7 +289,7 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
         {
             uint32_t pins=0;
             sm->io(sm,HS_RP_PIO_SM_IO_READ_JMP_PIN,&pins,sm->usr);
-            if(pins)
+            if((pins &0x1)!=0)
             {
                 sm->pc=instruction.INS_JMP.Address;
             }
@@ -322,7 +322,60 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
     break;
     case HS_RP_PIO_SM_INS_CLASS_WAIT:          //WAIT指令
     {
-
+        uint32_t Pol=instruction.INS_WAIT.Pol;
+        switch(instruction.INS_WAIT.Source)
+        {
+        case 0:
+        {
+            //GPIO (未经映射的)
+            uint32_t val=0;
+            sm->io(sm,HS_RP_PIO_SM_IO_READ_GPIO,&val,sm->usr);
+            if(Pol==(0x1&(val>>instruction.INS_WAIT.Index)))
+            {
+                sm->pc++;
+            }
+        }
+        break;
+        case 1:
+        {
+            //PIN
+            uint32_t val=0;
+            sm->io(sm,HS_RP_PIO_SM_IO_READ_PINS,&val,sm->usr);
+            if(Pol==(0x1&(val>>instruction.INS_WAIT.Index)))
+            {
+                sm->pc++;
+            }
+        }
+        break;
+        case 2:
+        {
+            //IRQ
+            uint32_t val=0;
+            sm->io(sm,HS_RP_PIO_SM_IO_READ_IRQ,&val,sm->usr);
+            if(Pol==(0x1&(val>>instruction.INS_WAIT.Index)))
+            {
+                sm->pc++;
+                if(Pol==1)
+                {
+                    //自动清除中断
+                    val&=~(1ULL<<instruction.INS_WAIT.Index);
+                    sm->io(sm,HS_RP_PIO_SM_IO_WRITE_IRQ,&val,sm->usr);
+                }
+            }
+        }
+        break;
+        case 3:
+        {
+            //JMPPIN
+            uint32_t val=0;
+            sm->io(sm,HS_RP_PIO_SM_IO_READ_JMP_PIN,&val,sm->usr);
+            if(Pol==(0x1&(val>>instruction.INS_WAIT.Index)))
+            {
+                sm->pc++;
+            }
+        }
+        break;
+        }
     }
     break;
     case HS_RP_PIO_SM_INS_CLASS_IN:            //IN指令
