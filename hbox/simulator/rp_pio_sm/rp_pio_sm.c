@@ -405,7 +405,43 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
     break;
     case HS_RP_PIO_SM_INS_CLASS_SET:            //SET指令
     {
+        switch(instruction.INS_SET.Destination)
+        {
+        case 0:
+        {
+            //PINS
+            uint32_t val=instruction.INS_SET.Data;
+            sm->io(sm,HS_RP_PIO_SM_IO_WRITE_PINS,&val,sm->usr);
+        }
+        break;
+        case 1:
+        {
+            //X
+            uint32_t val=instruction.INS_SET.Data;
+            sm->x=val;
+        }
+        break;
+        case 2:
+        {
+            //Y
+            uint32_t val=instruction.INS_SET.Data;
+            sm->y=val;
+        }
+        break;
+        case 4:
+        {
+            //PINDIRS
+            uint32_t val=instruction.INS_SET.Data;
+            sm->io(sm,HS_RP_PIO_SM_IO_WRITE_PINDIRS,&val,sm->usr);
+        }
+        break;
+        default:
+        {
 
+        }
+        break;
+        }
+        sm->pc++;
     }
     break;
     }
