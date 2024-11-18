@@ -550,7 +550,6 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
         {
             //PC
             sm->pc=data;
-            sm->pc++;
         }
         break;
         case 6:
