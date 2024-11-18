@@ -35,7 +35,7 @@ typedef enum
     HS_RP_PIO_SM_IO_WRITE_PINS,//写PINS,低位有效
     HS_RP_PIO_SM_IO_READ_PINDIR,//读PINDIR,低位有效
     HS_RP_PIO_SM_IO_WRITE_PINDIR,//写PINDIR,低位有效
-    HS_RP_PIO_SM_IO_READ_SIDESET,//SIDESET可参考HS_RP_PIO_SM_IO_READ_PINS,低位有效
+    HS_RP_PIO_SM_IO_WRITE_SIDESET,//SIDESET可参考HS_RP_PIO_SM_IO_WRITE_PINS,低位有效
     HS_RP_PIO_SM_IO_READ_STATUS,//读STATUS,通常是全0或者全1，由MOV指令使用
     HS_RP_PIO_SM_IO_READ_IRQ,//读IRQ,低位有效，值由IdxMode(2bit)+Index(3bit)+Val(1bit)组成,占用低6位
     HS_RP_PIO_SM_IO_WRITE_IRQ,//写IRQ,低位有效，值由IdxMode(2bit)+Index(3bit)+Val(1bit)组成,占用低6位,通常用于清除中断。
