@@ -372,12 +372,6 @@ void hs_rp_pio_sm_tick(hs_rp_pio_sm_t *sm,size_t cycles)
                 instruction.Instruction=val;
             }
 
-            //Sideset立即生效
-            if(sm->sideset_cnt > 0)
-            {
-                uint32_t val=instruction.Delay_SideSet>>(5-sm->sideset_cnt);
-                sm->io(sm,HS_RP_PIO_SM_IO_WRITE_SIDESET,&val,sm->usr);
-            }
 
             if(sm->delay!=0)
             {
