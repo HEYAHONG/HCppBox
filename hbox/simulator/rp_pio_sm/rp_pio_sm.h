@@ -85,6 +85,34 @@ typedef enum
  */
 void hs_rp_pio_sm_cfg(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_cfg_opt_t opt,uint32_t val);
 
+typedef enum
+{
+    HS_RP_PIO_SM_OSR_STATUS,
+    HS_RP_PIO_SM_ISR_STATUS,
+    HS_RP_PIO_SM_X_STATUS,
+    HS_RP_PIO_SM_Y_STATUS,
+    HS_RP_PIO_SM_PC_STATUS,
+    HS_RP_PIO_SM_DELAY_STATUS,
+    HS_RP_PIO_SM_OSR_SHIFT_CNT_STATUS,
+    HS_RP_PIO_SM_ISR_SHIFT_CNT_STATUS,
+    HS_RP_PIO_SM_PULL_THRESH_STATUS,
+    HS_RP_PIO_SM_PUSH_THRESH_STATUS,
+    HS_RP_PIO_SM_OUT_SHIFTDIR_STATUS,
+    HS_RP_PIO_SM_IN_SHIFTDIR_STATUS,
+    HS_RP_PIO_SM_AUTOPULL_STATUS,
+    HS_RP_PIO_SM_AUTOPUSH_STATUS,
+    HS_RP_PIO_SM_SIDESET_CNT_STATUS
+} hs_rp_pio_sm_status_opt_t;
+
+/** \brief 状态机状态,注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param sm hs_rp_pio_sm_t* 状态机指针
+ * \param opt hs_rp_pio_sm_status_opt_t 状态项
+ * \param val uint32_t* 值指针
+ *
+ */
+void hs_rp_pio_sm_status(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_status_opt_t opt,uint32_t *val);
+
 enum
 {
     HS_RP_PIO_SM_INS_CLASS_JMP=0,           //JMP指令
@@ -168,7 +196,7 @@ typedef union
 
 /** \brief 状态机执行指令，注意：此函数不是线程安全的，必要时需要加锁。
  *
- * \param sm hs_rp_pio_sm_t* 状态机
+ * \param sm hs_rp_pio_sm_t* 状态机指针
  * \param instruction hs_rp_pio_sm_instruction_t 指令
  *
  */
@@ -177,7 +205,7 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
 
 /** \brief 状态机节拍,由于pio对时序要求比较高，推荐在定时器中调用此函数。注意：此函数不是线程安全的，必要时需要加锁。
  *
- * \param sm hs_rp_pio_sm_t* 状态机
+ * \param sm hs_rp_pio_sm_t* 状态机指针
  * \param cycles size_t 周期数,0等于无效,如需精确的时序，通常使用1作为周期数，并使用定时器调用此函数。
  *
  */

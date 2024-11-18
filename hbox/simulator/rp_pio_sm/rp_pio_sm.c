@@ -105,6 +105,96 @@ void hs_rp_pio_sm_cfg(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_cfg_opt_t opt,uint32_t val
     }
 }
 
+void hs_rp_pio_sm_status(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_status_opt_t opt,uint32_t *val)
+{
+    if(sm!=NULL && val!=NULL)
+    {
+        switch(opt)
+        {
+        case HS_RP_PIO_SM_OSR_STATUS:
+        {
+            (*val)=sm->osr;
+        }
+        break;
+        case HS_RP_PIO_SM_ISR_STATUS:
+        {
+            (*val)=sm->isr;
+        }
+        break;
+        case HS_RP_PIO_SM_X_STATUS:
+        {
+            (*val)=sm->x;
+        }
+        break;
+        case HS_RP_PIO_SM_Y_STATUS:
+        {
+            (*val)=sm->y;
+        }
+        break;
+        case HS_RP_PIO_SM_PC_STATUS:
+        {
+            (*val)=sm->pc;
+        }
+        break;
+        case HS_RP_PIO_SM_DELAY_STATUS:
+        {
+            (*val)=sm->delay;
+        }
+        break;
+        case HS_RP_PIO_SM_OSR_SHIFT_CNT_STATUS:
+        {
+            (*val)=sm->osr_shift_cnt;
+        }
+        break;
+        case HS_RP_PIO_SM_ISR_SHIFT_CNT_STATUS:
+        {
+            (*val)=sm->isr_shift_cnt;
+        }
+        break;
+        case HS_RP_PIO_SM_PULL_THRESH_STATUS:
+        {
+            (*val)=sm->pull_thresh;
+        }
+        break;
+        case HS_RP_PIO_SM_PUSH_THRESH_STATUS:
+        {
+            (*val)=sm->push_thresh;
+        }
+        break;
+        case HS_RP_PIO_SM_OUT_SHIFTDIR_STATUS:
+        {
+            (*val)=sm->out_shiftdir;
+        }
+        break;
+        case HS_RP_PIO_SM_IN_SHIFTDIR_STATUS:
+        {
+            (*val)=sm->in_shiftdir;
+        }
+        break;
+        case HS_RP_PIO_SM_AUTOPULL_STATUS:
+        {
+            (*val)=sm->autopull;
+        }
+        break;
+        case HS_RP_PIO_SM_AUTOPUSH_STATUS:
+        {
+            (*val)=sm->autopush;
+        }
+        break;
+        case HS_RP_PIO_SM_SIDESET_CNT_STATUS:
+        {
+            (*val)=sm->sideset_cnt;
+        }
+        break;
+        default:
+        {
+
+        }
+        break;
+        }
+    }
+}
+
 void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction)
 {
     //TODO:具体指令的执行
