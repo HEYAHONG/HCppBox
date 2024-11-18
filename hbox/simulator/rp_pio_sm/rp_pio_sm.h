@@ -103,7 +103,8 @@ typedef enum
     HS_RP_PIO_SM_IN_SHIFTDIR_STATUS,
     HS_RP_PIO_SM_AUTOPULL_STATUS,
     HS_RP_PIO_SM_AUTOPUSH_STATUS,
-    HS_RP_PIO_SM_SIDESET_CNT_STATUS
+    HS_RP_PIO_SM_SIDESET_CNT_STATUS,
+    HS_RP_PIO_SM_STALL_STATUS
 } hs_rp_pio_sm_status_opt_t;
 
 /** \brief 状态机状态,注意：此函数不是线程安全的，必要时需要加锁。

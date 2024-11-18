@@ -30,6 +30,7 @@ struct hs_rp_pio_sm
         uint32_t autopull:1;//1=自动pull
         uint32_t autopush:1;//1=自动push
         uint32_t sideset_cnt:3;//0~5
+        uint32_t stall:1;//Stall
     };
 
 };
@@ -186,6 +187,11 @@ void hs_rp_pio_sm_status(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_status_opt_t opt,uint32
             (*val)=sm->sideset_cnt;
         }
         break;
+        case HS_RP_PIO_SM_STALL_STATUS:
+        {
+            (*val)=sm->stall;
+        }
+        break;
         default:
         {
 
@@ -333,6 +339,11 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
             if(Pol==(0x1&(val>>instruction.INS_WAIT.Index)))
             {
                 sm->pc++;
+                sm->stall=0;
+            }
+            else
+            {
+                sm->stall=1;
             }
         }
         break;
@@ -344,6 +355,11 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
             if(Pol==(0x1&(val>>instruction.INS_WAIT.Index)))
             {
                 sm->pc++;
+                sm->stall=0;
+            }
+            else
+            {
+                sm->stall=1;
             }
         }
         break;
@@ -361,6 +377,11 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
                     val&=~(1ULL<<instruction.INS_WAIT.Index);
                     sm->io(sm,HS_RP_PIO_SM_IO_WRITE_IRQ,&val,sm->usr);
                 }
+                sm->stall=0;
+            }
+            else
+            {
+                sm->stall=1;
             }
         }
         break;
@@ -372,6 +393,11 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
             if(Pol==(0x1&(val>>instruction.INS_WAIT.Index)))
             {
                 sm->pc++;
+                sm->stall=0;
+            }
+            else
+            {
+                sm->stall=1;
             }
         }
         break;
@@ -400,7 +426,43 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
     break;
     case HS_RP_PIO_SM_INS_CLASS_IRQ:           //IRQ指令
     {
-
+        //两个字段组合
+        uint8_t index=(((uint32_t)instruction.INS_IRQ.IdxMode) << 3)+instruction.INS_IRQ.Index;
+        if(instruction.INS_IRQ.Clr)
+        {
+            uint32_t irq=0;
+            sm->io(sm,HS_RP_PIO_SM_IO_READ_IRQ,&irq,sm->usr);
+            irq&=~(0x1ULL << index);
+            sm->io(sm,HS_RP_PIO_SM_IO_WRITE_IRQ,&irq,sm->usr);
+            sm->pc++;
+        }
+        else
+        {
+            uint32_t irq=0;
+            sm->io(sm,HS_RP_PIO_SM_IO_READ_IRQ,&irq,sm->usr);
+            if(!sm->stall)
+            {
+                irq|=(0x1ULL << index);
+                sm->io(sm,HS_RP_PIO_SM_IO_WRITE_IRQ,&irq,sm->usr);
+            }
+            if(instruction.INS_IRQ.Wait)
+            {
+                if((irq&(1ULL<<index))==0)
+                {
+                    sm->pc++;
+                    sm->stall=0;
+                }
+                else
+                {
+                    sm->stall=1;
+                }
+            }
+            else
+            {
+                sm->pc++;
+                sm->stall=0;
+            }
+        }
     }
     break;
     case HS_RP_PIO_SM_INS_CLASS_SET:            //SET指令
