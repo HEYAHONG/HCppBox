@@ -406,7 +406,154 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
     break;
     case HS_RP_PIO_SM_INS_CLASS_IN:            //IN指令
     {
+        uint8_t bit_count=instruction.INS_IN.Bit_count;
+        if(bit_count==0)
+        {
+            bit_count=32;
+        }
+        //输入数据掩码
+        uint32_t bit_mask=((((uint64_t)1ULL)<<(bit_count))-1);
+        uint32_t in_data=0;
+        switch(instruction.INS_IN.Source)
+        {
+        case 0:
+        {
+            //PINS
+            sm->io(sm,HS_RP_PIO_SM_IO_READ_PINS,&in_data,sm->usr);
+            in_data&=bit_mask;
+        }
+        break;
+        case 1:
+        {
+            //X
+            in_data=sm->x;
+            in_data&=bit_mask;
+        }
+        break;
+        case 2:
+        {
+            //Y
+            in_data=sm->y;
+            in_data&=bit_mask;
+        }
+        break;
+        case 3:
+        {
+            //NULL
+            in_data=0;
+            in_data&=bit_mask;
+        }
+        break;
+        case 6:
+        {
+            //ISR
+            in_data=sm->isr;
+            in_data&=bit_mask;
+        }
+        break;
+        case 7:
+        {
+            //OSR
+            in_data=sm->osr;
+            in_data&=bit_mask;
+        }
+        break;
+        default:
+        {
 
+        }
+        break;
+        }
+
+        if(sm->autopush)
+        {
+            if(sm->stall)
+            {
+                //自动PUSH
+                uint32_t val=sm->isr;
+                if(sm->io(sm,HS_RP_PIO_SM_IO_PUSH_RX_FIFO,&val,sm->usr))
+                {
+                    //PUSH成功
+                    sm->isr=0;
+                    sm->isr_shift_cnt=0;
+                    sm->pc++;
+                    sm->stall=0;
+                }
+            }
+            else
+            {
+                uint8_t new_isr_shift_cnt=sm->isr_shift_cnt;
+                new_isr_shift_cnt+=bit_count;
+                if(sm->in_shiftdir)
+                {
+                    //右移
+                    sm->isr >>= bit_count;
+                    sm->isr|=(in_data<<(32-bit_count));
+                }
+                else
+                {
+                    //左移
+                    sm->isr <<= bit_count;
+                    sm->isr|=in_data;
+                }
+                if(new_isr_shift_cnt>32)
+                {
+                    new_isr_shift_cnt=32;
+                }
+                sm->isr_shift_cnt=new_isr_shift_cnt;
+                uint8_t thresh=sm->push_thresh;
+                if(thresh==0)
+                {
+                    thresh=32;
+                }
+                if(sm->isr_shift_cnt >= thresh)
+                {
+                    //自动PUSH
+                    uint32_t val=sm->isr;
+                    if(sm->io(sm,HS_RP_PIO_SM_IO_PUSH_RX_FIFO,&val,sm->usr))
+                    {
+                        //PUSH成功
+                        sm->isr=0;
+                        sm->isr_shift_cnt=0;
+                        sm->pc++;
+                        sm->stall=0;
+                    }
+                    else
+                    {
+                        sm->stall=1;
+                    }
+
+                }
+                else
+                {
+                    sm->pc++;
+                }
+            }
+        }
+        else
+        {
+            uint8_t new_isr_shift_cnt=sm->isr_shift_cnt;
+            new_isr_shift_cnt+=bit_count;
+            if(sm->in_shiftdir)
+            {
+                //右移
+                sm->isr >>= bit_count;
+                sm->isr|=(in_data<<(32-bit_count));
+            }
+            else
+            {
+                //左移
+                sm->isr <<= bit_count;
+                sm->isr|=in_data;
+            }
+            if(new_isr_shift_cnt>32)
+            {
+                new_isr_shift_cnt=32;
+            }
+            sm->isr_shift_cnt=new_isr_shift_cnt;
+            sm->pc++;
+            sm->stall=0;
+        }
     }
     break;
     case HS_RP_PIO_SM_INS_CLASS_OUT:           //OUT指令
