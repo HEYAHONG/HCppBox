@@ -217,7 +217,107 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
     {
     case HS_RP_PIO_SM_INS_CLASS_JMP:           //JMP指令
     {
-
+        switch(instruction.INS_JMP.Condition)
+        {
+        case 0:
+        {
+            //无条件跳转
+            sm->pc=instruction.INS_JMP.Address;
+        }
+        break;
+        case 1:
+        {
+            if(!sm->x)
+            {
+                sm->pc=instruction.INS_JMP.Address;
+            }
+            else
+            {
+                sm->pc++;
+            }
+        }
+        break;
+        case 2:
+        {
+            if(sm->x--)
+            {
+                sm->pc=instruction.INS_JMP.Address;
+            }
+            else
+            {
+                sm->pc++;
+            }
+        }
+        break;
+        case 3:
+        {
+            if(!sm->y)
+            {
+                sm->pc=instruction.INS_JMP.Address;
+            }
+            else
+            {
+                sm->pc++;
+            }
+        }
+        break;
+        case 4:
+        {
+            if(sm->y--)
+            {
+                sm->pc=instruction.INS_JMP.Address;
+            }
+            else
+            {
+                sm->pc++;
+            }
+        }
+        break;
+        case 5:
+        {
+            if(sm->x!=sm->y)
+            {
+                sm->pc=instruction.INS_JMP.Address;
+            }
+            else
+            {
+                sm->pc++;
+            }
+        }
+        break;
+        case 6:
+        {
+            uint32_t pins=0;
+            sm->io(sm,HS_RP_PIO_SM_IO_READ_JMP_PIN,&pins,sm->usr);
+            if(pins)
+            {
+                sm->pc=instruction.INS_JMP.Address;
+            }
+            else
+            {
+                sm->pc++;
+            }
+        }
+        break;
+        case 7:
+        {
+            uint8_t cnt=sm->osr_shift_cnt;
+            uint8_t thresh=sm->pull_thresh;
+            if(thresh==0)
+            {
+                thresh=32;
+            }
+            if(!(cnt >= thresh))
+            {
+                sm->pc=instruction.INS_JMP.Address;
+            }
+            else
+            {
+                sm->pc++;
+            }
+        }
+        break;
+        }
     }
     break;
     case HS_RP_PIO_SM_INS_CLASS_WAIT:          //WAIT指令
