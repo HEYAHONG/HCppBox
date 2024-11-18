@@ -527,6 +527,7 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
                 else
                 {
                     sm->pc++;
+                    sm->stall=0;
                 }
             }
         }
@@ -558,7 +559,340 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
     break;
     case HS_RP_PIO_SM_INS_CLASS_OUT:           //OUT指令
     {
+        uint8_t bit_count=instruction.INS_OUT.Bit_count;
+        if(bit_count==0)
+        {
+            bit_count=32;
+        }
+        //输入数据掩码
+        uint32_t bit_mask=((((uint64_t)1ULL)<<(bit_count))-1);
 
+        if(sm->autopull==0)
+        {
+            uint32_t out_data=0;
+            {
+                uint8_t new_osr_shift_cnt=sm->osr_shift_cnt;
+                new_osr_shift_cnt+=bit_count;
+                if(new_osr_shift_cnt > 32)
+                {
+                    new_osr_shift_cnt=32;
+                }
+                sm->osr_shift_cnt=new_osr_shift_cnt;
+            }
+            if(sm->out_shiftdir)
+            {
+                //右移
+                out_data = (bit_mask &  sm->osr);
+                sm->osr >>=  bit_count;
+            }
+            else
+            {
+                //左移
+                bit_mask <<= (32-bit_count);
+                out_data = ((sm->osr & bit_mask)>> (32-bit_count));
+                sm->osr <<=  bit_count;
+            }
+            switch(instruction.INS_OUT.Destination)
+            {
+            case 0:
+            {
+                //PINS
+                sm->io(sm,HS_RP_PIO_SM_IO_WRITE_PINS,&out_data,sm->usr);
+                sm->pc++;
+            }
+            break;
+            case 1:
+            {
+                //X
+                sm->x=out_data;
+                sm->pc++;
+            }
+            break;
+            case 2:
+            {
+                //Y
+                sm->y=out_data;
+                sm->pc++;
+            }
+            break;
+            case 3:
+            {
+                //NULL
+                sm->pc++;
+            }
+            break;
+            case 4:
+            {
+                //PINDIR
+                sm->io(sm,HS_RP_PIO_SM_IO_WRITE_PINDIRS,&out_data,sm->usr);
+                sm->pc++;
+            }
+            break;
+            case 5:
+            {
+                sm->pc=out_data;
+            }
+            break;
+            case 6:
+            {
+                //ISR
+                if(sm->in_shiftdir)
+                {
+                    //右移
+                    sm->isr >>= bit_count;
+                    sm->isr|=(out_data<<(32-bit_count));
+                }
+                else
+                {
+                    //左移
+                    sm->isr <<= bit_count;
+                    sm->isr|=out_data;
+                }
+                sm->isr_shift_cnt=bit_count;
+                sm->pc++;
+            }
+            break;
+            case 7:
+            {
+                //EXEC
+                hs_rp_pio_sm_instruction_t new_instruction;
+                new_instruction.Instruction=out_data;
+                hs_rp_pio_sm_exec(sm,new_instruction);
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
+        }
+        else
+        {
+            if(sm->stall)
+            {
+                uint32_t val=0;
+                if(sm->io(sm,HS_RP_PIO_SM_IO_PULL_TX_FIFO,&val,sm->usr))
+                {
+                    {
+                        uint32_t out_data=0;
+                        {
+                            uint8_t new_osr_shift_cnt=sm->osr_shift_cnt;
+                            new_osr_shift_cnt+=bit_count;
+                            if(new_osr_shift_cnt > 32)
+                            {
+                                new_osr_shift_cnt=32;
+                            }
+                            sm->osr_shift_cnt=new_osr_shift_cnt;
+                        }
+                        if(sm->out_shiftdir)
+                        {
+                            //右移
+                            out_data = (bit_mask &  sm->osr);
+                            sm->osr >>=  bit_count;
+                        }
+                        else
+                        {
+                            //左移
+                            bit_mask <<= (32-bit_count);
+                            out_data = ((sm->osr & bit_mask)>> (32-bit_count));
+                            sm->osr <<=  bit_count;
+                        }
+                        switch(instruction.INS_OUT.Destination)
+                        {
+                        case 0:
+                        {
+                            //PINS
+                            sm->io(sm,HS_RP_PIO_SM_IO_WRITE_PINS,&out_data,sm->usr);
+                            sm->pc++;
+                        }
+                        break;
+                        case 1:
+                        {
+                            //X
+                            sm->x=out_data;
+                            sm->pc++;
+                        }
+                        break;
+                        case 2:
+                        {
+                            //Y
+                            sm->y=out_data;
+                            sm->pc++;
+                        }
+                        break;
+                        case 3:
+                        {
+                            //NULL
+                            sm->pc++;
+                        }
+                        break;
+                        case 4:
+                        {
+                            //PINDIR
+                            sm->io(sm,HS_RP_PIO_SM_IO_WRITE_PINDIRS,&out_data,sm->usr);
+                            sm->pc++;
+                        }
+                        break;
+                        case 5:
+                        {
+                            sm->pc=out_data;
+                        }
+                        break;
+                        case 6:
+                        {
+                            //ISR
+                            if(sm->in_shiftdir)
+                            {
+                                //右移
+                                sm->isr >>= bit_count;
+                                sm->isr|=(out_data<<(32-bit_count));
+                            }
+                            else
+                            {
+                                //左移
+                                sm->isr <<= bit_count;
+                                sm->isr|=out_data;
+                            }
+                            sm->isr_shift_cnt=bit_count;
+                            sm->pc++;
+                        }
+                        break;
+                        case 7:
+                        {
+                            //EXEC
+                            hs_rp_pio_sm_instruction_t new_instruction;
+                            new_instruction.Instruction=out_data;
+                            hs_rp_pio_sm_exec(sm,new_instruction);
+                        }
+                        break;
+                        default:
+                        {
+
+                        }
+                        break;
+                        }
+                    }
+                    sm->osr=val;
+                    sm->osr_shift_cnt=0;
+                    sm->stall=0;
+                }
+            }
+            else
+            {
+                uint32_t thresh=sm->pull_thresh;
+                if(thresh==0)
+                {
+                    thresh=32;
+                }
+                if((sm->osr_shift_cnt+bit_count) < thresh)
+                {
+                    //无需PULL
+                    uint32_t out_data=0;
+                    {
+                        uint8_t new_osr_shift_cnt=sm->osr_shift_cnt;
+                        new_osr_shift_cnt+=bit_count;
+                        if(new_osr_shift_cnt > 32)
+                        {
+                            new_osr_shift_cnt=32;
+                        }
+                        sm->osr_shift_cnt=new_osr_shift_cnt;
+                    }
+                    if(sm->out_shiftdir)
+                    {
+                        //右移
+                        out_data = (bit_mask &  sm->osr);
+                        sm->osr >>=  bit_count;
+                    }
+                    else
+                    {
+                        //左移
+                        bit_mask <<= (32-bit_count);
+                        out_data = ((sm->osr & bit_mask)>> (32-bit_count));
+                        sm->osr <<=  bit_count;
+                    }
+                    switch(instruction.INS_OUT.Destination)
+                    {
+                    case 0:
+                    {
+                        //PINS
+                        sm->io(sm,HS_RP_PIO_SM_IO_WRITE_PINS,&out_data,sm->usr);
+                        sm->pc++;
+                    }
+                    break;
+                    case 1:
+                    {
+                        //X
+                        sm->x=out_data;
+                        sm->pc++;
+                    }
+                    break;
+                    case 2:
+                    {
+                        //Y
+                        sm->y=out_data;
+                        sm->pc++;
+                    }
+                    break;
+                    case 3:
+                    {
+                        //NULL
+                        sm->pc++;
+                    }
+                    break;
+                    case 4:
+                    {
+                        //PINDIR
+                        sm->io(sm,HS_RP_PIO_SM_IO_WRITE_PINDIRS,&out_data,sm->usr);
+                        sm->pc++;
+                    }
+                    break;
+                    case 5:
+                    {
+                        sm->pc=out_data;
+                    }
+                    break;
+                    case 6:
+                    {
+                        //ISR
+                        if(sm->in_shiftdir)
+                        {
+                            //右移
+                            sm->isr >>= bit_count;
+                            sm->isr|=(out_data<<(32-bit_count));
+                        }
+                        else
+                        {
+                            //左移
+                            sm->isr <<= bit_count;
+                            sm->isr|=out_data;
+                        }
+                        sm->isr_shift_cnt=bit_count;
+                        sm->pc++;
+                    }
+                    break;
+                    case 7:
+                    {
+                        //EXEC
+                        hs_rp_pio_sm_instruction_t new_instruction;
+                        new_instruction.Instruction=out_data;
+                        hs_rp_pio_sm_exec(sm,new_instruction);
+                    }
+                    break;
+                    default:
+                    {
+
+                    }
+                    break;
+                    }
+                }
+                else
+                {
+                    //设置stall,准备pull
+                    sm->stall=1;
+                }
+            }
+        }
     }
     break;
     case HS_RP_PIO_SM_INS_CLASS_PUSH_MOV_PULL: //PUSH、MOV、PULL指令
@@ -957,12 +1291,14 @@ void hs_rp_pio_sm_tick(hs_rp_pio_sm_t *sm,size_t cycles)
                 instruction.Instruction=val;
             }
 
-
-            if(sm->delay!=0)
+            if(sm->stall==1)
             {
-                sm->delay--;
-                //等待延时结束
-                continue;
+                if(sm->delay!=0)
+                {
+                    sm->delay--;
+                    //等待延时结束
+                    continue;
+                }
             }
 
             hs_rp_pio_sm_exec(sm,instruction);
