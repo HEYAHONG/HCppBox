@@ -206,7 +206,7 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
     {
         uint32_t val=instruction.Delay_SideSet>>(5-sm->sideset_cnt);
         sm->io(sm,HS_RP_PIO_SM_IO_WRITE_SIDESET,&val,sm->usr);
-        sm->delay=instruction.Delay_SideSet&((1ULL << (5-sm->sideset_cnt+1))-1);
+        sm->delay=instruction.Delay_SideSet&((1ULL << (5-sm->sideset_cnt))-1);
     }
     else
     {
