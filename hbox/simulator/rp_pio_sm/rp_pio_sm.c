@@ -421,7 +421,155 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
     break;
     case HS_RP_PIO_SM_INS_CLASS_MOV:           //MOV指令
     {
+        uint32_t data=0;
+        switch(instruction.INS_MOV.Source)
+        {
+        case 0:
+        {
+            //PINS
+            sm->io(sm,HS_RP_PIO_SM_IO_READ_PINS,&data,sm->usr);
+        }
+        break;
+        case 1:
+        {
+            //X
+            data=sm->x;
+        }
+        break;
+        case 2:
+        {
+            //Y
+            data=sm->y;
+        }
+        break;
+        case 3:
+        {
+            //NULL
+            data=0;
+        }
+        break;
+        case 5:
+        {
+            //STATUS
+            sm->io(sm,HS_RP_PIO_SM_IO_READ_STATUS,&data,sm->usr);
+        }
+        break;
+        case 6:
+        {
+            //ISR
+            data=sm->isr;
+        }
+        break;
+        case 7:
+        {
+            //OSR
+            data=sm->osr;
+        }
+        default:
+        {
 
+        }
+        break;
+        }
+
+        switch(instruction.INS_MOV.Op)
+        {
+        case 0:
+        {
+            //None
+        }
+        break;
+        case 1:
+        {
+            //Invert (bitwise complement)
+            data=~data;
+        }
+        break;
+        case 2:
+        {
+            //Bit-reverse
+            uint32_t new_data=0;
+            for(size_t i=0; i<32; i++)
+            {
+                if((data&(1ULL<<i))!=0)
+                {
+                    new_data|=(1ULL << (31-i));
+                }
+            }
+            data=new_data;
+        }
+        break;
+        default:
+        {
+
+        }
+        break;
+        }
+
+        switch(instruction.INS_MOV.Destination)
+        {
+        case 0:
+        {
+            //PINS
+            sm->io(sm,HS_RP_PIO_SM_IO_WRITE_PINS,&data,sm->usr);
+            sm->pc++;
+        }
+        break;
+        case 1:
+        {
+            //X
+            sm->x=data;
+            sm->pc++;
+        }
+        break;
+        case 2:
+        {
+            //Y
+            sm->y=data;
+            sm->pc++;
+        }
+        break;
+        case 3:
+        {
+            //PINDIR
+            sm->io(sm,HS_RP_PIO_SM_IO_WRITE_PINDIRS,&data,sm->usr);
+            sm->pc++;
+        }
+        break;
+        case 4:
+        {
+            //Exec
+            {
+                hs_rp_pio_sm_instruction_t new_instruction;
+                new_instruction.Instruction=data;
+                hs_rp_pio_sm_exec(sm,new_instruction);
+            }
+        }
+        break;
+        case 5:
+        {
+            //PC
+            sm->pc=data;
+            sm->pc++;
+        }
+        break;
+        case 6:
+        {
+            //ISR
+            sm->isr=data;
+            sm->isr_shift_cnt=0;
+            sm->pc++;
+        }
+        break;
+        case 7:
+        {
+            //OSR
+            sm->osr=data;
+            sm->osr_shift_cnt=0;
+            sm->pc++;
+        }
+        break;
+        }
     }
     break;
     case HS_RP_PIO_SM_INS_CLASS_IRQ:           //IRQ指令
