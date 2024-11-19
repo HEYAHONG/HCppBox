@@ -137,6 +137,7 @@ enum
     HS_RP_PIO_SM_INS_CLASS_SET=7            //SET指令
 };
 
+//注意：此布局为小端模式的布局，大端模式在内部会进行修复
 typedef union
 {
     uint16_t Instruction;

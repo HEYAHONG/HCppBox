@@ -199,12 +199,96 @@ void hs_rp_pio_sm_status(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_status_opt_t opt,uint32
     }
 }
 
+static void hs_rp_pio_sm_exec_bigendian_fix(hs_rp_pio_sm_instruction_t *instruction)
+{
+    if(instruction!=NULL)
+    {
+        uint16_t instruction_value=instruction->Instruction;
+        instruction->Instruction=0x8000;
+        if(instruction->Instruction_Class!=0)
+        {
+            //小端模式，复原指令
+            instruction->Instruction=instruction_value;
+        }
+        else
+        {
+            //大端模式，重新解析指令
+            instruction->Instruction=0;
+            instruction->Instruction_Class=((instruction_value>>13)&0x7);
+            instruction->Delay_SideSet=((instruction_value>>8)&0x1F);
+            switch(instruction->Instruction_Class)
+            {
+            case HS_RP_PIO_SM_INS_CLASS_JMP:           //JMP指令
+            {
+                instruction->INS_JMP.Condition=((instruction_value>>5)&0x7);
+                instruction->INS_JMP.Address=((instruction_value)&0x1F);
+            }
+            break;
+            case HS_RP_PIO_SM_INS_CLASS_WAIT:          //WAIT指令
+            {
+                instruction->INS_WAIT.Pol=((instruction_value>>7)&0x1);
+                instruction->INS_WAIT.Source=((instruction_value>>5)&0x3);
+                instruction->INS_WAIT.Index=((instruction_value)&0x1F);
+            }
+            break;
+            case HS_RP_PIO_SM_INS_CLASS_IN:            //IN指令
+            {
+                instruction->INS_IN.Source=((instruction_value>>5)&0x7);
+                instruction->INS_IN.Bit_count=((instruction_value)&0x1F);
+            }
+            break;
+            case HS_RP_PIO_SM_INS_CLASS_OUT:           //OUT指令
+            {
+                instruction->INS_OUT.Destination=((instruction_value>>5)&0x7);
+                instruction->INS_OUT.Bit_count=((instruction_value)&0x1F);
+            }
+            break;
+            case HS_RP_PIO_SM_INS_CLASS_PUSH_MOV_PULL: //PUSH、MOV、PULL指令
+            {
+                instruction->INS_PUSH_MOV_PULL.Pull=((instruction_value>>7)&0x1);
+                instruction->INS_PUSH_MOV_PULL.ifF_ifE=((instruction_value>>6)&0x1);
+                instruction->INS_PUSH_MOV_PULL.Blk=((instruction_value>>5)&0x1);
+                instruction->INS_PUSH_MOV_PULL.Mov=((instruction_value>>4)&0x1);
+                instruction->INS_PUSH_MOV_PULL.Idxl=((instruction_value>>3)&0x1);
+                instruction->INS_PUSH_MOV_PULL.Index=((instruction_value)&0x3);
+            }
+            break;
+            case HS_RP_PIO_SM_INS_CLASS_MOV:           //MOV指令
+            {
+                instruction->INS_MOV.Destination=((instruction_value>>5)&0x7);
+                instruction->INS_MOV.Op=((instruction_value>>3)&0x3);
+                instruction->INS_MOV.Source=((instruction_value)&0x7);
+            }
+            break;
+            case HS_RP_PIO_SM_INS_CLASS_IRQ:           //IRQ指令
+            {
+                instruction->INS_IRQ.Clr=((instruction_value>>6)&0x1);
+                instruction->INS_IRQ.Wait=((instruction_value>>5)&0x1);
+                instruction->INS_IRQ.IdxMode=((instruction_value>>3)&0x3);
+                instruction->INS_IRQ.Index=((instruction_value)&0x7);
+            }
+            break;
+            case HS_RP_PIO_SM_INS_CLASS_SET:           //SET指令
+            {
+                instruction->INS_SET.Destination=((instruction_value>>5)&0x7);
+                instruction->INS_SET.Data=((instruction_value)&0x1F);
+            }
+            break;
+            }
+        }
+    }
+}
+
 void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction)
 {
     if(sm==NULL || sm->io==NULL)
     {
         return;
     }
+
+    //大端模式修复
+    hs_rp_pio_sm_exec_bigendian_fix(&instruction);
+
     //Delay Sideset特性
     if(sm->sideset_cnt > 0)
     {
