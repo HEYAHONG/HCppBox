@@ -222,6 +222,13 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
  */
 void hs_rp_pio_sm_tick(hs_rp_pio_sm_t *sm,size_t cycles);
 
+/** \brief 状态机复位(恢复默认状态与配置)，注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param sm hs_rp_pio_sm_t* 状态机指针
+ *
+ */
+void hs_rp_pio_sm_reset(hs_rp_pio_sm_t *sm);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

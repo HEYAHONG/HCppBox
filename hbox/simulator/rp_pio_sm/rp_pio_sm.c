@@ -48,9 +48,7 @@ hs_rp_pio_sm_t *hs_rp_pio_sm_init(void *mem,hs_rp_pio_io_t io,void *usr)
         hs_rp_pio_sm_t *sm=(hs_rp_pio_sm_t *)mem;
         sm->io=io;
         sm->usr=usr;
-        sm->osr_shift_cnt=32;
-        sm->out_shiftdir=1;
-        sm->in_shiftdir=1;
+        hs_rp_pio_sm_reset(sm);
         return sm;
     }
     return NULL;
@@ -1307,3 +1305,21 @@ void hs_rp_pio_sm_tick(hs_rp_pio_sm_t *sm,size_t cycles)
     }
 }
 
+
+void hs_rp_pio_sm_reset(hs_rp_pio_sm_t *sm)
+{
+    if(sm!=NULL)
+    {
+        hs_rp_pio_io_t io=sm->io;
+        void *usr=sm->usr;
+        memset(sm,0,hs_rp_pio_sm_size());
+        sm->io=io;
+        sm->usr=usr;
+        //默认为空
+        sm->osr_shift_cnt=32;
+        //默认右移
+        sm->out_shiftdir=1;
+        //默认右移
+        sm->in_shiftdir=1;
+    }
+}
