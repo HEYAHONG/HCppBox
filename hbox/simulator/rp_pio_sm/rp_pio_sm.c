@@ -1282,7 +1282,7 @@ void hs_rp_pio_sm_tick(hs_rp_pio_sm_t *sm,size_t cycles)
     if(sm!=0&&sm->io!=NULL)
     {
 
-        while(cycles--!=0)
+        while((cycles--)!=0)
         {
             hs_rp_pio_sm_instruction_t instruction;
             {
@@ -1291,7 +1291,8 @@ void hs_rp_pio_sm_tick(hs_rp_pio_sm_t *sm,size_t cycles)
                 instruction.Instruction=val;
             }
 
-            if(sm->stall==1)
+            //若出现Stall，则等待Stall结束后再进行延时操作。
+            if(sm->stall==0)
             {
                 if(sm->delay!=0)
                 {
