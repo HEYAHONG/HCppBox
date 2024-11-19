@@ -28,6 +28,7 @@ size_t hs_rp_pio_sm_size(void);
 
 typedef enum
 {
+    HS_RP_PIO_SM_IO_RESET,//IO复位，无参数
     HS_RP_PIO_SM_IO_READ_INSTRUCTION,//指令读取，传入PC的值(通过*val访问)，传出指令（低16位）
     HS_RP_PIO_SM_IO_PUSH_RX_FIFO,//写RX_FIFO，写32位数据
     HS_RP_PIO_SM_IO_READ_MOV_RX_FIFO_0,//读RX_FIFO，写32位数据

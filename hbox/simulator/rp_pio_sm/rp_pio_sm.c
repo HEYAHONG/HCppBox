@@ -1321,5 +1321,12 @@ void hs_rp_pio_sm_reset(hs_rp_pio_sm_t *sm)
         sm->out_shiftdir=1;
         //默认右移
         sm->in_shiftdir=1;
+
+        //复位IO
+        if(sm->io!=NULL)
+        {
+            uint32_t val=0;
+            sm->io(sm,HS_RP_PIO_SM_IO_RESET,&val,sm->usr);
+        }
     }
 }
