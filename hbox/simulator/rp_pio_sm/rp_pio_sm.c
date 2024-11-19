@@ -1279,7 +1279,7 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
 
 void hs_rp_pio_sm_tick(hs_rp_pio_sm_t *sm,size_t cycles)
 {
-    if(sm!=0&&sm->io!=NULL)
+    if(sm!=NULL&&sm->io!=NULL)
     {
 
         while((cycles--)!=0)
