@@ -1445,7 +1445,7 @@ static int hsimulator_test(int argc,const char *argv[])
 
     {
         printf("hsimulator hs_rp_pio_sm (simple_pins_out) start!\r\n");
-        uint8_t sm_buff[hs_rp_pio_sm_size()];
+        uint8_t *sm_buff=new uint8_t[hs_rp_pio_sm_size()];
         hs_rp_pio_sm_fifo_t tx_fifo;
         hs_rp_pio_sm_fifo_init(&tx_fifo);
         hs_rp_pio_sm_t * sm=hs_rp_pio_sm_init(sm_buff,[](hs_rp_pio_sm_t *sm,hs_rp_pio_sm_io_opt_t opt,uint32_t *val,void *usr)->bool
@@ -1496,6 +1496,7 @@ static int hsimulator_test(int argc,const char *argv[])
         printf("hsimulator hs_rp_pio_sm(simple_pins_out) 40 ticks !\r\n");
         hs_rp_pio_sm_tick(sm,40);
         printf("hsimulator hs_rp_pio_sm(simple_pins_out) end!\r\n");
+        delete [] sm_buff;
     }
 
     return 0;
