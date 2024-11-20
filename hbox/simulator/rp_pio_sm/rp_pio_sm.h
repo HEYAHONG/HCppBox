@@ -324,6 +324,16 @@ void hs_rp_pio_sm_memory_init(hs_rp_pio_sm_memory_t *sm_mem);
  */
 void hs_rp_pio_sm_load_memory_cfg(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_fifo_t *sm_rxfifo,const hs_rp_pio_sm_memory_t *sm_mem);
 
+/** \brief 程序，主要将TX FIFO中的数据（无数据则stall）中的最低位通过PINS发送出去。
+ *
+ * loop:
+ *      pull
+ *      out pins, 1
+ *      jmp loop
+ *
+ */
+extern const hs_rp_pio_sm_memory_t hs_rp_pio_sm_program_simple_pins_out;
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

@@ -1410,7 +1410,7 @@ static int hsimulator_test(int argc,const char *argv[])
             }
         }
 
-         {
+        {
             //6个数据(中间读取两个)
             hs_rp_pio_sm_fifo_push(&fifo,1);
             hs_rp_pio_sm_fifo_push(&fifo,2);
@@ -1441,6 +1441,61 @@ static int hsimulator_test(int argc,const char *argv[])
                 }
             }
         }
+    }
+
+    {
+        printf("hsimulator hs_rp_pio_sm (simple_pins_out) start!\r\n");
+        uint8_t sm_buff[hs_rp_pio_sm_size()];
+        hs_rp_pio_sm_fifo_t tx_fifo;
+        hs_rp_pio_sm_fifo_init(&tx_fifo);
+        hs_rp_pio_sm_t * sm=hs_rp_pio_sm_init(sm_buff,[](hs_rp_pio_sm_t *sm,hs_rp_pio_sm_io_opt_t opt,uint32_t *val,void *usr)->bool
+        {
+            bool ret=true;
+            switch(opt)
+            {
+            case HS_RP_PIO_SM_IO_RESET://IO复位，无参数
+            {
+                printf("hsimulator hs_rp_pio_sm (simple_pins_out) reset!\r\n");
+                hs_rp_pio_sm_load_memory_cfg(sm,NULL,&hs_rp_pio_sm_program_simple_pins_out);
+            }
+            break;
+            case HS_RP_PIO_SM_IO_READ_INSTRUCTION://指令读取，传入PC的值(通过*val访问)，传出指令（低16位）
+            {
+                (*val)=hs_rp_pio_sm_program_simple_pins_out.code[(*val)];
+            }
+            break;
+            case HS_RP_PIO_SM_IO_PULL_TX_FIFO://读TX_FIFO，读32位数据
+            {
+                ret=hs_rp_pio_sm_fifo_pull((hs_rp_pio_sm_fifo_t *)usr,val);
+            }
+            break;
+            case HS_RP_PIO_SM_IO_WRITE_PINS:
+            {
+                printf("hsimulator hs_rp_pio_sm (simple_pins_out) pins=%08X!\r\n",(int)(*val));
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
+            return ret;
+        },&tx_fifo);
+
+        printf("hsimulator hs_rp_pio_sm(simple_pins_out) 40 ticks !\r\n");
+        hs_rp_pio_sm_tick(sm,40);
+        printf("hsimulator hs_rp_pio_sm(simple_pins_out) push tx_fifo 0x1!\r\n");
+        hs_rp_pio_sm_fifo_push(&tx_fifo,0x1);
+        printf("hsimulator hs_rp_pio_sm(simple_pins_out) push tx_fifo 0x1!\r\n");
+        hs_rp_pio_sm_fifo_push(&tx_fifo,0x1);
+        printf("hsimulator hs_rp_pio_sm(simple_pins_out) push tx_fifo 0x0!\r\n");
+        hs_rp_pio_sm_fifo_push(&tx_fifo,0x0);
+        printf("hsimulator hs_rp_pio_sm(simple_pins_out) push tx_fifo 0x1!\r\n");
+        hs_rp_pio_sm_fifo_push(&tx_fifo,0x1);
+        printf("hsimulator hs_rp_pio_sm(simple_pins_out) 40 ticks !\r\n");
+        hs_rp_pio_sm_tick(sm,40);
+        printf("hsimulator hs_rp_pio_sm(simple_pins_out) end!\r\n");
     }
 
     return 0;
