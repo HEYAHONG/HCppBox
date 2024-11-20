@@ -231,6 +231,67 @@ void hs_rp_pio_sm_tick(hs_rp_pio_sm_t *sm,size_t cycles);
  */
 void hs_rp_pio_sm_reset(hs_rp_pio_sm_t *sm);
 
+
+typedef struct
+{
+    uint32_t fifo[4];//PIO状态机中FIFO深度为4
+    struct
+    {
+        uint32_t read_ptr:2;
+        uint32_t write_ptr:2;
+        uint32_t is_empty:1;//当读写指针相同时，使用此标志判断是否为空
+        uint32_t is_full:1;//当读写指针相同时，使用此标志判断是否为满
+        /*
+        *关闭FIFO，直接对fifo数组随机访问,
+        *一般用于HS_RP_PIO_SM_INS_CLASS_PUSH_MOV_PULL中的MOV指令.
+        *io操作对应HS_RP_PIO_SM_IO_READ_MOV_RX_FIFO_0~HS_RP_PIO_SM_IO_READ_MOV_RX_FIFO_3、HS_RP_PIO_SM_IO_WRITE_MOV_RX_FIFO_0~HS_RP_PIO_SM_IO_WRITE_MOV_RX_FIFO_3
+        *此时对FIFO的PUSH与PULL均无效
+        */
+        uint32_t disable_fifo:1;
+    };
+} hs_rp_pio_sm_fifo_t;
+
+/** \brief 状态机FIFO初始化,注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param sm_fifo hs_rp_pio_sm_fifo_t* 状态机FIFO指针
+ *
+ */
+void hs_rp_pio_sm_fifo_init(hs_rp_pio_sm_fifo_t *sm_fifo);
+
+/** \brief FIFO是否为空
+ *
+ * \param sm_fifo hs_rp_pio_sm_fifo_t* 状态机FIFO指针
+ * \return bool FIFO是否为空,sm_fifo为NULL时返回false
+ *
+ */
+bool hs_rp_pio_sm_fifo_is_empty(hs_rp_pio_sm_fifo_t *sm_fifo);
+
+/** \brief FIFO是否为满
+ *
+ * \param sm_fifo hs_rp_pio_sm_fifo_t* 状态机FIFO指针
+ * \return bool FIFO是否为满,sm_fifo为NULL时返回true
+ *
+ */
+bool hs_rp_pio_sm_fifo_is_full(hs_rp_pio_sm_fifo_t *sm_fifo);
+
+/** \brief 写FIFO，注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param sm_fifo hs_rp_pio_sm_fifo_t* 状态机FIFO指针
+ * \param data uint32_t 待写入的数据
+ * \return bool 是否写入成功
+ *
+ */
+bool hs_rp_pio_sm_fifo_push(hs_rp_pio_sm_fifo_t *sm_fifo,uint32_t data);
+
+/** \brief 读FIFO，注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param sm_fifo hs_rp_pio_sm_fifo_t* 状态机FIFO指针
+ * \param data uint32_t* 待读取的数据指针
+ * \return bool 是否读取成功
+ *
+ */
+bool hs_rp_pio_sm_fifo_pull(hs_rp_pio_sm_fifo_t *sm_fifo,uint32_t* data);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

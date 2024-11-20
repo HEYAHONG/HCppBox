@@ -1414,3 +1414,119 @@ void hs_rp_pio_sm_reset(hs_rp_pio_sm_t *sm)
         }
     }
 }
+
+
+void hs_rp_pio_sm_fifo_init(hs_rp_pio_sm_fifo_t *sm_fifo)
+{
+    if(sm_fifo!=NULL)
+    {
+        memset(sm_fifo,0,sizeof(hs_rp_pio_sm_fifo_t));
+        sm_fifo->is_empty=1;
+    }
+}
+
+bool hs_rp_pio_sm_fifo_is_empty(hs_rp_pio_sm_fifo_t *sm_fifo)
+{
+    if(sm_fifo!=NULL)
+    {
+        if(sm_fifo->read_ptr==sm_fifo->write_ptr)
+        {
+            return sm_fifo->is_empty!=0;
+        }
+    }
+    return false;
+}
+
+bool hs_rp_pio_sm_fifo_is_full(hs_rp_pio_sm_fifo_t *sm_fifo)
+{
+    if(sm_fifo!=NULL)
+    {
+        if(sm_fifo->read_ptr==sm_fifo->write_ptr)
+        {
+            return sm_fifo->is_full!=0;
+        }
+    }
+    return true;
+}
+
+bool hs_rp_pio_sm_fifo_push(hs_rp_pio_sm_fifo_t *sm_fifo,uint32_t data)
+{
+    if(sm_fifo!=NULL)
+    {
+        if(sm_fifo->disable_fifo)
+        {
+            //已关闭FIFO
+            return false;
+        }
+
+        if(hs_rp_pio_sm_fifo_is_full(sm_fifo))
+        {
+            return false;
+        }
+
+        if(sm_fifo->read_ptr==sm_fifo->write_ptr)
+        {
+            if(hs_rp_pio_sm_fifo_is_empty(sm_fifo))
+            {
+                //正常写入
+                sm_fifo->fifo[sm_fifo->write_ptr++]=data;
+                sm_fifo->is_empty=0;
+            }
+            else
+            {
+                //写入最后一个空位
+                sm_fifo->fifo[sm_fifo->write_ptr]=data;
+                sm_fifo->is_full=1;
+            }
+        }
+        else
+        {
+            //读写指针不相等，直接写入
+            sm_fifo->fifo[sm_fifo->write_ptr++]=data;
+        }
+
+        return true;
+    }
+    return false;
+}
+
+bool hs_rp_pio_sm_fifo_pull(hs_rp_pio_sm_fifo_t *sm_fifo,uint32_t* data)
+{
+    if(sm_fifo!=NULL && data!=NULL)
+    {
+        if(sm_fifo->disable_fifo)
+        {
+            //已关闭FIFO
+            return false;
+        }
+
+        if(hs_rp_pio_sm_fifo_is_empty(sm_fifo))
+        {
+            return false;
+        }
+
+        if(sm_fifo->read_ptr==sm_fifo->write_ptr)
+        {
+            if(hs_rp_pio_sm_fifo_is_full(sm_fifo))
+            {
+                //正常读取
+                (*data)=sm_fifo->fifo[sm_fifo->read_ptr++];
+                sm_fifo->is_full=0;
+            }
+            else
+            {
+                //读取最后一个有效数据
+                (*data)=sm_fifo->fifo[sm_fifo->read_ptr];
+                sm_fifo->is_empty=1;
+            }
+        }
+        else
+        {
+            //读写指针不相等，直接读取
+            (*data)=sm_fifo->fifo[sm_fifo->read_ptr++];
+        }
+
+        return true;
+    }
+    return false;
+}
