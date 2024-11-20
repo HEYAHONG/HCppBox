@@ -1540,3 +1540,36 @@ bool hs_rp_pio_sm_fifo_pull(hs_rp_pio_sm_fifo_t *sm_fifo,uint32_t* data)
     }
     return false;
 }
+
+void hs_rp_pio_sm_memory_init(hs_rp_pio_sm_memory_t *sm_mem)
+{
+    if(sm_mem!=NULL)
+    {
+        memset(sm_mem,0,sizeof(hs_rp_pio_sm_memory_t));
+        //默认设置
+        sm_mem->in_shiftdir=1;
+        sm_mem->out_shiftdir=1;
+    }
+}
+
+void hs_rp_pio_sm_load_memory_cfg(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_fifo_t *sm_rxfifo,const hs_rp_pio_sm_memory_t *sm_mem)
+{
+    if(sm_mem!=NULL)
+    {
+        if(sm_rxfifo!=NULL)
+        {
+            sm_rxfifo->disable_fifo=sm_mem->disable_rxfifo;
+        }
+
+        if(sm!=NULL)
+        {
+            sm->pull_thresh=sm_mem->pull_thresh;
+            sm->push_thresh=sm_mem->push_thresh;
+            sm->out_shiftdir=sm_mem->out_shiftdir;
+            sm->in_shiftdir=sm_mem->in_shiftdir;
+            sm->autopull=sm_mem->autopull;
+            sm->autopush=sm_mem->autopush;
+            sm->sideset_cnt=(sm_mem->sideset_cnt%6);
+        }
+    }
+}

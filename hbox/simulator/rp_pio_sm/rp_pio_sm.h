@@ -292,6 +292,38 @@ bool hs_rp_pio_sm_fifo_push(hs_rp_pio_sm_fifo_t *sm_fifo,uint32_t data);
  */
 bool hs_rp_pio_sm_fifo_pull(hs_rp_pio_sm_fifo_t *sm_fifo,uint32_t* data);
 
+typedef struct
+{
+    uint16_t code[32];//32条程序代码
+    struct //程序相关的配置
+    {
+        uint32_t pull_thresh:5;//PULL指令阈值,0代表阈值为32.
+        uint32_t push_thresh:5;//PUSH指令阈值,0代表阈值为32.
+        uint32_t out_shiftdir:1;//1=右移，0=左移，默认应当为1
+        uint32_t in_shiftdir:1;//1=右移，0=左移，默认应当为1
+        uint32_t autopull:1;//1=自动pull
+        uint32_t autopush:1;//1=自动push
+        uint32_t disable_rxfifo:1;//关闭RX FIFO，使用随机访问
+        uint32_t sideset_cnt:3;//,sideset特性，0~5
+    };
+} hs_rp_pio_sm_memory_t;
+
+/** \brief 程序内存初始化。
+ *
+ * \param sm_mem hs_rp_pio_sm_memory_t* 状态机Memory指针
+ *
+ */
+void hs_rp_pio_sm_memory_init(hs_rp_pio_sm_memory_t *sm_mem);
+
+/** \brief 加载内存配置，通常在io回调的复位函数中调用
+ *
+ * \param sm hs_rp_pio_sm_t* 状态机指针
+ * \param sm_rxfifo hs_rp_pio_sm_fifo_t* 状态机Rx FIFO指针,可为NULL
+ * \param sm_mem hs_rp_pio_sm_memory_t* 状态机Memory指针
+ *
+ */
+void hs_rp_pio_sm_load_memory_cfg(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_fifo_t *sm_rxfifo,const hs_rp_pio_sm_memory_t *sm_mem);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
