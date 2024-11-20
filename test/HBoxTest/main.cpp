@@ -15,6 +15,7 @@ static int hringbuf_test(int argc,const char *argv[]);
 static int hunicode_test(int argc,const char *argv[]);
 static int hstacklesscoroutine_test(int argc,const char *argv[]);
 static int hbase64_test(int argc,const char *argv[]);
+static int hsimulator_test(int argc,const char *argv[]);
 
 static int (*test_cb[])(int,const char *[])=
 {
@@ -29,7 +30,8 @@ static int (*test_cb[])(int,const char *[])=
     hringbuf_test,
     hunicode_test,
     hstacklesscoroutine_test,
-    hbase64_test
+    hbase64_test,
+    hsimulator_test
 };
 
 int main(int argc,const char *argv[])
@@ -1301,5 +1303,113 @@ static int hbase64_test(int argc,const char *argv[])
         printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
         printf("hbase64 test7:end!\r\n");
     }
+    return 0;
+}
+
+static int hsimulator_test(int argc,const char *argv[])
+{
+    {
+        //测试PIO FIFO
+        hs_rp_pio_sm_fifo_t fifo;
+        hs_rp_pio_sm_fifo_init(&fifo);
+        {
+            //0个数据
+            {
+                uint32_t data=0;
+                while(hs_rp_pio_sm_fifo_pull(&fifo,&data))
+                {
+                    printf("hsimulator hs_rp_pio_sm_fifo 5:data=%d\r\n",(int)data);
+                }
+            }
+        }
+
+        {
+            //1个数据
+            hs_rp_pio_sm_fifo_push(&fifo,1);
+            {
+                uint32_t data=0;
+                while(hs_rp_pio_sm_fifo_pull(&fifo,&data))
+                {
+                    printf("hsimulator hs_rp_pio_sm_fifo 1:data=%d\r\n",(int)data);
+                }
+            }
+        }
+
+        {
+            //2个数据
+            hs_rp_pio_sm_fifo_push(&fifo,1);
+            hs_rp_pio_sm_fifo_push(&fifo,2);
+            {
+                uint32_t data=0;
+                while(hs_rp_pio_sm_fifo_pull(&fifo,&data))
+                {
+                    printf("hsimulator hs_rp_pio_sm_fifo 2:data=%d\r\n",(int)data);
+                }
+            }
+        }
+
+        {
+            //3个数据
+            hs_rp_pio_sm_fifo_push(&fifo,1);
+            hs_rp_pio_sm_fifo_push(&fifo,2);
+            hs_rp_pio_sm_fifo_push(&fifo,3);
+            {
+                uint32_t data=0;
+                while(hs_rp_pio_sm_fifo_pull(&fifo,&data))
+                {
+                    printf("hsimulator hs_rp_pio_sm_fifo 3:data=%d\r\n",(int)data);
+                }
+            }
+        }
+
+        {
+            //4个数据
+            hs_rp_pio_sm_fifo_push(&fifo,1);
+            hs_rp_pio_sm_fifo_push(&fifo,2);
+            hs_rp_pio_sm_fifo_push(&fifo,3);
+            hs_rp_pio_sm_fifo_push(&fifo,4);
+            {
+                uint32_t data=0;
+                while(hs_rp_pio_sm_fifo_pull(&fifo,&data))
+                {
+                    printf("hsimulator hs_rp_pio_sm_fifo 4:data=%d\r\n",(int)data);
+                }
+            }
+        }
+
+        {
+            //5个数据
+            hs_rp_pio_sm_fifo_push(&fifo,1);
+            hs_rp_pio_sm_fifo_push(&fifo,2);
+            hs_rp_pio_sm_fifo_push(&fifo,3);
+            hs_rp_pio_sm_fifo_push(&fifo,4);
+            hs_rp_pio_sm_fifo_push(&fifo,5);
+            {
+                uint32_t data=0;
+                while(hs_rp_pio_sm_fifo_pull(&fifo,&data))
+                {
+                    printf("hsimulator hs_rp_pio_sm_fifo 5:data=%d\r\n",(int)data);
+                }
+            }
+        }
+
+        {
+            //6个数据
+            hs_rp_pio_sm_fifo_push(&fifo,1);
+            hs_rp_pio_sm_fifo_push(&fifo,2);
+            hs_rp_pio_sm_fifo_push(&fifo,3);
+            hs_rp_pio_sm_fifo_push(&fifo,4);
+            hs_rp_pio_sm_fifo_push(&fifo,5);
+            hs_rp_pio_sm_fifo_push(&fifo,6);
+            {
+                uint32_t data=0;
+                while(hs_rp_pio_sm_fifo_pull(&fifo,&data))
+                {
+                    printf("hsimulator hs_rp_pio_sm_fifo 6:data=%d\r\n",(int)data);
+                }
+            }
+        }
+    }
+
     return 0;
 }

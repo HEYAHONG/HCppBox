@@ -1459,13 +1459,13 @@ bool hs_rp_pio_sm_fifo_push(hs_rp_pio_sm_fifo_t *sm_fifo,uint32_t data)
             return false;
         }
 
-        if(hs_rp_pio_sm_fifo_is_full(sm_fifo))
-        {
-            return false;
-        }
 
         if(sm_fifo->read_ptr==sm_fifo->write_ptr)
         {
+            if(hs_rp_pio_sm_fifo_is_full(sm_fifo))
+            {
+                return false;
+            }
             if(hs_rp_pio_sm_fifo_is_empty(sm_fifo))
             {
                 //正常写入
@@ -1483,6 +1483,10 @@ bool hs_rp_pio_sm_fifo_push(hs_rp_pio_sm_fifo_t *sm_fifo,uint32_t data)
         {
             //读写指针不相等，直接写入
             sm_fifo->fifo[sm_fifo->write_ptr++]=data;
+            if(sm_fifo->read_ptr==sm_fifo->write_ptr)
+            {
+                sm_fifo->is_full=1;
+            }
         }
 
         return true;
@@ -1500,13 +1504,15 @@ bool hs_rp_pio_sm_fifo_pull(hs_rp_pio_sm_fifo_t *sm_fifo,uint32_t* data)
             return false;
         }
 
-        if(hs_rp_pio_sm_fifo_is_empty(sm_fifo))
-        {
-            return false;
-        }
+
 
         if(sm_fifo->read_ptr==sm_fifo->write_ptr)
         {
+            if(hs_rp_pio_sm_fifo_is_empty(sm_fifo))
+            {
+                return false;
+            }
+
             if(hs_rp_pio_sm_fifo_is_full(sm_fifo))
             {
                 //正常读取
@@ -1524,6 +1530,10 @@ bool hs_rp_pio_sm_fifo_pull(hs_rp_pio_sm_fifo_t *sm_fifo,uint32_t* data)
         {
             //读写指针不相等，直接读取
             (*data)=sm_fifo->fifo[sm_fifo->read_ptr++];
+            if(sm_fifo->read_ptr==sm_fifo->write_ptr)
+            {
+                sm_fifo->is_empty=1;
+            }
         }
 
         return true;
