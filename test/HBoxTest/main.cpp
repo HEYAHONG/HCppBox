@@ -1409,6 +1409,38 @@ static int hsimulator_test(int argc,const char *argv[])
                 }
             }
         }
+
+         {
+            //6个数据(中间读取两个)
+            hs_rp_pio_sm_fifo_push(&fifo,1);
+            hs_rp_pio_sm_fifo_push(&fifo,2);
+            hs_rp_pio_sm_fifo_push(&fifo,3);
+            {
+                uint32_t data=0;
+                {
+                    if(hs_rp_pio_sm_fifo_pull(&fifo,&data))
+                    {
+                        printf("hsimulator hs_rp_pio_sm_fifo 6(2):data=%d\r\n",(int)data);
+                    }
+                }
+                {
+                    if(hs_rp_pio_sm_fifo_pull(&fifo,&data))
+                    {
+                        printf("hsimulator hs_rp_pio_sm_fifo 6(2):data=%d\r\n",(int)data);
+                    }
+                }
+            }
+            hs_rp_pio_sm_fifo_push(&fifo,4);
+            hs_rp_pio_sm_fifo_push(&fifo,5);
+            hs_rp_pio_sm_fifo_push(&fifo,6);
+            {
+                uint32_t data=0;
+                while(hs_rp_pio_sm_fifo_pull(&fifo,&data))
+                {
+                    printf("hsimulator hs_rp_pio_sm_fifo 6(2):data=%d\r\n",(int)data);
+                }
+            }
+        }
     }
 
     return 0;
