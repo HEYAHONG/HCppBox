@@ -267,6 +267,53 @@ static size_t hs_mcs_51_core_instruction_length(uint8_t instruction)
     return ret;
 }
 
+static uint8_t hs_mcs_51_sfr_acc_read(hs_mcs_51_core_t * core)
+{
+    uint8_t ret=0;
+    hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_ACC,&ret);
+    return ret;
+}
+
+static uint8_t hs_mcs_51_sfr_psw_read(hs_mcs_51_core_t * core);
+static void hs_mcs_51_sfr_psw_write(hs_mcs_51_core_t * core,uint8_t psw);
+static void hs_mcs_51_sfr_acc_write(hs_mcs_51_core_t * core,uint8_t acc)
+{
+    hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_ACC,acc);
+    {
+        //更新PSW的P（位0）奇偶校验位
+        bool odd=false;
+        for(uint8_t i=0; i<8; i++)
+        {
+            if((acc&(1<<i))!=0)
+            {
+                odd=!odd;
+            }
+        }
+        uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+        if(odd)
+        {
+            psw|=0x1;
+        }
+        else
+        {
+            psw&=(~0x1);
+        }
+        hs_mcs_51_sfr_psw_write(core,psw);
+    }
+}
+
+static uint8_t hs_mcs_51_sfr_psw_read(hs_mcs_51_core_t * core)
+{
+    uint8_t ret=0;
+    hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_PSW,&ret);
+    return ret;
+}
+
+static void hs_mcs_51_sfr_psw_write(hs_mcs_51_core_t * core,uint8_t psw)
+{
+    hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_PSW,psw);
+}
+
 static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
 {
     if(core!=NULL && core->io!=NULL)
@@ -276,6 +323,39 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         //TODO:执行指令
         switch(instruction[0])
         {
+        case 0xE8:
+        case 0xE9:
+        case 0xEA:
+        case 0xEB:
+        case 0xEC:
+        case 0xED:
+        case 0xEE:
+        case 0xEF://MOV A,Rn
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+instruction[0]-0xE8;
+            uint8_t Rn=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
+            hs_mcs_51_sfr_acc_write(core,Rn);
+            core->pc+=1;
+        }
+        break;
+        case 0xF8:
+        case 0xF9:
+        case 0xFA:
+        case 0xFB:
+        case 0xFC:
+        case 0xFD:
+        case 0xFE:
+        case 0xFF://MOV Rn,A
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t acc=hs_mcs_51_sfr_acc_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+instruction[0]-0xF8;
+            core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,Rn_address,&acc,sizeof(acc),core->usr);
+            core->pc+=1;
+        }
+        break;
         default:
         {
             //默认行为,类似NOP指令，啥也不做
@@ -362,4 +442,13 @@ bool hs_mcs_51_sfr_write(hs_mcs_51_core_t * core,hs_mcs_51_sfr_addr_t addr,uint8
         return core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,addr,&data,1,core->usr);
     }
     return false;
+}
+
+uint16_t hs_mcs_51_pc_get(hs_mcs_51_core_t * core)
+{
+    if(core!=NULL)
+    {
+        return core->pc;
+    }
+    return 0;
 }

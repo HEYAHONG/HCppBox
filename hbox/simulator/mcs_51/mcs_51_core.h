@@ -245,6 +245,14 @@ bool hs_mcs_51_sfr_read(hs_mcs_51_core_t * core,hs_mcs_51_sfr_addr_t addr,uint8_
 bool hs_mcs_51_sfr_write(hs_mcs_51_core_t * core,hs_mcs_51_sfr_addr_t addr,uint8_t data);
 
 
+/** \brief MCS-51内核获取PC值，注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param core hs_mcs_51_core_t* MCS-51 内核指针
+ * \return uint16_t PC值
+ *
+ */
+uint16_t hs_mcs_51_pc_get(hs_mcs_51_core_t * core);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
