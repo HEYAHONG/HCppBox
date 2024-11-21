@@ -55,7 +55,31 @@ static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
                         uint16_t address=3+8*i;
                         core->interrupt_nested++;//增加中断嵌套，RETI指令时自减1
                         {
-                            //TODO:保存现场,执行中断
+
+                            uint8_t sp=0;
+                            hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
+                            //压栈PC高字节
+                            sp++;
+                            {
+                                if(core->io!=NULL)
+                                {
+                                    uint8_t val=(core->pc>>8);
+                                    core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                                }
+                            }
+                            //压栈PC低字节
+                            sp++;
+                            {
+                                if(core->io!=NULL)
+                                {
+                                    uint8_t val=(core->pc);
+                                    core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                                }
+                            }
+                            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+
+                            //跳转至中断入口地址
+                            core->pc=address;
                         }
                         return;
                     }
@@ -74,7 +98,30 @@ static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
                         uint16_t address=3+8*i;
                         core->interrupt_nested++;//增加中断嵌套，RETI指令时自减1
                         {
-                            //TODO:保存现场,执行中断
+                            uint8_t sp=0;
+                            hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
+                            //压栈PC高字节
+                            sp++;
+                            {
+                                if(core->io!=NULL)
+                                {
+                                    uint8_t val=(core->pc>>8);
+                                    core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                                }
+                            }
+                            //压栈PC低字节
+                            sp++;
+                            {
+                                if(core->io!=NULL)
+                                {
+                                    uint8_t val=(core->pc);
+                                    core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                                }
+                            }
+                            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+
+                            //跳转至中断入口地址
+                            core->pc=address;
                         }
                         return;
                     }
@@ -117,6 +164,14 @@ void hs_mcs_51_core_reset(hs_mcs_51_core_t * core)
             uint8_t dummy=0;
             core->io(core,HS_MCS_51_IO_RESET,0,&dummy,sizeof(dummy),core->usr);
         }
+        //初始化SP为0x07
+        hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,0x07);
+        //初始化P0～P3为0xFF
+        hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_P0,0xFF);
+        hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_P1,0xFF);
+        hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_P2,0xFF);
+        hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_P3,0xFF);
+
     }
 }
 
@@ -133,4 +188,22 @@ void hs_mcs_51_core_interrupt_set(hs_mcs_51_core_t * core,hs_mcs_51_interrupt_nu
             core->interrupt_low_priority_scan_table|=(1ULL << ((size_t)number));
         }
     }
+}
+
+bool hs_mcs_51_sfr_read(hs_mcs_51_core_t * core,hs_mcs_51_sfr_addr_t addr,uint8_t *data)
+{
+    if(core!=NULL && core->io!=NULL)
+    {
+        return core->io(core,HS_MCS_51_IO_READ_RAM_SFR,addr,data,1,core->usr);
+    }
+    return false;
+}
+
+bool hs_mcs_51_sfr_write(hs_mcs_51_core_t * core,hs_mcs_51_sfr_addr_t addr,uint8_t data)
+{
+    if(core!=NULL && core->io!=NULL)
+    {
+        return core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,addr,&data,1,core->usr);
+    }
+    return false;
 }
