@@ -11,5 +11,8 @@
 #include "simulator/rp_pio_sm/rp_pio_sm.h"
 #include "simulator/rp_pio_sm/rp_pio_sm.c"
 
+#include "simulator/mcs_51/mcs_51_core.h"
+#include "simulator/mcs_51/mcs_51_core.c"
+
 
 
