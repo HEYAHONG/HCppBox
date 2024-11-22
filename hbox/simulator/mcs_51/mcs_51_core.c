@@ -67,6 +67,7 @@ static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
                                     core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
                                 }
                             }
+                            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
                             //压栈PC低字节
                             sp++;
                             {
@@ -109,6 +110,7 @@ static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
                                     core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
                                 }
                             }
+                            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
                             //压栈PC低字节
                             sp++;
                             {
@@ -523,6 +525,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                         core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
                     }
                 }
+                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
                 //压栈PC低字节
                 sp++;
                 {
@@ -553,6 +556,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                         core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
                     }
                 }
+                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
                 //压栈PC低字节
                 sp++;
                 {
@@ -583,6 +587,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                     }
                 }
                 sp--;
+                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
                 //出栈PC高字节
                 {
                     {
@@ -614,6 +619,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                     }
                 }
                 sp--;
+                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
                 //出栈PC高字节
                 {
                     {
