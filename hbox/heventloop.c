@@ -8,6 +8,7 @@
  **************************************************************/
 
 #include "heventloop.h"
+#include "hmemoryheap.h"
 #include "hdefaults.h"
 
 typedef struct heventloop_event
@@ -33,7 +34,41 @@ struct heventloop
     uint32_t event_number;
     //最大事件数量,0表示无限制
     uint32_t max_event_number;
+    //标志位
+    struct
+    {
+        uint32_t has_internal_heap:1;
+    };
 };
+
+size_t heventloop_with_internal_heap_min_size(void)
+{
+    return sizeof(heventloop_t)+2*sizeof(heventloop_event_t)+64;//空间足够2个事件。
+}
+
+static void *internal_heap_mem_alloc(size_t nbytes,void *usr)
+{
+    return hmemoryheap_pool_malloc((hmemoryheap_pool_t *)usr,nbytes);
+}
+static void internal_heap_mem_free(void * ptr,void *usr)
+{
+    hmemoryheap_pool_free((hmemoryheap_pool_t *)usr,ptr);
+}
+
+heventloop_t * heventloop_with_internal_heap_init(void *usr,void (*mutex_lock)(void *),void (*mutex_unlock)(void *),void *mem,size_t length)
+{
+    if(mem==NULL && length < heventloop_with_internal_heap_min_size())
+    {
+        return NULL;
+    }
+    hmemoryheap_pool_t *pool=hmemoryheap_pool_format(usr,mutex_lock,mutex_unlock,(uint8_t *)mem,length);
+    heventloop_t *loop=heventloop_new_with_memmang_and_lock(pool,internal_heap_mem_alloc,internal_heap_mem_free,mutex_lock,mutex_unlock);
+    if(loop!=NULL)
+    {
+        loop->has_internal_heap=1;
+    }
+    return loop;
+}
 
 heventloop_t * heventloop_new_with_memmang_and_lock(void *usr,void *(*mem_alloc)(size_t,void *),void (*mem_free)(void *,void *),void (*mutex_lock)(void *),void (*mutex_unlock)(void *))
 {
@@ -86,7 +121,18 @@ void * heventloop_get_usr_ptr(heventloop_t *loop)
     {
         return NULL;
     }
-    return loop->usr;
+    if(loop->has_internal_heap)
+    {
+        if(loop->usr!=NULL)
+        {
+            return hmemoryheap_pool_get_usr_ptr((hmemoryheap_pool_t *)loop->usr);
+        }
+    }
+    else
+    {
+        return loop->usr;
+    }
+    return NULL;
 }
 
 void heventloop_free(heventloop_t *loop)

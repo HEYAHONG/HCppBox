@@ -29,6 +29,26 @@ extern "C"
 struct heventloop; /**< heventloop前置声明 */
 typedef struct heventloop heventloop_t; /**< heventloop_t类型定义 */
 
+/** \brief 获取使用内部堆的heventloop的最小大小
+ *
+ * \return size_t 使用内部堆的heventloop的最小大小
+ *
+ */
+size_t heventloop_with_internal_heap_min_size(void);
+
+/** \brief 初始化heventloop_t
+ *
+ * \param  usr void* 用户指针
+ * \param  mutex_lock 加锁,不要使用第一个参数
+ * \param  mutex_unlock 解锁,不要使用第一个参数
+ * \param  mem 内存（此内存可静态分配，大小不小于heventloop_with_internal_heap_min_size()返回的值）
+ * \param  length 内存大小
+ * \return heventloop_t* heventloop_t指针
+ *
+ */
+heventloop_t * heventloop_with_internal_heap_init(void *usr,void (*mutex_lock)(void *),void (*mutex_unlock)(void *),void *mem,size_t length);
+
+
 
 /** \brief 创建heventloop_t
  *
