@@ -165,6 +165,7 @@ static size_t hs_mcs_51_core_instruction_length(uint8_t instruction)
     }
     break;
     case 0x01:
+    case 0x05:
     case 0x11:
     case 0x15:
     case 0x21:
@@ -323,6 +324,99 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         //TODO:执行指令
         switch(instruction[0])
         {
+        case 0x01://AJMP addr
+        case 0x21:
+        case 0x41:
+        case 0x61:
+        case 0x81:
+        case 0xA1:
+        case 0xC1:
+        case 0xE1:
+        {
+            uint16_t addr11=256*(instruction[0]>>5)+instruction[1];
+            core->pc+=2;
+            core->delay_tick=1;
+            core->pc=addr11+(core->pc&0xF800);
+        }
+        break;
+        case 0x02://LJMP addr_hi addr_lo
+        {
+            core->delay_tick=1;
+            core->pc=256*instruction[1]+instruction[2];
+        }
+        break;
+        case 0x03://RR
+        {
+            uint8_t acc=hs_mcs_51_sfr_acc_read(core);
+            //循环右移
+            acc=((acc>>1)+(acc<<7));
+            hs_mcs_51_sfr_acc_write(core,acc);
+            core->pc+=1;
+        }
+        break;
+        case 0x04://INC A
+        {
+            uint8_t acc=hs_mcs_51_sfr_acc_read(core);
+            //自增
+            acc++;
+            hs_mcs_51_sfr_acc_write(core,acc);
+            core->pc+=1;
+        }
+        break;
+        case 0x05://INC addr
+        {
+            uint8_t addr=instruction[1];
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,addr,&val,sizeof(val),core->usr);
+            val++;
+            core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,addr,&val,sizeof(val),core->usr);
+            core->pc+=2;
+        }
+        break;
+        case 0x06://INC @R0
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+0;
+            uint8_t Rn=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,Rn,&val,sizeof(val),core->usr);
+            val++;
+            core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,Rn,&val,sizeof(val),core->usr);
+            core->pc+=1;
+        }
+        break;
+        case 0x07://INC @R1
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+1;
+            uint8_t Rn=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,Rn,&val,sizeof(val),core->usr);
+            val++;
+            core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,Rn,&val,sizeof(val),core->usr);
+            core->pc+=1;
+        }
+        break;
+        case 0x08:
+        case 0x09:
+        case 0x0A:
+        case 0x0B:
+        case 0x0C:
+        case 0x0D:
+        case 0x0E:
+        case 0x0F://INC Rn
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+instruction[0]-0x08;
+            uint8_t Rn=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
+            Rn++;
+            core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
+            core->pc+=1;
+        }
+        break;
         case 0xC0://PUSH
         {
             uint8_t sp=0;
@@ -338,6 +432,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             }
             hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
             core->pc+=2;
+            core->delay_tick=1;
         }
         break;
         case 0xD0://POP
@@ -355,6 +450,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             sp--;
             hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
             core->pc+=2;
+            core->delay_tick=1;
         }
         break;
         case 0xE8:
