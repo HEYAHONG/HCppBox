@@ -501,6 +501,147 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             hs_mcs_51_sfr_bit_write(core,bit_address,false);
         }
         break;
+        case 0x11://ACALL addr
+        case 0x31:
+        case 0x51:
+        case 0x71:
+        case 0x91:
+        case 0xB1:
+        case 0xD1:
+        case 0xF1:
+        {
+            core->pc+=2;
+            {
+                //压栈PC
+                uint8_t sp=0;
+                hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
+                //压栈PC高字节
+                sp++;
+                {
+                    if(core->io!=NULL)
+                    {
+                        uint8_t val=(core->pc>>8);
+                        core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                    }
+                }
+                //压栈PC低字节
+                sp++;
+                {
+                    if(core->io!=NULL)
+                    {
+                        uint8_t val=(core->pc);
+                        core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                    }
+                }
+                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+            }
+            uint16_t addr11=256*(instruction[0]>>5)+instruction[1];
+            core->delay_tick=1;
+            core->pc=addr11+(core->pc&0xF800);
+        }
+        break;
+        case 0x12://LCALL addr
+        {
+            core->pc+=3;
+            {
+                //压栈PC
+                uint8_t sp=0;
+                hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
+                //压栈PC高字节
+                sp++;
+                {
+                    if(core->io!=NULL)
+                    {
+                        uint8_t val=(core->pc>>8);
+                        core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                    }
+                }
+                //压栈PC低字节
+                sp++;
+                {
+                    if(core->io!=NULL)
+                    {
+                        uint8_t val=(core->pc);
+                        core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                    }
+                }
+                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+            }
+            core->delay_tick=1;
+            core->pc=256*instruction[1]+instruction[2];
+        }
+        break;
+        case 0x22://RET
+        {
+            uint16_t pc=0;
+            {
+                //出栈PC
+                uint8_t sp=0;
+                hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
+                //出栈PC低字节
+                {
+                    if(core->io!=NULL)
+                    {
+                        uint8_t val=0;
+                        core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                        pc+=val;
+                    }
+                }
+                sp--;
+                //出栈PC高字节
+                {
+                    if(core->io!=NULL)
+                    {
+                        uint8_t val=0;
+                        core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                        pc+=256*val;
+                    }
+                }
+                sp--;
+                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+            }
+            core->delay_tick=1;
+            core->pc=pc;
+        }
+        break;
+        case 0x32://RET
+        {
+            uint16_t pc=0;
+            {
+                //出栈PC
+                uint8_t sp=0;
+                hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
+                //出栈PC低字节
+                {
+                    if(core->io!=NULL)
+                    {
+                        uint8_t val=0;
+                        core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                        pc+=val;
+                    }
+                }
+                sp--;
+                //出栈PC高字节
+                {
+                    if(core->io!=NULL)
+                    {
+                        uint8_t val=0;
+                        core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                        pc+=256*val;
+                    }
+                }
+                sp--;
+                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+            }
+            core->delay_tick=1;
+            core->pc=pc;
+            //调整中断嵌套级别
+            if(core->interrupt_nested!=0)
+            {
+                core->interrupt_nested--;
+            }
+        }
+        break;
         case 0xC0://PUSH
         {
             uint8_t sp=0;
