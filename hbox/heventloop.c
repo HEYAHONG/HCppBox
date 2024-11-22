@@ -57,7 +57,7 @@ static void internal_heap_mem_free(void * ptr,void *usr)
 
 heventloop_t * heventloop_with_internal_heap_init(void *usr,void (*mutex_lock)(void *),void (*mutex_unlock)(void *),void *mem,size_t length)
 {
-    if(mem==NULL && length < heventloop_with_internal_heap_min_size())
+    if(mem==NULL || length < heventloop_with_internal_heap_min_size())
     {
         return NULL;
     }
