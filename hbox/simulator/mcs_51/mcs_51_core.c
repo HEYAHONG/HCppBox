@@ -518,7 +518,6 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 //压栈PC高字节
                 sp++;
                 {
-                    if(core->io!=NULL)
                     {
                         uint8_t val=(core->pc>>8);
                         core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
@@ -527,7 +526,6 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 //压栈PC低字节
                 sp++;
                 {
-                    if(core->io!=NULL)
                     {
                         uint8_t val=(core->pc);
                         core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
@@ -550,7 +548,6 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 //压栈PC高字节
                 sp++;
                 {
-                    if(core->io!=NULL)
                     {
                         uint8_t val=(core->pc>>8);
                         core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
@@ -559,7 +556,6 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 //压栈PC低字节
                 sp++;
                 {
-                    if(core->io!=NULL)
                     {
                         uint8_t val=(core->pc);
                         core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
@@ -580,7 +576,6 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
                 //出栈PC低字节
                 {
-                    if(core->io!=NULL)
                     {
                         uint8_t val=0;
                         core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
@@ -590,7 +585,6 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 sp--;
                 //出栈PC高字节
                 {
-                    if(core->io!=NULL)
                     {
                         uint8_t val=0;
                         core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
@@ -604,7 +598,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             core->pc=pc;
         }
         break;
-        case 0x32://RET
+        case 0x32://RETI
         {
             uint16_t pc=0;
             {
@@ -613,7 +607,6 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
                 //出栈PC低字节
                 {
-                    if(core->io!=NULL)
                     {
                         uint8_t val=0;
                         core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
@@ -623,7 +616,6 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 sp--;
                 //出栈PC高字节
                 {
-                    if(core->io!=NULL)
                     {
                         uint8_t val=0;
                         core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
