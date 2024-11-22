@@ -315,6 +315,75 @@ static void hs_mcs_51_sfr_psw_write(hs_mcs_51_core_t * core,uint8_t psw)
     hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_PSW,psw);
 }
 
+static bool hs_mcs_51_sfr_bit_read(hs_mcs_51_core_t * core,uint8_t bit_address)
+{
+    if(core==NULL || core->io==NULL)
+    {
+        return false;
+    }
+    if(bit_address < 0x80)
+    {
+        //内存 0x20~0x2F
+        uint8_t byte_address=0x20+bit_address/8;//字节地址
+        bit_address%=8;
+        uint8_t val=0;
+        core->io(core,HS_MCS_51_IO_READ_RAM_SFR,byte_address,&val,sizeof(val),core->usr);
+        if((val&(1<<bit_address))!=0)
+        {
+            return true;
+        }
+    }
+    else
+    {
+        //特殊寄存器中地址能被8整除的也可位寻址
+        uint8_t byte_address=(bit_address/8)*8;//字节地址
+        bit_address%=8;
+        uint8_t val=0;
+        core->io(core,HS_MCS_51_IO_READ_RAM_SFR,byte_address,&val,sizeof(val),core->usr);
+        if((val&(1<<bit_address))!=0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+static void hs_mcs_51_sfr_bit_write(hs_mcs_51_core_t * core,uint8_t bit_address,bool bit_value)
+{
+    if(core==NULL || core->io==NULL)
+    {
+        return;
+    }
+    if(bit_address < 0x80)
+    {
+        //内存 0x20~0x2F
+        uint8_t byte_address=0x20+bit_address/8;//字节地址
+        bit_address%=8;
+        uint8_t val=0;
+        core->io(core,HS_MCS_51_IO_READ_RAM_SFR,byte_address,&val,sizeof(val),core->usr);
+        val &= (~(1<<bit_address));
+        if(bit_value)
+        {
+            val|=(1<<bit_address);
+        }
+        core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,byte_address,&val,sizeof(val),core->usr);
+    }
+    else
+    {
+        //特殊寄存器中地址能被8整除的也可位寻址
+        uint8_t byte_address=(bit_address/8)*8;//字节地址
+        bit_address%=8;
+        uint8_t val=0;
+        core->io(core,HS_MCS_51_IO_READ_RAM_SFR,byte_address,&val,sizeof(val),core->usr);
+        val &= (~(1<<bit_address));
+        if(bit_value)
+        {
+            val|=(1<<bit_address);
+        }
+        core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,byte_address,&val,sizeof(val),core->usr);
+    }
+}
+
 static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
 {
     if(core!=NULL && core->io!=NULL)
@@ -415,6 +484,21 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             Rn++;
             core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
             core->pc+=1;
+        }
+        break;
+        case 0x10://JBC bit,addr
+        {
+            uint8_t bit_address=instruction[1];
+            int8_t  rel_addr=instruction[2];
+            if(hs_mcs_51_sfr_bit_read(core,bit_address))
+            {
+                core->pc+=rel_addr;
+            }
+            else
+            {
+                core->pc+=3;
+            }
+            hs_mcs_51_sfr_bit_write(core,bit_address,false);
         }
         break;
         case 0xC0://PUSH
