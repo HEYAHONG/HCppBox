@@ -323,6 +323,40 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         //TODO:执行指令
         switch(instruction[0])
         {
+        case 0xC0://PUSH
+        {
+            uint8_t sp=0;
+            hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
+            sp++;
+            {
+                {
+                    uint8_t addr=instruction[1];
+                    uint8_t val=0;
+                    core->io(core,HS_MCS_51_IO_READ_RAM_SFR,addr,&val,sizeof(val),core->usr);
+                    core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                }
+            }
+            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+            core->pc+=2;
+        }
+        break;
+        case 0xD0://POP
+        {
+            uint8_t sp=0;
+            hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
+            {
+                {
+                    uint8_t addr=instruction[1];
+                    uint8_t val=0;
+                    core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                    core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,addr,&val,sizeof(val),core->usr);
+                }
+            }
+            sp--;
+            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+            core->pc+=2;
+        }
+        break;
         case 0xE8:
         case 0xE9:
         case 0xEA:
