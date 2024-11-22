@@ -9,6 +9,7 @@
 
 #include "heventchain.h"
 #include "hdefaults.h"
+#include "hmemoryheap.h"
 
 typedef struct heventchain_hook
 {
@@ -35,7 +36,41 @@ struct heventchain
     heventchain_hook_t *hook_start;
     //下一个钩子id
     uint32_t hook_next_id;
+    //标志位
+    struct
+    {
+        uint32_t has_internal_heap:1;
+    };
 };
+
+size_t heventchain_with_internal_heap_min_size(void)
+{
+    return sizeof(heventchain_t)+2*sizeof(heventchain_hook_t)+64;//足够两个钩子
+}
+
+static void *internal_heap_mem_alloc(size_t nbytes,void *usr)
+{
+    return hmemoryheap_pool_malloc((hmemoryheap_pool_t *)usr,nbytes);
+}
+static void internal_heap_mem_free(void * ptr,void *usr)
+{
+    hmemoryheap_pool_free((hmemoryheap_pool_t *)usr,ptr);
+}
+
+heventchain_t * heventchain_with_internal_heap_init(void *usr,void (*mutex_lock)(void *),void (*mutex_unlock)(void *),void *mem,size_t length)
+{
+    if(mem==NULL && length < heventchain_with_internal_heap_min_size())
+    {
+        return NULL;
+    }
+    hmemoryheap_pool_t *pool=hmemoryheap_pool_format(usr,mutex_lock,mutex_unlock,(uint8_t *)mem,length);
+    heventchain_t *chain=heventchain_new_with_memmang_and_lock(pool,internal_heap_mem_alloc,internal_heap_mem_free,mutex_lock,mutex_unlock);
+    if(chain!=NULL)
+    {
+        chain->has_internal_heap=1;
+    }
+    return chain;
+}
 
 heventchain_t * heventchain_new_with_memmang_and_lock(void *usr,void *(*mem_alloc)(size_t,void *),void (*mem_free)(void *,void *),void (*mutex_lock)(void *),void (*mutex_unlock)(void *))
 {
@@ -86,7 +121,18 @@ void * heventchain_get_usr_ptr(heventchain_t *chain)
     {
         return NULL;
     }
-    return chain->usr;
+    if(chain->has_internal_heap)
+    {
+        if(chain->usr!=NULL)
+        {
+            return hmemoryheap_pool_get_usr_ptr((hmemoryheap_pool_t *)chain->usr);
+        }
+    }
+    else
+    {
+        return chain->usr;
+    }
+    return NULL;
 }
 
 void heventchain_free(heventchain_t *chain)

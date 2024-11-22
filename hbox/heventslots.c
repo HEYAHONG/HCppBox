@@ -8,6 +8,7 @@
  **************************************************************/
 
 #include "heventslots.h"
+#include "hmemoryheap.h"
 #include "hdefaults.h"
 
 typedef struct heventslots_slot
@@ -33,7 +34,41 @@ struct heventslots
     heventslots_slot_t *slot_start;
     //下一个槽id
     uint32_t slot_next_id;
+    //标志位
+    struct
+    {
+        uint32_t has_internal_heap:1;
+    };
 };
+
+size_t heventslots_with_internal_heap_min_size(void)
+{
+    return sizeof(heventslots_t)+2*sizeof(heventslots_slot_t)+64;//空间足够2个槽。
+}
+
+static void *internal_heap_mem_alloc(size_t nbytes,void *usr)
+{
+    return hmemoryheap_pool_malloc((hmemoryheap_pool_t *)usr,nbytes);
+}
+static void internal_heap_mem_free(void * ptr,void *usr)
+{
+    hmemoryheap_pool_free((hmemoryheap_pool_t *)usr,ptr);
+}
+
+heventslots_t * heventslots_with_internal_heap_init(void *usr,void (*mutex_lock)(void *),void (*mutex_unlock)(void *),void *mem,size_t length)
+{
+    if(mem==NULL && length < heventslots_with_internal_heap_min_size())
+    {
+        return NULL;
+    }
+    hmemoryheap_pool_t *pool=hmemoryheap_pool_format(usr,mutex_lock,mutex_unlock,(uint8_t *)mem,length);
+    heventslots_t *slots=heventslots_new_with_memmang_and_lock(pool,internal_heap_mem_alloc,internal_heap_mem_free,mutex_lock,mutex_unlock);
+    if(slots!=NULL)
+    {
+        slots->has_internal_heap=1;
+    }
+    return slots;
+}
 
 heventslots_t * heventslots_new_with_memmang_and_lock(void *usr,void *(*mem_alloc)(size_t,void *),void (*mem_free)(void *,void *),void (*mutex_lock)(void *),void (*mutex_unlock)(void *))
 {
@@ -84,7 +119,18 @@ void * heventslots_get_usr_ptr(heventslots_t *slots)
     {
         return NULL;
     }
-    return slots->usr;
+    if(slots->has_internal_heap)
+    {
+        if(slots->usr!=NULL)
+        {
+            return hmemoryheap_pool_get_usr_ptr((hmemoryheap_pool_t *)slots->usr);
+        }
+    }
+    else
+    {
+        return slots->usr;
+    }
+    return NULL;
 }
 
 void heventslots_free(heventslots_t *slots)
