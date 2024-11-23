@@ -24,6 +24,18 @@ if "msvc" in env["TOOLS"]:
     env.AppendUnique(CXXFLAGS='/std:c++latest')
     env.AppendUnique(CXXFLAGS='/DWIN32=1')
 
+#gcc设置
+if "gcc" in env["TOOLS"]:
+    #pkg-config
+    pkg_config_path=env.WhereIs("pkg-config")
+    if pkg_config_path and len(pkg_config_path) > 0:
+        print("pkg-config={}".format(pkg_config_path))
+        #判断readline是否存在
+        if not env.Execute("pkg-config --exist readline"):
+            print("readline found")
+            env.MergeFlags(['!pkg-config readline  --cflags --libs', '-DHAVE_READLINE=1'])
+            
+
 cwd = str(Dir('#'))
 objs = []
 
