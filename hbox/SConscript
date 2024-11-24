@@ -8,6 +8,8 @@ src = Glob('*.c')
 src += Glob('*.cpp')
 src += Glob('modbus/*.c')
 src += Glob('modbus/*.cpp')
+src += Glob('gui/*.c')
+src += Glob('gui/*.cpp')
 CPPPATH = [
 cwd,
 cwd+'/cpp'

@@ -1,0 +1,24 @@
+/***************************************************************
+ * Name:      hgui_gui_common.h
+ * Purpose:   声明common接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2024-11-24
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+#ifndef __HGUI_GUI_COMMON_H__
+#define __HGUI_GUI_COMMON_H__
+#include "stdbool.h"
+#include "stdint.h"
+#include "string.h"
+#include "stdlib.h"
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
+#endif // __HGUI_GUI_COMMON_H__

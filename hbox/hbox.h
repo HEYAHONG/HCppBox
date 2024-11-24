@@ -28,6 +28,7 @@
 #include "hmodbus.h"
 #include "hbase64.h"
 #include "hsimulator.h"
+#include "hgui.h"
 
 /*
 由C++编写的组件
