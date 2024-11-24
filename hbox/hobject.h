@@ -764,6 +764,27 @@ hobject_base_t * hobject_managed_struct_base(hobject_managed_struct_t *obj_ptr);
 hobject_managed_struct_t * hobject_managed_struct(hobject_base_t *base);
 
 
+/** \brief 获取结构体的某个成员的偏移
+ *
+ * \param  type 结构体类型
+ * \param  member 成员名称
+ *
+ */
+#ifndef GET_STRUCT_MEMBER_OFFSET
+#define GET_STRUCT_MEMBER_OFFSET(type,member) ((uintptr_t) &(((type *)0)->member))
+#endif
+
+/** \brief 通过某个成员的偏移获取结构体地址,通常用于某些情况只能传结构体某个成员的地址（如回调函数中声明了某参数的类型）但又需要获取原结构体地址的情况。
+ *
+ * \param  member_ptr 某个成员的指针
+ * \param  type 结构体类型
+ * \param  member 成员名称
+ *
+ */
+#ifndef GET_STRUCT_PTR_BY_MEMBER_PTR
+#define GET_STRUCT_PTR_BY_MEMBER_PTR(member_ptr,type,member) ((const type *)(((uintptr_t)(member_ptr))-GET_STRUCT_MEMBER_OFFSET(type,member)))
+#endif
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

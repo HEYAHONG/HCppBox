@@ -1088,6 +1088,10 @@ static int hobject_test(int argc,const char *argv[])
             free(obj);
         }
     }
+    {
+        hobject_int16_t obj=HOBJECT_INT16_INITIALIZER;
+        printf("hobject_test: obj addr=%08X,data addr=%08X,offset=%08X,get_obj_by_data=%08X\r\n",(uint32_t)(uintptr_t)&obj,(uint32_t)(uintptr_t)&obj.data,(uint32_t)GET_STRUCT_MEMBER_OFFSET(hobject_int16_t,data),(uint32_t)(uintptr_t)GET_STRUCT_PTR_BY_MEMBER_PTR(&obj.data,hobject_int16_t,data));
+    }
     printf("hobject_test:end\r\n");
     return 0;
 }
