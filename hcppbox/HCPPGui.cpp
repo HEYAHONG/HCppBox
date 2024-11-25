@@ -12,7 +12,6 @@
 #include "thread"
 #include "chrono"
 
-
 #ifdef WIN32
 hgui_driver &driver=*hgui_driver_default_get();
 #include "windows.h"
@@ -263,8 +262,166 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
     return 0;
 }
 
-#else
+#elif defined(HAVE_SDL)
+#include <SDL.h>
+hgui_driver &driver=*hgui_driver_default_get();
+static class HCPPGuiDriver
+{
+    std::recursive_mutex m_lock;
+    SDL_Surface *screen;
+public:
+    bool fill_rectangle(hgui_driver_t *driver,size_t x,size_t y,size_t w,size_t h,hgui_pixel_t pixel)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_lock);
+        if(screen!=NULL)
+        {
+            SDL_Rect fill_rect= {(Sint16)x,(Sint16)y,(Uint16)w,(Uint16)h};
+            SDL_FillRect(screen, &fill_rect, pixel.pixel_32_bits);
+            SDL_Flip(screen);
+            return true;
+        }
+        return false;
+    }
+    static bool g_fill_rectangle(hgui_driver_t *driver,size_t x,size_t y,size_t w,size_t h,hgui_pixel_t pixel)
+    {
+        if(driver==NULL || driver->usr==NULL)
+        {
+            return false;
+        }
+        HCPPGuiDriver &obj=*(HCPPGuiDriver *)driver->usr;
+        return obj.fill_rectangle(driver,x,y,w,h,pixel);
+    }
+    bool reset(hgui_driver_t *driver)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_lock);
+        if((SDL_WasInit(SDL_INIT_EVERYTHING)&SDL_INIT_VIDEO)==0)
+        {
+            if(SDL_Init(SDL_INIT_EVERYTHING)<0)
+            {
+                return false;
+            }
+        }
+        if(screen==NULL)
+        {
+            screen=SDL_SetVideoMode(320,240,32,SDL_HWSURFACE);
+        }
+        return true;
+    }
+    static bool g_reset(hgui_driver_t *driver)
+    {
+        if(driver==NULL || driver->usr==NULL)
+        {
+            return false;
+        }
+        HCPPGuiDriver &obj=*(HCPPGuiDriver *)driver->usr;
+        return obj.reset(driver);
+    }
+    bool is_ok(hgui_driver_t *driver)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_lock);
+        return screen!=NULL;
+    }
+    static hgui_pixel_mode_t  g_pixel_mode(hgui_driver_t *driver,hgui_pixel_mode_t *new_mode)
+    {
+        (void)driver;
+        (void)new_mode;
+        return HGUI_PIXEL_MODE_32_BITS;
+    }
+    bool resize(hgui_driver_t *driver,ssize_t *w,ssize_t *h)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_lock);
 
+        bool ret=false;
+        if(w!=NULL && (*w) <0)
+        {
+            ret=true;
+        }
+        if(h!=NULL && (*h) <0)
+        {
+            ret=true;
+        }
+        if(w!=NULL)
+        {
+            (*w)=screen->w;
+        }
+
+        if(h!=NULL)
+        {
+            (*h)=screen->h;
+        }
+
+        //暂不支持调整大小
+        return ret;
+    }
+
+    static bool g_resize(hgui_driver_t *driver,ssize_t *w,ssize_t *h)
+    {
+        if(driver==NULL || driver->usr==NULL)
+        {
+            return false;
+        }
+        HCPPGuiDriver &obj=*(HCPPGuiDriver *)driver->usr;
+        return obj.resize(driver,w,h);
+    }
+
+    bool update(hgui_driver_t *driver)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_lock);
+        {
+            SDL_Event event= {0};
+            while(SDL_PollEvent(&event))
+            {
+                switch(event.type)
+                {
+                case SDL_QUIT:
+                {
+                    screen=NULL;
+                }
+                break;
+                default:
+                {
+
+                }
+                break;
+                }
+            }
+        }
+        return true;
+    }
+    static bool g_is_ok(hgui_driver_t *driver)
+    {
+        if(driver==NULL || driver->usr==NULL)
+        {
+            return false;
+        }
+        HCPPGuiDriver &obj=*(HCPPGuiDriver *)driver->usr;
+        obj.update(driver);
+        return obj.is_ok(driver);
+    }
+    HCPPGuiDriver():screen(NULL)
+    {
+        driver.usr=this;
+        driver.fill_rectangle=g_fill_rectangle;
+        driver.reset=g_reset;
+        driver.resize=g_resize;
+        driver.is_ok=g_is_ok;
+        driver.pixel_mode = g_pixel_mode;
+    }
+    ~HCPPGuiDriver()
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_lock);
+        screen=NULL;
+        SDL_Quit();
+    }
+} g_HCPPGuiDriver;
+
+void *HCPPGuiInit(void)
+{
+    return &g_HCPPGuiDriver;
+}
+
+#else
+//不支持的平台
 void *HCPPGuiInit(void)
 {
     return NULL;

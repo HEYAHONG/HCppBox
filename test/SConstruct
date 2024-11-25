@@ -35,6 +35,10 @@ if "gcc" in env["TOOLS"]:
         if not env.Execute("pkg-config --exist readline"):
             print("readline found")
             env.MergeFlags(['!pkg-config readline  --cflags --libs', '-DHAVE_READLINE=1'])
+        #判断sdl是否存在
+        if not env.Execute("pkg-config --exist sdl"):
+            print("sdl found")
+            env.MergeFlags(['!pkg-config sdl  --cflags --libs', '-DHAVE_SDL=1'])
             
 
 cwd = str(Dir('#'))

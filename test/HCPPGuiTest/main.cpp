@@ -25,7 +25,7 @@ int main()
                 hgui_pixel_t pixel;
                 if(hgui_driver_pixel_mode(NULL,NULL)==HGUI_PIXEL_MODE_24_BITS || hgui_driver_pixel_mode(NULL,NULL)==HGUI_PIXEL_MODE_32_BITS)
                 {
-                    pixel.pixel_32_bits=0xFFFFFFFF;
+                    pixel.pixel_32_bits=0xFF0000FF;
                 }
                 hgui_driver_fill_rectangle(NULL,0,0,w,h,pixel);
             }

@@ -20,6 +20,22 @@ if(WIN32)
 	target_link_libraries(HCppBox ws2_32)
 endif()
 
+include(FindPkgConfig)
+if(PKG_CONFIG_FOUND)
+pkg_check_modules(SDL IMPORTED_TARGET sdl)
+pkg_check_modules(SDL2 IMPORTED_TARGET sdl2)
+if(SDL_FOUND)
+target_link_libraries(HCppBox PkgConfig::SDL)
+add_definitions(-DHAVE_SDL=1)
+else()
+if(SDL2_FOUND)
+target_link_libraries(HCppBox PkgConfig::SDL2)
+add_definitions(-DHAVE_SDL2=1)
+endif()
+endif()
+endif()
+
+
 #链接hbox
 hbox_enable(HCppBox)
 
