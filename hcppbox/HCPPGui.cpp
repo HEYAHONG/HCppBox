@@ -33,7 +33,7 @@ public:
         std::lock_guard<std::recursive_mutex> lock(m_lock);
         if(hdc !=NULL)
         {
-            SetPixel(hdc,x,y,pixel.pixel_32_bits);
+            SetPixel(hdc,x,y,RGB((pixel.pixel_32_bits>>16)&0xFF, (pixel.pixel_32_bits >> 8)&0xFF, (pixel.pixel_32_bits)&0xFF));
             return true;
         }
         return false;
