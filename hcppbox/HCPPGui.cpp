@@ -128,9 +128,8 @@ public:
         std::lock_guard<std::recursive_mutex> lock(m_lock);
         return hwnd!=NULL;
     }
-    hgui_pixel_mode_t  g_pixel_mode(hgui_driver_t *driver,hgui_pixel_mode_t *new_mode)
+    static hgui_pixel_mode_t  g_pixel_mode(hgui_driver_t *driver,hgui_pixel_mode_t *new_mode)
     {
-        std::lock_guard<std::recursive_mutex> lock(m_lock);
         (void)driver;
         (void)new_mode;
         return HGUI_PIXEL_MODE_32_BITS;
@@ -220,6 +219,7 @@ public:
         driver.reset=g_reset;
         driver.resize=g_resize;
         driver.is_ok=g_is_ok;
+        driver.pixel_mode = g_pixel_mode;
     }
     ~HCPPGuiDriver()
     {
