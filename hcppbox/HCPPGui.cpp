@@ -92,7 +92,7 @@ public:
                        0,                   /* Extended possibilites for variation */
                        szClassName,         /* Classname */
                        _T(""),       /* Title Text */
-                       WS_OVERLAPPEDWINDOW, /* default window */
+                       WS_POPUPWINDOW | WS_CAPTION,  /* popup window */
                        CW_USEDEFAULT,       /* Windows decides the position */
                        CW_USEDEFAULT,       /* where the window ends up on the screen */
                        320,                 /* The programs width */
