@@ -89,3 +89,34 @@ bool hgui_driver_reset(hgui_driver_t *driver)
     return false;
 }
 
+hgui_pixel_mode_t  hgui_driver_pixel_mode(hgui_driver_t *driver,hgui_pixel_mode_t* new_mode)
+{
+    if(driver==NULL)
+    {
+        driver=hgui_driver_default_get();
+    }
+
+    if(driver->pixel_mode!=NULL)
+    {
+        return driver->pixel_mode(driver,new_mode);
+    }
+    else
+    {
+        return hgui_pixel_global_mode_get();
+    }
+}
+
+bool hgui_driver_resize(hgui_driver_t* driver,ssize_t *w,ssize_t *h)
+{
+    if(driver==NULL)
+    {
+        driver=hgui_driver_default_get();
+    }
+
+    if(driver->resize!=NULL)
+    {
+        return driver->resize(driver,w,h);
+    }
+
+    return false;
+}

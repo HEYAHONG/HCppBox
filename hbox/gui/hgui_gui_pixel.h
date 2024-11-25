@@ -14,7 +14,30 @@ extern "C"
 {
 #endif // __cplusplus
 
-typedef union
+typedef enum hgui_pixel_mode
+{
+    HGUI_PIXEL_MODE_NONE=0, //模式位未设置，获取全局设置
+    HGUI_PIXEL_MODE_1_BIT,
+    HGUI_PIXEL_MODE_MONOCHROME=HGUI_PIXEL_MODE_1_BIT,
+    HGUI_PIXEL_MODE_2_BIT,
+    HGUI_PIXEL_MODE_CGA=HGUI_PIXEL_MODE_2_BIT,
+    HGUI_PIXEL_MODE_4_BIT,
+    HGUI_PIXEL_MODE_EGA=HGUI_PIXEL_MODE_4_BIT,
+    HGUI_PIXEL_MODE_8_BITS,
+    HGUI_PIXEL_MODE_VGA=HGUI_PIXEL_MODE_8_BITS,
+    HGUI_PIXEL_MODE_16_BITS,
+    HGUI_PIXEL_MODE_XGA=HGUI_PIXEL_MODE_16_BITS,
+    HGUI_PIXEL_MODE_24_BITS,
+    HGUI_PIXEL_MODE_SVGA=HGUI_PIXEL_MODE_24_BITS,
+    HGUI_PIXEL_MODE_32_BITS,
+    HGUI_PIXEL_MODE_MAX_BITS,
+    HGUI_PIXEL_MODE_CALLBACK    //回调函数
+}  hgui_pixel_mode_t;
+
+union hgui_pixel;
+typedef union hgui_pixel hgui_pixel_t;
+
+union hgui_pixel
 {
     uint8_t     pixel_1_bit;    //单色
     uint8_t     pixel_2_bits;   //2位色
@@ -23,7 +46,17 @@ typedef union
     uint16_t    pixel_16_bits;  //16位色,如RGB565等
     uint32_t    pixel_24_bits;  //24位色,如RGB888等
     uint32_t    pixel_32_bits;  //32位色（用于像素处理），如ARGB8888等
-} hgui_pixel_t; /**< 像素定义 */
+    uint64_t    pixel_max_bits; //更高位色，仅用于存储更高色深更高的数据
+    /** \brief 获取像素
+     *
+     * \param x ssize_t X坐标，负数表示不使用此参数
+     * \param y ssize_t Y坐标，负数表示不使用此参数
+     * \param mode hgui_pixel_mode_t* 可为NULL，像素模式,若模式仍然是HGUI_PIXEL_MODE_CALLBACK，则仍需调用返回的像素回调
+     * \return hgui_pixel_t 像素
+     *
+     */
+    hgui_pixel_t (*pixel)(ssize_t x,ssize_t y,hgui_pixel_mode_t *mode);
+} ; /**< 像素定义 */
 
 
 /** \brief 32位色ARGB8888(24位色RGB888)转16位色RGB565
@@ -43,26 +76,6 @@ typedef union
 #ifndef HGUI_RGB_16_to_32
 #define HGUI_RGB_16_to_32(rgb) ((0xFF << 24) | ((((unsigned int)(rgb)) & 0x1F) << 3) | ((((unsigned int)(rgb)) & 0x7E0) << 5) | ((((unsigned int)(rgb)) & 0xF800) << 8))
 #endif
-
-
-
-typedef enum
-{
-    HGUI_PIXEL_MODE_NONE=0, //模式位未设置，获取全局设置
-    HGUI_PIXEL_MODE_1_BIT,
-    HGUI_PIXEL_MODE_MONOCHROME=HGUI_PIXEL_MODE_1_BIT,
-    HGUI_PIXEL_MODE_2_BIT,
-    HGUI_PIXEL_MODE_CGA=HGUI_PIXEL_MODE_2_BIT,
-    HGUI_PIXEL_MODE_4_BIT,
-    HGUI_PIXEL_MODE_EGA=HGUI_PIXEL_MODE_4_BIT,
-    HGUI_PIXEL_MODE_8_BITS,
-    HGUI_PIXEL_MODE_VGA=HGUI_PIXEL_MODE_8_BITS,
-    HGUI_PIXEL_MODE_16_BITS,
-    HGUI_PIXEL_MODE_XGA=HGUI_PIXEL_MODE_16_BITS,
-    HGUI_PIXEL_MODE_24_BITS,
-    HGUI_PIXEL_MODE_SVGA=HGUI_PIXEL_MODE_24_BITS,
-    HGUI_PIXEL_MODE_32_BITS
-}  hgui_pixel_mode_t;
 
 /** \brief 获取全局像素设置
  *

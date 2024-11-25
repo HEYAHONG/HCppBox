@@ -51,6 +51,25 @@ struct hgui_driver
      *
      */
     bool (*reset)(hgui_driver_t *driver);
+
+    /** \brief 获取像素模式
+     *
+     * \param driver hgui_driver_t* 驱动指针
+     * \param new_mode hgui_pixel_mode_t* 新模式，NULL表示仅读取。
+     * \return hgui_pixel_mode_t 像素模式
+     *
+     */
+    hgui_pixel_mode_t  (*pixel_mode)(hgui_driver_t *driver,hgui_pixel_mode_t *new_mode);
+
+    /** \brief 重设大小
+     *
+     * \param driver hgui_driver_t* 驱动指针
+     * \param w ssize_t* 宽度指针，传入待重设的值，返回重设后的值。传入负数表示读取数据。
+     * \param h ssize_t* 高度指针，传入待重设的值，返回重设后的值。传入负数表示读取数据。
+     * \return bool 是否重设成功
+     *
+     */
+    bool (*resize)(hgui_driver_t *driver,ssize_t *w,ssize_t *h);
 };
 
 #define HGUI_DRIVER_INITIALIZER {0} /**< hgui_driver_t初始化项 */
@@ -96,6 +115,25 @@ bool hgui_driver_fill_rectangle(hgui_driver_t *driver,size_t x,size_t y,size_t w
  *
  */
 bool hgui_driver_reset(hgui_driver_t *driver);
+
+/** \brief 获取像素模式
+ *
+ * \param driver hgui_driver_t* 驱动指针
+ * \param new_mode hgui_pixel_mode_t* 新模式，NULL表示仅读取。
+ * \return hgui_pixel_mode_t 像素模式
+ *
+ */
+hgui_pixel_mode_t  hgui_driver_pixel_mode(hgui_driver_t *driver,hgui_pixel_mode_t* new_mode);
+
+/** \brief 重设大小
+ *
+ * \param driver hgui_driver_t* 驱动指针
+ * \param w ssize_t* 宽度指针，传入待重设的值，返回重设后的值。传入负数表示读取数据。
+ * \param h ssize_t* 高度指针，传入待重设的值，返回重设后的值。传入负数表示读取数据。
+ * \return bool 是否重设成功
+ *
+ */
+bool hgui_driver_resize(hgui_driver_t* driver,ssize_t *w,ssize_t *h);
 
 #ifdef __cplusplus
 }
