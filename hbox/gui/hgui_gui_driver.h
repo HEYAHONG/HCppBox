@@ -70,6 +70,14 @@ struct hgui_driver
      *
      */
     bool (*resize)(hgui_driver_t *driver,ssize_t *w,ssize_t *h);
+
+    /** \brief 是否正常工作,在某些情况下（如windows中）需要在主线程中调用此函数更新driver内部状态
+     *
+     * \param driver hgui_driver_t* 驱动指针
+     * \return bool 是否正常工作
+     *
+     */
+    bool (*is_ok)(hgui_driver_t *driver);
 };
 
 #define HGUI_DRIVER_INITIALIZER {0} /**< hgui_driver_t初始化项 */
@@ -134,6 +142,15 @@ hgui_pixel_mode_t  hgui_driver_pixel_mode(hgui_driver_t *driver,hgui_pixel_mode_
  *
  */
 bool hgui_driver_resize(hgui_driver_t* driver,ssize_t *w,ssize_t *h);
+
+
+/** \brief 是否正常工作
+ *
+ * \param driver hgui_driver_t* 驱动指针
+ * \return bool 是否正常工作
+ *
+ */
+bool  hgui_driver_is_ok(hgui_driver_t *driver);
 
 #ifdef __cplusplus
 }

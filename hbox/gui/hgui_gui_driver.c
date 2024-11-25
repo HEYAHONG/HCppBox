@@ -56,7 +56,7 @@ bool hgui_driver_fill_rectangle(hgui_driver_t *driver,size_t x,size_t y,size_t w
                 bool ret=true;
                 for(size_t i=x; i<x+w; i++)
                 {
-                    for(size_t j=y; y<y+h; j++)
+                    for(size_t j=y; j<y+h; j++)
                     {
                         ret=driver->draw_pixel(driver,i,j,pixel);
                         if(!ret)
@@ -116,6 +116,22 @@ bool hgui_driver_resize(hgui_driver_t* driver,ssize_t *w,ssize_t *h)
     if(driver->resize!=NULL)
     {
         return driver->resize(driver,w,h);
+    }
+
+    return false;
+}
+
+
+bool  hgui_driver_is_ok(hgui_driver_t *driver)
+{
+    if(driver==NULL)
+    {
+        driver=hgui_driver_default_get();
+    }
+
+    if(driver->is_ok!=NULL)
+    {
+        return driver->is_ok(driver);
     }
 
     return false;

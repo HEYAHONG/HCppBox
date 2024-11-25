@@ -74,3 +74,12 @@
 
 - HCPPInit.cpp
 - HCPPInit.h
+
+## HCPPGui
+
+测试嵌入式GUI，非通用GUI框架。
+
+### 文件列表
+
+- HCPPGui.cpp
+- HCPPGui.h
