@@ -34,28 +34,31 @@ typedef enum hgui_pixel_mode
     HGUI_PIXEL_MODE_CALLBACK    //回调函数
 }  hgui_pixel_mode_t;
 
-union hgui_pixel;
-typedef union hgui_pixel hgui_pixel_t;
+struct hgui_pixel;
+typedef struct hgui_pixel hgui_pixel_t;
 
-union hgui_pixel
+struct hgui_pixel
 {
-    uint8_t     pixel_1_bit;    //单色
-    uint8_t     pixel_2_bits;   //2位色
-    uint8_t     pixel_4_bits;   //4位色
-    uint8_t     pixel_8_bits;   //8位色,如RGB233
-    uint16_t    pixel_16_bits;  //16位色,如RGB565等
-    uint32_t    pixel_24_bits;  //24位色,如RGB888等
-    uint32_t    pixel_32_bits;  //32位色（用于像素处理），如ARGB8888等
-    uint64_t    pixel_max_bits; //更高位色，仅用于存储更高色深更高的数据
-    /** \brief 获取像素
-     *
-     * \param x ssize_t X坐标，负数表示不使用此参数
-     * \param y ssize_t Y坐标，负数表示不使用此参数
-     * \param mode hgui_pixel_mode_t* 可为NULL，像素模式,若模式仍然是HGUI_PIXEL_MODE_CALLBACK，则仍需调用返回的像素回调
-     * \return hgui_pixel_t 像素
-     *
-     */
-    hgui_pixel_t (*pixel)(ssize_t x,ssize_t y,hgui_pixel_mode_t *mode);
+    union
+    {
+        uint8_t     pixel_1_bit;    //单色
+        uint8_t     pixel_2_bits;   //2位色
+        uint8_t     pixel_4_bits;   //4位色
+        uint8_t     pixel_8_bits;   //8位色,如RGB233
+        uint16_t    pixel_16_bits;  //16位色,如RGB565等
+        uint32_t    pixel_24_bits;  //24位色,如RGB888等
+        uint32_t    pixel_32_bits;  //32位色（用于像素处理），如ARGB8888等
+        uint64_t    pixel_max_bits; //更高位色，仅用于存储更高色深更高的数据
+        /** \brief 获取像素
+         *
+         * \param x ssize_t X坐标，负数表示不使用此参数
+         * \param y ssize_t Y坐标，负数表示不使用此参数
+         * \return hgui_pixel_t 像素,注意：像素仍然可能是回调函数
+         *
+         */
+        hgui_pixel_t (*pixel)(ssize_t x,ssize_t y);
+    };
+    hgui_pixel_mode_t mode;
 } ; /**< 像素定义 */
 
 
