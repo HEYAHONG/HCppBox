@@ -79,6 +79,10 @@
 
 测试嵌入式GUI，非通用GUI框架。
 
+此组件主要依赖以下第三方库：
+
+- [SDL](https://libsdl.org/)：用于创建显示窗口，默认使用SDL1,Debian系Linux可使用`sudo apt-get install libsdl-dev`安装sdl1.2库。
+
 ### 文件列表
 
 - HCPPGui.cpp
