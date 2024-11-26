@@ -20,6 +20,10 @@ if(WIN32)
 	target_link_libraries(HCppBox ws2_32)
 endif()
 
+if(CYGWIN)
+        target_link_libraries(HCppBox ws2_32 gdi32)
+endif()
+
 include(FindPkgConfig)
 if(PKG_CONFIG_FOUND)
 pkg_check_modules(SDL IMPORTED_TARGET sdl)

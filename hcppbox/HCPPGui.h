@@ -21,6 +21,15 @@ extern "C"
  */
 void *HCPPGuiInit(void);
 
+
+
+#ifdef main
+//windows下,SDL库会重新定义main为SDL_main,在此处取消定义
+#undef main
+#endif // main
+
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

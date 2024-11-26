@@ -24,6 +24,10 @@ typedef SSIZE_T ssize_t;
 #endif
 #endif
 
+#ifndef ssize_t
+typedef intptr_t ssize_t;
+#endif // ssize_t
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

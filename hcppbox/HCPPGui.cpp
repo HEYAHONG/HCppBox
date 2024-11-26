@@ -12,7 +12,8 @@
 #include "thread"
 #include "chrono"
 
-#ifdef WIN32
+
+#if defined(WIN32) && !defined(HAVE_SDL)
 hgui_driver &driver=*hgui_driver_default_get();
 #include "windows.h"
 #include "tchar.h"
@@ -264,6 +265,9 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
 #elif defined(HAVE_SDL)
 #include <SDL.h>
+#ifndef WIN32
+#include <windows.h>
+#endif // WIN32
 hgui_driver &driver=*hgui_driver_default_get();
 static class HCPPGuiDriver
 {
@@ -304,6 +308,7 @@ public:
         if(screen==NULL)
         {
             screen=SDL_SetVideoMode(320,240,32,SDL_HWSURFACE);
+            SDL_WM_SetCaption("","sdl");
         }
         return true;
     }
@@ -406,6 +411,9 @@ public:
         driver.resize=g_resize;
         driver.is_ok=g_is_ok;
         driver.pixel_mode = g_pixel_mode;
+#ifdef WIN32
+        SDL_SetModuleHandle(GetModuleHandle(NULL));
+#endif // WIN32
     }
     ~HCPPGuiDriver()
     {
