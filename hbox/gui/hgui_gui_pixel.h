@@ -96,6 +96,16 @@ void hgui_pixel_global_mode_set(hgui_pixel_mode_t mode);
 
 
 
+/** \brief 获取像素的bits，通常用于将回调函数类型的像素转化为用为存储的像素
+ *
+ * \param pixel hgui_pixel_t 原像素
+ * \param x ssize_t X坐标
+ * \param y ssize_t Y坐标
+ * \return hgui_pixel_t 像素
+ *
+ */
+hgui_pixel_t hgui_pixel_bits_get(hgui_pixel_t pixel,ssize_t x,ssize_t y);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

@@ -20,3 +20,20 @@ void hgui_pixel_global_mode_set(hgui_pixel_mode_t mode)
     pixel_mode=mode;
 }
 
+
+hgui_pixel_t hgui_pixel_bits_get(hgui_pixel_t pixel,ssize_t x,ssize_t y)
+{
+    while(pixel.mode==HGUI_PIXEL_MODE_CALLBACK)
+    {
+        if(pixel.pixel!=NULL)
+        {
+            pixel=pixel.pixel(x,y);
+        }
+        else
+        {
+            pixel.pixel_max_bits=0;
+            pixel.mode=hgui_pixel_global_mode_get();
+        }
+    }
+    return pixel;
+}
