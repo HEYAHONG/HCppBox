@@ -143,7 +143,7 @@ public:
         }
         {
             RECT rect= {0};
-            if(GetWindowRect(hwnd,&rect))
+            if(GetClientRect(hwnd,&rect))
             {
                 if((*w) < 0 )
                 {
@@ -156,9 +156,28 @@ public:
                 }
             }
 
-            bool ret = (MoveWindow(hwnd,rect.left,rect.top,(*w),(*h),TRUE)!=0);
+            ssize_t new_w = (*w);
+            ssize_t new_h = (*h);
 
-            if(GetWindowRect(hwnd,&rect))
+            bool ret = (MoveWindow(hwnd,rect.left,rect.top,new_w,new_h,TRUE)!=0);
+
+            if(GetClientRect(hwnd,&rect))
+            {
+                (*w) = rect.right - rect.left;
+                if((*w) < 0)
+                {
+                    (*w)=-(*w);
+                }
+                (*h) = rect.bottom - rect.top;
+                if((*h) < 0)
+                {
+                    (*h)=-(*h);
+                }
+            }
+
+            ret = (MoveWindow(hwnd,rect.left,rect.top,2*new_w-(*w),2*new_h-(*h),TRUE)!=0);
+
+            if(GetClientRect(hwnd,&rect))
             {
                 (*w) = rect.right - rect.left;
                 if((*w) < 0)
@@ -335,27 +354,41 @@ public:
     bool resize(hgui_driver_t *driver,ssize_t *w,ssize_t *h)
     {
         std::lock_guard<std::recursive_mutex> lock(m_lock);
-
+        if(w==NULL || h == NULL)
+        {
+            return false;
+        }
         bool ret=false;
-        if(w!=NULL && (*w) <0)
+        bool need_resize=false;
+        if((*w) > 0 || (*h) > 0)
         {
-            ret=true;
+            need_resize=true;
         }
-        if(h!=NULL && (*h) <0)
-        {
-            ret=true;
-        }
-        if(w!=NULL)
+        if((*w) <0)
         {
             (*w)=screen->w;
+            ret=true;
         }
-
-        if(h!=NULL)
+        if((*h) <0)
         {
             (*h)=screen->h;
+            ret=true;
+        }
+        if(need_resize)
+        {
+            if(screen!=NULL)
+            {
+                SDL_FreeSurface(screen);
+                //重新创建窗口，需要重新绘制
+                screen=SDL_SetVideoMode((*w),(*h),32,SDL_HWSURFACE);
+                SDL_WM_SetCaption("","sdl");
+                ret=true;
+            }
         }
 
-        //暂不支持调整大小
+        (*w)=screen->w;
+        (*h)=screen->h;
+
         return ret;
     }
 
@@ -418,6 +451,10 @@ public:
     ~HCPPGuiDriver()
     {
         std::lock_guard<std::recursive_mutex> lock(m_lock);
+        if(screen!=NULL)
+        {
+            SDL_FreeSurface(screen);
+        }
         screen=NULL;
         SDL_Quit();
     }
