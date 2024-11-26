@@ -265,7 +265,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
 #elif defined(HAVE_SDL)
 #include <SDL.h>
-#ifndef WIN32
+#ifdef WIN32
 #include <windows.h>
 #endif // WIN32
 hgui_driver &driver=*hgui_driver_default_get();
