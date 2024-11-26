@@ -445,7 +445,9 @@ public:
         driver.is_ok=g_is_ok;
         driver.pixel_mode = g_pixel_mode;
 #ifdef WIN32
+#ifndef __CYGWIN__
         SDL_SetModuleHandle(GetModuleHandle(NULL));
+#endif // __CYGWIN__
 #endif // WIN32
     }
     ~HCPPGuiDriver()
