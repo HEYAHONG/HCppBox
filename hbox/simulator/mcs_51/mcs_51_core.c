@@ -883,7 +883,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             uint8_t cy=(psw>>7);
             uint8_t new_cy=(acc>>7);
             //循环左移,加上CY
-            acc=((acc>>1)+(cy));
+            acc=((acc<<1)+(cy));
             hs_mcs_51_sfr_acc_write(core,acc);
             psw&=0x7F;
             psw|=(new_cy<<7);
