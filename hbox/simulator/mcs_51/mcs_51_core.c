@@ -709,7 +709,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             uint8_t data=instruction[1];
             uint8_t acc=hs_mcs_51_sfr_acc_read(core);
             {
-                uint8_t Cy=((((uint)acc+(uint)(data)) > 255)?0x01:0);
+                uint8_t Cy=((((uint16_t)acc+(uint16_t)(data)) > 255)?0x01:0);
                 uint8_t Ac=((((acc&0x0f)+(data&0x0f)) & 0xf0)?0x01:0);
                 uint8_t C6=((((acc&0x7f)+(data&0x7f)) & 0x80)?0x01:00);
                 uint8_t Ov=(Cy^C6);
@@ -731,7 +731,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             uint8_t acc=hs_mcs_51_sfr_acc_read(core);
             {
                 uint8_t data=val;
-                uint8_t Cy=((((uint)acc+(uint)(data)) > 255)?0x01:0);
+                uint8_t Cy=((((uint16_t)acc+(uint16_t)(data)) > 255)?0x01:0);
                 uint8_t Ac=((((acc&0x0f)+(data&0x0f)) & 0xf0)?0x01:0);
                 uint8_t C6=((((acc&0x7f)+(data&0x7f)) & 0x80)?0x01:00);
                 uint8_t Ov=(Cy^C6);
@@ -756,7 +756,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             uint8_t acc=hs_mcs_51_sfr_acc_read(core);
             {
                 uint8_t data=val;
-                uint8_t Cy=((((uint)acc+(uint)(data)) > 255)?0x01:0);
+                uint8_t Cy=((((uint16_t)acc+(uint16_t)(data)) > 255)?0x01:0);
                 uint8_t Ac=((((acc&0x0f)+(data&0x0f)) & 0xf0)?0x01:0);
                 uint8_t C6=((((acc&0x7f)+(data&0x7f)) & 0x80)?0x01:00);
                 uint8_t Ov=(Cy^C6);
@@ -781,7 +781,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             uint8_t acc=hs_mcs_51_sfr_acc_read(core);
             {
                 uint8_t data=val;
-                uint8_t Cy=((((uint)acc+(uint)(data)) > 255)?0x01:0);
+                uint8_t Cy=((((uint16_t)acc+(uint16_t)(data)) > 255)?0x01:0);
                 uint8_t Ac=((((acc&0x0f)+(data&0x0f)) & 0xf0)?0x01:0);
                 uint8_t C6=((((acc&0x7f)+(data&0x7f)) & 0x80)?0x01:00);
                 uint8_t Ov=(Cy^C6);
@@ -811,7 +811,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             uint8_t acc=hs_mcs_51_sfr_acc_read(core);
             {
                 uint8_t data=Rn;
-                uint8_t Cy=((((uint)acc+(uint)(data)) > 255)?0x01:0);
+                uint8_t Cy=((((uint16_t)acc+(uint16_t)(data)) > 255)?0x01:0);
                 uint8_t Ac=((((acc&0x0f)+(data&0x0f)) & 0xf0)?0x01:0);
                 uint8_t C6=((((acc&0x7f)+(data&0x7f)) & 0x80)?0x01:00);
                 uint8_t Ov=(Cy^C6);
