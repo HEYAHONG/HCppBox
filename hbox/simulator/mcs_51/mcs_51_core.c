@@ -715,7 +715,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 uint8_t Ov=(Cy^C6);
                 acc+=data;
                 uint8_t psw=hs_mcs_51_sfr_psw_read(core);
-                psw&=0x3D;
+                psw&=(~(0x80|0x40|0x04));
                 psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
                 hs_mcs_51_sfr_psw_write(core,psw);
             }
@@ -737,7 +737,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 uint8_t Ov=(Cy^C6);
                 acc+=data;
                 uint8_t psw=hs_mcs_51_sfr_psw_read(core);
-                psw&=0x3D;
+                psw&=(~(0x80|0x40|0x04));
                 psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
                 hs_mcs_51_sfr_psw_write(core,psw);
             }
@@ -762,7 +762,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 uint8_t Ov=(Cy^C6);
                 acc+=data;
                 uint8_t psw=hs_mcs_51_sfr_psw_read(core);
-                psw&=0x3D;
+                psw&=(~(0x80|0x40|0x04));
                 psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
                 hs_mcs_51_sfr_psw_write(core,psw);
             }
@@ -787,7 +787,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 uint8_t Ov=(Cy^C6);
                 acc+=data;
                 uint8_t psw=hs_mcs_51_sfr_psw_read(core);
-                psw&=0x3D;
+                psw&=(~(0x80|0x40|0x04));
                 psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
                 hs_mcs_51_sfr_psw_write(core,psw);
             }
@@ -817,7 +817,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 uint8_t Ov=(Cy^C6);
                 acc+=data;
                 uint8_t psw=hs_mcs_51_sfr_psw_read(core);
-                psw&=0x3D;
+                psw&=(~(0x80|0x40|0x04));
                 psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
                 hs_mcs_51_sfr_psw_write(core,psw);
             }
