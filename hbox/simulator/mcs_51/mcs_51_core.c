@@ -571,7 +571,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             core->pc=256*instruction[1]+instruction[2];
         }
         break;
-        case 0x13://RRC
+        case 0x13://RRC A
         {
             uint8_t acc=hs_mcs_51_sfr_acc_read(core);
             uint8_t psw=hs_mcs_51_sfr_psw_read(core);
@@ -648,6 +648,21 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             core->pc+=1;
         }
         break;
+        case 0x20://JB bit,addr
+        {
+            uint8_t bit_address=instruction[1];
+            int8_t  rel_addr=instruction[2];
+            if(hs_mcs_51_sfr_bit_read(core,bit_address))
+            {
+                core->pc+=rel_addr;
+            }
+            else
+            {
+                core->pc+=3;
+            }
+            core->delay_tick=1;
+        }
+        break;
         case 0x22://RET
         {
             uint16_t pc=0;
@@ -678,6 +693,136 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             }
             core->delay_tick=1;
             core->pc=pc;
+        }
+        break;
+        case 0x23: //RL A
+        {
+            uint8_t acc=hs_mcs_51_sfr_acc_read(core);
+            //循环左移
+            acc=((acc<<1)+(acc>>7));
+            hs_mcs_51_sfr_acc_write(core,acc);
+            core->pc+=1;
+        }
+        break;
+        case 0x24://ADD A,#Data
+        {
+            uint8_t data=instruction[1];
+            uint8_t acc=hs_mcs_51_sfr_acc_read(core);
+            {
+                uint8_t Cy=((((uint)acc+(uint)(data)) > 255)?0x01:0);
+                uint8_t Ac=((((acc&0x0f)+(data&0x0f)) & 0xf0)?0x01:0);
+                uint8_t C6=((((acc&0x7f)+(data&0x7f)) & 0x80)?0x01:00);
+                uint8_t Ov=(Cy^C6);
+                acc+=data;
+                uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+                psw&=0x3D;
+                psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
+                hs_mcs_51_sfr_psw_write(core,psw);
+            }
+            hs_mcs_51_sfr_acc_write(core,acc);
+            core->pc+=2;
+        }
+        break;
+        case 0x25://ADD A,addr
+        {
+            uint8_t addr=instruction[1];
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,addr,&val,sizeof(val),core->usr);
+            uint8_t acc=hs_mcs_51_sfr_acc_read(core);
+            {
+                uint8_t data=val;
+                uint8_t Cy=((((uint)acc+(uint)(data)) > 255)?0x01:0);
+                uint8_t Ac=((((acc&0x0f)+(data&0x0f)) & 0xf0)?0x01:0);
+                uint8_t C6=((((acc&0x7f)+(data&0x7f)) & 0x80)?0x01:00);
+                uint8_t Ov=(Cy^C6);
+                acc+=data;
+                uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+                psw&=0x3D;
+                psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
+                hs_mcs_51_sfr_psw_write(core,psw);
+            }
+            hs_mcs_51_sfr_acc_write(core,acc);
+            core->pc+=2;
+        }
+        break;
+        case 0x26://ADD A,@R0
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+0;
+            uint8_t Rn=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,Rn,&val,sizeof(val),core->usr);
+            uint8_t acc=hs_mcs_51_sfr_acc_read(core);
+            {
+                uint8_t data=val;
+                uint8_t Cy=((((uint)acc+(uint)(data)) > 255)?0x01:0);
+                uint8_t Ac=((((acc&0x0f)+(data&0x0f)) & 0xf0)?0x01:0);
+                uint8_t C6=((((acc&0x7f)+(data&0x7f)) & 0x80)?0x01:00);
+                uint8_t Ov=(Cy^C6);
+                acc+=data;
+                uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+                psw&=0x3D;
+                psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
+                hs_mcs_51_sfr_psw_write(core,psw);
+            }
+            hs_mcs_51_sfr_acc_write(core,acc);
+            core->pc+=1;
+        }
+        break;
+        case 0x27://ADD A,@R1
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+1;
+            uint8_t Rn=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,Rn,&val,sizeof(val),core->usr);
+            uint8_t acc=hs_mcs_51_sfr_acc_read(core);
+            {
+                uint8_t data=val;
+                uint8_t Cy=((((uint)acc+(uint)(data)) > 255)?0x01:0);
+                uint8_t Ac=((((acc&0x0f)+(data&0x0f)) & 0xf0)?0x01:0);
+                uint8_t C6=((((acc&0x7f)+(data&0x7f)) & 0x80)?0x01:00);
+                uint8_t Ov=(Cy^C6);
+                acc+=data;
+                uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+                psw&=0x3D;
+                psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
+                hs_mcs_51_sfr_psw_write(core,psw);
+            }
+            hs_mcs_51_sfr_acc_write(core,acc);
+            core->pc+=1;
+        }
+        break;
+        case 0x28:
+        case 0x29:
+        case 0x2A:
+        case 0x2B:
+        case 0x2C:
+        case 0x2D:
+        case 0x2E:
+        case 0x2F://ADD A,Rn
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+instruction[0]-0x28;
+            uint8_t Rn=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
+            uint8_t acc=hs_mcs_51_sfr_acc_read(core);
+            {
+                uint8_t data=Rn;
+                uint8_t Cy=((((uint)acc+(uint)(data)) > 255)?0x01:0);
+                uint8_t Ac=((((acc&0x0f)+(data&0x0f)) & 0xf0)?0x01:0);
+                uint8_t C6=((((acc&0x7f)+(data&0x7f)) & 0x80)?0x01:00);
+                uint8_t Ov=(Cy^C6);
+                acc+=data;
+                uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+                psw&=0x3D;
+                psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
+                hs_mcs_51_sfr_psw_write(core,psw);
+            }
+            hs_mcs_51_sfr_acc_write(core,acc);
+            core->pc+=1;
         }
         break;
         case 0x32://RETI
