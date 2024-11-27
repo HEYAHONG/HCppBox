@@ -35,7 +35,11 @@ public:
         if(hdc !=NULL)
         {
             pixel=hgui_pixel_bits_get(pixel,x,y);
-            SetPixel(hdc,x,y,RGB((pixel.pixel_32_bits>>16)&0xFF, (pixel.pixel_32_bits >> 8)&0xFF, (pixel.pixel_32_bits)&0xFF));
+            COLORREF color = RGB((pixel.pixel_32_bits >> 16) & 0xFF, (pixel.pixel_32_bits >> 8) & 0xFF, (pixel.pixel_32_bits) & 0xFF);
+            if(!SetPixelV(hdc, x, y, color))
+            {
+                SetPixel(hdc, x, y, color);
+            }
             return true;
         }
         return false;
