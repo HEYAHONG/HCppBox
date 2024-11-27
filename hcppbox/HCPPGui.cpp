@@ -299,9 +299,16 @@ public:
         std::lock_guard<std::recursive_mutex> lock(m_lock);
         if(screen!=NULL)
         {
-            pixel=hgui_pixel_bits_get(pixel,x,y);
-            SDL_Rect fill_rect= {(Sint16)x,(Sint16)y,(Uint16)w,(Uint16)h};
-            SDL_FillRect(screen, &fill_rect, pixel.pixel_32_bits);
+            for(size_t i=x; i<x+w; i++)
+            {
+                for(size_t j=y; j<y+h; j++)
+                {
+                    //每个像素都进行一次转换
+                    pixel=hgui_pixel_bits_get(pixel,i,j);
+                    SDL_Rect fill_rect= {(Sint16)i,(Sint16)j,(Uint16)1,(Uint16)1};
+                    SDL_FillRect(screen, &fill_rect, pixel.pixel_32_bits);
+                }
+            }
             SDL_Flip(screen);
             return true;
         }
