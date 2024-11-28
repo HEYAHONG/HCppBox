@@ -1583,6 +1583,92 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             core->pc+=1;
         }
         break;
+        case 0xA0://ORL C,/addr
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Cy=(psw>>7);
+            uint8_t bit_address=instruction[1];
+            uint8_t bit=((!hs_mcs_51_sfr_bit_read(core,bit_address))?0x01:0);
+            psw|=((bit || Cy)?0x80:0);
+            hs_mcs_51_sfr_psw_write(core,psw);
+            core->pc+=2;
+            core->delay_tick=1;
+        }
+        break;
+        case 0xA2://MOV C,bit
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            psw&=0x7F;
+            uint8_t bit_address=instruction[1];
+            uint8_t bit=(hs_mcs_51_sfr_bit_read(core,bit_address)?0x01:0);
+            psw|=(bit<<7);
+            hs_mcs_51_sfr_psw_write(core,psw);
+            core->pc+=2;
+        }
+        break;
+        case 0xA3://INC DPTR
+        {
+            uint16_t dptr=hs_mcs_51_sfr_dptr_read(core);
+            dptr++;
+            hs_mcs_51_sfr_dptr_write(core,dptr);
+            core->pc+=1;
+            core->delay_tick=1;
+        }
+        break;
+        case 0xA4://MUL AB
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t acc=hs_mcs_51_sfr_acc_read(core);
+            uint8_t b=hs_mcs_51_sfr_b_read(core);
+            uint16_t result=((uint16_t)acc)*b;
+            acc=result&0xFF;
+            b=(result>>8)&0xFF;
+            psw&=(~(0x80|0x04));
+            if(b!=0)
+            {
+                psw|=0x04;
+            }
+            hs_mcs_51_sfr_psw_write(core,psw);
+            hs_mcs_51_sfr_acc_write(core,acc);
+            hs_mcs_51_sfr_b_write(core,b);
+            core->pc+=1;
+            core->delay_tick=3;
+        }
+        break;
+        case 0xA6:
+        case 0xA7://MOV @Ri,addr
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+(instruction[0]&0x01);
+            uint8_t Rn=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
+            uint8_t addr=instruction[1];
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,addr,&val,sizeof(val),core->usr);
+            core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,Rn,&val,sizeof(val),core->usr);
+            core->pc+=2;
+            core->delay_tick=1;
+        }
+        break;
+        case 0xA8:
+        case 0xA9:
+        case 0xAA:
+        case 0xAB:
+        case 0xAC:
+        case 0xAD:
+        case 0xAE:
+        case 0xAF://MOV Rn,addr
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+(instruction[0]&0x07);
+            uint8_t addr=instruction[1];
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,addr,&val,sizeof(val),core->usr);
+            core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,Rn_address,&val,sizeof(val),core->usr);
+            core->pc+=2;
+            core->delay_tick=1;
+        }
+        break;
         case 0xC0://PUSH
         {
             uint8_t sp=0;
