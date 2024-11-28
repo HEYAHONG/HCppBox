@@ -2114,7 +2114,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         }
         break;
         case 0xF6:
-        case 0xF7:
+        case 0xF7://MOV @Ri,A
         {
             uint8_t psw=hs_mcs_51_sfr_psw_read(core);
             uint8_t Rn_address=8*((psw>>3)&0x3)+(instruction[0]&0x01);
