@@ -18,15 +18,19 @@ extern "C"
 #endif // __cplusplus
 
 #if defined(_MSC_VER)
+
 #include <BaseTsd.h>
 #ifndef ssize_t
 typedef SSIZE_T ssize_t;
 #endif
-#endif
+
+#else
 
 #ifndef ssize_t
 typedef intptr_t ssize_t;
 #endif // ssize_t
+
+#endif
 
 #ifdef __cplusplus
 }
