@@ -2006,6 +2006,58 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             core->delay_tick=1;
         }
         break;
+        case 0xE0://MOVX A,@DPTR
+        {
+            uint16_t dptr=hs_mcs_51_sfr_dptr_read(core);
+            uint8_t data=0;
+            core->io(core,HS_MCS_51_IO_READ_EXTERNAL_RAM,dptr,&data,sizeof(data),core->usr);
+            hs_mcs_51_sfr_acc_write(core,data);
+            core->pc+=1;
+            core->delay_tick=1;
+        }
+        break;
+        case 0xE2:
+        case 0xE3://MOVX A,@Ri
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+(instruction[0]&0x01);
+            uint8_t Rn=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_READ_EXTERNAL_RAM,Rn,&val,sizeof(val),core->usr);
+            hs_mcs_51_sfr_acc_write(core,val);
+            core->pc+=1;
+            core->delay_tick=1;
+        }
+        break;
+        case 0xE4://CLR A
+        {
+            hs_mcs_51_sfr_acc_write(core,0);
+            core->pc+=1;
+        }
+        break;
+        case 0xE5://MOV A,addr
+        {
+            uint8_t addr=instruction[1];
+            uint8_t data=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,addr,&data,sizeof(data),core->usr);
+            hs_mcs_51_sfr_acc_write(core,data);
+            core->pc+=2;
+        }
+        break;
+        case 0xE6:
+        case 0xE7://MOV A,@Ri
+        {
+            uint8_t psw=hs_mcs_51_sfr_psw_read(core);
+            uint8_t Rn_address=8*((psw>>3)&0x3)+(instruction[0]&0x01);
+            uint8_t Rn=0;
+            core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,Rn,&val,sizeof(val),core->usr);
+            hs_mcs_51_sfr_acc_write(core,val);
+            core->pc+=1;
+        }
+        break;
         case 0xE8:
         case 0xE9:
         case 0xEA:
