@@ -492,13 +492,10 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         {
             uint8_t bit_address=instruction[1];
             int8_t  rel_addr=instruction[2];
+            core->pc+=3;
             if(hs_mcs_51_sfr_bit_read(core,bit_address))
             {
                 core->pc+=rel_addr;
-            }
-            else
-            {
-                core->pc+=3;
             }
             hs_mcs_51_sfr_bit_write(core,bit_address,false);
         }
@@ -652,13 +649,10 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         {
             uint8_t bit_address=instruction[1];
             int8_t  rel_addr=instruction[2];
+            core->pc+=3;
             if(hs_mcs_51_sfr_bit_read(core,bit_address))
             {
                 core->pc+=rel_addr;
-            }
-            else
-            {
-                core->pc+=3;
             }
             core->delay_tick=1;
         }
@@ -829,13 +823,10 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         {
             uint8_t bit_address=instruction[1];
             int8_t  rel_addr=instruction[2];
+            core->pc+=3;
             if(!hs_mcs_51_sfr_bit_read(core,bit_address))
             {
                 core->pc+=rel_addr;
-            }
-            else
-            {
-                core->pc+=3;
             }
         }
         break;
