@@ -480,7 +480,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         case 0x0F://INC Rn
         {
             uint8_t psw=hs_mcs_51_sfr_psw_read(core);
-            uint8_t Rn_address=8*((psw>>3)&0x3)+instruction[0]-0x08;
+            uint8_t Rn_address=8*((psw>>3)&0x3)+(instruction[0]&0x07);
             uint8_t Rn=0;
             core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
             Rn++;
@@ -640,7 +640,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         case 0x1F://DEC Rn
         {
             uint8_t psw=hs_mcs_51_sfr_psw_read(core);
-            uint8_t Rn_address=8*((psw>>3)&0x3)+instruction[0]-0x18;
+            uint8_t Rn_address=8*((psw>>3)&0x3)+(instruction[0]&0x07);
             uint8_t Rn=0;
             core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
             Rn--;
@@ -805,7 +805,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         case 0x2F://ADD A,Rn
         {
             uint8_t psw=hs_mcs_51_sfr_psw_read(core);
-            uint8_t Rn_address=8*((psw>>3)&0x3)+instruction[0]-0x28;
+            uint8_t Rn_address=8*((psw>>3)&0x3)+(instruction[0]&0x07);
             uint8_t Rn=0;
             core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
             uint8_t acc=hs_mcs_51_sfr_acc_read(core);
@@ -996,7 +996,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         case 0x3F://ADDC A,Rn
         {
             uint8_t psw=hs_mcs_51_sfr_psw_read(core);
-            uint8_t Rn_address=8*((psw>>3)&0x3)+instruction[0]-0x38;
+            uint8_t Rn_address=8*((psw>>3)&0x3)+(instruction[0]&0x07);
             uint8_t Rn=0;
             core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
             uint8_t acc=hs_mcs_51_sfr_acc_read(core);
@@ -1063,7 +1063,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         case 0xEF://MOV A,Rn
         {
             uint8_t psw=hs_mcs_51_sfr_psw_read(core);
-            uint8_t Rn_address=8*((psw>>3)&0x3)+instruction[0]-0xE8;
+            uint8_t Rn_address=8*((psw>>3)&0x3)+(instruction[0]&0x07);
             uint8_t Rn=0;
             core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
             hs_mcs_51_sfr_acc_write(core,Rn);
@@ -1081,7 +1081,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         {
             uint8_t psw=hs_mcs_51_sfr_psw_read(core);
             uint8_t acc=hs_mcs_51_sfr_acc_read(core);
-            uint8_t Rn_address=8*((psw>>3)&0x3)+instruction[0]-0xF8;
+            uint8_t Rn_address=8*((psw>>3)&0x3)+(instruction[0]&0x07);
             core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,Rn_address,&acc,sizeof(acc),core->usr);
             core->pc+=1;
         }
