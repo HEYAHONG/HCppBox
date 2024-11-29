@@ -640,7 +640,7 @@ static bool acs2_show_char(const hgui_gui_dotfont_t * dotfont,uint32_t Char,size
 
 const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_0806=
 {
-    (const uint8_t *)asc2_0806,
+    (const uint8_t *)(const void *)asc2_0806,
     acs2_show_char,
     6,
     8
