@@ -13,9 +13,9 @@ struct hs_mcs_51_core
     void *usr;
     struct
     {
-        uint32_t delay_tick:2;//MCS-51具有多周期指令。为保证执行效果，对于多周期指令需要延时,最多延时3周期。
-        uint32_t interrupt_nested:2;//中断嵌套层数，0=正常运行
-        uint32_t pc:16;//PC
+        uint16_t delay_tick:2;//MCS-51具有多周期指令。为保证执行效果，对于多周期指令需要延时,最多延时3周期。
+        uint16_t interrupt_nested:2;//中断嵌套层数，0=正常运行
+        uint16_t pc;//PC
         uint32_t interrupt_low_priority_scan_table;//中断(低优先级)扫描表，位0表示中断0，最高支持32个中断
         uint32_t interrupt_high_priority_scan_table;//中断(高优先级)扫描表，位0表示中断0，最高支持32个中断
     };
@@ -1633,6 +1633,14 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             hs_mcs_51_sfr_b_write(core,b);
             core->pc+=1;
             core->delay_tick=3;
+        }
+        break;
+        case 0xA5://0xA5,保留指令
+        {
+            int8_t rel_addr=0;
+            core->pc+=1;
+            core->io(core,HS_MCS_51_IO_BREAKPOINT,core->pc,&rel_addr,sizeof(rel_addr),core->usr);
+            core->pc+=rel_addr;
         }
         break;
         case 0xA6:
