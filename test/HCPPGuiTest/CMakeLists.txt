@@ -11,6 +11,8 @@ set_property(TARGET HCPPGuiTest PROPERTY CXX_STANDARD 23)
 
 #启用HCppBox
 hcppbox_enable(HCPPGuiTest)
+#启用Hrc
+hrc_enable(HCPPGuiTest)
 
 
 #添加源代码

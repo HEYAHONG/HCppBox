@@ -1,6 +1,7 @@
 
 #include "HCPPBox.h"
 #include "hbox.h"
+#include "hrc.h"
 #include "stdint.h"
 #include <thread>
 #include <chrono>
@@ -43,7 +44,7 @@ int main()
         while(hgui_driver_is_ok(NULL))
         {
             i++;
-            std::this_thread::sleep_for(std::chrono::microseconds(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
             if(i==100)
             {
                 ssize_t w=::w,h=::h;
@@ -52,7 +53,7 @@ int main()
                 }
                 hgui_driver_fill_rectangle(NULL,0,0,w,h,pixel);
             }
-            if(i==500)
+            if(i==200)
             {
                 auto draw_pixel=[](const hgui_gui_dotfont_t * dotfont,size_t x,size_t y,bool point,void *usr)->bool
                 {
@@ -69,6 +70,32 @@ int main()
                 hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_acs2_1608,"Booting",0,8+12,w,draw_pixel,NULL);
                 hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_acs2_2416,"Booting",0,8+12+16,w,draw_pixel,NULL);
                 hgui_driver_fill_rectangle(NULL,0,0,w,h,pixel);
+            }
+            if (i == 300)
+            {
+                auto draw_pixel = [](const hgui_gui_dotfont_t* dotfont, size_t x, size_t y, bool point, void* usr)->bool
+                {
+                    (void)dotfont;
+                    (void)usr;
+                    if ((x < w) && (y < h) && point)
+                    {
+                        VRAM[x][y] = 0xFF000000;
+                    }
+                    return true;
+                };
+                const char* banner = (const char *)RCGetHandle("banner");
+                if (banner != NULL)
+                {
+                    for (size_t i = 0; i < w; i++)
+                    {
+                        for (size_t j = 0; j < h; j++)
+                        {
+                            VRAM[i][j] = 0xFFFF0000;
+                        }
+                    }
+                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_acs2_1206, banner, 0, 0, w, draw_pixel, NULL);
+                    hgui_driver_fill_rectangle(NULL, 0, 0, w, h, pixel);
+                }
             }
         }
     }
