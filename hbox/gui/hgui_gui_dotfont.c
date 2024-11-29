@@ -60,6 +60,32 @@ bool hgui_gui_dotfont_show_ascii_string(const hgui_gui_dotfont_t * dotfont,const
                         break;
                     }
                 }
+                else
+                {
+                    //控制字符
+
+                    if(Char=='\b')
+                    {
+                        //退格字符
+                        if(x > dotfont->w)
+                        {
+                            x-=dotfont->w;
+                        }
+                    }
+
+                    if(Char=='\r')
+                    {
+                        //回车
+                        x=0;
+                    }
+
+                    if(Char=='\n')
+                    {
+                        //换行
+                        y+=dotfont->h;
+                        x=0;
+                    }
+                }
             }
             return ret;
 
@@ -106,6 +132,32 @@ bool hgui_gui_dotfont_show_unicode_string(const hgui_gui_dotfont_t * dotfont,con
                     {
                         ret=false;
                         break;
+                    }
+                }
+                else
+                {
+                    //控制字符
+
+                    if(Char=='\b')
+                    {
+                        //退格字符
+                        if(x > dotfont->w)
+                        {
+                            x-=dotfont->w;
+                        }
+                    }
+
+                    if(Char=='\r')
+                    {
+                        //回车
+                        x=0;
+                    }
+
+                    if(Char=='\n')
+                    {
+                        //换行
+                        y+=dotfont->h;
+                        x=0;
                     }
                 }
             }
