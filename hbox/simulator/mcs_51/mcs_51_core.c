@@ -1346,7 +1346,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         case 0x80://SJMP addr
         {
             core->pc+=2;
-            uint8_t rel_addr=instruction[1];
+            int8_t rel_addr=instruction[1];
             core->pc+=rel_addr;
             core->delay_tick=1;
         }
@@ -1704,7 +1704,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         case 0xB4://CJNE A,#data,addr
         {
             uint8_t data=instruction[1];
-            uint8_t rel_addr=instruction[2];
+            int8_t rel_addr=instruction[2];
             uint8_t acc=hs_mcs_51_sfr_acc_read(core);
             {
                 uint8_t psw=hs_mcs_51_sfr_psw_read(core);
@@ -1728,7 +1728,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             uint8_t data=0;
             uint8_t addr=instruction[1];
             core->io(core,HS_MCS_51_IO_READ_RAM_SFR,addr,&data,sizeof(data),core->usr);
-            uint8_t rel_addr=instruction[2];
+            int8_t rel_addr=instruction[2];
             uint8_t acc=hs_mcs_51_sfr_acc_read(core);
             {
                 uint8_t psw=hs_mcs_51_sfr_psw_read(core);
@@ -1757,7 +1757,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             uint8_t val=0;
             core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,Rn,&val,sizeof(val),core->usr);
             uint8_t data=instruction[1];
-            uint8_t rel_addr=instruction[2];
+            int8_t rel_addr=instruction[2];
             {
                 uint8_t psw=hs_mcs_51_sfr_psw_read(core);
                 psw&=0x7F;
@@ -1789,7 +1789,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             uint8_t Rn=0;
             core->io(core,HS_MCS_51_IO_READ_RAM_SFR,Rn_address,&Rn,sizeof(Rn),core->usr);
             uint8_t data=instruction[1];
-            uint8_t rel_addr=instruction[2];
+            int8_t rel_addr=instruction[2];
             {
                 uint8_t psw=hs_mcs_51_sfr_psw_read(core);
                 psw&=0x7F;
