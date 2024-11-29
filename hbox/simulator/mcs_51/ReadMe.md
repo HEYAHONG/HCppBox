@@ -6,10 +6,11 @@
 
 # 编译器/开发环境
 
-- Keil C51
-- [SDCC](https://sdcc.sourceforge.net/)
+- Keil C51:MCS-51 集成开发环境。
+- [SDCC](https://sdcc.sourceforge.net/)：支持MCS-51的编译器。
+- [mcu8051ide](https://sourceforge.net/projects/mcu8051ide/):MCS-51 集成开发环境,采用SDCC，支持模拟器，支持外设（如LED显示）。
 
-推荐使用SDCC，可采用部分较新的C语言特性。
+编译器推荐使用SDCC，可采用部分较新的C语言特性。
 
 # 模型
 
