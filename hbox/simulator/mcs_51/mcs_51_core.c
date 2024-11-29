@@ -1639,7 +1639,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         {
             int8_t rel_addr=0;
             core->pc+=1;
-            core->io(core,HS_MCS_51_IO_BREAKPOINT,core->pc,&rel_addr,sizeof(rel_addr),core->usr);
+            core->io(core,HS_MCS_51_IO_BREAKPOINT,core->pc,(uint8_t *)&rel_addr,sizeof(rel_addr),core->usr);
             core->pc+=rel_addr;
         }
         break;
