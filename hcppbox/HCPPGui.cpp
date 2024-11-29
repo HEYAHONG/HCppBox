@@ -308,9 +308,9 @@ public:
                 for(size_t j=y; j<y+h; j++)
                 {
                     //每个像素都进行一次转换
-                    pixel=hgui_pixel_bits_get(pixel,i,j);
+                    hgui_pixel_t final_pixel=hgui_pixel_bits_get(pixel,i,j);
                     SDL_Rect fill_rect= {(Sint16)i,(Sint16)j,(Uint16)1,(Uint16)1};
-                    SDL_FillRect(screen, &fill_rect, pixel.pixel_32_bits);
+                    SDL_FillRect(screen, &fill_rect, final_pixel.pixel_32_bits);
                 }
             }
             SDL_Flip(screen);

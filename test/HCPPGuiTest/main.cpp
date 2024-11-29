@@ -52,6 +52,24 @@ int main()
                 }
                 hgui_driver_fill_rectangle(NULL,0,0,w,h,pixel);
             }
+            if(i==500)
+            {
+                auto draw_pixel=[](const hgui_gui_dotfont_t * dotfont,size_t x,size_t y,bool point,void *usr)->bool
+                {
+                    (void)dotfont;
+                    (void)usr;
+                    if((x<w) && (y<h)&&point)
+                    {
+                        VRAM[x][y]=0xFF000000;
+                    }
+                    return true;
+                };
+                hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_acs2_0806,"Booting",0,0,w,draw_pixel,NULL);
+                hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_acs2_1206,"Booting",0,8,w,draw_pixel,NULL);
+                hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_acs2_1608,"Booting",0,8+12,w,draw_pixel,NULL);
+                hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_acs2_2416,"Booting",0,8+12+16,w,draw_pixel,NULL);
+                hgui_driver_fill_rectangle(NULL,0,0,w,h,pixel);
+            }
         }
     }
 

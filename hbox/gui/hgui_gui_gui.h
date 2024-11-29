@@ -17,6 +17,7 @@ extern "C"
 #include "hgui_gui_common.h"
 #include "hgui_gui_pixel.h"
 #include "hgui_gui_driver.h"
+#include "hgui_gui_dotfont.h"
 
 #ifdef __cplusplus
 }
