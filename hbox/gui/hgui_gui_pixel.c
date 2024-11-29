@@ -33,6 +33,10 @@ hgui_pixel_t hgui_pixel_bits_get(hgui_pixel_t pixel,ssize_t x,ssize_t y)
         {
             pixel.pixel_max_bits=0;
             pixel.mode=hgui_pixel_global_mode_get();
+            if(pixel.mode==HGUI_PIXEL_MODE_CALLBACK)
+            {
+                pixel.mode=HGUI_PIXEL_MODE_32_BITS;
+            }
         }
     }
     return pixel;
