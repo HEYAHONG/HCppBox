@@ -152,6 +152,13 @@ bool hgui_driver_resize(hgui_driver_t* driver,ssize_t *w,ssize_t *h);
  */
 bool  hgui_driver_is_ok(hgui_driver_t *driver);
 
+/** \brief 更新驱动内部状态(某些情况下使用)
+ *
+ */
+#ifndef hgui_driver_update
+#define hgui_driver_update hgui_driver_is_ok
+#endif // hgui_driver_update
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

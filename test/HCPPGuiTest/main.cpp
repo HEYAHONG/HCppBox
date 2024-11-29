@@ -41,7 +41,7 @@ int main()
     if(hgui_driver_reset(NULL))
     {
         size_t i=0;
-        while(hgui_driver_is_ok(NULL))
+        while(hgui_driver_update(NULL))
         {
             i++;
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
