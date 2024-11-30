@@ -97,6 +97,30 @@ int main()
                     hgui_driver_fill_rectangle(NULL, 0, 0, w, h, pixel);
                 }
             }
+
+            if(i==500)
+            {
+                hgui_gui_xpm_header_t header=hgui_gui_xpm_header_get(hgui_gui_xpm_xpm_xpm);
+                printf("xpm:width=%d,height=%d,ncolors=%d,cpp=%d,x_hotspot=%d,y_hotspot=%d,XPMEXT=%s\r\n",(int)header.width,(int)header.height,(int)header.ncolors,(int)header.cpp,(int)header.x_hotspot,(int)header.y_hotspot,header.XPMEXT?"true":"false");
+                for (size_t i = 0; i < w; i++)
+                {
+                        for (size_t j = 0; j < h; j++)
+                        {
+                            VRAM[i][j] = 0xFF00FF00;
+                        }
+                }
+                auto draw_pixel = [](size_t x,size_t y,uint32_t color,void *usr)->bool
+                {
+                    (void)usr;
+                    if ((x < w) && (y < h))
+                    {
+                        VRAM[x][y] = (0xFF000000 | color);
+                    }
+                    return true;
+                };
+                hgui_gui_xpm_draw_color(hgui_gui_xpm_xpm_xpm,(w-header.width)/2,(h-header.height)/2,draw_pixel,NULL);
+                hgui_driver_fill_rectangle(NULL, 0, 0, w, h, pixel);
+            }
         }
     }
 
