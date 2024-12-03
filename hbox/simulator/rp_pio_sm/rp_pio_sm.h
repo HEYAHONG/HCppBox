@@ -329,8 +329,8 @@ typedef struct
 {
     uint32_t sm[10];                //64位系统需要40字节
     hs_rp_pio_sm_memory_t memory;    //程序内存
-    hs_rp_pio_sm_fifo_t txfifo;
-    hs_rp_pio_sm_fifo_t rxfifo;
+    hs_rp_pio_sm_fifo_t txfifo;      //用户可使用hs_rp_pio_sm_fifo_push向状态机写入数据。
+    hs_rp_pio_sm_fifo_t rxfifo;      //用户可使用hs_rp_pio_sm_fifo_pull读取状态机的数据。对于某些程序而言,可直接访问fifo内的字。
     uint32_t pins;
     uint32_t jmp_pin;               //位0表示JMP指令使用的PIN
     uint32_t gpio;                  //GPIO与PINS不同，通常指未经映射的IO
