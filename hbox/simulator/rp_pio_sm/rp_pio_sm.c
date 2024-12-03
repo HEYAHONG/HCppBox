@@ -1754,6 +1754,47 @@ void hs_rp_pio_reset(hs_rp_pio_t *pio)
     hs_rp_pio_sm_reset((hs_rp_pio_sm_t *)pio);
 }
 
+bool hs_rp_pio_push(hs_rp_pio_t *pio,uint32_t data)
+{
+    if(pio!=NULL)
+    {
+        return hs_rp_pio_sm_fifo_push(&pio->txfifo,data);
+    }
+    return false;
+}
+
+bool hs_rp_pio_pull(hs_rp_pio_t *pio,uint32_t* data)
+{
+    if(pio!=NULL)
+    {
+        return hs_rp_pio_sm_fifo_pull(&pio->rxfifo,data);
+    }
+    return false;
+}
+
+bool  hs_rp_pio_rxfifo_set(hs_rp_pio_t *pio,uint32_t addr,uint32_t data)
+{
+    if((pio!=NULL) && (pio->rxfifo.disable_fifo==1))
+    {
+        pio->rxfifo.fifo[addr%4]=data;
+        return true;
+    }
+    return false;
+}
+
+bool  hs_rp_pio_rxfifo_get(hs_rp_pio_t *pio,uint32_t addr,uint32_t* data)
+{
+    if((pio!=NULL) && (pio->rxfifo.disable_fifo==1))
+    {
+        if(data!=NULL)
+        {
+            (*data)=pio->rxfifo.fifo[addr%4];
+        }
+        return true;
+    }
+    return false;
+}
+
 /** \brief 程序，主要将TX FIFO中的数据（无数据则stall）中的最低位通过PINS发送出去。。
  *
  * loop:

@@ -1492,13 +1492,13 @@ static int hsimulator_test(int argc,const char *argv[])
         printf("hsimulator hs_rp_pio(simple_pins_out) 40 ticks !\r\n");
         hs_rp_pio_tick(&pio,40);
         printf("hsimulator hs_rp_pio(simple_pins_out) push tx_fifo 0xFFFFFFFF!\r\n");
-        hs_rp_pio_sm_fifo_push(&pio.txfifo,0xFFFFFFFF);
+        hs_rp_pio_push(&pio,0xFFFFFFFF);
         printf("hsimulator hs_rp_pio(simple_pins_out) push tx_fifo 0xFFFFFFFF!\r\n");
-        hs_rp_pio_sm_fifo_push(&pio.txfifo,0xFFFFFFFF);
+        hs_rp_pio_push(&pio,0xFFFFFFFF);
         printf("hsimulator hs_rp_pio(simple_pins_out) push tx_fifo 0x0!\r\n");
-        hs_rp_pio_sm_fifo_push(&pio.txfifo,0x0);
+        hs_rp_pio_push(&pio,0x0);
         printf("hsimulator hs_rp_pio(simple_pins_out) push tx_fifo 0xFFFFFFFF!\r\n");
-        hs_rp_pio_sm_fifo_push(&pio.txfifo,0xFFFFFFFF);
+        hs_rp_pio_push(&pio,0xFFFFFFFF);
         printf("hsimulator hs_rp_pio(simple_pins_out) 40 ticks !\r\n");
         hs_rp_pio_tick(&pio,40);
         printf("hsimulator hs_rp_pio(simple_pins_out) end!\r\n");

@@ -365,6 +365,46 @@ void hs_rp_pio_tick(hs_rp_pio_t *pio,size_t cycles);
  */
 void hs_rp_pio_reset(hs_rp_pio_t *pio);
 
+/** \brief PIO PUSH数据，注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param pio hs_rp_pio_t*pio指针
+ * \param data uint32_t 数据
+ * \return bool 是否成功
+ *
+ */
+bool hs_rp_pio_push(hs_rp_pio_t *pio,uint32_t data);
+
+/** \brief PIO PULL数据，注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param pio hs_rp_pio_t*pio指针
+ * \param data uint32_t* 待读取数据的指针
+ * \return bool 是否成功
+ *
+ */
+bool hs_rp_pio_pull(hs_rp_pio_t *pio,uint32_t* data);
+
+/** \brief PIO 直接写入Rx FIFO(用于部分程序)，注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param pio hs_rp_pio_t* pio指针
+ * \param addr uint32_t ，内部地址，范围0～3
+ * \param data uint32_t 数据
+ * \return bool 是否成功
+ *
+ */
+bool  hs_rp_pio_rxfifo_set(hs_rp_pio_t *pio,uint32_t addr,uint32_t data);
+
+
+
+/** \brief PIO 直接读取Rx FIFO(用于部分程序)，注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param pio hs_rp_pio_t* pio指针
+ * \param addr uint32_t ，内部地址，范围0～3
+ * \param data uint32_t* 待读取数据的指针
+ * \return bool 是否成功
+ *
+ */
+bool  hs_rp_pio_rxfifo_get(hs_rp_pio_t *pio,uint32_t addr,uint32_t* data);
+
 
 /** \brief 程序，主要将TX FIFO中的数据（无数据则stall）中的最低位通过PINS发送出去。
  *
