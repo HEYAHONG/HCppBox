@@ -1574,6 +1574,185 @@ void hs_rp_pio_sm_load_memory_cfg(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_fifo_t *sm_rxf
     }
 }
 
+static bool hs_rp_pio_io_process(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_io_opt_t opt,uint32_t *val,void *usr)
+{
+    bool ret=true;
+    hs_rp_pio_t *pio=(hs_rp_pio_t *)sm;
+    if(pio==NULL || val==NULL)
+    {
+        return false;
+    }
+    switch(opt)
+    {
+    case HS_RP_PIO_SM_IO_RESET:                 //IO复位，无参数
+    {
+        hs_rp_pio_sm_fifo_init(&pio->txfifo);
+        hs_rp_pio_sm_fifo_init(&pio->rxfifo);
+        hs_rp_pio_sm_load_memory_cfg(sm,&pio->rxfifo,&pio->memory);
+    }
+    break;
+    case HS_RP_PIO_SM_IO_READ_INSTRUCTION:       //指令读取，传入PC的值(通过*val访问)，传出指令（低16位）
+    {
+        (*val)=pio->memory.code[(*val)];
+    }
+    break;
+    case HS_RP_PIO_SM_IO_PUSH_RX_FIFO:           //写RX_FIFO，写32位数据
+    {
+        ret=hs_rp_pio_sm_fifo_push(&pio->rxfifo,(*val));
+    }
+    break;
+    case HS_RP_PIO_SM_IO_READ_MOV_RX_FIFO_0:     //读RX_FIFO，写32位数据
+    {
+        if(pio->rxfifo.disable_fifo)
+        {
+            (*val)=pio->rxfifo.fifo[0];
+        }
+    }
+    break;
+    case HS_RP_PIO_SM_IO_READ_MOV_RX_FIFO_1:    //读RX_FIFO，写32位数据
+    {
+        if(pio->rxfifo.disable_fifo)
+        {
+            (*val)=pio->rxfifo.fifo[1];
+        }
+    }
+    break;
+    case HS_RP_PIO_SM_IO_READ_MOV_RX_FIFO_2:    //读RX_FIFO，写32位数据
+    {
+        if(pio->rxfifo.disable_fifo)
+        {
+            (*val)=pio->rxfifo.fifo[2];
+        }
+    }
+    break;
+    case HS_RP_PIO_SM_IO_READ_MOV_RX_FIFO_3:    //读RX_FIFO，写32位数据
+    {
+        if(pio->rxfifo.disable_fifo)
+        {
+            (*val)=pio->rxfifo.fifo[3];
+        }
+    }
+    break;
+    case HS_RP_PIO_SM_IO_WRITE_MOV_RX_FIFO_0:   //写RX_FIFO，写32位数据
+    {
+        if(pio->rxfifo.disable_fifo)
+        {
+            pio->rxfifo.fifo[0]=(*val);
+        }
+    }
+    break;
+    case HS_RP_PIO_SM_IO_WRITE_MOV_RX_FIFO_1:   //写RX_FIFO，写32位数据
+    {
+        if(pio->rxfifo.disable_fifo)
+        {
+            pio->rxfifo.fifo[1]=(*val);
+        }
+    }
+    break;
+    case HS_RP_PIO_SM_IO_WRITE_MOV_RX_FIFO_2:   //写RX_FIFO，写32位数据
+    {
+        if(pio->rxfifo.disable_fifo)
+        {
+            pio->rxfifo.fifo[2]=(*val);
+        }
+    }
+    break;
+    case HS_RP_PIO_SM_IO_WRITE_MOV_RX_FIFO_3:   //写RX_FIFO，写32位数据
+    {
+        if(pio->rxfifo.disable_fifo)
+        {
+            pio->rxfifo.fifo[3]=(*val);
+        }
+    }
+    break;
+    case HS_RP_PIO_SM_IO_PULL_TX_FIFO:          //读TX_FIFO，读32位数据
+    {
+        ret=hs_rp_pio_sm_fifo_pull(&pio->txfifo,val);
+    }
+    break;
+    case HS_RP_PIO_SM_IO_READ_PINS:             //读PINS,32位数据，每一位表示一个PIN
+    {
+        (*val)=pio->pins;
+    }
+    break;
+    case HS_RP_PIO_SM_IO_READ_JMP_PIN:          //读取用于JMP的PIN,32位数据，每一位表示一个PIN，位0表示JMP指令使用的PIN
+    {
+        (*val)=pio->jmp_pin;
+    }
+    break;
+    case HS_RP_PIO_SM_IO_READ_GPIO:             //读GPIO(未经映射)，32位数据，每一位表示一个GPIO。
+    {
+        (*val)=pio->gpio;
+    }
+    break;
+    case HS_RP_PIO_SM_IO_WRITE_PINS:            //写PINS,32位数据，每一位表示一个PIN
+    {
+        pio->pins=(*val);
+    }
+    break;
+    case HS_RP_PIO_SM_IO_READ_PINDIRS:          //读PINDIR,32位数据，每一位表示一个PINDIR
+    {
+        (*val)=pio->pindirs;
+    }
+    break;
+    case HS_RP_PIO_SM_IO_WRITE_PINDIRS:         //写PINDIR,32位数据，每一位表示一个PINDIR
+    {
+        pio->pindirs=(*val);
+    }
+    break;
+    case HS_RP_PIO_SM_IO_WRITE_SIDESET:         //SIDESET可参考HS_RP_PIO_SM_IO_WRITE_PINS,低位有效
+    {
+        pio->sideset=(*val);
+    }
+    break;
+    case HS_RP_PIO_SM_IO_READ_STATUS:           //读STATUS,32位数据，通常是全0或者全1，由MOV指令使用
+    {
+        (*val)=pio->status;
+    }
+    break;
+    case HS_RP_PIO_SM_IO_READ_IRQ:              //读IRQ,32位数据，位地址由IdxMode(2bit)+Index(3bit)组成
+    {
+        (*val)=pio->irq;
+    }
+    break;
+    case HS_RP_PIO_SM_IO_WRITE_IRQ:             //写IRQ,32位数据，位地址由IdxMode(2bit)+Index(3bit)组成,通常用于清除中断。
+    {
+        pio->irq=(*val);
+    }
+    break;
+    default:
+    {
+
+    }
+    break;
+    }
+    if(pio->hook!=NULL)
+    {
+        return pio->hook(sm,opt,val,usr);
+    }
+    return ret;
+}
+
+void hs_rp_pio_init(hs_rp_pio_t *pio,hs_rp_pio_io_t hook,void *usr)
+{
+    if(pio!=NULL)
+    {
+        memset(pio,0,sizeof(hs_rp_pio_t));
+        hs_rp_pio_sm_memory_init(&pio->memory);
+        pio->hook=hook;
+        hs_rp_pio_sm_init(&pio,hs_rp_pio_io_process,usr);
+    }
+}
+
+void hs_rp_pio_tick(hs_rp_pio_t *pio,size_t cycles)
+{
+    hs_rp_pio_sm_tick((hs_rp_pio_sm_t *)pio,cycles);
+}
+
+void hs_rp_pio_reset(hs_rp_pio_t *pio)
+{
+    hs_rp_pio_sm_reset((hs_rp_pio_sm_t *)pio);
+}
 
 /** \brief 程序，主要将TX FIFO中的数据（无数据则stall）中的最低位通过PINS发送出去。。
  *

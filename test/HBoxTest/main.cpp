@@ -1448,6 +1448,10 @@ static int hsimulator_test(int argc,const char *argv[])
     }
 
     {
+        printf("hsimulator hs_rp_pio_sm size=%d\r\n",(int)hs_rp_pio_sm_size());
+    }
+
+    {
         printf("hsimulator hs_rp_pio_sm (simple_pins_out) start!\r\n");
         uint8_t *sm_buff=new uint8_t[hs_rp_pio_sm_size()];
         hs_rp_pio_sm_fifo_t tx_fifo;
