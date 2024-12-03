@@ -1728,7 +1728,7 @@ static bool hs_rp_pio_io_process(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_io_opt_t opt,ui
     }
     if(pio->hook!=NULL)
     {
-        return pio->hook(sm,opt,val,usr);
+        pio->hook(sm,opt,val,usr);
     }
     return ret;
 }
@@ -1740,7 +1740,7 @@ void hs_rp_pio_init(hs_rp_pio_t *pio,hs_rp_pio_io_t hook,void *usr)
         memset(pio,0,sizeof(hs_rp_pio_t));
         hs_rp_pio_sm_memory_init(&pio->memory);
         pio->hook=hook;
-        hs_rp_pio_sm_init(&pio,hs_rp_pio_io_process,usr);
+        hs_rp_pio_sm_init(pio,hs_rp_pio_io_process,usr);
     }
 }
 
