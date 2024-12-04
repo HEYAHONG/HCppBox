@@ -254,6 +254,26 @@ bool hs_mcs_51_sfr_write(hs_mcs_51_core_t * core,hs_mcs_51_sfr_addr_t addr,uint8
  */
 uint16_t hs_mcs_51_pc_get(hs_mcs_51_core_t * core);
 
+
+/** \brief MCS-51内核读位，注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param core hs_mcs_51_core_t* MCS-51 内核指针
+ * \param bitaddr uint8_t 位地址
+ * \return bool 值
+ *
+ */
+bool hs_mcs_51_bit_read(hs_mcs_51_core_t * core,uint8_t bitaddr);
+
+/** \brief MCS-51内核写位，注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * \param core hs_mcs_51_core_t* MCS-51 内核指针
+ * \param bitaddr uint8_t 位地址
+ * \param vaule bool 值
+ * \return bool (写入后的)值
+ *
+ */
+bool hs_mcs_51_bit_write(hs_mcs_51_core_t * core,uint8_t bitaddr,bool value);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

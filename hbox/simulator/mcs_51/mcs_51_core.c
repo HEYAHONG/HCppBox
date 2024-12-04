@@ -2245,3 +2245,14 @@ uint16_t hs_mcs_51_pc_get(hs_mcs_51_core_t * core)
     }
     return 0;
 }
+
+bool hs_mcs_51_bit_read(hs_mcs_51_core_t * core,uint8_t bitaddr)
+{
+    return hs_mcs_51_sfr_bit_read(core,bitaddr);
+}
+
+bool hs_mcs_51_bit_write(hs_mcs_51_core_t * core,uint8_t bitaddr,bool value)
+{
+    hs_mcs_51_sfr_bit_write(core,bitaddr,value);
+    return hs_mcs_51_bit_read(core,bitaddr);
+}
