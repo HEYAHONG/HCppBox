@@ -255,6 +255,120 @@ bool hs_mcs_51_sfr_write(hs_mcs_51_core_t * core,hs_mcs_51_sfr_addr_t addr,uint8
 uint16_t hs_mcs_51_pc_get(hs_mcs_51_core_t * core);
 
 
+/*
+ * 8051位地址
+ */
+/* P0 */
+#define HS_MCS_51_BIT_ADDRESS_P0_0  (0x80)
+#define HS_MCS_51_BIT_ADDRESS_P0_1  (0x81)
+#define HS_MCS_51_BIT_ADDRESS_P0_2  (0x82)
+#define HS_MCS_51_BIT_ADDRESS_P0_3  (0x83)
+#define HS_MCS_51_BIT_ADDRESS_P0_4  (0x84)
+#define HS_MCS_51_BIT_ADDRESS_P0_5  (0x85)
+#define HS_MCS_51_BIT_ADDRESS_P0_6  (0x86)
+#define HS_MCS_51_BIT_ADDRESS_P0_7  (0x87)
+/*  TCON  */
+#define HS_MCS_51_BIT_ADDRESS_IT0   (0x88)
+#define HS_MCS_51_BIT_ADDRESS_IE0   (0x89)
+#define HS_MCS_51_BIT_ADDRESS_IT1   (0x8A)
+#define HS_MCS_51_BIT_ADDRESS_IE1   (0x8B)
+#define HS_MCS_51_BIT_ADDRESS_TR0   (0x8C)
+#define HS_MCS_51_BIT_ADDRESS_TF0   (0x8D)
+#define HS_MCS_51_BIT_ADDRESS_TR1   (0x8E)
+#define HS_MCS_51_BIT_ADDRESS_TF1   (0x8F)
+/* P1 */
+#define HS_MCS_51_BIT_ADDRESS_P1_0  (0x90)
+#define HS_MCS_51_BIT_ADDRESS_P1_1  (0x91)
+#define HS_MCS_51_BIT_ADDRESS_P1_2  (0x92)
+#define HS_MCS_51_BIT_ADDRESS_P1_3  (0x93)
+#define HS_MCS_51_BIT_ADDRESS_P1_4  (0x94)
+#define HS_MCS_51_BIT_ADDRESS_P1_5  (0x95)
+#define HS_MCS_51_BIT_ADDRESS_P1_6  (0x96)
+#define HS_MCS_51_BIT_ADDRESS_P1_7  (0x97)
+/*  SCON  */
+#define HS_MCS_51_BIT_ADDRESS_RI    (0x98)
+#define HS_MCS_51_BIT_ADDRESS_TI    (0x99)
+#define HS_MCS_51_BIT_ADDRESS_RB8   (0x9A)
+#define HS_MCS_51_BIT_ADDRESS_TB8   (0x9B)
+#define HS_MCS_51_BIT_ADDRESS_REN   (0x9C)
+#define HS_MCS_51_BIT_ADDRESS_SM2   (0x9D)
+#define HS_MCS_51_BIT_ADDRESS_SM1   (0x9E)
+#define HS_MCS_51_BIT_ADDRESS_SM0   (0x9F)
+/* P2 */
+#define HS_MCS_51_BIT_ADDRESS_P2_0  (0xA0)
+#define HS_MCS_51_BIT_ADDRESS_P2_1  (0xA1)
+#define HS_MCS_51_BIT_ADDRESS_P2_2  (0xA2)
+#define HS_MCS_51_BIT_ADDRESS_P2_3  (0xA3)
+#define HS_MCS_51_BIT_ADDRESS_P2_4  (0xA4)
+#define HS_MCS_51_BIT_ADDRESS_P2_5  (0xA5)
+#define HS_MCS_51_BIT_ADDRESS_P2_6  (0xA6)
+#define HS_MCS_51_BIT_ADDRESS_P2_7  (0xA7)
+/*  IE   */
+#define HS_MCS_51_BIT_ADDRESS_EX0   (0xA8)
+#define HS_MCS_51_BIT_ADDRESS_ET0   (0xA9)
+#define HS_MCS_51_BIT_ADDRESS_EX1   (0xAA)
+#define HS_MCS_51_BIT_ADDRESS_ET1   (0xAB)
+#define HS_MCS_51_BIT_ADDRESS_ES    (0xAC)
+#define HS_MCS_51_BIT_ADDRESS_EA    (0xAF)
+/*  P3  */
+#define HS_MCS_51_BIT_ADDRESS_P3_0  (0xB0)
+#define HS_MCS_51_BIT_ADDRESS_P3_1  (0xB1)
+#define HS_MCS_51_BIT_ADDRESS_P3_2  (0xB2)
+#define HS_MCS_51_BIT_ADDRESS_P3_3  (0xB3)
+#define HS_MCS_51_BIT_ADDRESS_P3_4  (0xB4)
+#define HS_MCS_51_BIT_ADDRESS_P3_5  (0xB5)
+#define HS_MCS_51_BIT_ADDRESS_P3_6  (0xB6)
+#define HS_MCS_51_BIT_ADDRESS_P3_7  (0xB7)
+#define HS_MCS_51_BIT_ADDRESS_RXD   (0xB0)
+#define HS_MCS_51_BIT_ADDRESS_TXD   (0xB1)
+#define HS_MCS_51_BIT_ADDRESS_INT0  (0xB2)
+#define HS_MCS_51_BIT_ADDRESS_INT1  (0xB3)
+#define HS_MCS_51_BIT_ADDRESS_T0    (0xB4)
+#define HS_MCS_51_BIT_ADDRESS_T1    (0xB5)
+#define HS_MCS_51_BIT_ADDRESS_WR    (0xB6)
+#define HS_MCS_51_BIT_ADDRESS_RD    (0xB7)
+/*  IP   */
+#define HS_MCS_51_BIT_ADDRESS_PX0   (0xB8)
+#define HS_MCS_51_BIT_ADDRESS_PT0   (0xB9)
+#define HS_MCS_51_BIT_ADDRESS_PX1   (0xBA)
+#define HS_MCS_51_BIT_ADDRESS_PT1   (0xBB)
+#define HS_MCS_51_BIT_ADDRESS_PS    (0xBC)
+/*  PSW   */
+#define HS_MCS_51_BIT_ADDRESS_P     (0xD0)
+#define HS_MCS_51_BIT_ADDRESS_F1    (0xD1)
+#define HS_MCS_51_BIT_ADDRESS_OV    (0xD2)
+#define HS_MCS_51_BIT_ADDRESS_RS0   (0xD3)
+#define HS_MCS_51_BIT_ADDRESS_RS1   (0xD4)
+#define HS_MCS_51_BIT_ADDRESS_F0    (0xD5)
+#define HS_MCS_51_BIT_ADDRESS_AC    (0xD6)
+#define HS_MCS_51_BIT_ADDRESS_CY    (0xD7)
+/*
+ * 8052新增位地址
+ */
+/*  IE  */
+#define HS_MCS_51_BIT_ADDRESS_ET2     (0xAD) /* Enable timer2 interrupt */
+/*  IP  */
+#define HS_MCS_51_BIT_ADDRESS_PT2     (0xBD) /* T2 interrupt priority bit */
+/* T2CON bits */
+#define HS_MCS_51_BIT_ADDRESS_T2CON_0 (0xC8)
+#define HS_MCS_51_BIT_ADDRESS_T2CON_1 (0xC9)
+#define HS_MCS_51_BIT_ADDRESS_T2CON_2 (0xCA)
+#define HS_MCS_51_BIT_ADDRESS_T2CON_3 (0xCB)
+#define HS_MCS_51_BIT_ADDRESS_T2CON_4 (0xCC)
+#define HS_MCS_51_BIT_ADDRESS_T2CON_5 (0xCD)
+#define HS_MCS_51_BIT_ADDRESS_T2CON_6 (0xCE)
+#define HS_MCS_51_BIT_ADDRESS_T2CON_7 (0xCF)
+#define HS_MCS_51_BIT_ADDRESS_CP_RL2  (0xC8)
+#define HS_MCS_51_BIT_ADDRESS_C_T2    (0xC9)
+#define HS_MCS_51_BIT_ADDRESS_TR2     (0xCA)
+#define HS_MCS_51_BIT_ADDRESS_EXEN2   (0xCB)
+#define HS_MCS_51_BIT_ADDRESS_TCLK    (0xCC)
+#define HS_MCS_51_BIT_ADDRESS_RCLK    (0xCD)
+#define HS_MCS_51_BIT_ADDRESS_EXF2    (0xCE)
+#define HS_MCS_51_BIT_ADDRESS_TF2     (0xCF)
+
+
+
 /** \brief MCS-51内核读位，注意：此函数不是线程安全的，必要时需要加锁。
  *
  * \param core hs_mcs_51_core_t* MCS-51 内核指针
