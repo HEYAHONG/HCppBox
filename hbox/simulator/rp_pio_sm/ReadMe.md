@@ -23,7 +23,7 @@
 
 # PIO程序编译
 
-除开使用官方工具，还可使用一些第三方工具：
+- [pico-sdk](https://github.com/raspberrypi/pico-sdk.git):此为树莓派官方Pico SDK，其tools/pioasm目录为pioasm源代码目录。
 
-- [pioasm-wasm](https://github.com/wokwi/pioasm-wasm.git)：[https://wokwi.com/tools/pioasm](https://wokwi.com/tools/pioasm)
+- [pioasm-wasm](https://github.com/wokwi/pioasm-wasm.git)：此为第三方工具，可使用[https://wokwi.com/tools/pioasm](https://wokwi.com/tools/pioasm)在线访问。
 
