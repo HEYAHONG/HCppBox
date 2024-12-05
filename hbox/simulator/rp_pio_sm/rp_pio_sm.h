@@ -327,7 +327,7 @@ void hs_rp_pio_sm_load_memory_cfg(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_fifo_t *sm_rxf
 
 typedef struct
 {
-    uint32_t sm[10];                //64位系统需要40字节
+    uint32_t sm[((sizeof(uintptr_t)*2+sizeof(uint32_t)*6)/sizeof(uint32_t))+(((sizeof(uintptr_t)*2+sizeof(uint32_t)*6)%sizeof(uint32_t))?1:0)];
     hs_rp_pio_sm_memory_t memory;    //程序内存
     hs_rp_pio_sm_fifo_t txfifo;      //用户可使用hs_rp_pio_sm_fifo_push向状态机写入数据。
     hs_rp_pio_sm_fifo_t rxfifo;      //用户可使用hs_rp_pio_sm_fifo_pull读取状态机的数据。对于某些程序而言,可直接访问fifo内的字。
