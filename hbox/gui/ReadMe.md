@@ -9,6 +9,11 @@
 
 更加复杂的交互(如音视频、动画、字体效果等)应当使用更加成熟的库,如[Qt](https://www.qt.io/)、[minigui](https://github.com/VincentWei/MiniGUI.git)、[lvgl](https://github.com/lvgl/lvgl.git)、[u8g2](https://github.com/olikraus/u8g2.git)等
 
+# 注意事项
+
+- 本组件不包括实际的硬件驱动,在driver子组件中提供了一系列接口，用户需要根据实际硬件实现相应接口。
+- 在大多数GUI库中，GUI都是单线程管理的（由单个线程完成绘图及相关事件处理）。因此，本组件中的大多数函数均不是线程安全的，如在多线程环境下运行，需要自行加锁。
+
 # 子组件说明
 
 ## common
