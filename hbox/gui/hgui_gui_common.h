@@ -83,7 +83,33 @@ void hgui_gui_free_set(hgui_gui_free_t hook);
  */
 void hgui_gui_default_free(void *ptr);
 
+typedef struct
+{
+    ssize_t x;//X坐标,负数表示特殊坐标
+    ssize_t y;//Y坐标,负数表示特殊坐标
+    size_t  w;//宽度
+    size_t  h;//高度
+} hgui_gui_common_rectangle_t;/**< 矩形 */
 
+#define HGUI_GUI_COMMON_RECTANGLE_X_LEFT            (-1)   /**< 矩形在父矩形的左边*/
+#define HGUI_GUI_COMMON_RECTANGLE_X_CENTER          (-2)   /**< 矩形在父矩形的中间*/
+#define HGUI_GUI_COMMON_RECTANGLE_X_RIGHT           (-3)   /**< 矩形在父矩形的右边*/
+
+#define HGUI_GUI_COMMON_RECTANGLE_Y_TOP             (-1)   /**< 矩形在父矩形的顶部*/
+#define HGUI_GUI_COMMON_RECTANGLE_Y_CENTER          (-2)   /**< 矩形在父矩形的中间*/
+#define HGUI_GUI_COMMON_RECTANGLE_Y_BOTTOM          (-3)   /**< 矩形在父矩形的底部*/
+
+/** \brief 将矩形坐标转化为绝对坐标
+ *
+ * \param rect hgui_gui_common_rectangle_t 待转化的矩形
+ * \param x size_t X坐标
+ * \param y size_t Y坐标
+ * \param w size_t 宽度
+ * \param h size_t 高度
+ * \return hgui_gui_common_rectangle_t 转化后的坐标
+ *
+ */
+hgui_gui_common_rectangle_t hgui_gui_common_rectangle_absolute_convert(hgui_gui_common_rectangle_t rect,size_t x,size_t y,size_t w,size_t h);
 
 #endif
 
