@@ -31,6 +31,8 @@ typedef SSIZE_T ssize_t;
 typedef intptr_t ssize_t;
 #endif // ssize_t
 
+#endif
+
 /** \brief GUI内存分配
  *
  * \param nBytes size_t 大小
@@ -111,7 +113,7 @@ typedef struct
  */
 hgui_gui_common_rectangle_t hgui_gui_common_rectangle_absolute_convert(hgui_gui_common_rectangle_t rect,size_t x,size_t y,size_t w,size_t h);
 
-#endif
+
 
 #ifdef __cplusplus
 }
