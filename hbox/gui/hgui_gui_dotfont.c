@@ -590,19 +590,19 @@ static bool ascii_show_char(const hgui_gui_dotfont_t * dotfont,uint32_t Char,siz
     {
         if(size1==8)
         {
-            temp=ascii_0806[chr1][i];   //调用0806字体
+            temp=dotfont->font[chr1*6+i];   //调用0806字体
         }
         else if(size1==12)
         {
-            temp=ascii_1206[chr1][i];   //调用1206字体
+            temp=dotfont->font[chr1*12+i];   //调用1206字体
         }
         else if(size1==16)
         {
-            temp=ascii_1608[chr1][i];   //调用1608字体
+            temp=dotfont->font[chr1*16+i];   //调用1608字体
         }
         else if(size1==24)
         {
-            temp=ascii_2412[chr1][i];   //调用2412字体
+            temp=dotfont->font[chr1*36+i];   //调用2412字体
         }
         else
         {
