@@ -93,10 +93,10 @@ bool hgui_gui_dotfont_show_ascii_string(const hgui_gui_dotfont_t * dotfont,const
 bool hgui_gui_dotfont_show_unicode_string(const hgui_gui_dotfont_t * dotfont,const wchar_t *unicode_string,size_t x,size_t y,size_t w,hgui_gui_dotfont_draw_pixel_t draw_pixel,void *usr);
 
 
-extern const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_0806;
-extern const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_1206;
-extern const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_1608;
-extern const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_2416;
+extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_0806;
+extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_1206;
+extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_1608;
+extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_2416;
 
 
 #ifdef __cplusplus

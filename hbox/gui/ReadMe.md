@@ -67,12 +67,12 @@
 
 内置字体如下：
 
-- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_0806;`:ASCII 8X6 字体。
-- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_1206;`:ASCII 12X6 字体。
-- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_1608;`:ASCII 16X8 字体。
-- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_2416;`:ASCII 24X16 字体。
+- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_0806;`:ASCII 8X6 字体。
+- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_1206;`:ASCII 12X6 字体。
+- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_1608;`:ASCII 16X8 字体。
+- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_2416;`:ASCII 24X16 字体。
 
-此子组件的字体为结构体常量，若在链接时开启垃圾回收功能（对于ld而言，其标志为`--gc-sections`，配合gcc的`-ffunction-sections -fdata-sections`可实现垃圾回收），未使用的字体将不会出现在最终的可执行文件中。
+此子组件的字体为结构体常量，若在链接时开启垃圾回收功能（对于ld而言，其标志为`--gc-sections`，配合gcc的`-ffunction-sections -fdata-sections`可实现垃圾回收），未使用的字体(主要针对汉字点阵字体)将不会出现在最终的可执行文件中。
 
 用户自行实现字体时，推荐将字体与字体内部的数据都定义为常量，这样可以省下大量RAM空间。
 

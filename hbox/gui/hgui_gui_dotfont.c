@@ -168,8 +168,8 @@ bool hgui_gui_dotfont_show_unicode_string(const hgui_gui_dotfont_t * dotfont,con
     return false;
 }
 
-
-static const uint8_t asc2_0806[][6] =
+//8*6 ASCII字符集点阵
+static const uint8_t ascii_0806[][6] =
 {
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00},// sp
     {0x00, 0x00, 0x00, 0x2f, 0x00, 0x00},// !
@@ -264,8 +264,8 @@ static const uint8_t asc2_0806[][6] =
     {0x00, 0x44, 0x64, 0x54, 0x4C, 0x44},// z
     {0x14, 0x14, 0x14, 0x14, 0x14, 0x14},// horiz lines
 };
-//12*12 ASCII字符集点阵
-static const uint8_t asc2_1206[95][12]=
+//12*6 ASCII字符集点阵
+static const uint8_t ascii_1206[95][12]=
 {
     {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00},/*" ",0*/
     {0x00,0x00,0xFC,0x00,0x00,0x00,0x00,0x00,0x02,0x00,0x00,0x00},/*"!",1*/
@@ -363,8 +363,8 @@ static const uint8_t asc2_1206[95][12]=
     {0x00,0x02,0xDE,0x20,0x00,0x00,0x00,0x04,0x07,0x00,0x00,0x00},/*"}",93*/
     {0x02,0x01,0x02,0x04,0x04,0x02,0x00,0x00,0x00,0x00,0x00,0x00},/*"~",94*/
 };
-//16*16 ASCII字符集点阵
-static const uint8_t asc2_1608[][16]=
+//16*8 ASCII字符集点阵
+static const uint8_t ascii_1608[][16]=
 {
     {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00},/*" ",0*/
     {0x00,0x00,0x00,0xF8,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x33,0x30,0x00,0x00,0x00},/*"!",1*/
@@ -462,8 +462,8 @@ static const uint8_t asc2_1608[][16]=
     {0x00,0x02,0x02,0x7C,0x80,0x00,0x00,0x00,0x00,0x40,0x40,0x3F,0x00,0x00,0x00,0x00},/*"}",93*/
     {0x00,0x06,0x01,0x01,0x02,0x02,0x04,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00},/*"~",94*/
 };
-//24*24 ASICII字符集点阵
-static const uint8_t asc2_2412[][36]=
+//24*12 ASCII字符集点阵
+static const uint8_t ascii_2412[][36]=
 {
     {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00},/*" ",0*/
     {0x00,0x00,0x00,0x00,0x00,0xF0,0xF0,0xF0,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x7F,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x1C,0x1C,0x1C,0x00,0x00,0x00,0x00},/*"!",1*/
@@ -563,7 +563,7 @@ static const uint8_t asc2_2412[][36]=
 
 };
 
-static bool acs2_show_char(const hgui_gui_dotfont_t * dotfont,uint32_t Char,size_t x,size_t y,hgui_gui_dotfont_draw_pixel_t draw_pixel,void *usr)
+static bool ascii_show_char(const hgui_gui_dotfont_t * dotfont,uint32_t Char,size_t x,size_t y,hgui_gui_dotfont_draw_pixel_t draw_pixel,void *usr)
 {
     if(dotfont==NULL || draw_pixel==NULL)
     {
@@ -590,19 +590,19 @@ static bool acs2_show_char(const hgui_gui_dotfont_t * dotfont,uint32_t Char,size
     {
         if(size1==8)
         {
-            temp=asc2_0806[chr1][i];   //调用0806字体
+            temp=ascii_0806[chr1][i];   //调用0806字体
         }
         else if(size1==12)
         {
-            temp=asc2_1206[chr1][i];   //调用1206字体
+            temp=ascii_1206[chr1][i];   //调用1206字体
         }
         else if(size1==16)
         {
-            temp=asc2_1608[chr1][i];   //调用1608字体
+            temp=ascii_1608[chr1][i];   //调用1608字体
         }
         else if(size1==24)
         {
-            temp=asc2_2412[chr1][i];   //调用2412字体
+            temp=ascii_2412[chr1][i];   //调用2412字体
         }
         else
         {
@@ -638,31 +638,31 @@ static bool acs2_show_char(const hgui_gui_dotfont_t * dotfont,uint32_t Char,size
 }
 
 
-const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_0806=
+const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_0806=
 {
-    (const uint8_t *)(const void *)asc2_0806,
-    acs2_show_char,
+    (const uint8_t *)(const void *)ascii_0806,
+    ascii_show_char,
     6,
     8
 };
-const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_1206=
+const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_1206=
 {
-    (const uint8_t *)(const void *)asc2_1206,
-    acs2_show_char,
+    (const uint8_t *)(const void *)ascii_1206,
+    ascii_show_char,
     6,
     12
 };
-const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_1608=
+const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_1608=
 {
-    (const uint8_t *)(const void *)asc2_1608,
-    acs2_show_char,
+    (const uint8_t *)(const void *)ascii_1608,
+    ascii_show_char,
     8,
     16
 };
-const hgui_gui_dotfont_t hgui_gui_dotfont_acs2_2416=
+const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_2416=
 {
-    (const uint8_t *)(const void *)asc2_2412,
-    acs2_show_char,
+    (const uint8_t *)(const void *)ascii_2412,
+    ascii_show_char,
     16,
     24
 };
