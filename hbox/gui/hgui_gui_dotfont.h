@@ -98,6 +98,10 @@ extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_1206;
 extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_1608;
 extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_2416;
 
+//假字体，一般用于调试
+extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_1616;
+extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_2424;
+extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_3232;
 
 #ifdef __cplusplus
 }

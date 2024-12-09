@@ -667,3 +667,72 @@ const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_2416=
     24
 };
 
+static bool unicode_show_char_dummy(const hgui_gui_dotfont_t * dotfont,uint32_t Char,size_t x,size_t y,hgui_gui_dotfont_draw_pixel_t draw_pixel,void *usr)
+{
+    if(dotfont==NULL || draw_pixel==NULL)
+    {
+        return false;
+    }
+    if(dotfont->font!=NULL)
+    {
+        //TODO:正常字体显示，若正确需要退出，否则可进一步处理
+    }
+
+    if(dotfont->w >=12 && dotfont->h >= 16 && Char < 0x10000)
+    {
+        //dummy字体,将字符编码的低2字节通过ascii 8x6字体显示出来。
+        for(size_t i=0; i<4; i++)
+        {
+            uint8_t val=((Char>>(4*(3-i)))&0xF);
+            char c='0'+val;
+            if(val >= 10)
+            {
+                c='A'+val-10;
+            }
+            {
+                char str[2]= {c,0};
+                hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,str,x+(dotfont->w-12)/2+(i%2)*6,y+(dotfont->h-16)/2+(i/2)*8,x+dotfont->w,draw_pixel,NULL);
+            }
+        }
+
+        //画字体框
+        for(size_t i=x; i<x+dotfont->w; i++)
+        {
+            draw_pixel(dotfont,i,y,true,usr);
+            draw_pixel(dotfont,i,y+dotfont->h-1,true,usr);
+        }
+        for(size_t i=y; i<y+dotfont->h; i++)
+        {
+            draw_pixel(dotfont,x,i,true,usr);
+            draw_pixel(dotfont,x+dotfont->w-1,i,true,usr);
+        }
+
+        return true;
+    }
+    return false;
+}
+
+const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_1616=
+{
+    NULL,
+    unicode_show_char_dummy,
+    16,
+    16
+};
+
+const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_2424=
+{
+    NULL,
+    unicode_show_char_dummy,
+    24,
+    24
+};
+
+const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_3232=
+{
+    NULL,
+    unicode_show_char_dummy,
+    32,
+    32
+};
+

@@ -69,6 +69,9 @@ int main()
                 hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_1206,"Booting",0,8,w,draw_pixel,NULL);
                 hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_1608,"Booting",0,8+12,w,draw_pixel,NULL);
                 hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_2416,"Booting",0,8+12+16,w,draw_pixel,NULL);
+                hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_1616,L"启动中",0,8+12+16+24,w,draw_pixel,NULL);
+                hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_2424,L"启动中",0,8+12+16+24+16,w,draw_pixel,NULL);
+                hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_3232,L"启动中",0,8+12+16+24+16+24,w,draw_pixel,NULL);
                 hgui_driver_fill_rectangle(NULL,0,0,w,h,pixel);
             }
             if (i == 300)
@@ -104,10 +107,10 @@ int main()
                 printf("xpm:width=%d,height=%d,ncolors=%d,cpp=%d,x_hotspot=%d,y_hotspot=%d,XPMEXT=%s\r\n",(int)header.width,(int)header.height,(int)header.ncolors,(int)header.cpp,(int)header.x_hotspot,(int)header.y_hotspot,header.XPMEXT?"true":"false");
                 for (size_t i = 0; i < w; i++)
                 {
-                        for (size_t j = 0; j < h; j++)
-                        {
-                            VRAM[i][j] = 0xFF00FF00;
-                        }
+                    for (size_t j = 0; j < h; j++)
+                    {
+                        VRAM[i][j] = 0xFF00FF00;
+                    }
                 }
                 auto draw_pixel = [](size_t x,size_t y,uint32_t color,void *usr)->bool
                 {
