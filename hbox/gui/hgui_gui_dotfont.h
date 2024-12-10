@@ -106,6 +106,14 @@ extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_1616;
 extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_2424;
 extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_3232;
 
+/** \brief 获取某个字体的dummy字体
+ *
+ * \param dotfont const hgui_gui_dotfont_t* 原字体
+ * \return hgui_gui_dotfont_t dummy字体
+ *
+ */
+hgui_gui_dotfont_t hgui_gui_dotfont_add_dummy(const hgui_gui_dotfont_t * dotfont);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

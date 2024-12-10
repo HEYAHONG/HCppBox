@@ -741,3 +741,13 @@ const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_3232=
     32
 };
 
+hgui_gui_dotfont_t hgui_gui_dotfont_add_dummy(const hgui_gui_dotfont_t * dotfont)
+{
+    hgui_gui_dotfont_t font= {(const uint8_t *)dotfont,unicode_show_char_dummy,16,16};
+    if(dotfont!=NULL)
+    {
+        font.w=dotfont->w;
+        font.h=dotfont->h;
+    }
+    return font;
+}
