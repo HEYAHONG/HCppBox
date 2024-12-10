@@ -675,7 +675,12 @@ static bool unicode_show_char_dummy(const hgui_gui_dotfont_t * dotfont,uint32_t 
     }
     if(dotfont->font!=NULL)
     {
-        //TODO:正常字体显示，若正确需要退出，否则可进一步处理
+        //正常字体显示，若正确需要退出，否则可进一步处理
+        wchar_t str[2]= {Char,0};
+        if(hgui_gui_dotfont_show_unicode_string((const hgui_gui_dotfont_t *)dotfont->font,str,x,y,x+dotfont->w,draw_pixel,usr))
+        {
+            return true;
+        }
     }
 
     if(dotfont->w >=12 && dotfont->h >= 16 && Char < 0x10000)

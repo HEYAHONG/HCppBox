@@ -71,9 +71,9 @@
 - `extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_1206;`:ASCII 12X6 字体。
 - `extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_1608;`:ASCII 16X8 字体。
 - `extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_2416;`:ASCII 24X16 字体。
-- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_1616;`:假 16X16 字体。
-- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_2424;`:假 24X24 字体。
-- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_3232;`:假 32X32 字体。
+- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_1616;`:假 16X16 字体。对于dummy字体而言，可构造一个临时字体并将字体参数(font)可设置为其它字体(`hgui_gui_dotfont_t *` 指针),这样就可以实现当其它字体失败时显示dummy字体。
+- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_2424;`:假 24X24 字体。对于dummy字体而言，可构造一个临时字体并将字体参数(font)可设置为其它字体(`hgui_gui_dotfont_t *` 指针),这样就可以实现当其它字体失败时显示dummy字体。
+- `extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_3232;`:假 32X32 字体。对于dummy字体而言，可构造一个临时字体并将字体参数(font)可设置为其它字体(`hgui_gui_dotfont_t *` 指针),这样就可以实现当其它字体失败时显示dummy字体。
 
 此子组件的字体为结构体常量，若在链接时开启垃圾回收功能（对于ld而言，其标志为`--gc-sections`，配合gcc的`-ffunction-sections -fdata-sections`可实现垃圾回收），未使用的字体(主要针对汉字点阵字体)将不会出现在最终的可执行文件中。
 

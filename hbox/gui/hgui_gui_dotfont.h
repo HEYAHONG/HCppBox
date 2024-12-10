@@ -99,6 +99,9 @@ extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_1608;
 extern const hgui_gui_dotfont_t hgui_gui_dotfont_ascii_2416;
 
 //假字体，一般用于调试
+/*
+ * 对于dummy字体而言，可构造一个临时字体并将字体参数(font)可设置为其它字体(hgui_gui_dotfont_t * 指针),这样就可以实现当其它字体失败时显示dummy字体。
+ */
 extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_1616;
 extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_2424;
 extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_3232;
