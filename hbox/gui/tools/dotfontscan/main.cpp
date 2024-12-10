@@ -123,7 +123,7 @@ static int cmd_help(int argc,const char *argv[])
 }
 
 #ifdef WIN32
-std::string font_file_path("simsun.ttc");
+std::string font_file_path("C:/Windows/Fonts/simsun.ttc");
 #else
 //默认使用 文泉驿 字体,debian系统(最新版)使用sudo apt-get install fonts-wqy-zenhei安装后即可使用
 std::string font_file_path("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc");
