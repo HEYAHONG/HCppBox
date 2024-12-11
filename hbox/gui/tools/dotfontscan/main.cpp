@@ -6,6 +6,11 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include <string>
+#include <codecvt>
+#include <iostream>
+#include <locale>
+#include <set>
+#include <fstream>
 
 
 static class ft_lib
@@ -29,6 +34,7 @@ public:
 
 static int cmd_help(int argc,const char *argv[]);
 static int cmd_font(int argc,const char *argv[]);
+static int cmd_input_file(int argc,const char *argv[]);
 static struct
 {
     const char * cmd;
@@ -51,6 +57,13 @@ static struct
         cmd_help,
         "--font=[font_file_path]  / -f [font_file_path] ",
         "fontfile path"
+    },
+    {
+        "--input",
+        "-i",
+        cmd_input_file,
+        "--input=[input_file_path]  / -i [input_file_path] ",
+        "input file(utf-8) path"
     }
 };
 
@@ -167,6 +180,45 @@ static int cmd_font(int argc,const char *argv[])
     return 0;
 }
 
+static std::string input_file_path("font.map");
+static int cmd_input_file(int argc,const char *argv[])
+{
+    for(int i=0; i<argc; i++)
+    {
+        {
+            char temp[4096]= {0};
+            const char *para=NULL;
+            strcat(temp,argv[i]);
+            for(size_t k=0; k<strlen(temp); k++)
+            {
+                if(temp[k]=='=')
+                {
+                    temp[k]='\0';
+                    para=&temp[k+1];
+                    break;
+                }
+            }
+            if(strcmp("--input",temp)==0)
+            {
+                if(para!=NULL)
+                {
+                    input_file_path=para;
+                    break;
+                }
+            }
+            if(strcmp("-i",argv[i])==0)
+            {
+                if((i+1)<argc)
+                {
+                    input_file_path=argv[i+1];
+                    break;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 static void arg_parse(int argc,const char *argv[])
 {
     if(argc==1)
@@ -219,9 +271,54 @@ static void arg_parse(int argc,const char *argv[])
 }
 
 
+static std::wstring string_to_wstring(std::string original)
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> code_convert;
+    return code_convert.from_bytes(original);
+}
+
+//需要转换的字符集合
+static std::set<wchar_t> char_set;
+static void process_input_file()
+{
+    std::fstream file(input_file_path.c_str(),std::ios::in);
+    if(file.is_open())
+    {
+        std::string buffer;
+        while(std::getline(file,buffer))
+        {
+            std::wstring str=string_to_wstring(buffer);
+            buffer.clear();
+            for(size_t i=0; i<str.length(); i++)
+            {
+                char_set.insert(str.at(i));
+            }
+        }
+        file.close();
+    }
+    else
+    {
+        printf("can't open %s\r\n",input_file_path.c_str());
+    }
+
+    {
+        //把常用的ascii字符也添加至字符列表
+        for(size_t i=' '; i<0x80; i++)
+        {
+            char_set.insert(i);
+        }
+    }
+    {
+        //打印字符数
+        printf("char count=%d,min=%08X,max=%08X\r\n",(int)char_set.size(),(int)*char_set.begin(),(int)*char_set.rbegin());
+    }
+}
+
 int main(int argc,const char *argv[])
 {
     arg_parse(argc,argv);
+
+    process_input_file();
 
     FT_Face face=NULL;
 
