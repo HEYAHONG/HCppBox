@@ -69,9 +69,10 @@ int main()
                 hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_1206,"Booting",0,8,w,draw_pixel,NULL);
                 hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_1608,"Booting",0,8+12,w,draw_pixel,NULL);
                 hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_2416,"Booting",0,8+12+16,w,draw_pixel,NULL);
-                hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_1616,L"启动中",0,8+12+16+24,w,draw_pixel,NULL);
-                hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_2424,L"启动中",0,8+12+16+24+16,w,draw_pixel,NULL);
-                hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_3232,L"启动中",0,8+12+16+24+16+24,w,draw_pixel,NULL);
+                hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_1212,L"启动中",0,8+12+16+24,w,draw_pixel,NULL);
+                hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_1616,L"启动中",0,8+12+16+24+12,w,draw_pixel,NULL);
+                hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_2424,L"启动中",0,8+12+16+24+12+16,w,draw_pixel,NULL);
+                hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_3232,L"启动中",0,8+12+16+24+12+16+24,w,draw_pixel,NULL);
                 hgui_driver_fill_rectangle(NULL,0,0,w,h,pixel);
             }
             if (i == 300)

@@ -231,6 +231,11 @@ int main(int argc,const char *argv[])
         return -1;
     }
 
+    //设置为unicode
+    FT_Select_Charmap(face, FT_ENCODING_UNICODE);
+
+
+
     FT_Done_Face(face);
     return 0;
 }

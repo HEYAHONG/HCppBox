@@ -714,8 +714,32 @@ static bool unicode_show_char_dummy(const hgui_gui_dotfont_t * dotfont,uint32_t 
 
         return true;
     }
-    return false;
+    else
+    {
+        //画字体框
+        for(size_t i=x; i<x+dotfont->w; i++)
+        {
+            draw_pixel(dotfont,i,y,true,usr);
+            draw_pixel(dotfont,i,y+dotfont->h-1,true,usr);
+        }
+        for(size_t i=y; i<y+dotfont->h; i++)
+        {
+            draw_pixel(dotfont,x,i,true,usr);
+            draw_pixel(dotfont,x+dotfont->w-1,i,true,usr);
+        }
+
+        return true;
+    }
 }
+
+
+const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_1212=
+{
+    NULL,
+    unicode_show_char_dummy,
+    12,
+    12
+};
 
 const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_1616=
 {
