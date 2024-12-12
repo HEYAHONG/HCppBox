@@ -11,6 +11,7 @@
 #include <locale>
 #include <set>
 #include <fstream>
+#include <algorithm>
 
 
 static class ft_lib
@@ -136,7 +137,20 @@ static int cmd_help(int argc,const char *argv[])
 }
 
 #ifdef WIN32
-std::string font_file_path("C:/Windows/Fonts/simsun.ttc");
+static std::string get_system_root()
+{
+    std::string ret("C:/Windows");
+    {
+        const char *systemroot=getenv("SystemRoot");
+        if(systemroot!=NULL)
+        {
+            ret=systemroot;
+            std::replace(ret.begin(),ret.end(),'\\','/');
+        }
+    }
+    return ret;
+}
+std::string font_file_path(get_system_root()+"/Fonts/simsun.ttc");
 #else
 //默认使用 文泉驿 字体,debian系统(最新版)使用sudo apt-get install fonts-wqy-zenhei安装后即可使用
 std::string font_file_path("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc");
