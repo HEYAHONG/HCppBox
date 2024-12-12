@@ -3,6 +3,7 @@
 #include "hrc.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_GLYPH_H
 #include "stdlib.h"
 #include "stdio.h"
 #include <string>
@@ -344,6 +345,40 @@ int main(int argc,const char *argv[])
 
     //设置为unicode
     FT_Select_Charmap(face, FT_ENCODING_UNICODE);
+
+    {
+        //显示24x24点阵字符
+        FT_Set_Pixel_Sizes(face,24,24);
+        for(auto it=char_set.begin();it!=char_set.end();it++)
+        {
+            if(0==FT_Load_Glyph(face,FT_Get_Char_Index(face,*it),FT_LOAD_DEFAULT))
+            {
+                printf("\r\n");
+                if(0==FT_Render_Glyph(face->glyph,FT_RENDER_MODE_NORMAL))
+                {
+                    FT_Bitmap bmp=face->glyph->bitmap;
+                    size_t w=bmp.width;
+                    size_t h=bmp.rows;
+                    printf("char=%08X,whidth=%d,height=%d\r\n",(int)(*it),(int)w,(int)h);
+                    for(size_t i=0;i<h;i++)
+                    {
+                        for(size_t j=0;j<w;j++)
+                        {
+                            if(bmp.buffer[i*w+j]==0)
+                            {
+                                printf(" ");
+                            }
+                            else
+                            {
+                                printf("#");
+                            }
+                        }
+                        printf("\r\n");
+                    }
+                }
+            }
+        }
+    }
 
 
 
