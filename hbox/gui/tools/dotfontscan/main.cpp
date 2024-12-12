@@ -359,7 +359,7 @@ int main(int argc,const char *argv[])
                     FT_Bitmap bmp=face->glyph->bitmap;
                     size_t w=bmp.width;
                     size_t h=bmp.rows;
-                    printf("char=%08X,whidth=%d,height=%d\r\n",(int)(*it),(int)w,(int)h);
+                    printf("char=%08X,width=%d,height=%d\r\n",(int)(*it),(int)w,(int)h);
                     for(size_t i=0;i<h;i++)
                     {
                         for(size_t j=0;j<w;j++)
