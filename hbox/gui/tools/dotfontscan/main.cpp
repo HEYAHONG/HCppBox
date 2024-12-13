@@ -354,9 +354,22 @@ int main(int argc,const char *argv[])
                     FT_Bitmap bmp=face->glyph->bitmap;
                     size_t w=bmp.width;
                     size_t h=bmp.rows;
-                    size_t left=face->glyph->bitmap_left;
-                    size_t top=face->size->metrics.ascender/64-face->glyph->bitmap_top;//转换为屏幕坐标的偏移
-                    printf("char=%08X,left=%d,top=%d,width=%d,height=%d\r\n",(int)(*it),(int)left,(int)top,(int)w,(int)h);
+                    int left=face->glyph->bitmap_left;
+                    int font_size=face->size->metrics.ascender/64;
+                    int top=font_size-face->glyph->bitmap_top;//转换为屏幕坐标的偏移
+                    {
+                        //调整偏移
+                        if(h+top > font_size)
+                        {
+                            top-=(h+top-font_size);
+                        }
+                        if(left < 0)
+                        {
+                            //不允许负偏移
+                            left=0;
+                        }
+                    }
+                    printf("char=%08X,size=%d,left=%d,top=%d,width=%d,height=%d\r\n",(int)(*it),(int)font_size,(int)left,(int)top,(int)w,(int)h);
                     for(size_t i=0; i<h; i++)
                     {
                         for(size_t j=0; j<w; j++)
