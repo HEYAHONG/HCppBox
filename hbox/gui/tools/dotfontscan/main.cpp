@@ -56,7 +56,7 @@ static struct
     {
         "--font",
         "-f",
-        cmd_help,
+        cmd_font,
         "--font=[font_file_path]  / -f [font_file_path] ",
         "fontfile path"
     },
