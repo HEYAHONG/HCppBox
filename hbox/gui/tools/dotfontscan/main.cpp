@@ -236,11 +236,6 @@ static int cmd_input_file(int argc,const char *argv[])
 
 static void arg_parse(int argc,const char *argv[])
 {
-    if(argc==1)
-    {
-        cmd_help(argc,argv);
-    }
-    else
     {
         for(int i=0; i<argc; i++)
         {
@@ -349,7 +344,7 @@ int main(int argc,const char *argv[])
     {
         //显示24x24点阵字符
         FT_Set_Pixel_Sizes(face,24,24);
-        for(auto it=char_set.begin();it!=char_set.end();it++)
+        for(auto it=char_set.begin(); it!=char_set.end(); it++)
         {
             if(0==FT_Load_Glyph(face,FT_Get_Char_Index(face,*it),FT_LOAD_DEFAULT))
             {
@@ -359,10 +354,12 @@ int main(int argc,const char *argv[])
                     FT_Bitmap bmp=face->glyph->bitmap;
                     size_t w=bmp.width;
                     size_t h=bmp.rows;
-                    printf("char=%08X,width=%d,height=%d\r\n",(int)(*it),(int)w,(int)h);
-                    for(size_t i=0;i<h;i++)
+                    size_t left=face->glyph->bitmap_left;
+                    size_t top=face->size->metrics.ascender/64-face->glyph->bitmap_top;//转换为屏幕坐标的偏移
+                    printf("char=%08X,left=%d,top=%d,width=%d,height=%d\r\n",(int)(*it),(int)left,(int)top,(int)w,(int)h);
+                    for(size_t i=0; i<h; i++)
                     {
-                        for(size_t j=0;j<w;j++)
+                        for(size_t j=0; j<w; j++)
                         {
                             if(bmp.buffer[i*w+j]==0)
                             {
