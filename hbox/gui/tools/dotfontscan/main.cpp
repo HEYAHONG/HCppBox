@@ -343,7 +343,8 @@ int main(int argc,const char *argv[])
 
     {
         //显示24x24点阵字符
-        FT_Set_Pixel_Sizes(face,24,24);
+        int font_size=24;
+        FT_Set_Pixel_Sizes(face,font_size,font_size);
         for(auto it=char_set.begin(); it!=char_set.end(); it++)
         {
             if(0==FT_Load_Glyph(face,FT_Get_Char_Index(face,*it),FT_LOAD_DEFAULT))
@@ -355,7 +356,6 @@ int main(int argc,const char *argv[])
                     size_t w=bmp.width;
                     size_t h=bmp.rows;
                     int left=face->glyph->bitmap_left;
-                    int font_size=face->size->metrics.ascender/64;
                     int top=font_size-face->glyph->bitmap_top;//转换为屏幕坐标的偏移
                     {
                         //调整偏移
