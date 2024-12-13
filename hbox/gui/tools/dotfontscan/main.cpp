@@ -324,32 +324,34 @@ static void process_input_file()
     }
 }
 
-int main(int argc,const char *argv[])
+static void checkout_fontfile()
 {
-    arg_parse(argc,argv);
+    FT_Face face=NULL;
+    if(FT_New_Face(g_ft_lib, font_file_path.c_str(), 0, &face))
+    {
+        printf("FT_New_Face (%s) error!\r\n",font_file_path.c_str());
+        exit(-1);
+    }
 
-    process_input_file();
+    FT_Done_Face(face);
+}
 
+static void font_bitmap_get(void (*on_get)(FT_Bitmap bmp,int x,int y,wchar_t _char,int font_size),int font_size=24)
+{
     FT_Face face=NULL;
 
     if(FT_New_Face(g_ft_lib, font_file_path.c_str(), 0, &face))
     {
-        printf("FT_New_Face (%s) error!\r\n",font_file_path.c_str());
-        return -1;
+        return;
     }
-
     //设置为unicode
     FT_Select_Charmap(face, FT_ENCODING_UNICODE);
-
     {
-        //显示24x24点阵字符
-        int font_size=24;
         FT_Set_Pixel_Sizes(face,font_size,font_size);
         for(auto it=char_set.begin(); it!=char_set.end(); it++)
         {
             if(0==FT_Load_Glyph(face,FT_Get_Char_Index(face,*it),FT_LOAD_DEFAULT))
             {
-                printf("\r\n");
                 if(0==FT_Render_Glyph(face->glyph,FT_RENDER_MODE_NORMAL))
                 {
                     FT_Bitmap bmp=face->glyph->bitmap;
@@ -369,30 +371,52 @@ int main(int argc,const char *argv[])
                             left=0;
                         }
                     }
-                    printf("char=%08X,size=%d,left=%d,top=%d,width=%d,height=%d\r\n",(int)(*it),(int)font_size,(int)left,(int)top,(int)w,(int)h);
-                    for(size_t i=0; i<h; i++)
+                    if(on_get!=NULL)
                     {
-                        for(size_t j=0; j<w; j++)
-                        {
-                            if(bmp.buffer[i*w+j]==0)
-                            {
-                                printf(" ");
-                            }
-                            else
-                            {
-                                printf("#");
-                            }
-                        }
-                        printf("\r\n");
+                        on_get(bmp,left,top,(*it),font_size);
                     }
                 }
             }
         }
     }
 
-
-
     FT_Done_Face(face);
+}
+
+int main(int argc,const char *argv[])
+{
+    arg_parse(argc,argv);
+
+    process_input_file();
+
+    checkout_fontfile();
+
+    {
+        //打印24X24点阵
+        font_bitmap_get([](FT_Bitmap bmp,int x,int y,wchar_t _char,int font_size)
+        {
+            size_t w=bmp.width;
+            size_t h=bmp.rows;
+            printf("\r\nchar=%08X,size=%d,x=%d,y=%d,width=%d,height=%d\r\n",(int)_char,(int)font_size,(int)x,(int)y,(int)w,(int)h);
+            for(size_t i=0; i<h; i++)
+            {
+                for(size_t j=0; j<w; j++)
+                {
+                    if(bmp.buffer[i*w+j]==0)
+                    {
+                        printf(" ");
+                    }
+                    else
+                    {
+                        printf("#");
+                    }
+                }
+                printf("\r\n");
+            }
+        },24);
+    }
+
+
     return 0;
 }
 
