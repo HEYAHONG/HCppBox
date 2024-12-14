@@ -37,6 +37,7 @@ public:
 static int cmd_help(int argc,const char *argv[]);
 static int cmd_font(int argc,const char *argv[]);
 static int cmd_input_file(int argc,const char *argv[]);
+static int cmd_output_file(int argc,const char *argv[]);
 static struct
 {
     const char * cmd;
@@ -66,6 +67,13 @@ static struct
         cmd_input_file,
         "--input=[input_file_path]  / -i [input_file_path] ",
         "input file(utf-8) path"
+    },
+    {
+        "--output",
+        "-o",
+        cmd_output_file,
+        "--output=[output_file_path]  / -o [output_file_path] ",
+        "output file(C file) path"
     }
 };
 
@@ -234,6 +242,45 @@ static int cmd_input_file(int argc,const char *argv[])
     return 0;
 }
 
+static std::string output_file_path("hdotfont.c");
+static int cmd_output_file(int argc,const char *argv[])
+{
+    for(int i=0; i<argc; i++)
+    {
+        {
+            char temp[4096]= {0};
+            const char *para=NULL;
+            strcat(temp,argv[i]);
+            for(size_t k=0; k<strlen(temp); k++)
+            {
+                if(temp[k]=='=')
+                {
+                    temp[k]='\0';
+                    para=&temp[k+1];
+                    break;
+                }
+            }
+            if(strcmp("--output",temp)==0)
+            {
+                if(para!=NULL)
+                {
+                    output_file_path=para;
+                    break;
+                }
+            }
+            if(strcmp("-o",argv[i])==0)
+            {
+                if((i+1)<argc)
+                {
+                    output_file_path=argv[i+1];
+                    break;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 static void arg_parse(int argc,const char *argv[])
 {
     {
@@ -383,6 +430,130 @@ static void font_bitmap_get(void (*on_get)(FT_Bitmap bmp,int x,int y,wchar_t _ch
     FT_Done_Face(face);
 }
 
+static std::fstream outfile;
+static void generate_c_file()
+{
+    outfile.open(output_file_path.c_str(),std::ios::out);
+    if(outfile.is_open())
+    {
+        //包含文件
+        outfile << "#include \"stdint.h\""<<std::endl;
+        outfile << "#include \"stdlib.h\""<<std::endl;
+        //生成12到32的点阵
+        for(size_t i=12; i<=32; i++)
+        {
+            //字体注释信息
+            outfile<<"/* Font Size "<<i<<" */"<<std::endl<<std::endl;
+
+            font_bitmap_get([](FT_Bitmap bmp,int x,int y,wchar_t _char,int font_size)
+            {
+                size_t w=bmp.width;
+                size_t h=bmp.rows;
+                {
+                    //单个字体的注释
+                    outfile << "/*"<<std::endl;
+                    {
+                        char buff[512]= {0};
+                        sprintf(buff,"char=%08X,size=%d,x=%d,y=%d,width=%d,height=%d",(int)_char,(int)font_size,(int)x,(int)y,(int)w,(int)h);
+                        outfile << buff<<std::endl;
+                    }
+                    for(size_t i=0; i<h; i++)
+                    {
+                        for(size_t j=0; j<w; j++)
+                        {
+                            if(bmp.buffer[i*w+j]<0x80)
+                            {
+                                outfile<<" ";
+                            }
+                            else
+                            {
+                                outfile<<"#";
+                            }
+                        }
+                        outfile << std::endl;
+                    }
+                    outfile << "*/"<<std::endl;
+                }
+                {
+                    {
+                        //输出变量名
+                        char buff[512]= {0};
+                        sprintf(buff,"const uint8_t hdotfont_char_%08X_%d[]=",(int)_char,(int)font_size);
+                        outfile << buff<<std::endl;
+                    }
+                    outfile << "{"<<std::endl;
+
+                    outfile << "/* wchar_t */"<<std::endl;
+                    {
+                        //输出wchar_t的值
+                        char buff[512]= {0};
+                        sprintf(buff,"0x%02X,0x%02X,0x%02X,0x%02X,",(int)_char&0xFF,(int)(_char>>8)&0xFF,(int)(_char>>16)&0xFF,(int)(_char>>24)&0xFF);
+                        outfile << buff<<std::endl;
+                    }
+
+                    outfile << "/* x,y,w,h */"<<std::endl;
+                    {
+                        //输出x,y,w,h
+                        char buff[512]= {0};
+                        sprintf(buff,"%d,%d,%d,%d,",(int)x,(int)y,(int)w,(int)h);
+                        outfile << buff<<std::endl;
+                    }
+
+                    outfile << "/* data */"<<std::endl;
+                    {
+                        uint8_t temp=0;
+                        for(size_t i=0; i<h; i++)
+                        {
+                            for(size_t j=0; j<w; j++)
+                            {
+                                size_t pixel_index=i*w+j;
+                                if(bmp.buffer[i*w+j]>=0x80)
+                                {
+                                    temp |= (0x1<<(pixel_index%8));
+                                }
+                                if((pixel_index%8)==7)
+                                {
+                                    //存满8个位
+                                    {
+                                        char buff[512]= {0};
+                                        sprintf(buff,"0x%02X,",temp);
+                                        outfile << buff;
+                                    }
+                                    if((pixel_index/8)%8==7)
+                                    {
+                                        outfile<<std::endl;
+                                    }
+                                    temp=0;
+                                }
+                                else if(i==(h-1) && j==(w-1))
+                                {
+                                    //最后一位
+                                    {
+                                        char buff[512]= {0};
+                                        sprintf(buff,"0x%02X,",temp);
+                                        outfile << buff;
+                                    }
+                                    temp=0;
+                                }
+                            }
+                        }
+                    }
+
+                    //末尾添0
+                    outfile << "0x00" <<std::endl;
+                    outfile << "};"<<std::endl;
+                }
+                outfile << std::endl;
+            },i);
+        }
+        outfile.close();
+    }
+    else
+    {
+        printf("open output file(%s) error!\r\n",output_file_path.c_str());
+    }
+}
+
 int main(int argc,const char *argv[])
 {
     arg_parse(argc,argv);
@@ -391,31 +562,7 @@ int main(int argc,const char *argv[])
 
     checkout_fontfile();
 
-    {
-        //打印24X24点阵
-        font_bitmap_get([](FT_Bitmap bmp,int x,int y,wchar_t _char,int font_size)
-        {
-            size_t w=bmp.width;
-            size_t h=bmp.rows;
-            printf("\r\nchar=%08X,size=%d,x=%d,y=%d,width=%d,height=%d\r\n",(int)_char,(int)font_size,(int)x,(int)y,(int)w,(int)h);
-            for(size_t i=0; i<h; i++)
-            {
-                for(size_t j=0; j<w; j++)
-                {
-                    if(bmp.buffer[i*w+j]==0)
-                    {
-                        printf(" ");
-                    }
-                    else
-                    {
-                        printf("#");
-                    }
-                }
-                printf("\r\n");
-            }
-        },24);
-    }
-
+    generate_c_file();
 
     return 0;
 }
