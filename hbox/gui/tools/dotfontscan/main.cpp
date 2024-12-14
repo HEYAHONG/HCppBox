@@ -553,6 +553,9 @@ static void generate_c_file()
             {
                 //输出点阵字符集大小
                 char buff[512]= {0};
+                sprintf(buff,"extern const uint32_t hdotfont_char_set_%d_size;",(int)i);
+                outfile << buff<<std::endl;
+                buff[0]='\0';
                 sprintf(buff,"const uint32_t hdotfont_char_set_%d_size=%d;",(int)i,(int)output_char_set.size());
                 outfile << buff<<std::endl;
             }
@@ -563,6 +566,9 @@ static void generate_c_file()
                 {
                     //输出变量名
                     char buff[512]= {0};
+                    sprintf(buff,"extern const uint8_t *const hdotfont_char_set_%d[];",(int)i);
+                    outfile << buff<<std::endl;
+                    buff[0]='\0';
                     sprintf(buff,"const uint8_t *const hdotfont_char_set_%d[]=",(int)i);
                     outfile << buff<<std::endl;
                 }
