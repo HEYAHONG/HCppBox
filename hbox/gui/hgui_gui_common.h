@@ -13,6 +13,9 @@
 #include "string.h"
 #include "stdlib.h"
 #include "wchar.h"
+#ifdef __RTTHREAD__
+#include "rtthread.h"
+#endif
 #ifdef __cplusplus
 extern "C"
 {
@@ -27,9 +30,11 @@ typedef SSIZE_T ssize_t;
 
 #else
 
+#ifndef __RTTHREAD__
 #ifndef ssize_t
 typedef intptr_t ssize_t;
 #endif // ssize_t
+#endif // __RTTHREAD__
 
 #endif
 
