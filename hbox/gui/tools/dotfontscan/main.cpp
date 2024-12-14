@@ -431,6 +431,7 @@ static void font_bitmap_get(void (*on_get)(FT_Bitmap bmp,int x,int y,wchar_t _ch
 }
 
 static std::fstream outfile;
+static std::set<wchar_t> output_char_set;
 static void generate_c_file()
 {
     outfile.open(output_file_path.c_str(),std::ios::out);
@@ -445,8 +446,10 @@ static void generate_c_file()
             //字体注释信息
             outfile<<"/* Font Size "<<i<<" */"<<std::endl<<std::endl;
 
+            output_char_set.clear();
             font_bitmap_get([](FT_Bitmap bmp,int x,int y,wchar_t _char,int font_size)
             {
+                output_char_set.insert(_char);
                 size_t w=bmp.width;
                 size_t h=bmp.rows;
                 {
@@ -545,6 +548,39 @@ static void generate_c_file()
                 }
                 outfile << std::endl;
             },i);
+
+            if(output_char_set.size()>0)
+            {
+                //输出点阵字符集大小
+                char buff[512]= {0};
+                sprintf(buff,"const uint32_t hdotfont_char_set_%d_size=%d;",(int)i,(int)output_char_set.size());
+                outfile << buff<<std::endl;
+            }
+
+            if(output_char_set.size()>0)
+            {
+                //输出字符集
+                {
+                    //输出变量名
+                    char buff[512]= {0};
+                    sprintf(buff,"const uint8_t *const hdotfont_char_set_%d[]=",(int)i);
+                    outfile << buff<<std::endl;
+                }
+                outfile << "{"<<std::endl;
+                for(auto it=output_char_set.begin(); it!=output_char_set.end(); it++)
+                {
+                    {
+                        //单个字符的变量名称
+                        char buff[512]= {0};
+                        sprintf(buff,"hdotfont_char_%08X_%d,",(int)(*it),(int)i);
+                        outfile << buff<<std::endl;
+                    }
+                }
+                //末尾添0
+                outfile << "NULL" <<std::endl;
+                outfile << "};"<<std::endl;
+            }
+
         }
         outfile.close();
     }
