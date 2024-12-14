@@ -73,6 +73,10 @@ int main()
                 hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_1616,L"启动中",0,8+12+16+24+12,w,draw_pixel,NULL);
                 hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_2424,L"启动中",0,8+12+16+24+12+16,w,draw_pixel,NULL);
                 hgui_gui_dotfont_show_unicode_string(&hgui_gui_dotfont_unicode_dummy_3232,L"启动中",0,8+12+16+24+12+16+24,w,draw_pixel,NULL);
+                {
+                    const hgui_gui_dotfont_hdotfont_t font=hgui_gui_dotfont_hdotfont(hdotfont_char_set_24,hdotfont_char_set_24_size,24);
+                    hgui_gui_dotfont_show_unicode_string((const hgui_gui_dotfont_t *)&font,L"启动中",0,8+12+16+24+12+16+24+32,w,draw_pixel,NULL);
+                }
                 hgui_driver_fill_rectangle(NULL,0,0,w,h,pixel);
             }
             if (i == 300)

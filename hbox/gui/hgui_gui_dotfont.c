@@ -775,3 +775,155 @@ hgui_gui_dotfont_t hgui_gui_dotfont_add_dummy(const hgui_gui_dotfont_t * dotfont
     }
     return font;
 }
+
+static bool hdotfont_show_char(const hgui_gui_dotfont_t * dotfont,uint32_t Char,size_t x,size_t y,hgui_gui_dotfont_draw_pixel_t draw_pixel,void *usr)
+{
+    if(dotfont==NULL || draw_pixel==NULL)
+    {
+        return false;
+    }
+    if(dotfont->font==NULL)
+    {
+        return false;
+    }
+    const uint8_t *const *char_set=(const uint8_t *const*)dotfont->font;
+    hgui_gui_dotfont_hdotfont_t *hdotfont=(hgui_gui_dotfont_hdotfont_t *)dotfont;
+    size_t index=0;
+    {
+        //采用二分法查找字体
+        size_t min=0;
+        size_t max=(hdotfont->char_set_size-1);
+        if(min==max)
+        {
+            return false;
+        }
+        index=(max+min)/2;
+        while(true)
+        {
+            {
+                if(char_set[min]==NULL)
+                {
+                    return false;
+                }
+                //比较最小值
+                wchar_t min_Char=char_set[min][0]+char_set[min][1]*(1ULL<<8)+char_set[min][2]*(1ULL<<16)+char_set[min][3]*(1ULL<<24);
+                if(Char<min_Char)
+                {
+                    //不支持的字符
+                    return false;
+                }
+                if(min_Char==Char)
+                {
+                    index=min;
+                    break;
+                }
+            }
+            {
+                if(char_set[max]==NULL)
+                {
+                    return false;
+                }
+                //比较最大值
+                wchar_t max_Char=char_set[max][0]+char_set[max][1]*(1ULL<<8)+char_set[max][2]*(1ULL<<16)+char_set[max][3]*(1ULL<<24);
+                if(Char>max_Char)
+                {
+                    //不支持的字符
+                    return false;
+                }
+                if(max_Char==Char)
+                {
+                    index=max;
+                    break;
+                }
+            }
+            {
+                //中间无数据
+                if(min==(max-1))
+                {
+                    //未找到字符
+                    return false;
+                }
+            }
+            {
+                if(char_set[index]==NULL)
+                {
+                    return false;
+                }
+                //比较当前值
+                wchar_t current_Char=char_set[index][0]+char_set[index][1]*(1ULL<<8)+char_set[index][2]*(1ULL<<16)+char_set[index][3]*(1ULL<<24);
+                if(current_Char==Char)
+                {
+                    break;
+                }
+                if(current_Char > Char)
+                {
+                    max=index;
+                }
+                else
+                {
+                    min=index;
+                }
+                index=(min+max)/2;
+            }
+
+        }
+    }
+
+    const uint8_t *const current_char=char_set[index];
+
+    {
+        uint8_t offset_x=current_char[4];
+        uint8_t offset_y=current_char[5];
+        uint8_t width=current_char[6];
+        uint8_t height=current_char[7];
+        const uint8_t *data=&current_char[8];
+        for(size_t i=0; i<dotfont->h; i++)
+        {
+            for(size_t j=0; j<dotfont->w; j++)
+            {
+                if((j >= offset_x) && (j< offset_x+width) &&(i >= offset_y) && (i< offset_y+height))
+                {
+                    uint8_t bitmap_x=j-offset_x;
+                    uint8_t bitmap_y=i-offset_y;
+                    uint32_t pixel_index=bitmap_y*width+bitmap_x;
+                    if((data[pixel_index/8]&(1ULL<<(pixel_index%8)))!=0)
+                    {
+                        draw_pixel(dotfont,x+j,y+i,true,usr);
+                    }
+                    else
+                    {
+                        draw_pixel(dotfont,x+j,y+i,false,usr);
+                    }
+                }
+                else
+                {
+                    draw_pixel(dotfont,x+j,y+i,false,usr);
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+const hgui_gui_dotfont_hdotfont_t hgui_gui_dotfont_hdotfont(const uint8_t *const char_set[],uint32_t char_set_size,size_t font_size)
+{
+    hgui_gui_dotfont_hdotfont_t ret= {0};
+    ret.font.w=font_size;
+    ret.font.h=font_size;
+    ret.font.font=(const uint8_t *)char_set;
+    ret.font.show_char=hdotfont_show_char;
+    ret.char_set_size=char_set_size;
+    if(char_set!=NULL && char_set[char_set_size]!=NULL)
+    {
+        //大小不对，自动获取大小
+        size_t i=0;
+        //末尾为NULL
+        while(char_set[i]!=NULL)
+        {
+            i++;
+        }
+        ret.char_set_size=i;
+    }
+    return ret;
+}

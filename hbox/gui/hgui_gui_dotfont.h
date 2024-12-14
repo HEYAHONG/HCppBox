@@ -115,6 +115,66 @@ extern const hgui_gui_dotfont_t hgui_gui_dotfont_unicode_dummy_3232;
  */
 hgui_gui_dotfont_t hgui_gui_dotfont_add_dummy(const hgui_gui_dotfont_t * dotfont);
 
+/* 采用dotfontscan生成的字体文件,需要添加dotfontscan生成的文件到源代码构建列表*/
+extern const uint32_t hdotfont_char_set_12_size;
+extern const uint8_t *const hdotfont_char_set_12[];
+extern const uint32_t hdotfont_char_set_13_size;
+extern const uint8_t *const hdotfont_char_set_13[];
+extern const uint32_t hdotfont_char_set_14_size;
+extern const uint8_t *const hdotfont_char_set_14[];
+extern const uint32_t hdotfont_char_set_15_size;
+extern const uint8_t *const hdotfont_char_set_15[];
+extern const uint32_t hdotfont_char_set_16_size;
+extern const uint8_t *const hdotfont_char_set_16[];
+extern const uint32_t hdotfont_char_set_17_size;
+extern const uint8_t *const hdotfont_char_set_17[];
+extern const uint32_t hdotfont_char_set_18_size;
+extern const uint8_t *const hdotfont_char_set_18[];
+extern const uint32_t hdotfont_char_set_19_size;
+extern const uint8_t *const hdotfont_char_set_19[];
+extern const uint32_t hdotfont_char_set_20_size;
+extern const uint8_t *const hdotfont_char_set_20[];
+extern const uint32_t hdotfont_char_set_21_size;
+extern const uint8_t *const hdotfont_char_set_21[];
+extern const uint32_t hdotfont_char_set_22_size;
+extern const uint8_t *const hdotfont_char_set_22[];
+extern const uint32_t hdotfont_char_set_23_size;
+extern const uint8_t *const hdotfont_char_set_23[];
+extern const uint32_t hdotfont_char_set_24_size;
+extern const uint8_t *const hdotfont_char_set_24[];
+extern const uint32_t hdotfont_char_set_25_size;
+extern const uint8_t *const hdotfont_char_set_25[];
+extern const uint32_t hdotfont_char_set_26_size;
+extern const uint8_t *const hdotfont_char_set_26[];
+extern const uint32_t hdotfont_char_set_27_size;
+extern const uint8_t *const hdotfont_char_set_27[];
+extern const uint32_t hdotfont_char_set_28_size;
+extern const uint8_t *const hdotfont_char_set_28[];
+extern const uint32_t hdotfont_char_set_29_size;
+extern const uint8_t *const hdotfont_char_set_29[];
+extern const uint32_t hdotfont_char_set_30_size;
+extern const uint8_t *const hdotfont_char_set_30[];
+extern const uint32_t hdotfont_char_set_31_size;
+extern const uint8_t *const hdotfont_char_set_31[];
+extern const uint32_t hdotfont_char_set_32_size;
+extern const uint8_t *const hdotfont_char_set_32[];
+
+typedef struct hgui_gui_dotfont_hdotfont hgui_gui_dotfont_hdotfont_t;
+struct hgui_gui_dotfont_hdotfont
+{
+    hgui_gui_dotfont_t font;
+    size_t char_set_size;//字符集大小
+};
+
+/** \brief 从dotfontscan获取字体。
+ *
+ * \param const*char_set const uint8_t* hdotfont字符集
+ * \param font_size size_t 字体大小
+ * \return const hgui_gui_dotfont_hdotfont_t 字体(其指针可转换为hgui_gui_dotfont_t指针)
+ *
+ */
+const hgui_gui_dotfont_hdotfont_t hgui_gui_dotfont_hdotfont(const uint8_t *const char_set[],uint32_t char_set_size,size_t font_size);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
