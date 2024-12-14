@@ -417,6 +417,11 @@ static void font_bitmap_get(void (*on_get)(FT_Bitmap bmp,int x,int y,wchar_t _ch
                             //不允许负偏移
                             left=0;
                         }
+                        if(top < 0)
+                        {
+                            //不允许负偏移
+                            top=0;
+                        }
                     }
                     if(on_get!=NULL)
                     {

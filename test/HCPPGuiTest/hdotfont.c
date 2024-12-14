@@ -2155,7 +2155,7 @@ const uint8_t hdotfont_char_000050CF_12[]=
 };
 
 /*
-char=0000521D,size=12,x=0,y=-1,width=11,height=13
+char=0000521D,size=12,x=0,y=0,width=11,height=13
 
   #
    #
@@ -2175,7 +2175,7 @@ const uint8_t hdotfont_char_0000521D_12[]=
     /* wchar_t */
     0x1D,0x52,0x00,0x00,
     /* x,y,w,h */
-    0,-1,11,13,
+    0,0,11,13,
     /* data */
     0x00,0x20,0x00,0x02,0x1C,0x89,0x48,0x54,
     0x72,0x52,0x93,0x08,0x44,0x22,0x12,0x51,
@@ -2237,7 +2237,7 @@ const uint8_t hdotfont_char_00005316_12[]=
 };
 
 /*
-char=0000542F,size=12,x=0,y=-1,width=11,height=13
+char=0000542F,size=12,x=0,y=0,width=11,height=13
 
      ##
    ########
@@ -2257,7 +2257,7 @@ const uint8_t hdotfont_char_0000542F_12[]=
     /* wchar_t */
     0x2F,0x54,0x00,0x00,
     /* x,y,w,h */
-    0,-1,11,13,
+    0,0,11,13,
     /* data */
     0x00,0x00,0x03,0xFE,0x09,0x48,0x40,0xFE,
     0x13,0x80,0x00,0x14,0xA4,0x20,0x05,0xE5,
@@ -2453,7 +2453,7 @@ const uint8_t hdotfont_char_00008C03_12[]=
 };
 
 /*
-char=0000989C,size=12,x=0,y=-1,width=12,height=13
+char=0000989C,size=12,x=0,y=0,width=12,height=13
 
    #
  ##########
@@ -2473,7 +2473,7 @@ const uint8_t hdotfont_char_0000989C_12[]=
     /* wchar_t */
     0x9C,0x98,0x00,0x00,
     /* x,y,w,h */
-    0,-1,12,13,
+    0,0,12,13,
     /* data */
     0x00,0x80,0x00,0xFE,0x47,0x11,0xFC,0x27,
     0x55,0x5A,0x65,0x56,0x5A,0x65,0x56,0x92,
@@ -4655,7 +4655,7 @@ const uint8_t hdotfont_char_0000007B_13[]=
 };
 
 /*
-char=0000007C,size=13,x=1,y=-1,width=2,height=14
+char=0000007C,size=13,x=1,y=0,width=2,height=14
 #
 #
 #
@@ -4676,7 +4676,7 @@ const uint8_t hdotfont_char_0000007C_13[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    1,-1,2,14,
+    1,0,2,14,
     /* data */
     0x55,0x55,0x55,0x01,0x00
 };
@@ -4877,7 +4877,7 @@ const uint8_t hdotfont_char_00005316_13[]=
 };
 
 /*
-char=0000542F,size=13,x=0,y=-1,width=12,height=14
+char=0000542F,size=13,x=0,y=0,width=12,height=14
 
       #
    ########
@@ -4898,7 +4898,7 @@ const uint8_t hdotfont_char_0000542F_13[]=
     /* wchar_t */
     0x2F,0x54,0x00,0x00,
     /* x,y,w,h */
-    0,-1,12,14,
+    0,0,12,14,
     /* data */
     0x00,0x00,0x04,0xF8,0x87,0x80,0x08,0x88,
     0xFF,0x08,0x80,0x00,0xE8,0x8F,0x82,0x24,
@@ -7387,7 +7387,7 @@ const uint8_t hdotfont_char_0000007B_14[]=
 };
 
 /*
-char=0000007C,size=14,x=1,y=-1,width=2,height=15
+char=0000007C,size=14,x=1,y=0,width=2,height=15
 
 #
 #
@@ -7409,7 +7409,7 @@ const uint8_t hdotfont_char_0000007C_14[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    1,-1,2,15,
+    1,0,2,15,
     /* data */
     0x54,0x55,0x55,0x05,0x00
 };
@@ -7675,7 +7675,7 @@ const uint8_t hdotfont_char_000056DE_14[]=
 };
 
 /*
-char=000059CB,size=14,x=0,y=-1,width=14,height=15
+char=000059CB,size=14,x=0,y=0,width=14,height=15
 
    #     #
   ##     #
@@ -7697,7 +7697,7 @@ const uint8_t hdotfont_char_000059CB_14[]=
     /* wchar_t */
     0xCB,0x59,0x00,0x00,
     /* x,y,w,h */
-    0,-1,14,15,
+    0,0,14,15,
     /* data */
     0x00,0x00,0x82,0xC0,0x20,0x10,0x04,0x1E,
     0x08,0x25,0x46,0x1D,0x49,0x00,0x82,0x8F,
@@ -7764,7 +7764,7 @@ const uint8_t hdotfont_char_00005E55_14[]=
 };
 
 /*
-char=00007D20,size=14,x=0,y=-1,width=14,height=15
+char=00007D20,size=14,x=0,y=0,width=14,height=15
 
       ##
       ##
@@ -7786,7 +7786,7 @@ const uint8_t hdotfont_char_00007D20_14[]=
     /* wchar_t */
     0x20,0x7D,0x00,0x00,
     /* x,y,w,h */
-    0,-1,14,15,
+    0,0,14,15,
     /* data */
     0x00,0x00,0x30,0x00,0x0C,0xF0,0x3F,0x40,
     0x80,0xFF,0x07,0x26,0xC0,0x0E,0xF8,0x04,
@@ -10214,7 +10214,7 @@ const uint8_t hdotfont_char_0000007B_15[]=
 };
 
 /*
-char=0000007C,size=15,x=1,y=-1,width=2,height=16
+char=0000007C,size=15,x=1,y=0,width=2,height=16
 
 #
 #
@@ -10237,7 +10237,7 @@ const uint8_t hdotfont_char_0000007C_15[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    1,-1,2,16,
+    1,0,2,16,
     /* data */
     0x54,0x55,0x55,0x15,0x00
 };
@@ -10331,7 +10331,7 @@ const uint8_t hdotfont_char_00004E2D_15[]=
 };
 
 /*
-char=000050CF,size=15,x=0,y=-1,width=15,height=16
+char=000050CF,size=15,x=0,y=0,width=15,height=16
 
     #  #
    ## #####
@@ -10354,7 +10354,7 @@ const uint8_t hdotfont_char_000050CF_15[]=
     /* wchar_t */
     0xCF,0x50,0x00,0x00,
     /* x,y,w,h */
-    0,-1,15,16,
+    0,0,15,16,
     /* data */
     0x00,0x00,0x48,0x00,0xF6,0x01,0x8D,0x80,
     0xFF,0x21,0x91,0x98,0x7F,0x0E,0x23,0xC4,
@@ -10608,7 +10608,7 @@ const uint8_t hdotfont_char_00005E55_15[]=
 };
 
 /*
-char=00007D20,size=15,x=0,y=-1,width=15,height=16
+char=00007D20,size=15,x=0,y=0,width=15,height=16
 
        #
   ###########
@@ -10631,7 +10631,7 @@ const uint8_t hdotfont_char_00007D20_15[]=
     /* wchar_t */
     0x20,0x7D,0x00,0x00,
     /* x,y,w,h */
-    0,-1,15,16,
+    0,0,15,16,
     /* data */
     0x00,0x00,0x40,0x00,0xFF,0x07,0x10,0x00,
     0x0C,0x00,0x04,0x00,0x03,0xC0,0x0C,0xB8,
@@ -10702,7 +10702,7 @@ const uint8_t hdotfont_char_00008C03_15[]=
 };
 
 /*
-char=0000989C,size=15,x=0,y=-1,width=15,height=16
+char=0000989C,size=15,x=0,y=0,width=15,height=16
 
    ##
  #######  #
@@ -10725,7 +10725,7 @@ const uint8_t hdotfont_char_0000989C_15[]=
     /* wchar_t */
     0x9C,0x98,0x00,0x00,
     /* x,y,w,h */
-    0,-1,15,16,
+    0,0,15,16,
     /* data */
     0x00,0x00,0x0C,0x80,0x3F,0x81,0x85,0x80,
     0xF2,0x31,0x88,0x88,0x54,0x64,0x2A,0x4E,
@@ -13269,7 +13269,7 @@ const uint8_t hdotfont_char_000050CF_16[]=
 };
 
 /*
-char=0000521D,size=16,x=0,y=-1,width=15,height=17
+char=0000521D,size=16,x=0,y=0,width=15,height=17
 
    #
     #
@@ -13293,7 +13293,7 @@ const uint8_t hdotfont_char_0000521D_16[]=
     /* wchar_t */
     0x1D,0x52,0x00,0x00,
     /* x,y,w,h */
-    0,-1,15,17,
+    0,0,15,17,
     /* data */
     0x00,0x00,0x04,0x00,0x04,0x00,0xF2,0xEF,
     0x23,0x06,0x11,0x43,0x89,0xF1,0xC4,0x3C,
@@ -13527,7 +13527,7 @@ const uint8_t hdotfont_char_00005E55_16[]=
 };
 
 /*
-char=00007D20,size=16,x=0,y=-1,width=16,height=17
+char=00007D20,size=16,x=0,y=0,width=16,height=17
 
        ##
   ############
@@ -13551,7 +13551,7 @@ const uint8_t hdotfont_char_00007D20_16[]=
     /* wchar_t */
     0x20,0x7D,0x00,0x00,
     /* x,y,w,h */
-    0,-1,16,17,
+    0,0,16,17,
     /* data */
     0x00,0x00,0x80,0x01,0xFC,0x3F,0x80,0x00,
     0xFC,0x1F,0x80,0x00,0xFE,0x7F,0xC0,0x00,
@@ -13623,7 +13623,7 @@ const uint8_t hdotfont_char_00008C03_16[]=
 };
 
 /*
-char=0000989C,size=16,x=0,y=-1,width=16,height=17
+char=0000989C,size=16,x=0,y=0,width=16,height=17
 
     #
  ##############
@@ -13647,7 +13647,7 @@ const uint8_t hdotfont_char_0000989C_16[]=
     /* wchar_t */
     0x9C,0x98,0x00,0x00,
     /* x,y,w,h */
-    0,-1,16,17,
+    0,0,16,17,
     /* data */
     0x00,0x00,0x10,0x00,0xFE,0x7F,0x48,0x0C,
     0x68,0x04,0xFC,0x3F,0x44,0x2A,0x64,0x2A,
@@ -16101,7 +16101,7 @@ const uint8_t hdotfont_char_0000007B_17[]=
 };
 
 /*
-char=0000007C,size=17,x=1,y=-1,width=2,height=18
+char=0000007C,size=17,x=1,y=0,width=2,height=18
  #
  #
  #
@@ -16126,7 +16126,7 @@ const uint8_t hdotfont_char_0000007C_17[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    1,-1,2,18,
+    1,0,2,18,
     /* data */
     0xAA,0xAA,0xAA,0xAA,0x02,0x00
 };
@@ -16257,7 +16257,7 @@ const uint8_t hdotfont_char_000050CF_17[]=
 };
 
 /*
-char=0000521D,size=17,x=0,y=-1,width=16,height=18
+char=0000521D,size=17,x=0,y=0,width=16,height=18
 
    #
     #
@@ -16282,7 +16282,7 @@ const uint8_t hdotfont_char_0000521D_17[]=
     /* wchar_t */
     0x1D,0x52,0x00,0x00,
     /* x,y,w,h */
-    0,-1,16,18,
+    0,0,16,18,
     /* data */
     0x00,0x00,0x08,0x00,0x10,0x00,0x30,0x7F,
     0x7E,0x44,0x20,0x44,0x20,0x44,0xD0,0x44,
@@ -16360,7 +16360,7 @@ const uint8_t hdotfont_char_00005316_17[]=
 };
 
 /*
-char=0000542F,size=17,x=0,y=-1,width=16,height=18
+char=0000542F,size=17,x=0,y=0,width=16,height=18
 
         #
         ##
@@ -16385,7 +16385,7 @@ const uint8_t hdotfont_char_0000542F_17[]=
     /* wchar_t */
     0x2F,0x54,0x00,0x00,
     /* x,y,w,h */
-    0,-1,16,18,
+    0,0,16,18,
     /* data */
     0x00,0x00,0x00,0x01,0x00,0x03,0x18,0x40,
     0x18,0x40,0x18,0x40,0xF8,0x7F,0x18,0x40,
@@ -16530,7 +16530,7 @@ const uint8_t hdotfont_char_00005E55_17[]=
 };
 
 /*
-char=00007D20,size=17,x=0,y=-1,width=17,height=18
+char=00007D20,size=17,x=0,y=0,width=17,height=18
 
         #
   #############
@@ -16555,7 +16555,7 @@ const uint8_t hdotfont_char_00007D20_17[]=
     /* wchar_t */
     0x20,0x7D,0x00,0x00,
     /* x,y,w,h */
-    0,-1,17,18,
+    0,0,17,18,
     /* data */
     0x00,0x00,0x00,0x02,0xF0,0xFF,0x01,0x08,
     0x00,0x18,0x00,0x20,0x00,0x40,0x00,0xC0,
@@ -16632,7 +16632,7 @@ const uint8_t hdotfont_char_00008C03_17[]=
 };
 
 /*
-char=0000989C,size=17,x=0,y=-1,width=17,height=18
+char=0000989C,size=17,x=0,y=0,width=17,height=18
 
     #
     ##  ########
@@ -16657,7 +16657,7 @@ const uint8_t hdotfont_char_0000989C_17[]=
     /* wchar_t */
     0x9C,0x98,0x00,0x00,
     /* x,y,w,h */
-    0,-1,17,18,
+    0,0,17,18,
     /* data */
     0x00,0x00,0x20,0x00,0xC0,0xFC,0x43,0xC6,
     0x80,0x84,0x00,0xCF,0x0F,0x81,0x10,0x22,
@@ -19226,7 +19226,7 @@ const uint8_t hdotfont_char_0000007B_18[]=
 };
 
 /*
-char=0000007C,size=18,x=1,y=-1,width=2,height=19
+char=0000007C,size=18,x=1,y=0,width=2,height=19
 
  #
  #
@@ -19252,7 +19252,7 @@ const uint8_t hdotfont_char_0000007C_18[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    1,-1,2,19,
+    1,0,2,19,
     /* data */
     0xA8,0xAA,0xAA,0xAA,0x0A,0x00
 };
@@ -19388,7 +19388,7 @@ const uint8_t hdotfont_char_000050CF_18[]=
 };
 
 /*
-char=0000521D,size=18,x=0,y=-1,width=17,height=19
+char=0000521D,size=18,x=0,y=0,width=17,height=19
 
    ##
     #
@@ -19414,7 +19414,7 @@ const uint8_t hdotfont_char_0000521D_18[]=
     /* wchar_t */
     0x1D,0x52,0x00,0x00,
     /* x,y,w,h */
-    0,-1,17,19,
+    0,0,17,19,
     /* data */
     0x00,0x00,0x30,0x00,0x40,0x00,0x80,0xF9,
     0x07,0xC2,0x88,0x8F,0x11,0x18,0x23,0x50,
@@ -19496,7 +19496,7 @@ const uint8_t hdotfont_char_00005316_18[]=
 };
 
 /*
-char=0000542F,size=18,x=0,y=-1,width=17,height=19
+char=0000542F,size=18,x=0,y=0,width=17,height=19
 
         #
         ###
@@ -19522,7 +19522,7 @@ const uint8_t hdotfont_char_0000542F_18[]=
     /* wchar_t */
     0x2F,0x54,0x00,0x00,
     /* x,y,w,h */
-    0,-1,17,19,
+    0,0,17,19,
     /* data */
     0x00,0x00,0x00,0x02,0x00,0x1C,0x80,0xFF,
     0x07,0x01,0x08,0x02,0x10,0x04,0x20,0xF8,
@@ -19779,7 +19779,7 @@ const uint8_t hdotfont_char_00008C03_18[]=
 };
 
 /*
-char=0000989C,size=18,x=0,y=-1,width=18,height=19
+char=0000989C,size=18,x=0,y=0,width=18,height=19
 
     #
     ##   ########
@@ -19805,7 +19805,7 @@ const uint8_t hdotfont_char_0000989C_18[]=
     /* wchar_t */
     0x9C,0x98,0x00,0x00,
     /* x,y,w,h */
-    0,-1,18,19,
+    0,0,18,19,
     /* data */
     0x00,0x00,0x40,0x00,0x00,0xE3,0x1F,0x7F,
     0x04,0xC8,0x10,0x60,0x61,0xC0,0x5F,0x08,
@@ -22453,7 +22453,7 @@ const uint8_t hdotfont_char_0000007B_19[]=
 };
 
 /*
-char=0000007C,size=19,x=1,y=-1,width=3,height=20
+char=0000007C,size=19,x=1,y=0,width=3,height=20
 
  #
  #
@@ -22480,7 +22480,7 @@ const uint8_t hdotfont_char_0000007C_19[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    1,-1,3,20,
+    1,0,3,20,
     /* data */
     0x90,0x24,0x49,0x92,0x24,0x49,0x92,0x04,0x00
 };
@@ -22622,7 +22622,7 @@ const uint8_t hdotfont_char_000050CF_19[]=
 };
 
 /*
-char=0000521D,size=19,x=0,y=-1,width=18,height=20
+char=0000521D,size=19,x=0,y=0,width=18,height=20
 
     #
     #
@@ -22649,7 +22649,7 @@ const uint8_t hdotfont_char_0000521D_19[]=
     /* wchar_t */
     0x1D,0x52,0x00,0x00,
     /* x,y,w,h */
-    0,-1,18,20,
+    0,0,18,20,
     /* data */
     0x00,0x00,0x40,0x00,0x00,0x01,0x00,0x0C,
     0x00,0x20,0xFE,0xF9,0x23,0x04,0x84,0x10,
@@ -22734,7 +22734,7 @@ const uint8_t hdotfont_char_00005316_19[]=
 };
 
 /*
-char=0000542F,size=19,x=0,y=-1,width=18,height=20
+char=0000542F,size=19,x=0,y=0,width=18,height=20
 
          #
          ##
@@ -22761,7 +22761,7 @@ const uint8_t hdotfont_char_0000542F_19[]=
     /* wchar_t */
     0x2F,0x54,0x00,0x00,
     /* x,y,w,h */
-    0,-1,18,20,
+    0,0,18,20,
     /* data */
     0x00,0x00,0x00,0x08,0x00,0x60,0x00,0xFC,
     0x7F,0x10,0x00,0x41,0x00,0x04,0x01,0x10,
@@ -29115,7 +29115,7 @@ const uint8_t hdotfont_char_0000007B_21[]=
 };
 
 /*
-char=0000007C,size=21,x=2,y=-1,width=2,height=22
+char=0000007C,size=21,x=2,y=0,width=2,height=22
 #
 #
 #
@@ -29144,7 +29144,7 @@ const uint8_t hdotfont_char_0000007C_21[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    2,-1,2,22,
+    2,0,2,22,
     /* data */
     0x55,0x55,0x55,0x55,0x55,0x01,0x00
 };
@@ -29606,7 +29606,7 @@ const uint8_t hdotfont_char_00005E55_21[]=
 };
 
 /*
-char=00007D20,size=21,x=0,y=-1,width=21,height=22
+char=00007D20,size=21,x=0,y=0,width=21,height=22
           #
           #
   #      ###      #
@@ -29635,7 +29635,7 @@ const uint8_t hdotfont_char_00007D20_21[]=
     /* wchar_t */
     0x20,0x7D,0x00,0x00,
     /* x,y,w,h */
-    0,-1,21,22,
+    0,0,21,22,
     /* data */
     0x00,0x04,0x00,0x80,0x00,0x10,0x38,0x10,
     0xFE,0xFF,0x03,0x40,0x00,0xF0,0xFF,0x07,
@@ -32628,7 +32628,7 @@ const uint8_t hdotfont_char_0000007B_22[]=
 };
 
 /*
-char=0000007C,size=22,x=2,y=-1,width=2,height=23
+char=0000007C,size=22,x=2,y=0,width=2,height=23
 
 ##
 ##
@@ -32658,7 +32658,7 @@ const uint8_t hdotfont_char_0000007C_22[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    2,-1,2,23,
+    2,0,2,23,
     /* data */
     0xFC,0xFF,0xFF,0xFF,0xFF,0x0F,0x00
 };
@@ -33140,7 +33140,7 @@ const uint8_t hdotfont_char_00005E55_22[]=
 };
 
 /*
-char=00007D20,size=22,x=0,y=-1,width=22,height=23
+char=00007D20,size=22,x=0,y=0,width=22,height=23
 
           ##
           ##
@@ -33170,7 +33170,7 @@ const uint8_t hdotfont_char_00007D20_22[]=
     /* wchar_t */
     0x20,0x7D,0x00,0x00,
     /* x,y,w,h */
-    0,-1,22,23,
+    0,0,22,23,
     /* data */
     0x00,0x00,0x00,0x00,0x03,0x00,0xC0,0x00,
     0xF0,0xFF,0x3F,0x00,0x0C,0x00,0xFC,0xFF,
@@ -33264,7 +33264,7 @@ const uint8_t hdotfont_char_00008C03_22[]=
 };
 
 /*
-char=0000989C,size=22,x=0,y=-1,width=22,height=23
+char=0000989C,size=22,x=0,y=0,width=22,height=23
 
      ##
      ##    ##########
@@ -33294,7 +33294,7 @@ const uint8_t hdotfont_char_0000989C_22[]=
     /* wchar_t */
     0x9C,0x98,0x00,0x00,
     /* x,y,w,h */
-    0,-1,22,23,
+    0,0,22,23,
     /* data */
     0x00,0x00,0x00,0x18,0x00,0x00,0x86,0xFF,
     0xF1,0x3F,0x07,0x10,0xC3,0x00,0x4C,0x30,
@@ -36199,7 +36199,7 @@ const uint8_t hdotfont_char_0000007B_23[]=
 };
 
 /*
-char=0000007C,size=23,x=2,y=-1,width=2,height=24
+char=0000007C,size=23,x=2,y=0,width=2,height=24
 
 ##
 ##
@@ -36230,7 +36230,7 @@ const uint8_t hdotfont_char_0000007C_23[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    2,-1,2,24,
+    2,0,2,24,
     /* data */
     0xFC,0xFF,0xFF,0xFF,0xFF,0xFF,0x00
 };
@@ -36727,7 +36727,7 @@ const uint8_t hdotfont_char_00005E55_23[]=
 };
 
 /*
-char=00007D20,size=23,x=0,y=-1,width=23,height=24
+char=00007D20,size=23,x=0,y=0,width=23,height=24
 
            #
            #
@@ -36758,7 +36758,7 @@ const uint8_t hdotfont_char_00007D20_23[]=
     /* wchar_t */
     0x20,0x7D,0x00,0x00,
     /* x,y,w,h */
-    0,-1,23,24,
+    0,0,23,24,
     /* data */
     0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x02,
     0x80,0xFF,0xFF,0x03,0x80,0x00,0x00,0x40,
@@ -36856,7 +36856,7 @@ const uint8_t hdotfont_char_00008C03_23[]=
 };
 
 /*
-char=0000989C,size=23,x=0,y=-1,width=23,height=24
+char=0000989C,size=23,x=0,y=0,width=23,height=24
 
      ##
      ##
@@ -36887,7 +36887,7 @@ const uint8_t hdotfont_char_0000989C_23[]=
     /* wchar_t */
     0x9C,0x98,0x00,0x00,
     /* x,y,w,h */
-    0,-1,23,24,
+    0,0,23,24,
     /* data */
     0x00,0x00,0x00,0x30,0x00,0x00,0x18,0x00,
     0x80,0xFF,0xFF,0x07,0x31,0x18,0x80,0x19,
@@ -40081,7 +40081,7 @@ const uint8_t hdotfont_char_000050CF_24[]=
 };
 
 /*
-char=0000521D,size=24,x=0,y=-1,width=22,height=25
+char=0000521D,size=24,x=0,y=0,width=22,height=25
 
     ##
     ###
@@ -40113,7 +40113,7 @@ const uint8_t hdotfont_char_0000521D_24[]=
     /* wchar_t */
     0x1D,0x52,0x00,0x00,
     /* x,y,w,h */
-    0,-1,22,25,
+    0,0,22,25,
     /* data */
     0x00,0x00,0x00,0x0C,0x00,0x00,0x07,0x00,
     0x80,0x01,0x00,0xC0,0xF8,0x3F,0x00,0x30,
@@ -40569,7 +40569,7 @@ const uint8_t hdotfont_char_00008C03_24[]=
 };
 
 /*
-char=0000989C,size=24,x=0,y=-1,width=24,height=25
+char=0000989C,size=24,x=0,y=0,width=24,height=25
 
       #
      ###
@@ -40601,7 +40601,7 @@ const uint8_t hdotfont_char_0000989C_24[]=
     /* wchar_t */
     0x9C,0x98,0x00,0x00,
     /* x,y,w,h */
-    0,-1,24,25,
+    0,0,24,25,
     /* data */
     0x00,0x00,0x00,0x40,0x00,0x00,0xE0,0x00,
     0x00,0xC0,0xF8,0x7F,0xFC,0x0F,0x03,0x30,
@@ -43698,7 +43698,7 @@ const uint8_t hdotfont_char_0000007B_25[]=
 };
 
 /*
-char=0000007C,size=25,x=2,y=-1,width=2,height=26
+char=0000007C,size=25,x=2,y=0,width=2,height=26
  #
 ##
 ##
@@ -43731,7 +43731,7 @@ const uint8_t hdotfont_char_0000007C_25[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    2,-1,2,26,
+    2,0,2,26,
     /* data */
     0xFE,0xFF,0xFF,0xFF,0xFF,0xFF,0x03,0x00
 };
@@ -43899,7 +43899,7 @@ const uint8_t hdotfont_char_000050CF_25[]=
 };
 
 /*
-char=0000521D,size=25,x=0,y=-1,width=23,height=26
+char=0000521D,size=25,x=0,y=0,width=23,height=26
 
      #
     ###
@@ -43932,7 +43932,7 @@ const uint8_t hdotfont_char_0000521D_25[]=
     /* wchar_t */
     0x1D,0x52,0x00,0x00,
     /* x,y,w,h */
-    0,-1,23,26,
+    0,0,23,26,
     /* data */
     0x00,0x00,0x00,0x10,0x00,0x00,0x1C,0x00,
     0x00,0x1C,0x00,0x00,0x8C,0xFF,0x03,0xC4,
@@ -44038,7 +44038,7 @@ const uint8_t hdotfont_char_00005316_25[]=
 };
 
 /*
-char=0000542F,size=25,x=0,y=-1,width=23,height=26
+char=0000542F,size=25,x=0,y=0,width=23,height=26
 
            ##
            ###
@@ -44071,7 +44071,7 @@ const uint8_t hdotfont_char_0000542F_25[]=
     /* wchar_t */
     0x2F,0x54,0x00,0x00,
     /* x,y,w,h */
-    0,-1,23,26,
+    0,0,23,26,
     /* data */
     0x00,0x00,0x00,0x00,0x0C,0x00,0x00,0x0E,
     0x00,0x00,0x0E,0x00,0xFE,0xFF,0x07,0x03,
@@ -47583,7 +47583,7 @@ const uint8_t hdotfont_char_0000007B_26[]=
 };
 
 /*
-char=0000007C,size=26,x=2,y=-1,width=3,height=27
+char=0000007C,size=26,x=2,y=0,width=3,height=27
  #
  #
  #
@@ -47617,7 +47617,7 @@ const uint8_t hdotfont_char_0000007C_26[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    2,-1,3,27,
+    2,0,3,27,
     /* data */
     0x92,0x24,0x49,0x92,0x24,0x49,0x92,0x24,
     0x49,0x92,0x00,0x00
@@ -47932,7 +47932,7 @@ const uint8_t hdotfont_char_00005316_26[]=
 };
 
 /*
-char=0000542F,size=26,x=0,y=-1,width=24,height=27
+char=0000542F,size=26,x=0,y=0,width=24,height=27
 
             #
            ###
@@ -47966,7 +47966,7 @@ const uint8_t hdotfont_char_0000542F_26[]=
     /* wchar_t */
     0x2F,0x54,0x00,0x00,
     /* x,y,w,h */
-    0,-1,24,27,
+    0,0,24,27,
     /* data */
     0x00,0x00,0x00,0x00,0x10,0x00,0x00,0x38,
     0x00,0x00,0x70,0x00,0xE0,0xFF,0x7F,0x60,
@@ -51574,7 +51574,7 @@ const uint8_t hdotfont_char_0000007B_27[]=
 };
 
 /*
-char=0000007C,size=27,x=2,y=-1,width=3,height=28
+char=0000007C,size=27,x=2,y=0,width=3,height=28
 
  #
  #
@@ -51609,7 +51609,7 @@ const uint8_t hdotfont_char_0000007C_27[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    2,-1,3,28,
+    2,0,3,28,
     /* data */
     0x90,0x24,0x49,0x92,0x24,0x49,0x92,0x24,
     0x49,0x92,0x04,0x00
@@ -56316,7 +56316,7 @@ const uint8_t hdotfont_char_00005E55_28[]=
 };
 
 /*
-char=00007D20,size=28,x=1,y=-1,width=26,height=29
+char=00007D20,size=28,x=1,y=0,width=26,height=29
 
             ##
             ##
@@ -56352,7 +56352,7 @@ const uint8_t hdotfont_char_00007D20_28[]=
     /* wchar_t */
     0x20,0x7D,0x00,0x00,
     /* x,y,w,h */
-    1,-1,26,29,
+    1,0,26,29,
     /* data */
     0x00,0x00,0x00,0x00,0xC0,0x00,0x00,0x00,
     0x03,0x00,0xFF,0xFF,0x3F,0xFC,0xFF,0xFF,
@@ -59882,7 +59882,7 @@ const uint8_t hdotfont_char_0000007B_29[]=
 };
 
 /*
-char=0000007C,size=29,x=2,y=-1,width=3,height=30
+char=0000007C,size=29,x=2,y=0,width=3,height=30
  #
  ##
  ##
@@ -59919,7 +59919,7 @@ const uint8_t hdotfont_char_0000007C_29[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    2,-1,3,30,
+    2,0,3,30,
     /* data */
     0xB2,0x6D,0xDB,0xB6,0x6D,0xDB,0xB6,0x6D,
     0xDB,0xB6,0x6D,0x00,0x00
@@ -60527,7 +60527,7 @@ const uint8_t hdotfont_char_00005E55_29[]=
 };
 
 /*
-char=00007D20,size=29,x=1,y=-1,width=27,height=30
+char=00007D20,size=29,x=1,y=0,width=27,height=30
 
             ##
             ##
@@ -60564,7 +60564,7 @@ const uint8_t hdotfont_char_00007D20_29[]=
     /* wchar_t */
     0x20,0x7D,0x00,0x00,
     /* x,y,w,h */
-    1,-1,27,30,
+    1,0,27,30,
     /* data */
     0x00,0x00,0x00,0x00,0x80,0x01,0x00,0x00,
     0x0C,0x00,0x00,0xE0,0x00,0xC0,0xFF,0xFF,
@@ -60687,7 +60687,7 @@ const uint8_t hdotfont_char_00008C03_29[]=
 };
 
 /*
-char=0000989C,size=29,x=0,y=-1,width=29,height=30
+char=0000989C,size=29,x=0,y=0,width=29,height=30
 
        #
       ###
@@ -60724,7 +60724,7 @@ const uint8_t hdotfont_char_0000989C_29[]=
     /* wchar_t */
     0x9C,0x98,0x00,0x00,
     /* x,y,w,h */
-    0,-1,29,30,
+    0,0,29,30,
     /* data */
     0x00,0x00,0x00,0x00,0x10,0x00,0x00,0x00,
     0x07,0x00,0x00,0xC0,0xE0,0xFF,0xC3,0xFF,
@@ -64182,7 +64182,7 @@ const uint8_t hdotfont_char_0000007B_30[]=
 };
 
 /*
-char=0000007C,size=30,x=2,y=-1,width=3,height=31
+char=0000007C,size=30,x=2,y=0,width=3,height=31
  #
  ##
  ##
@@ -64220,7 +64220,7 @@ const uint8_t hdotfont_char_0000007C_30[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    2,-1,3,31,
+    2,0,3,31,
     /* data */
     0xB2,0x6D,0xDB,0xB6,0x6D,0xDB,0xB6,0x6D,
     0xDB,0xB6,0x6D,0x0B,0x00
@@ -65011,7 +65011,7 @@ const uint8_t hdotfont_char_00008C03_30[]=
 };
 
 /*
-char=0000989C,size=30,x=0,y=-1,width=30,height=31
+char=0000989C,size=30,x=0,y=0,width=30,height=31
 
        #
        ##
@@ -65049,7 +65049,7 @@ const uint8_t hdotfont_char_0000989C_30[]=
     /* wchar_t */
     0x9C,0x98,0x00,0x00,
     /* x,y,w,h */
-    0,-1,30,31,
+    0,0,30,31,
     /* data */
     0x00,0x00,0x00,0x00,0x20,0x00,0x00,0x00,
     0x18,0x00,0x00,0x00,0x0E,0xFE,0x3F,0xFC,
@@ -68616,7 +68616,7 @@ const uint8_t hdotfont_char_0000007B_31[]=
 };
 
 /*
-char=0000007C,size=31,x=3,y=-1,width=2,height=32
+char=0000007C,size=31,x=3,y=0,width=2,height=32
 
 ##
 ##
@@ -68655,7 +68655,7 @@ const uint8_t hdotfont_char_0000007C_31[]=
     /* wchar_t */
     0x7C,0x00,0x00,0x00,
     /* x,y,w,h */
-    3,-1,2,32,
+    3,0,2,32,
     /* data */
     0xFC,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
     0x00
@@ -73362,7 +73362,7 @@ const uint8_t hdotfont_char_000050CF_32[]=
 };
 
 /*
-char=0000521D,size=32,x=0,y=-1,width=30,height=33
+char=0000521D,size=32,x=0,y=0,width=30,height=33
 
        #
       ##
@@ -73402,7 +73402,7 @@ const uint8_t hdotfont_char_0000521D_32[]=
     /* wchar_t */
     0x1D,0x52,0x00,0x00,
     /* x,y,w,h */
-    0,-1,30,33,
+    0,0,30,33,
     /* data */
     0x00,0x00,0x00,0x00,0x20,0x00,0x00,0x00,
     0x0C,0x00,0x00,0x00,0x07,0x00,0x00,0x80,
