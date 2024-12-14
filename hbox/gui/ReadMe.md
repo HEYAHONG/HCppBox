@@ -84,6 +84,10 @@
 - [hgui_gui_dotfont.c](hgui_gui_dotfont.c)  
 - [hgui_gui_dotfont.h](hgui_gui_dotfont.h)
 
+额外的构建目标：
+
+- `dotfontscan_tool`:若采用CMake编译，则可尝试使用`dotfontscan_tool`目标构建[dotfontscan](tools/dotfontscan)工具来生成点阵字体。
+
 ## xpm
 
 XPM图像显示。
