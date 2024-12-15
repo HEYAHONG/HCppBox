@@ -123,7 +123,7 @@ typedef enum
     HS_MCS_51_INTERRUPT_8051_IE1=HS_MCS_51_INTERRUPT_2, //外部中断1
     HS_MCS_51_INTERRUPT_8051_TF1=HS_MCS_51_INTERRUPT_3, //定时器中断1
     HS_MCS_51_INTERRUPT_8051_SI0=HS_MCS_51_INTERRUPT_4, //串口中断0
-    HS_MCS_51_INTERRUPT_8051_TF2=HS_MCS_51_INTERRUPT_5  //定时器中断2
+    HS_MCS_51_INTERRUPT_8052_TF2=HS_MCS_51_INTERRUPT_5  //定时器中断2
 } hs_mcs_51_interrupt_number_t;
 
 /** \brief MCS-51内核设置中断到中断扫描表（将在下一个周期执行中断），执行后自动清除，一般由外设调用，注意：此函数不是线程安全的，必要时需要加锁。
