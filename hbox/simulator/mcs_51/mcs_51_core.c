@@ -82,6 +82,14 @@ static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
                             //跳转至中断入口地址
                             core->pc=address;
                         }
+                        {
+                            //调用中断回调
+                            if(core->io!=NULL)
+                            {
+                                uint8_t val=core->interrupt_nested;
+                                core->io(core,HS_MCS_51_IO_INTERRUPT_ENTER,i,&val,sizeof(val),core->usr);
+                            }
+                        }
                         return;
                     }
                 }
@@ -124,6 +132,14 @@ static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
 
                             //跳转至中断入口地址
                             core->pc=address;
+                        }
+                        {
+                            //调用中断回调
+                            if(core->io!=NULL)
+                            {
+                                uint8_t val=core->interrupt_nested;
+                                core->io(core,HS_MCS_51_IO_INTERRUPT_ENTER,i,&val,sizeof(val),core->usr);
+                            }
                         }
                         return;
                     }
@@ -842,6 +858,14 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             }
             core->delay_tick=1;
             core->pc=pc;
+            {
+                //调用中断回调
+                if(core->io!=NULL)
+                {
+                    uint8_t val=core->interrupt_nested;
+                    core->io(core,HS_MCS_51_IO_INTERRUPT_EXIT,0xFFFF,&val,sizeof(val),core->usr);
+                }
+            }
             //调整中断嵌套级别
             if(core->interrupt_nested!=0)
             {
@@ -2217,6 +2241,15 @@ void hs_mcs_51_core_interrupt_set(hs_mcs_51_core_t * core,hs_mcs_51_interrupt_nu
             core->interrupt_low_priority_scan_table|=(1ULL << ((size_t)number));
         }
     }
+}
+
+int  hs_mcs_51_core_interrupt_nested_get(hs_mcs_51_core_t * core)
+{
+    if(core!=NULL)
+    {
+        return core->interrupt_nested;
+    }
+    return -1;
 }
 
 bool hs_mcs_51_sfr_read(hs_mcs_51_core_t * core,hs_mcs_51_sfr_addr_t addr,uint8_t *data)

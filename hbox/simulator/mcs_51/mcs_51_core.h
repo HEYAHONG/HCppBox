@@ -41,7 +41,9 @@ typedef enum
     HS_MCS_51_IO_WRITE_HIGH_RAM,        //写入内部RAM(包括低128B与高128B)
     HS_MCS_51_IO_READ_EXTERNAL_RAM,     //读取外部RAM(最高64KB)
     HS_MCS_51_IO_WRITE_EXTERNAL_RAM,    //写入外部RAM(最高64KB)
-    HS_MCS_51_IO_BREAKPOINT             //由MCS-51的保留指令（0xA5）触发，可用于自定义的指令(默认这是一条单周期单字节指令)，通过地址传入PC的值（下一条指令地址），通过数据传出相对跳转的地址(有符号数)。
+    HS_MCS_51_IO_BREAKPOINT,            //由MCS-51的保留指令（0xA5）触发，可用于自定义的指令(默认这是一条单周期单字节指令)，通过地址传入PC的值（下一条指令地址），通过数据传出相对跳转的地址(有符号数)。
+    HS_MCS_51_IO_INTERRUPT_ENTER,       //中断进入，地址为中断号，数据为运行级别
+    HS_MCS_51_IO_INTERRUPT_EXIT         //中断退出，数据为运行级别,通常用于自动清除某些标志
 } hs_mcs_51_io_opt_t;
 
 /** \brief MCS-51 IO操作
@@ -135,6 +137,13 @@ typedef enum
  */
 void hs_mcs_51_core_interrupt_set(hs_mcs_51_core_t * core,hs_mcs_51_interrupt_number_t number,bool is_high_priority);
 
+/** \brief MCS-51内核获取中断嵌套层数
+ *
+ * \param core hs_mcs_51_core_t* 内核指针
+ * \return int 嵌套层数,失败返回-1
+ *
+ */
+int  hs_mcs_51_core_interrupt_nested_get(hs_mcs_51_core_t * core);
 
 //SFR地址
 typedef enum
