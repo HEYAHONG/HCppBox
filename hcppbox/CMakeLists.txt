@@ -24,6 +24,12 @@ if(CYGWIN)
         target_link_libraries(HCppBox ws2_32 gdi32)
 endif()
 
+if(DEFINED ENV{HCPPBOX_USE_PURE_CPLUSPLUS})
+	set(HCPPBOX_USE_PURE_CPLUSPLUS ON)
+endif()
+
+if(NOT DEFINED HCPPBOX_USE_PURE_CPLUSPLUS)
+
 include(FindPkgConfig)
 if(PKG_CONFIG_FOUND)
 pkg_check_modules(SDL IMPORTED_TARGET sdl)
@@ -37,6 +43,8 @@ target_link_libraries(HCppBox PkgConfig::SDL2)
 add_definitions(-DHAVE_SDL2=1)
 endif()
 endif()
+endif()
+
 endif()
 
 
