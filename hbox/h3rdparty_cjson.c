@@ -9,6 +9,11 @@
 #include "h3rdparty.h"
 
 #ifndef  H3RDPARTY_USING_SYSTEM_CJSON
+#ifdef __ARMCC_VERSION
+#ifdef __GNUC__
+#undef __GNUC__
+#endif // __GNUC__
+#endif // __ARMCC_VERSION
 #include "3rdparty/cJSON/cJSON.c"
 #endif // H3RDPARTY_USING_SYSTEM_CJSON
 

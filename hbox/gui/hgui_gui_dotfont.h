@@ -170,10 +170,10 @@ struct hgui_gui_dotfont_hdotfont
  *
  * \param const*char_set const uint8_t* hdotfont字符集
  * \param font_size size_t 字体大小
- * \return const hgui_gui_dotfont_hdotfont_t 字体(其指针可转换为hgui_gui_dotfont_t指针)
+ * \return hgui_gui_dotfont_hdotfont_t 字体(其指针可转换为hgui_gui_dotfont_t指针)
  *
  */
-const hgui_gui_dotfont_hdotfont_t hgui_gui_dotfont_hdotfont(const uint8_t *const char_set[],uint32_t char_set_size,size_t font_size);
+hgui_gui_dotfont_hdotfont_t hgui_gui_dotfont_hdotfont(const uint8_t *const char_set[],uint32_t char_set_size,size_t font_size);
 
 #ifdef __cplusplus
 }

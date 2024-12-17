@@ -994,7 +994,7 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
                     index=(sm->y&0x3);
                 }
                 uint32_t val=0;
-                sm->io(sm,HS_RP_PIO_SM_IO_READ_MOV_RX_FIFO_0+index,&val,sm->usr);
+                sm->io(sm,(hs_rp_pio_sm_io_opt_t)((int)HS_RP_PIO_SM_IO_READ_MOV_RX_FIFO_0+index),&val,sm->usr);
                 sm->osr=val;
                 sm->osr_shift_cnt=0;
             }
@@ -1011,7 +1011,7 @@ void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction
                     index=(sm->y&0x3);
                 }
                 uint32_t val=sm->isr;
-                sm->io(sm,HS_RP_PIO_SM_IO_WRITE_MOV_RX_FIFO_0+index,&val,sm->usr);
+                sm->io(sm,(hs_rp_pio_sm_io_opt_t)((int)HS_RP_PIO_SM_IO_WRITE_MOV_RX_FIFO_0+index),&val,sm->usr);
             }
             sm->pc++;
         }

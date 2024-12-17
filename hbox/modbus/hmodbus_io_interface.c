@@ -2258,27 +2258,28 @@ bool modbus_io_interface_request(modbus_io_interface_request_t type,modbus_io_in
     {
         return false;
     }
+    bool ret=false;
     switch(type)
     {
     case    MODBUS_IO_INTERFACE_TCP_CLIENT:
     {
-        return modbus_io_interface_request_tcp(io,function_code,context,context_length,false);
+        ret = modbus_io_interface_request_tcp(io,function_code,context,context_length,false);
     }
     break;
     case    MODBUS_IO_INTERFACE_RTU_MASTER:
     {
-        return modbus_io_interface_request_rtu(io,function_code,context,context_length);
+        ret = modbus_io_interface_request_rtu(io,function_code,context,context_length);
     }
     break;
     case MODBUS_IO_INTERFACE_TCP_GATEWAY_CLIENT:
     {
-        return modbus_io_interface_request_tcp(io,function_code,context,context_length,true);
+        ret = modbus_io_interface_request_tcp(io,function_code,context,context_length,true);
     }
     break;
     default:
         break;
     }
-    return false;
+    return ret;
 }
 
 

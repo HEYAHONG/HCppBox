@@ -906,7 +906,7 @@ static bool hdotfont_show_char(const hgui_gui_dotfont_t * dotfont,uint32_t Char,
     return true;
 }
 
-const hgui_gui_dotfont_hdotfont_t hgui_gui_dotfont_hdotfont(const uint8_t *const char_set[],uint32_t char_set_size,size_t font_size)
+hgui_gui_dotfont_hdotfont_t hgui_gui_dotfont_hdotfont(const uint8_t *const char_set[],uint32_t char_set_size,size_t font_size)
 {
     hgui_gui_dotfont_hdotfont_t ret= {0};
     ret.font.w=font_size;
