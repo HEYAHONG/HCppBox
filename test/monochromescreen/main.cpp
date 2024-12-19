@@ -50,48 +50,80 @@ static void monochromescreen_bootlogo()
         return true;
     };
     hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,"Booting",(w-6*7)/2,(h-8)/2,w,draw_pixel,NULL);
+
+    {
+        //将上1/8与下1/8像素设置为置位
+        for(size_t i=0; i<h; i++)
+        {
+            for(size_t j=0; j<w; j++)
+            {
+                if(i<h/8 || i>=(h-h/8))
+                {
+                    monochromescreen_set_pixel(j,i,true);
+                }
+            }
+        }
+    }
 }
 
+
+static void  monochromscreen_screen_clear()
+{
+    for(size_t i=0; i<w; i++)
+    {
+        for(size_t j=0; j<h; j++)
+        {
+            monochromescreen_set_pixel(i,j,false);
+        }
+    }
+
+    hgui_scene1_app_need_refresh(&g_hgui_scene1_app);
+}
+
+static void monochromscreen_pixel_init()
+{
+    pixel.mode=HGUI_PIXEL_MODE_CALLBACK;
+    pixel.pixel=[](ssize_t x,ssize_t y) -> hgui_pixel_t
+    {
+        hgui_pixel_t ret={0};
+        ret.mode=HGUI_PIXEL_MODE_32_BITS;
+        x/=dotsize;
+        y/=dotsize;
+        if(x/8<w_bytes && y <h_bytes)
+        {
+            if((VRAM[x/8][y]&(1ULL<<(x%8)))!=0)
+            {
+                ret.pixel_32_bits=frontcolor;
+            }
+            else
+            {
+                ret.pixel_32_bits=backcolor;
+            }
+        }
+        return ret;
+    };
+}
+
+static void monochromscreen_screen_size_adjust()
+{
+    ssize_t new_w=w*dotsize,new_h=h*dotsize;
+    hgui_driver_resize(NULL,&new_w,&new_h);
+}
 
 static void monochromscreen_init()
 {
     HCPPGuiInit();
     {
         //初始化屏幕颜色
-        for(size_t i=0; i<w; i++)
-        {
-            for(size_t j=0; j<h; j++)
-            {
-                monochromescreen_set_pixel(i,j,false);
-            }
-        }
+        monochromscreen_screen_clear();
+
         //初始化像素回调
-        pixel.mode=HGUI_PIXEL_MODE_CALLBACK;
-        pixel.pixel=[](ssize_t x,ssize_t y) -> hgui_pixel_t
-        {
-            hgui_pixel_t ret={0};
-            ret.mode=HGUI_PIXEL_MODE_32_BITS;
-            x/=dotsize;
-            y/=dotsize;
-            if(x/8<w_bytes && y <h_bytes)
-            {
-                if((VRAM[x/8][y]&(1ULL<<(x%8)))!=0)
-                {
-                    ret.pixel_32_bits=frontcolor;
-                }
-                else
-                {
-                    ret.pixel_32_bits=backcolor;
-                }
-            }
-            return ret;
-        };
+        monochromscreen_pixel_init();
 
-        {
-            ssize_t new_w=w*dotsize,new_h=h*dotsize;
-            hgui_driver_resize(NULL,&new_w,&new_h);
-        }
+        //调整屏幕大小(用于桌面平台模拟时调整窗口大小)
+        monochromscreen_screen_size_adjust();
 
+        //显示启动logo
         monochromescreen_bootlogo();
 
         hgui_scene1_app_need_refresh(&g_hgui_scene1_app);
@@ -145,7 +177,7 @@ int main()
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
 #else
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        //非Windows采用可实时刷新
+        //非Windows可实时刷新
         hgui_scene1_app_need_refresh(&g_hgui_scene1_app);
 #endif // WIN32
     }
