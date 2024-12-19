@@ -82,6 +82,13 @@ bool hgui_scene1_app_was_init(const hgui_scene1_app_t *app);
  */
 bool hgui_scene1_app_update(const hgui_scene1_app_t *app,void *usr);
 
+/** \brief App设置刷新标志，调用此函数后下次App更新时将进行App刷新操作。
+ *
+ * \param app const hgui_scene1_app_t* App指针
+ *
+ */
+void hgui_scene1_app_need_refresh(const hgui_scene1_app_t *app);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

@@ -31,7 +31,8 @@ typedef struct
 {
     struct
     {
-        uint32_t be_init:1;
+        uint32_t be_init:1;//是否初始化
+        uint32_t need_refresh:1;//是否需要刷新
     };
 } hgui_scene1_app_status_t;//APP状态，包含所有APP可修改的属性
 
@@ -64,6 +65,7 @@ static bool  hgui_scene1_app_init_callback(const hgui_scene1_app_t *app,void *us
         {
             HGUI_SCENE1_APP_ON_INIT_SUCCESS;
         }
+        hgui_scene1_app_need_refresh(app);
         if(app!=NULL)
         {
             if(app->status!=NULL)
@@ -96,6 +98,10 @@ static bool  hgui_scene1_app_init_callback(const hgui_scene1_app_t *app,void *us
 #define HGUI_SCENE1_APP_ON_UPDATE_SUCCESS {}
 #endif // HGUI_SCENE1_APP_ON_UPDATE_SUCCESS
 
+#ifndef HGUI_SCENE1_APP_ON_UPDATE_SUCCESS_NEED_REFRESH
+#define HGUI_SCENE1_APP_ON_UPDATE_SUCCESS_NEED_REFRESH {}
+#endif // HGUI_SCENE1_APP_ON_UPDATE_SUCCESS_NEED_REFRESH
+
 #ifndef HGUI_SCENE1_APP_ON_UPDATE_FAILURE
 #define HGUI_SCENE1_APP_ON_UPDATE_FAILURE {}
 #endif // HGUI_SCENE1_APP_ON_UPDATE_FAILURE
@@ -120,8 +126,34 @@ static bool  hgui_scene1_app_update_callback(const hgui_scene1_app_t *app,void *
 
     if(hgui_driver_update(hgui_scene1_app_driver_get(app)))
     {
-        HGUI_SCENE1_APP_ON_UPDATE_SUCCESS;
+        {
+            HGUI_SCENE1_APP_ON_UPDATE_SUCCESS;
+        }
         ret=true;
+        {
+            bool need_refresh=false;
+            {
+                if(app!=NULL)
+                {
+                    if(app->status!=NULL)
+                    {
+                        need_refresh=(app->status->need_refresh==1);
+                        app->status->need_refresh=0;
+                    }
+                }
+                else
+                {
+                    need_refresh=(g_hgui_scene1_app.status->need_refresh==1);
+                    g_hgui_scene1_app.status->need_refresh=0;
+                }
+            }
+            if(need_refresh)
+            {
+                {
+                    HGUI_SCENE1_APP_ON_UPDATE_SUCCESS_NEED_REFRESH;
+                }
+            }
+        }
     }
     else
     {
@@ -215,6 +247,19 @@ bool hgui_scene1_app_update(const hgui_scene1_app_t *app,void *usr)
         return true;
     }
     return g_hgui_scene1_app.update(app,usr);
+}
+
+void hgui_scene1_app_need_refresh(const hgui_scene1_app_t *app)
+{
+    if(app==NULL)
+    {
+        app==&g_hgui_scene1_app;
+    }
+
+    if(app->status!=NULL)
+    {
+        app->status->need_refresh=1;
+    }
 }
 
 #ifdef __cplusplus

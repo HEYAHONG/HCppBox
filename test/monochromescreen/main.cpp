@@ -94,7 +94,7 @@ static void monochromscreen_init()
 
         monochromescreen_bootlogo();
 
-        monochromescreen_refresh();
+        hgui_scene1_app_need_refresh(&g_hgui_scene1_app);
     }
 }
 
@@ -116,16 +116,19 @@ static void monochromscreen_init()
 //定义初始化失败时执行的语句
 #define HGUI_SCENE1_APP_ON_INIT_FAILURE     {}
 
-//定义初始化开始时执行的语句
+//定义更新开始时执行的语句
 #define HGUI_SCENE1_APP_ON_UPDATE_BEGIN     {}
 
-//定义初始化结束时执行的语句
+//定义更新结束时执行的语句
 #define HGUI_SCENE1_APP_ON_UPDATE_END       {}
 
-//定义初始化更新成功时执行的语句
-#define HGUI_SCENE1_APP_ON_UPDATE_SUCCESS   {   monochromescreen_refresh(); }
+//定义更新成功时执行的语句
+#define HGUI_SCENE1_APP_ON_UPDATE_SUCCESS   {}
 
-//定义初始化更新失败时执行的语句
+//定义更新成功且需要刷新时执行的语句
+#define HGUI_SCENE1_APP_ON_UPDATE_SUCCESS_NEED_REFRESH { monochromescreen_refresh(); }
+
+//定义更新失败时执行的语句
 #define HGUI_SCENE1_APP_ON_UPDATE_FAILURE   {}
 
 //实现APP

@@ -6,17 +6,18 @@
 
 应用的参数一般由宏定义配置，可配置的宏定义如下：
 
-|               宏定义                | 说明                                               | 备注                                                         |
-| :---------------------------------: | -------------------------------------------------- | ------------------------------------------------------------ |
-|      `HGUI_SCENE1_APP_DRIVER`       | Gui驱动指针，NULL表示使用默认GUI驱动。             |                                                              |
-|       `HGUI_SCENE1_APP_WIDTH`       | 屏幕宽度，默认为128                                |                                                              |
-|      `HGUI_SCENE1_APP_HEIGHT`       | 屏幕 高度，默认为64                                |                                                              |
-|  `HGUI_SCENE1_APP_ON_INIT_SUCCESS`  | 定义当应用初始化成功时执行的语句，默认为空语句块。 | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
-|  `HGUI_SCENE1_APP_ON_INIT_FAILURE`  | 定义当应用初始化失败时执行的语句，默认为空语句块。 | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
-|  `HGUI_SCENE1_APP_ON_UPDATE_BEGIN`  | 定义当应用更新开始时执行的语句，默认为空语句块。   | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
-|   `HGUI_SCENE1_APP_ON_UPDATE_END`   | 定义当应用结束时执行的语句，默认为空语句块。       | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
-| `HGUI_SCENE1_APP_ON_UPDATE_SUCCESS` | 定义当应用更新成功时执行的语句，默认为空语句块。   | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
-| `HGUI_SCENE1_APP_ON_UPDATE_FAILURE` | 定义当应用更新失败时执行的语句，默认为空语句块。   | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
+|                      宏定义                      | 说明                                                   | 备注                                                         |
+| :----------------------------------------------: | ------------------------------------------------------ | ------------------------------------------------------------ |
+|             `HGUI_SCENE1_APP_DRIVER`             | Gui驱动指针，NULL表示使用默认GUI驱动。                 |                                                              |
+|             `HGUI_SCENE1_APP_WIDTH`              | 屏幕宽度，默认为128                                    |                                                              |
+|             `HGUI_SCENE1_APP_HEIGHT`             | 屏幕 高度，默认为64                                    |                                                              |
+|        `HGUI_SCENE1_APP_ON_INIT_SUCCESS`         | 定义当应用初始化成功时执行的语句，默认为空语句块。     | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
+|        `HGUI_SCENE1_APP_ON_INIT_FAILURE`         | 定义当应用初始化失败时执行的语句，默认为空语句块。     | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
+|        `HGUI_SCENE1_APP_ON_UPDATE_BEGIN`         | 定义当应用更新开始时执行的语句，默认为空语句块。       | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
+|         `HGUI_SCENE1_APP_ON_UPDATE_END`          | 定义当应用结束时执行的语句，默认为空语句块。           | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
+|       `HGUI_SCENE1_APP_ON_UPDATE_SUCCESS`        | 定义当应用更新成功时执行的语句，默认为空语句块。       | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
+| `HGUI_SCENE1_APP_ON_UPDATE_SUCCESS_NEED_REFRESH` | 定义当更新成功且需要刷新时执行的语句，默认为空语句块。 | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
+|       `HGUI_SCENE1_APP_ON_UPDATE_FAILURE`        | 定义当应用更新失败时执行的语句，默认为空语句块。       | 语句中可使用局部变量`app`访问应用数据，可使用局部变量`usr`访问用户自定义参数。 |
 
 配置完宏定义后，用户需要使用`#include HGUI_SCENE1_APP_IMPLEMENT`实现应用。
 
@@ -42,16 +43,19 @@
 //定义初始化失败时执行的语句
 #define HGUI_SCENE1_APP_ON_INIT_FAILURE     {}
 
-//定义初始化开始时执行的语句
+//定义更新开始时执行的语句
 #define HGUI_SCENE1_APP_ON_UPDATE_BEGIN     {}
 
-//定义初始化结束时执行的语句
+//定义更新结束时执行的语句
 #define HGUI_SCENE1_APP_ON_UPDATE_END       {}
 
-//定义初始化更新成功时执行的语句
+//定义更新成功时执行的语句
 #define HGUI_SCENE1_APP_ON_UPDATE_SUCCESS   {}
 
-//定义初始化更新失败时执行的语句
+//定义更新成功且需要刷新时执行的语句
+#define HGUI_SCENE1_APP_ON_UPDATE_SUCCESS_NEED_REFRESH {}
+
+//定义更新失败时执行的语句
 #define HGUI_SCENE1_APP_ON_UPDATE_FAILURE   {}
 
 //实现APP
