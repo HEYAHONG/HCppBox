@@ -253,7 +253,7 @@ void hgui_scene1_app_need_refresh(const hgui_scene1_app_t *app)
 {
     if(app==NULL)
     {
-        app==&g_hgui_scene1_app;
+        app=&g_hgui_scene1_app;
     }
 
     if(app->status!=NULL)
