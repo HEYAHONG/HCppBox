@@ -98,21 +98,49 @@ static void monochromscreen_init()
     }
 }
 
+/*
+ * GUI应用
+ */
+//定义Gui驱动指针
+#define HGUI_SCENE1_APP_DRIVER      NULL
+
+//定义屏幕宽度
+#define HGUI_SCENE1_APP_WIDTH       w
+
+//定义屏幕高度
+#define HGUI_SCENE1_APP_HEIGHT      h
+
+//定义初始化成功时执行的语句
+#define HGUI_SCENE1_APP_ON_INIT_SUCCESS     {   monochromscreen_init(); }
+
+//定义初始化失败时执行的语句
+#define HGUI_SCENE1_APP_ON_INIT_FAILURE     {}
+
+//定义初始化开始时执行的语句
+#define HGUI_SCENE1_APP_ON_UPDATE_BEGIN     {}
+
+//定义初始化结束时执行的语句
+#define HGUI_SCENE1_APP_ON_UPDATE_END       {}
+
+//定义初始化更新成功时执行的语句
+#define HGUI_SCENE1_APP_ON_UPDATE_SUCCESS   {   monochromescreen_refresh(); }
+
+//定义初始化更新失败时执行的语句
+#define HGUI_SCENE1_APP_ON_UPDATE_FAILURE   {}
+
+//实现APP
+#include HGUI_SCENE1_APP_IMPLEMENT
 
 int main()
 {
-
-    if(hgui_driver_reset(NULL))
+    if(hgui_scene1_app_init(&g_hgui_scene1_app,NULL))
     {
-        monochromscreen_init();
         size_t i=0;
-        while(hgui_driver_update(NULL))
+        while(hgui_scene1_app_update(&g_hgui_scene1_app,NULL))
         {
             i++;
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            monochromescreen_refresh();
         }
     }
-
     return 0;
 }
