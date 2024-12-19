@@ -145,6 +145,8 @@ int main()
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
 #else
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        //非Windows采用可实时刷新
+        hgui_scene1_app_need_refresh(&g_hgui_scene1_app);
 #endif // WIN32
     }
     return 0;
