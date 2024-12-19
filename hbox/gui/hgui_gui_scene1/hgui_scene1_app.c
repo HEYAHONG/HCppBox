@@ -26,6 +26,25 @@ extern "C"
 #define HGUI_SCENE1_APP_HEIGHT      64
 #endif // HGUI_SCENE1_APP_HEIGHT
 
+
+typedef struct
+{
+    struct
+    {
+        uint32_t be_init:1;
+    };
+} hgui_scene1_app_status_t;//APP状态，包含所有APP可修改的属性
+
+struct hgui_scene1_app
+{
+    hgui_driver_t * driver;
+    size_t          w;
+    size_t          h;
+    bool  (*init)(const hgui_scene1_app_t *app,void *usr);
+    bool  (*update)(const hgui_scene1_app_t *app,void *usr);
+    hgui_scene1_app_status_t *status;
+};
+
 #ifndef HGUI_SCENE1_APP_ON_INIT_SUCCESS
 #define HGUI_SCENE1_APP_ON_INIT_SUCCESS {}
 #endif // HGUI_SCENE1_APP_ON_INIT_SUCCESS
@@ -36,10 +55,25 @@ extern "C"
 
 static bool  hgui_scene1_app_init_callback(const hgui_scene1_app_t *app,void *usr)
 {
+    if(hgui_scene1_app_was_init(app))
+    {
+        return true;
+    }
     if(hgui_driver_reset(hgui_scene1_app_driver_get(app)))
     {
         {
             HGUI_SCENE1_APP_ON_INIT_SUCCESS;
+        }
+        if(app!=NULL)
+        {
+            if(app->status!=NULL)
+            {
+                app->status->be_init=1;
+            }
+        }
+        else
+        {
+            g_hgui_scene1_app.status->be_init=1;
         }
         return true;
     }
@@ -68,6 +102,17 @@ static bool  hgui_scene1_app_init_callback(const hgui_scene1_app_t *app,void *us
 
 static bool  hgui_scene1_app_update_callback(const hgui_scene1_app_t *app,void *usr)
 {
+    if(app!=NULL)
+    {
+        if(!hgui_scene1_app_was_init(app))
+        {
+            hgui_scene1_app_init(app,usr);
+        }
+        if(!hgui_scene1_app_was_init(app))
+        {
+            return false;
+        }
+    }
     bool ret=false;
     {
         HGUI_SCENE1_APP_ON_UPDATE_BEGIN;
@@ -91,22 +136,15 @@ static bool  hgui_scene1_app_update_callback(const hgui_scene1_app_t *app,void *
     return ret;
 }
 
-struct hgui_scene1_app
-{
-    hgui_driver_t * driver;
-    size_t          w;
-    size_t          h;
-    bool  (*init)(const hgui_scene1_app_t *app,void *usr);
-    bool  (*update)(const hgui_scene1_app_t *app,void *usr);
-};
-
+static hgui_scene1_app_status_t m_hgui_scene1_app_status= {0};
 const hgui_scene1_app_t g_hgui_scene1_app=
 {
     (HGUI_SCENE1_APP_DRIVER),
     (HGUI_SCENE1_APP_WIDTH),
     (HGUI_SCENE1_APP_HEIGHT),
     hgui_scene1_app_init_callback,
-    hgui_scene1_app_update_callback
+    hgui_scene1_app_update_callback,
+    &m_hgui_scene1_app_status
 };
 
 
@@ -150,6 +188,19 @@ bool hgui_scene1_app_init(const hgui_scene1_app_t *app,void *usr)
         return true;
     }
     return g_hgui_scene1_app.init(app,usr);
+}
+
+bool hgui_scene1_app_was_init(const hgui_scene1_app_t *app)
+{
+    if(app!=NULL)
+    {
+        if(g_hgui_scene1_app.status!=NULL)
+        {
+            return app->status->be_init==1;
+        }
+        return false;
+    }
+    return g_hgui_scene1_app.status->be_init==1;
 }
 
 bool hgui_scene1_app_update(const hgui_scene1_app_t *app,void *usr)

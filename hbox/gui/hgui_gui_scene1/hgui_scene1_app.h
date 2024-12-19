@@ -65,7 +65,15 @@ size_t hgui_scene1_app_height_get(const hgui_scene1_app_t *app);
  */
 bool hgui_scene1_app_init(const hgui_scene1_app_t *app,void *usr);
 
-/** \brief App更新,注意：此函数只能在成功初始化后使用，在某些场景下不进行更新将导致异常。
+/** \brief App是否初始化
+ *
+ * \param app const hgui_scene1_app_t* App指针
+ * \return bool 是否成功初始化
+ *
+ */
+bool hgui_scene1_app_was_init(const hgui_scene1_app_t *app);
+
+/** \brief App更新,注意：在某些场景下不进行更新将导致异常。
  *
  * \param app const hgui_scene1_app_t* App指针
  * \param usr void* 用户自定义参数

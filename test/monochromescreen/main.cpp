@@ -133,14 +133,12 @@ static void monochromscreen_init()
 
 int main()
 {
-    if(hgui_scene1_app_init(&g_hgui_scene1_app,NULL))
+
+    size_t i=0;
+    while(hgui_scene1_app_update(&g_hgui_scene1_app,NULL))
     {
-        size_t i=0;
-        while(hgui_scene1_app_update(&g_hgui_scene1_app,NULL))
-        {
-            i++;
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        }
+        i++;
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     return 0;
 }
