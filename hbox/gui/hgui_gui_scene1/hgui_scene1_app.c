@@ -27,14 +27,28 @@ extern "C"
 #endif // HGUI_SCENE1_APP_HEIGHT
 
 
+#ifndef HGUI_SCENE1_APP_SCREEN_STACK_DEPTH
+#define HGUI_SCENE1_APP_SCREEN_STACK_DEPTH      4
+#endif // HGUI_SCENE1_APP_SCREEN_STACK_DEPTH
+
+#if (HGUI_SCENE1_APP_SCREEN_STACK_DEPTH) < 4
+#undef  HGUI_SCENE1_APP_SCREEN_STACK_DEPTH
+#define HGUI_SCENE1_APP_SCREEN_STACK_DEPTH      4
+#endif
+
 typedef struct
 {
-    struct
+    struct                                  //状态信息
     {
-        uint32_t be_init:1;//是否初始化
-        uint32_t need_refresh:1;//是否需要刷新
+        uint32_t be_init:1;                 //是否初始化
+        uint32_t need_refresh:1;            //是否需要刷新
     };
-} hgui_scene1_app_status_t;//APP状态，包含所有APP可修改的属性
+    struct                                  //屏幕栈信息
+    {
+        size_t   screen_stack_pointer;                                                  // 栈指针
+        hgui_scene1_screen_base_t *screen_stack[HGUI_SCENE1_APP_SCREEN_STACK_DEPTH];    //屏幕栈
+    };
+} hgui_scene1_app_status_t;                 //APP状态，包含所有APP可修改的属性
 
 struct hgui_scene1_app
 {
@@ -128,6 +142,13 @@ static bool  hgui_scene1_app_update_callback(const hgui_scene1_app_t *app,void *
     {
         {
             HGUI_SCENE1_APP_ON_UPDATE_SUCCESS;
+        }
+        {
+            hgui_scene1_screen_base_t *screen=app->status->screen_stack[app->status->screen_stack_pointer];
+            if(screen!=NULL)
+            {
+                hgui_scene1_screen_base_update(screen,app);
+            }
         }
         ret=true;
         {
@@ -260,6 +281,81 @@ void hgui_scene1_app_need_refresh(const hgui_scene1_app_t *app)
     {
         app->status->need_refresh=1;
     }
+}
+
+bool hgui_scene1_app_screen_stack_push(const hgui_scene1_app_t *app,hgui_scene1_screen_base_t *screen)
+{
+    if(app==NULL)
+    {
+        app=&g_hgui_scene1_app;
+    }
+
+    if(screen==NULL)
+    {
+        return false;
+    }
+
+    if(app->status==NULL)
+    {
+        return false;
+    }
+    bool ret=false;
+
+    if(app->status->screen_stack_pointer == ((sizeof(app->status->screen_stack)/sizeof(app->status->screen_stack[0]))-1))
+    {
+        return false;
+    }
+    hgui_scene1_screen_base_t *old_screen=app->status->screen_stack[app->status->screen_stack_pointer];
+    if(old_screen==NULL)
+    {
+        app->status->screen_stack[app->status->screen_stack_pointer]=screen;
+        hgui_scene1_screen_base_enter(screen,app);
+        ret=true;
+    }
+    else
+    {
+        app->status->screen_stack_pointer++;
+        app->status->screen_stack[app->status->screen_stack_pointer]=screen;
+        hgui_scene1_screen_base_leave(old_screen,app);
+        hgui_scene1_screen_base_enter(screen,app);
+        ret=true;
+    }
+
+    return ret;
+}
+
+bool hgui_scene1_app_screen_stack_pop(const hgui_scene1_app_t *app)
+{
+    if(app==NULL)
+    {
+        app=&g_hgui_scene1_app;
+    }
+
+    if(app->status==NULL)
+    {
+        return false;
+    }
+    bool ret=false;
+    hgui_scene1_screen_base_t *old_screen=app->status->screen_stack[app->status->screen_stack_pointer];
+    if(app->status->screen_stack_pointer!=0)
+    {
+        hgui_scene1_screen_base_leave(old_screen,app);
+        ret=true;
+        app->status->screen_stack_pointer--;
+        hgui_scene1_screen_base_t *new_screen=app->status->screen_stack[app->status->screen_stack_pointer];
+        hgui_scene1_screen_base_enter(new_screen,app);
+    }
+    else
+    {
+        if(old_screen!=NULL)
+        {
+            app->status->screen_stack[app->status->screen_stack_pointer]=NULL;
+            hgui_scene1_screen_base_leave(old_screen,app);
+            ret=true;
+        }
+    }
+
+    return ret;
 }
 
 #ifdef __cplusplus

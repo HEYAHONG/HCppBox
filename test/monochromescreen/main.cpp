@@ -3,6 +3,7 @@
 #include "hbox.h"
 #include "hrc.h"
 #include "stdint.h"
+#include "time.h"
 #include <thread>
 #include <chrono>
 
@@ -131,6 +132,68 @@ static void monochromscreen_init()
 }
 
 /*
+ * 屏幕
+ */
+
+//主屏幕
+hdefaults_tick_t main_screen_tick=hdefaults_tick_get();
+static  const hgui_scene1_screen_base_t main_screen=
+{
+    //进入屏幕
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app)
+    {
+        main_screen_tick=hdefaults_tick_get();
+    },
+    //离开屏幕
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app)
+    {
+
+    },
+    //更新屏幕
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app)
+    {
+        if((hdefaults_tick_get()-main_screen_tick)>500)
+        {
+            main_screen_tick=hdefaults_tick_get();
+            monochromscreen_screen_clear();
+            {
+                //将上1/8与下1/8像素设置为置位
+                for(size_t i=0; i<h; i++)
+                {
+                    for(size_t j=0; j<w; j++)
+                    {
+                        if(i<h/8 || i>=(h-h/8))
+                        {
+                            monochromescreen_set_pixel(j,i,true);
+                        }
+                    }
+                }
+            }
+            {
+                //显示时间
+                auto draw_pixel=[](const hgui_gui_dotfont_t * dotfont,size_t x,size_t y,bool point,void *usr)->bool
+                {
+                    (void)dotfont;
+                    (void)usr;
+                    if((x<w) && (y<h))
+                    {
+                        monochromescreen_set_pixel(x,y,!point);
+                    }
+                    return true;
+                };
+                time_t now=time(NULL);
+                struct tm tm_now=*localtime(&now);
+                std::string  asctime_str{asctime(&tm_now)};
+                asctime_str=asctime_str.substr(0,20);
+                hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,asctime_str.c_str(),4,(h-h/8),w,draw_pixel,NULL);
+            }
+            hgui_scene1_app_need_refresh(app);
+        }
+    },
+    NULL
+};
+
+/*
  * GUI应用
  */
 //定义Gui驱动指针
@@ -142,8 +205,11 @@ static void monochromscreen_init()
 //定义屏幕高度
 #define HGUI_SCENE1_APP_HEIGHT      h
 
+//定义屏幕栈深度
+#define HGUI_SCENE1_APP_SCREEN_STACK_DEPTH      8
+
 //定义初始化成功时执行的语句
-#define HGUI_SCENE1_APP_ON_INIT_SUCCESS     {   monochromscreen_init(); }
+#define HGUI_SCENE1_APP_ON_INIT_SUCCESS     {   monochromscreen_init(); hgui_scene1_app_screen_stack_push(&g_hgui_scene1_app,(hgui_scene1_screen_base_t *)&main_screen); }
 
 //定义初始化失败时执行的语句
 #define HGUI_SCENE1_APP_ON_INIT_FAILURE     {}

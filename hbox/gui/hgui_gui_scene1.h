@@ -15,6 +15,7 @@ extern "C"
 #endif // __cplusplus
 
 #include "hgui_gui_scene1/hgui_scene1_app.h"
+#include "hgui_gui_scene1/hgui_scene1_screen.h"
 
 #ifdef __cplusplus
 }

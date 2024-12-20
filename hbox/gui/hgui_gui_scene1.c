@@ -8,4 +8,4 @@
  **************************************************************/
 #include "hgui_gui_scene1.h"
 
-
+#include "hgui_gui_scene1/hgui_scene1_screen.c"

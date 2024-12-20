@@ -89,6 +89,27 @@ bool hgui_scene1_app_update(const hgui_scene1_app_t *app,void *usr);
  */
 void hgui_scene1_app_need_refresh(const hgui_scene1_app_t *app);
 
+
+struct hgui_scene1_screen_base;
+typedef struct hgui_scene1_screen_base hgui_scene1_screen_base_t;
+
+/** \brief App进入某一块屏幕，注意：调用此函数后上一块屏幕已被清理。
+ *
+ * \param app const hgui_scene1_app_t* App指针
+ * \param screen hgui_scene1_screen_base_t* 屏幕指针
+ * \return bool 是否进入成功
+ *
+ */
+bool hgui_scene1_app_screen_stack_push(const hgui_scene1_app_t *app,hgui_scene1_screen_base_t *screen);
+
+/** \brief App退出某一块屏幕,注意：调用此函数后该屏幕已被清理。
+ *
+ * \param app const hgui_scene1_app_t* App指针
+ * \return bool 是否进入成功
+ *
+ */
+bool hgui_scene1_app_screen_stack_pop(const hgui_scene1_app_t *app);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
