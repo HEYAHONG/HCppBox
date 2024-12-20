@@ -14,7 +14,7 @@ static const size_t h_bytes=h;
 static uint8_t VRAM[w_bytes][h_bytes]= {0};
 static hgui_pixel_t pixel= {0};
 static uint32_t backcolor=0xFFFAF208;//背景色
-static uint32_t frontcolor=0x0;//前景色
+static uint32_t frontcolor=0xFF000000;//前景色
 static uint32_t dotsize=2;//点大小
 
 static void monochromescreen_refresh()
