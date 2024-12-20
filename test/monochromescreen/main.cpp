@@ -170,7 +170,6 @@ static  const hgui_scene1_screen_base_t main_screen=
                 }
             }
             {
-                //显示时间
                 auto draw_pixel=[](const hgui_gui_dotfont_t * dotfont,size_t x,size_t y,bool point,void *usr)->bool
                 {
                     (void)dotfont;
@@ -181,11 +180,36 @@ static  const hgui_scene1_screen_base_t main_screen=
                     }
                     return true;
                 };
-                time_t now=time(NULL);
-                struct tm tm_now=*localtime(&now);
-                std::string  asctime_str{asctime(&tm_now)};
-                asctime_str=asctime_str.substr(0,20);
-                hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,asctime_str.c_str(),4,(h-h/8),w,draw_pixel,NULL);
+                {
+                    //显示标题
+                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,"Main",(w-6*4)/2,0,w,draw_pixel,NULL);
+                }
+                {
+                    //显示内容
+                    auto draw_pixel=[](const hgui_gui_dotfont_t * dotfont,size_t x,size_t y,bool point,void *usr)->bool
+                    {
+                        (void)dotfont;
+                        (void)usr;
+                        if((x<w) && (y<h))
+                        {
+                            monochromescreen_set_pixel(x,y,point);
+                        }
+                        return true;
+                    };
+                    char str[256];
+                    {
+                        sprintf(str,"This is %dx%d screen\nmonochrome screen\r\n",(int)w,(int)h);
+                    }
+                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,str,0,h/8+4,w,draw_pixel,NULL);
+                }
+                {
+                    //显示时间
+                    time_t now=time(NULL);
+                    struct tm tm_now=*localtime(&now);
+                    std::string  asctime_str{asctime(&tm_now)};
+                    asctime_str=asctime_str.substr(0,20);
+                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,asctime_str.c_str(),4,(h-h/8),w,draw_pixel,NULL);
+                }
             }
             hgui_scene1_app_need_refresh(app);
         }
