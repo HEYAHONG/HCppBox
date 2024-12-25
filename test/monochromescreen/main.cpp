@@ -199,7 +199,7 @@ static  const hgui_scene1_screen_base_t main_screen=
                     };
                     char str[256];
                     {
-                        sprintf(str,"This is %dx%d screen\nmonochrome screen\r\nkey_count=%d\r\npress UP or DOWN\r\n",(int)w,(int)h,main_screen_key_count);
+                        sprintf(str,"This is %dx%d screen\nmonochrome screen\r\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\n",(int)w,(int)h,main_screen_key_count);
                     }
                     hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,str,0,h/8+4,w,draw_pixel,NULL);
                 }
@@ -228,12 +228,14 @@ static  const hgui_scene1_screen_base_t main_screen=
                     //按键按下
                     switch(key.key_value)
                     {
+                    case HGUI_GUI_EVENT_KEY_VALUE_w:
                     case HGUI_GUI_EVENT_KEY_VALUE_UP:
                     {
                         //上键
                         main_screen_key_count++;
                     }
                     break;
+                    case HGUI_GUI_EVENT_KEY_VALUE_s:
                     case HGUI_GUI_EVENT_KEY_VALUE_DOWN:
                     {
                         //下键
