@@ -19,6 +19,7 @@ extern "C"
 #include "hgui_gui_driver.h"
 #include "hgui_gui_dotfont.h"
 #include "hgui_gui_xpm.h"
+#include "hgui_gui_event.h"
 #include "hgui_gui_scene1.h"
 
 #ifdef __cplusplus

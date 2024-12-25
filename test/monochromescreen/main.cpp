@@ -137,6 +137,7 @@ static void monochromscreen_init()
 
 //主屏幕
 hdefaults_tick_t main_screen_tick=hdefaults_tick_get();
+static  int main_screen_key_count=0;
 static  const hgui_scene1_screen_base_t main_screen=
 {
     //进入屏幕
@@ -198,7 +199,7 @@ static  const hgui_scene1_screen_base_t main_screen=
                     };
                     char str[256];
                     {
-                        sprintf(str,"This is %dx%d screen\nmonochrome screen\r\n",(int)w,(int)h);
+                        sprintf(str,"This is %dx%d screen\nmonochrome screen\r\nkey_count=%d\r\npress UP or DOWN\r\n",(int)w,(int)h,main_screen_key_count);
                     }
                     hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,str,0,h/8+4,w,draw_pixel,NULL);
                 }
@@ -222,6 +223,32 @@ static  const hgui_scene1_screen_base_t main_screen=
             if(hgui_gui_event_key_get(&key,type,eventparam,eventparam_length,usr)!=NULL)
             {
                 //按键事件
+                if(key.key_press_or_release==1)
+                {
+                    //按键按下
+                    switch(key.key_value)
+                    {
+                    case HGUI_GUI_EVENT_KEY_VALUE_UP:
+                    {
+                        //上键
+                        main_screen_key_count++;
+                    }
+                    break;
+                    case HGUI_GUI_EVENT_KEY_VALUE_DOWN:
+                    {
+                        //下键
+                        main_screen_key_count--;
+                    }
+                    break;
+                    default:
+                    {
+
+                    }
+                    break;
+                    }
+                }
+
+                hgui_scene1_app_need_refresh(&g_hgui_scene1_app);
             }
         }
         return true;

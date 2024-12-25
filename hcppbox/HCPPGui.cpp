@@ -429,6 +429,17 @@ public:
                     screen=NULL;
                 }
                 break;
+                case SDL_KEYDOWN:
+                case SDL_KEYUP:
+                {
+                    SDL_KeyboardEvent *key = (SDL_KeyboardEvent*)&event;
+                    hgui_gui_event_key_t hkey= {0};
+                    hkey.key_value=key->keysym.sym;
+                    hkey.key_mode=key->keysym.mod;
+                    hkey.key_press_or_release=((event.type==SDL_KEYDOWN)?1:0);
+                    hgui_gui_event_key_emit(&hkey,hgui_driver_event_input_helper,driver);
+                }
+                break;
                 default:
                 {
 
