@@ -11,6 +11,18 @@ static const size_t h=240;
 static uint32_t VRAM[w][h]= {0};
 static hgui_pixel_t pixel;
 
+static bool hgui_event_process(uint8_t type,void *eventparam,size_t eventparam_length,void *usr)
+{
+    {
+        hgui_gui_event_key_t key;
+        if(hgui_gui_event_key_get(&key,type,eventparam,eventparam_length,usr)!=NULL)
+        {
+            printf("event key:%c(%02X) %s,mode=%04X\r\n",(char)key.key_value,(int)key.key_value,key.key_press_or_release?"press":"release",(int)key.key_mode);
+        }
+    }
+    return true;
+}
+
 int main()
 {
     HCPPGuiInit();
@@ -36,6 +48,9 @@ int main()
             }
             return ret;
         };
+
+        //初始化事件处理
+        hgui_driver_event_callback_set(NULL,hgui_event_process);
     }
 
     if(hgui_driver_reset(NULL))

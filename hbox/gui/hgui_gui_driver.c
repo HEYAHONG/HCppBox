@@ -156,3 +156,12 @@ bool hgui_driver_event_input_helper(uint8_t type,void *eventparam,size_t eventpa
 {
     return hgui_driver_event_input((hgui_driver_t *)usr,type,eventparam,eventparam_length,NULL);
 }
+
+void hgui_driver_event_callback_set(hgui_driver_t *driver,hgui_gui_event_callback_t event_cb)
+{
+    if(driver==NULL)
+    {
+        driver=hgui_driver_default_get();
+    }
+    driver->event_cb=event_cb;
+}

@@ -93,15 +93,7 @@ static bool  hgui_scene1_app_init_callback(const hgui_scene1_app_t *app,void *us
             HGUI_SCENE1_APP_ON_INIT_SUCCESS;
         }
         {
-            hgui_driver_t * driver=hgui_scene1_app_driver_get(app);
-            if(driver==NULL)
-            {
-                driver=hgui_driver_default_get();
-            }
-            if(driver!=NULL)
-            {
-                driver->event_cb=hgui_scene1_app_event_input_helper;
-            }
+            hgui_driver_event_callback_set(hgui_scene1_app_driver_get(app),hgui_scene1_app_event_input_helper);
         }
         hgui_scene1_app_need_refresh(app);
         if(app!=NULL)

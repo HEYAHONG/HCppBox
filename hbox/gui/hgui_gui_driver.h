@@ -191,6 +191,14 @@ bool  hgui_driver_event_input(hgui_driver_t *driver,uint8_t event_type,void *eve
  */
 bool hgui_driver_event_input_helper(uint8_t type,void *eventparam,size_t eventparam_length,void *usr);
 
+/** \brief 设置事件回调
+ *
+ * \param driver hgui_driver_t* 驱动指针
+ * \param event_cb hgui_gui_event_callback_t 事件回调函数
+ *
+ */
+void hgui_driver_event_callback_set(hgui_driver_t *driver,hgui_gui_event_callback_t event_cb);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
