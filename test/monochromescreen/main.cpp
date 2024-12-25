@@ -214,6 +214,11 @@ static  const hgui_scene1_screen_base_t main_screen=
             hgui_scene1_app_need_refresh(app);
         }
     },
+    //事件处理
+    [](uint8_t type,void *eventparam,size_t eventparam_length,void *usr) -> bool
+    {
+        return true;
+    },
     NULL
 };
 

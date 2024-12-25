@@ -9,6 +9,7 @@
 #ifndef __HGUI_SCENE1_SCREEN_H__
 #define __HGUI_SCENE1_SCREEN_H__
 #include "hgui_scene1_app.h"
+#include "../hgui_gui_event.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -46,12 +47,17 @@ struct hgui_scene1_screen_base
     */
     void (*update)(hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app);
 
+    /** \brief 事件处理回调(一般由App调用)
+     *
+     *
+     */
+    hgui_gui_event_callback_t event_cb;
+
     /** \brief 用户自定义参数
      *
      *
      */
     void *usr;
-
 };
 
 

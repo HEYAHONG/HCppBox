@@ -136,3 +136,23 @@ bool  hgui_driver_is_ok(hgui_driver_t *driver)
 
     return false;
 }
+
+bool  hgui_driver_event_input(hgui_driver_t *driver,uint8_t event_type,void *event_param,size_t event_param_length,void *usr)
+{
+    if(driver==NULL)
+    {
+        driver=hgui_driver_default_get();
+    }
+
+    if(driver->event_cb!=NULL)
+    {
+        return driver->event_cb(event_type,event_param,event_param_length,usr);
+    }
+
+    return false;
+}
+
+bool hgui_driver_event_input_helper(uint8_t type,void *eventparam,size_t eventparam_length,void *usr)
+{
+    return hgui_driver_event_input((hgui_driver_t *)usr,type,eventparam,eventparam_length,NULL);
+}

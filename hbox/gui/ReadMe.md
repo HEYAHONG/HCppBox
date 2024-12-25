@@ -152,6 +152,17 @@ XPM可使用[GIMP](https://www.gimp.org/)从其它图像格式导出。
 - [hgui_gui_xpm.c](hgui_gui_xpm.c) 
 - [hgui_gui_xpm.h](hgui_gui_xpm.h) 
 
+## event
+
+事件处理。
+
+辅助实现一些常用的事件处理。
+
+文件:
+
+- [hgui_gui_event.c](hgui_gui_event.c) 
+- [hgui_gui_event.h](hgui_gui_event.h) 
+
 ## scene1
 
 场景1相关代码。详细说明见目录[hgui_gui_scene1](hgui_gui_scene1)。

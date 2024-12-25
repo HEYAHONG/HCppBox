@@ -68,6 +68,19 @@ struct hgui_scene1_app
 #define HGUI_SCENE1_APP_ON_INIT_FAILURE {}
 #endif // HGUI_SCENE1_APP_ON_INIT_FAILURE
 
+static bool hgui_scene1_app_event_input_helper(uint8_t type,void *eventparam,size_t eventparam_length,void *usr)
+{
+    const hgui_scene1_app_t *app=&g_hgui_scene1_app;
+    {
+        hgui_scene1_screen_base_t *screen=app->status->screen_stack[app->status->screen_stack_pointer];
+        if(screen!=NULL && screen->event_cb!=NULL)
+        {
+            return screen->event_cb(type,eventparam,eventparam_length,usr);
+        }
+    }
+    return false;
+}
+
 static bool  hgui_scene1_app_init_callback(const hgui_scene1_app_t *app,void *usr)
 {
     if(hgui_scene1_app_was_init(app))
@@ -78,6 +91,17 @@ static bool  hgui_scene1_app_init_callback(const hgui_scene1_app_t *app,void *us
     {
         {
             HGUI_SCENE1_APP_ON_INIT_SUCCESS;
+        }
+        {
+            hgui_driver_t * driver=hgui_scene1_app_driver_get(app);
+            if(driver==NULL)
+            {
+                driver=hgui_driver_default_get();
+            }
+            if(driver!=NULL)
+            {
+                driver->event_cb=hgui_scene1_app_event_input_helper;
+            }
         }
         hgui_scene1_app_need_refresh(app);
         if(app!=NULL)

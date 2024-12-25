@@ -9,6 +9,7 @@
 #ifndef __HGUI_GUI_DRIVER_H__
 #define __HGUI_GUI_DRIVER_H__
 #include "hgui_gui_pixel.h"
+#include "hgui_gui_event.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -78,6 +79,12 @@ struct hgui_driver
      *
      */
     bool (*is_ok)(hgui_driver_t *driver);
+
+    /** \brief 事件回调，由用户设定(当不为NULL，由驱动调用此回调函数)
+     *
+     *
+     */
+    hgui_gui_event_callback_t event_cb;
 };
 
 #define HGUI_DRIVER_INITIALIZER {0} /**< hgui_driver_t初始化项 */
@@ -158,6 +165,31 @@ bool  hgui_driver_is_ok(hgui_driver_t *driver);
 #ifndef hgui_driver_update
 #define hgui_driver_update hgui_driver_is_ok
 #endif // hgui_driver_update
+
+
+/** \brief 事件处理（调用用户设定的事件处理回调函数）,可由用户调用/驱动内部更新状态时调用。
+ *
+ * \param driver hgui_driver_t* 驱动指针
+ * \param event_type uint8_t 事件类型
+ * \param event_param void* 事件参数
+ * \param event_param_length size_t 事件参数长度
+ * \param usr void* 用户参数，注意：驱动更新状态时此参数为NULL。
+ * \return bool 是否处理完成
+ *
+ */
+bool  hgui_driver_event_input(hgui_driver_t *driver,uint8_t event_type,void *event_param,size_t event_param_length,void *usr);
+
+
+/** \brief 事件处理助手，一般用于驱动更新时的事件调用，一般不由用户调用，主要配合事件组件中的函数工作。
+ *
+ * \param type uint8_t 事件类型，见hgui_gui_event_type_t。
+ * \param eventparam void* 事件参数
+ * \param eventparam_length size_t 事件参数长度
+ * \param usr void* 用户参数，此处必须填写驱动指针(hgui_driver_t *)
+ * \return bool 是否处理完成
+ *
+ */
+bool hgui_driver_event_input_helper(uint8_t type,void *eventparam,size_t eventparam_length,void *usr);
 
 #ifdef __cplusplus
 }
