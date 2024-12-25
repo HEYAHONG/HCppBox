@@ -272,14 +272,42 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
     switch (message)                  /* handle the messages */
     {
     case WM_DESTROY:
-        PostQuitMessage (0);       /* send a WM_QUIT to the message queue */
-        if(g_HCPPGuiDriver.hdc!=NULL)
+    {
+        PostQuitMessage(0);       /* send a WM_QUIT to the message queue */
+        if (g_HCPPGuiDriver.hdc != NULL)
         {
-            ReleaseDC(g_HCPPGuiDriver.hwnd,g_HCPPGuiDriver.hdc);
-            g_HCPPGuiDriver.hdc=NULL;
+            ReleaseDC(g_HCPPGuiDriver.hwnd, g_HCPPGuiDriver.hdc);
+            g_HCPPGuiDriver.hdc = NULL;
         }
-        g_HCPPGuiDriver.hwnd=NULL;
-        break;
+        g_HCPPGuiDriver.hwnd = NULL;
+    }
+    break;
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+    case WM_KEYUP:
+    case WM_SYSKEYUP:
+    {
+        hgui_gui_event_key_t key = { 0 };
+        key.key_press_or_release = (((message == WM_KEYDOWN) || (message == WM_SYSKEYDOWN)) ? 1 : 0);
+        if (message == WM_SYSKEYDOWN || message == WM_SYSKEYUP)
+        {
+            key.key_mode |= HGUI_GUI_EVENT_KEY_MODE_ALT;
+        }
+        if (wParam >= '0' && wParam <= '9')
+        {
+            //数字键
+            key.key_value = wParam-'0'+ HGUI_GUI_EVENT_KEY_VALUE_0;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        if (wParam >= 'A' && wParam <= 'Z')
+        {
+            //字母键
+            key.key_value = wParam-'A'+HGUI_GUI_EVENT_KEY_VALUE_a;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+
+    }
+    break;
     default:                      /* for messages that we don't deal with */
         return DefWindowProc (hwnd, message, wParam, lParam);
     }
