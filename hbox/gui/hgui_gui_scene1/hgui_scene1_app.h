@@ -110,6 +110,14 @@ bool hgui_scene1_app_screen_stack_push(const hgui_scene1_app_t *app,hgui_scene1_
  */
 bool hgui_scene1_app_screen_stack_pop(const hgui_scene1_app_t *app);
 
+/** \brief App获取当前屏幕
+ *
+ * \param app const hgui_scene1_app_t* App指针
+ * \return hgui_scene1_screen_base_t* 当前屏幕指针
+ *
+ */
+hgui_scene1_screen_base_t * hgui_scene1_app_current_screen_get(const hgui_scene1_app_t *app);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

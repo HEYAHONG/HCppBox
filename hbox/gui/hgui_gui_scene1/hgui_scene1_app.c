@@ -374,6 +374,21 @@ bool hgui_scene1_app_screen_stack_pop(const hgui_scene1_app_t *app)
     return ret;
 }
 
+hgui_scene1_screen_base_t * hgui_scene1_app_current_screen_get(const hgui_scene1_app_t *app)
+{
+    if(app==NULL)
+    {
+        app=&g_hgui_scene1_app;
+    }
+
+    if(app->status==NULL)
+    {
+        return NULL;
+    }
+
+    return app->status->screen_stack[app->status->screen_stack_pointer];
+}
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
