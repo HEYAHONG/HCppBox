@@ -49,9 +49,16 @@ struct hgui_scene1_screen_base
 
     /** \brief 事件处理回调(一般由App调用)
      *
+     * \param screen hgui_scene1_screen_base_t* 屏幕指针
+     * \param app hgui_scene1_app_t* APP指针
+     * \param type uint8_t 事件类型，见hgui_gui_event_type_t。
+     * \param eventparam void* 事件参数
+     * \param eventparam_length size_t 事件参数长度
+     * \param usr void* 用户参数
+     * \return bool 事件是否处理成功，一般返回true
      *
      */
-    hgui_gui_event_callback_t event_cb;
+    bool (*event_cb)(hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app,uint8_t type,void *eventparam,size_t eventparam_length,void *usr);
 
     /** \brief 用户自定义参数
      *

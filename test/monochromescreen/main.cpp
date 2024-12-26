@@ -216,7 +216,7 @@ static  const hgui_scene1_screen_base_t main_screen=
         }
     },
     //事件处理
-    [](uint8_t type,void *eventparam,size_t eventparam_length,void *usr) -> bool
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app,uint8_t type,void *eventparam,size_t eventparam_length,void *usr) -> bool
     {
         {
             hgui_gui_event_key_t key;

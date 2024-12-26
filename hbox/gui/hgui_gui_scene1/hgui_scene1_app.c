@@ -80,11 +80,11 @@ static bool hgui_scene1_app_event_input_helper(uint8_t type,void *eventparam,siz
         {
             if(app->status->event_cb==NULL)
             {
-                return screen->event_cb(type,eventparam,eventparam_length,usr);
+                return screen->event_cb(screen,app,type,eventparam,eventparam_length,usr);
             }
             else
             {
-                bool ret=screen->event_cb(type,eventparam,eventparam_length,usr);
+                bool ret=screen->event_cb(screen,app,type,eventparam,eventparam_length,usr);
                 ret = (app->status->event_cb(type,eventparam,eventparam_length,usr) && ret);
                 return ret;
             }
