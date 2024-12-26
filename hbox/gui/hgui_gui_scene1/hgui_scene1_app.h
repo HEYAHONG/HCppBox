@@ -10,6 +10,7 @@
 #define __HGUI_SCENE1_APP_H__
 #include "../hgui_gui_common.h"
 #include "../hgui_gui_driver.h"
+#include "../hgui_gui_event.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -117,6 +118,15 @@ bool hgui_scene1_app_screen_stack_pop(const hgui_scene1_app_t *app);
  *
  */
 hgui_scene1_screen_base_t * hgui_scene1_app_current_screen_get(const hgui_scene1_app_t *app);
+
+
+/** \brief 设置事件回调，此回调在所有界面均有效。注意：通常用于在后台处理按键事件。
+ *
+ * \param app const hgui_scene1_app_t* App指针
+ * \param cb hgui_gui_event_callback_t 事件回调
+ *
+ */
+void hgui_scene1_app_event_callback_set(const hgui_scene1_app_t *app,hgui_gui_event_callback_t cb);
 
 #ifdef __cplusplus
 }

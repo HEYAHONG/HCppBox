@@ -48,6 +48,9 @@ typedef struct
         size_t   screen_stack_pointer;                                                  // 栈指针
         hgui_scene1_screen_base_t *screen_stack[HGUI_SCENE1_APP_SCREEN_STACK_DEPTH];    //屏幕栈
     };
+
+    hgui_gui_event_callback_t event_cb;//事件回调
+
 } hgui_scene1_app_status_t;                 //APP状态，包含所有APP可修改的属性
 
 struct hgui_scene1_app
@@ -75,7 +78,23 @@ static bool hgui_scene1_app_event_input_helper(uint8_t type,void *eventparam,siz
         hgui_scene1_screen_base_t *screen=app->status->screen_stack[app->status->screen_stack_pointer];
         if(screen!=NULL && screen->event_cb!=NULL)
         {
-            return screen->event_cb(type,eventparam,eventparam_length,usr);
+            if(app->status->event_cb==NULL)
+            {
+                return screen->event_cb(type,eventparam,eventparam_length,usr);
+            }
+            else
+            {
+                bool ret=screen->event_cb(type,eventparam,eventparam_length,usr);
+                ret = (app->status->event_cb(type,eventparam,eventparam_length,usr) && ret);
+                return ret;
+            }
+        }
+        else
+        {
+            if(app->status->event_cb!=NULL)
+            {
+                return app->status->event_cb(type,eventparam,eventparam_length,usr);
+            }
         }
     }
     return false;
@@ -387,6 +406,22 @@ hgui_scene1_screen_base_t * hgui_scene1_app_current_screen_get(const hgui_scene1
     }
 
     return app->status->screen_stack[app->status->screen_stack_pointer];
+}
+
+
+void hgui_scene1_app_event_callback_set(const hgui_scene1_app_t *app,hgui_gui_event_callback_t cb)
+{
+    if(app==NULL)
+    {
+        app=&g_hgui_scene1_app;
+    }
+
+    if(app->status==NULL)
+    {
+        return;
+    }
+
+    app->status->event_cb=cb;
 }
 
 #ifdef __cplusplus
