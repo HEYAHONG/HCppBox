@@ -317,10 +317,53 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
 #elif defined(HAVE_SDL)
 #include <SDL.h>
+#include <SDL_version.h>
 #ifdef WIN32
 #include <windows.h>
 #endif // WIN32
 hgui_driver &driver=*hgui_driver_default_get();
+static uint32_t sdl_keysym_convert(uint32_t keycode)
+{
+#if ((SDL_MAJOR_VERSION)>=1) && ((SDL_MINOR_VERSION)>2)
+    uint32_t ret=keycode;
+    switch(keycode)
+    {
+    case SDLK_DELETE:
+    {
+        ret=HGUI_GUI_EVENT_KEY_VALUE_DELETE;
+    }
+    break;
+    case SDLK_RIGHT:
+    {
+        ret=HGUI_GUI_EVENT_KEY_VALUE_RIGHT;
+    }
+    break;
+    case SDLK_LEFT:
+    {
+        ret=HGUI_GUI_EVENT_KEY_VALUE_LEFT;
+    }
+    break;
+    case SDLK_DOWN:
+    {
+        ret=HGUI_GUI_EVENT_KEY_VALUE_DOWN;
+    }
+    break;
+    case SDLK_UP:
+    {
+        ret=HGUI_GUI_EVENT_KEY_VALUE_UP;
+    }
+    break;
+    default:
+    {
+
+    }
+    break;
+    }
+    return ret;
+#else
+    return keycode;
+#endif
+}
 static class HCPPGuiDriver
 {
     std::recursive_mutex m_lock;
@@ -462,7 +505,7 @@ public:
                 {
                     SDL_KeyboardEvent *key = (SDL_KeyboardEvent*)&event;
                     hgui_gui_event_key_t hkey= {0};
-                    hkey.key_value=key->keysym.sym;
+                    hkey.key_value=sdl_keysym_convert(key->keysym.sym);
                     hkey.key_mode=key->keysym.mod;
                     hkey.key_press_or_release=((event.type==SDL_KEYDOWN)?1:0);
                     hgui_gui_event_key_emit(&hkey,hgui_driver_event_input_helper,driver);
