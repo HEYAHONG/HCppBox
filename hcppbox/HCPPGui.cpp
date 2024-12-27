@@ -305,7 +305,43 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             key.key_value = wParam-'A'+HGUI_GUI_EVENT_KEY_VALUE_a;
             hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
         }
-
+        switch (wParam)
+        {
+        case VK_DELETE:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_DELETE;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_RIGHT:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_RIGHT;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_LEFT:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_LEFT;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_DOWN:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_DOWN;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_UP:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_UP;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        default:
+        {
+        }
+        break;
+        }
     }
     break;
     default:                      /* for messages that we don't deal with */
