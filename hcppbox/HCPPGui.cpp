@@ -354,6 +354,68 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
         }
         break;
+        case VK_NUMPAD1:
+        case VK_NUMPAD2:
+        case VK_NUMPAD3:
+        case VK_NUMPAD4:
+        case VK_NUMPAD5:
+        case VK_NUMPAD6:
+        case VK_NUMPAD7:
+        case VK_NUMPAD8:
+        case VK_NUMPAD9:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_KP1+wParam-VK_NUMPAD1;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_NUMPAD0:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_KP0+wParam-VK_NUMPAD0;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_DECIMAL:
+        {
+            //小键盘 .
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_KP_PERIOD;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_SEPARATOR:
+        {
+            //小键盘 ENTER
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_KP_ENTER;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_ADD:
+        {
+            //小键盘 +
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_KP_PLUS;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_SUBTRACT:
+        {
+            //小键盘 -
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_KP_MINUS;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_MULTIPLY:
+        {
+            //小键盘 *
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_KP_MULTIPLY;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_DIVIDE:
+        {
+            //小键盘 /
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_KP_DIVIDE;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
         default:
         {
         }
@@ -420,6 +482,60 @@ static uint32_t sdl_keysym_convert(uint32_t keycode)
     case SDLK_F12:
     {
         ret=HGUI_GUI_EVENT_KEY_VALUE_F1+keycode-SDLK_F1;
+    }
+    break;
+    case SDLK_KP_1:
+    case SDLK_KP_2:
+    case SDLK_KP_3:
+    case SDLK_KP_4:
+    case SDLK_KP_5:
+    case SDLK_KP_6:
+    case SDLK_KP_7:
+    case SDLK_KP_8:
+    case SDLK_KP_9:
+    {
+        ret=HGUI_GUI_EVENT_KEY_VALUE_KP1+keycode-SDLK_KP_1;
+    }
+    break;
+    case SDLK_KP_0:
+    {
+        ret= HGUI_GUI_EVENT_KEY_VALUE_KP0+keycode-SDLK_KP_0;
+    }
+    break;
+    case SDLK_KP_PERIOD:
+    {
+        //小键盘 .
+        ret=HGUI_GUI_EVENT_KEY_VALUE_KP_PERIOD;
+    }
+    break;
+    case SDLK_KP_ENTER:
+    {
+        //小键盘 ENTER
+        ret= HGUI_GUI_EVENT_KEY_VALUE_KP_ENTER;
+    }
+    break;
+    case SDLK_KP_PLUS:
+    {
+        //小键盘 +
+        ret=HGUI_GUI_EVENT_KEY_VALUE_KP_PLUS;
+    }
+    break;
+    case SDLK_KP_MINUS:
+    {
+        //小键盘 -
+        ret=HGUI_GUI_EVENT_KEY_VALUE_KP_MINUS;
+    }
+    break;
+    case SDLK_KP_MULTIPLY:
+    {
+        //小键盘 *
+        ret=HGUI_GUI_EVENT_KEY_VALUE_KP_MULTIPLY;
+    }
+    break;
+    case SDLK_KP_DIVIDE:
+    {
+        //小键盘 /
+        ret = HGUI_GUI_EVENT_KEY_VALUE_KP_DIVIDE;
     }
     break;
     default:
