@@ -337,6 +337,23 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
         }
         break;
+        case VK_F1:
+        case VK_F2:
+        case VK_F3:
+        case VK_F4:
+        case VK_F5:
+        case VK_F6:
+        case VK_F7:
+        case VK_F8:
+        case VK_F9:
+        case VK_F10:
+        case VK_F11:
+        case VK_F12:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_F1+wParam-VK_F1;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
         default:
         {
         }
@@ -387,6 +404,22 @@ static uint32_t sdl_keysym_convert(uint32_t keycode)
     case SDLK_UP:
     {
         ret=HGUI_GUI_EVENT_KEY_VALUE_UP;
+    }
+    break;
+    case SDLK_F1:
+    case SDLK_F2:
+    case SDLK_F3:
+    case SDLK_F4:
+    case SDLK_F5:
+    case SDLK_F6:
+    case SDLK_F7:
+    case SDLK_F8:
+    case SDLK_F9:
+    case SDLK_F10:
+    case SDLK_F11:
+    case SDLK_F12:
+    {
+        ret=HGUI_GUI_EVENT_KEY_VALUE_F1+keycode-SDLK_F1;
     }
     break;
     default:
