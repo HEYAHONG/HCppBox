@@ -29,29 +29,49 @@ static class HCPPGuiDriver
     friend LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
     std::recursive_mutex m_lock;
 public:
-    bool draw_pixel(hgui_driver_t *driver,size_t x,size_t y,hgui_pixel_t pixel)
+    bool fill_rectangle(hgui_driver_t *driver,size_t x,size_t y,size_t w,size_t h,hgui_pixel_t pixel)
     {
         std::lock_guard<std::recursive_mutex> lock(m_lock);
-        if(hdc !=NULL)
+        if(hdc!=NULL)
         {
-            pixel=hgui_pixel_bits_get(pixel,x,y);
-            COLORREF color = RGB((pixel.pixel_32_bits >> 16) & 0xFF, (pixel.pixel_32_bits >> 8) & 0xFF, (pixel.pixel_32_bits) & 0xFF);
-            if(!SetPixelV(hdc, x, y, color))
+            HDC memdc=CreateCompatibleDC(hdc);
+            if(memdc==NULL)
             {
-                SetPixel(hdc, x, y, color);
+                return false;
             }
+            HBITMAP hbitmap=CreateCompatibleBitmap(hdc,w,h);
+            if(hbitmap==NULL)
+            {
+                DeleteDC(memdc);
+                return false;
+            }
+            SelectObject(memdc,hbitmap);
+            for(size_t i=0; i<w; i++)
+            {
+                for(size_t j=0; j<h; j++)
+                {
+                    //每个像素都进行一次转换
+                    hgui_pixel_t final_pixel=hgui_pixel_bits_get(pixel,i+x,j+y);
+                    COLORREF color = RGB((final_pixel.pixel_32_bits >> 16) & 0xFF, (final_pixel.pixel_32_bits >> 8) & 0xFF, (final_pixel.pixel_32_bits) & 0xFF);
+                    SetPixel(memdc, i, j, color);
+                }
+            }
+            BitBlt(hdc, x, y, w, h, memdc, 0, 0, SRCCOPY);
+            SelectObject(memdc,NULL);
+            DeleteObject(hbitmap);
+            DeleteDC(memdc);
             return true;
         }
         return false;
     }
-    static  bool g_draw_pixel(hgui_driver_t *driver,size_t x,size_t y,hgui_pixel_t pixel)
+    static  bool g_fill_rectangle(hgui_driver_t *driver,size_t x,size_t y,size_t w,size_t h,hgui_pixel_t pixel)
     {
         if(driver==NULL || driver->usr==NULL)
         {
             return false;
         }
         HCPPGuiDriver &obj=*(HCPPGuiDriver *)driver->usr;
-        return obj.draw_pixel(driver,x,y,pixel);
+        return obj.fill_rectangle(driver,x,y,w,h,pixel);
     }
     bool reset(hgui_driver_t *driver)
     {
@@ -115,7 +135,6 @@ public:
                 hdc=GetDC(hwnd);
             }
         }
-
 
         return true;
     }
@@ -216,7 +235,7 @@ public:
         std::lock_guard<std::recursive_mutex> lock(m_lock);
         {
             MSG messages;
-            if(PeekMessage (&messages, hwnd, 0, 0,PM_REMOVE))
+            while(PeekMessage (&messages, hwnd, 0, 0,PM_REMOVE))
             {
                 /* Translate virtual-key messages into character messages */
                 TranslateMessage(&messages);
@@ -239,7 +258,7 @@ public:
     HCPPGuiDriver():IsRegisterClass(false),hwnd(NULL),hdc(NULL)
     {
         driver.usr=this;
-        driver.draw_pixel=g_draw_pixel;
+        driver.fill_rectangle=g_fill_rectangle;
         driver.reset=g_reset;
         driver.resize=g_resize;
         driver.is_ok=g_is_ok;
