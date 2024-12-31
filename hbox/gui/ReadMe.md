@@ -84,6 +84,11 @@
 
 回调函数配合C++的Lambda表达式可轻松实现带缓冲的GUI显示。
 
+注意:
+
+- 默认状态下最高支持32位色，更高位数需要通过定义宏定义`HGUI_PIXEL_USING_MAX_BITS`启用。
+- 进行驱动移植时可调用`hgui_pixel_bits_get`获取真正的像素值。
+
 文件:
 
 - [hgui_gui_pixel.c](hgui_gui_pixel.c)

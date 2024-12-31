@@ -31,7 +31,11 @@ hgui_pixel_t hgui_pixel_bits_get(hgui_pixel_t pixel,ssize_t x,ssize_t y)
         }
         else
         {
+#ifdef HGUI_PIXEL_USING_MAX_BITS
             pixel.pixel_max_bits=0;
+#else
+            pixel.pixel_32_bits=0;
+#endif
             pixel.mode=hgui_pixel_global_mode_get();
             if(pixel.mode==HGUI_PIXEL_MODE_CALLBACK)
             {

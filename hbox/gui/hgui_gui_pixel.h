@@ -30,7 +30,9 @@ typedef enum hgui_pixel_mode
     HGUI_PIXEL_MODE_24_BITS,
     HGUI_PIXEL_MODE_SVGA=HGUI_PIXEL_MODE_24_BITS,
     HGUI_PIXEL_MODE_32_BITS,
+#ifdef HGUI_PIXEL_USING_MAX_BITS
     HGUI_PIXEL_MODE_MAX_BITS,
+#endif
     HGUI_PIXEL_MODE_CALLBACK    //回调函数
 }  hgui_pixel_mode_t;
 
@@ -48,7 +50,9 @@ struct hgui_pixel
         uint16_t    pixel_16_bits;  //16位色,如RGB565等
         uint32_t    pixel_24_bits;  //24位色,如RGB888等
         uint32_t    pixel_32_bits;  //32位色（用于像素处理），如ARGB8888等
+#ifdef HGUI_PIXEL_USING_MAX_BITS
         uint64_t    pixel_max_bits; //更高位色，仅用于存储更高色深更高的数据
+#endif
         /** \brief 获取像素
          *
          * \param x ssize_t X坐标，负数表示不使用此参数
