@@ -324,7 +324,7 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 
 本组件预定义一些Protocol Buffers，可用于测试。具体见[pbinc](pbinc)。
 
-使用nanopb时，需要现使用Protocol Buffers消息文件通过`nanopb_generator`工具生成`.pb.h`与`.pb.c`文件。
+使用nanopb时，需要先使用Protocol Buffers消息文件(`.proto`文件)通过`nanopb_generator`工具生成`.pb.h`与`.pb.c`文件。
 
 nanopb_generator可通过以下方式获取：
 
