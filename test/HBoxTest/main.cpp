@@ -1509,6 +1509,10 @@ static int hsimulator_test(int argc,const char *argv[])
     return 0;
 }
 
+//导入main_entry消息定义及实现
+#include "pbinc/main_entry.pb.h"
+#include "pbinc/main_entry.pb.c"
+
 static int h3rdparty_test(int argc,const char *argv[])
 {
     printf("h3rdparty_test:start!\r\n");
@@ -1536,6 +1540,83 @@ static int h3rdparty_test(int argc,const char *argv[])
             cJSON_Delete(root);
         }
         printf("h3rdparty_test:cJSON end!\r\n");
+    }
+
+    {
+        printf("h3rdparty_test:nanopb start!\r\n");
+        {
+            uint8_t buffer[4096]= {0};
+            //数据长度
+            size_t buffer_length=0;
+            {
+                //消息编码（序列化）
+                printf("h3rdparty_test:nanopb encode!\r\n");
+                MainEntry message=MainEntry_init_zero;
+                message.argc=argc;
+                message.argv.funcs.encode=[] (pb_ostream_t *stream, const pb_field_t *field, void * const *arg)->bool
+                {
+                    const char **argv=(const char **)*arg;
+                    if(stream!=NULL && field->tag == MainEntry_argv_tag)
+                    {
+                        for(size_t i=0; argv[i]!=NULL; i++)
+                        {
+                            if (!pb_encode_tag_for_field(stream, field))
+                            {
+                                return false;
+                            }
+                            if(!pb_encode_string(stream,(const pb_byte_t *)argv[i],strlen(argv[i])))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                };
+                message.argv.arg=(void *)argv;
+                pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+                if(pb_encode(&stream, MainEntry_fields, &message))
+                {
+                    buffer_length=stream.bytes_written;
+                }
+            }
+            {
+                for(size_t i=0; i<buffer_length; i++)
+                {
+                    if(i!=0 && (i%16) == 0)
+                    {
+                        printf("\r\n");
+                    }
+                    printf("%02X ",(int)buffer[i]);
+                }
+                printf("\r\n");
+            }
+            {
+                //消息解码（反序列化）
+                printf("h3rdparty_test:nanopb decode!\r\n");
+                MainEntry message=MainEntry_init_zero;
+                message.argc=argc;
+                message.argv.funcs.decode=[] (pb_istream_t *stream, const pb_field_t *field, void **arg)->bool
+                {
+                    if(stream!=NULL && field->tag == MainEntry_argv_tag)
+                    {
+                        uint8_t buff[4096]= {0};
+                        if(sizeof(buff) < stream->bytes_left)
+                        {
+                            return false;
+                        }
+                        pb_read(stream,buff,stream->bytes_left);
+                        printf("argv:%s\r\n",(char *)buff);
+                    }
+                    return true;
+                };
+                pb_istream_t stream = pb_istream_from_buffer(buffer, buffer_length);
+                if(pb_decode(&stream, MainEntry_fields, &message))
+                {
+                    printf("argc=%d\r\n",message.argc);
+                }
+            }
+        }
+        printf("h3rdparty_test:nanopb end!\r\n");
     }
 
     printf("h3rdparty test:end!\r\n");

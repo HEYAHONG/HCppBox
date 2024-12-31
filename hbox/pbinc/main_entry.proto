@@ -1,0 +1,8 @@
+
+syntax = "proto3"; 
+
+
+message MainEntry{
+    int32               argc = 1;
+    repeated string     argv = 2;
+}
