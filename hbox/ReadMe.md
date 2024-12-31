@@ -318,6 +318,20 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 | `H3RDPARTY_USING_SYSTEM_CJSON`  | 使用系统cJSON库  | 需要手动引入第三方库，只定义此宏定义可能不能通过编译 |
 | `H3RDPARTY_USING_SYSTEM_NANOPB` | 使用系统nanopb库 | 需要手动引入第三方库，只定义此宏定义可能不能通过编译 |
 
+### nanopb
+
+嵌入式系统Protocol Buffers。
+
+本组件预定义一些Protocol Buffers，可用于测试。具体见[pbinc](pbinc)。
+
+使用nanopb时，需要现使用Protocol Buffers消息文件通过`nanopb_generator`工具生成`.pb.h`与`.pb.c`文件。
+
+nanopb_generator可通过以下方式获取：
+
+- 直接下载[nanopb](https://github.com/nanopb/nanopb)源代码,使用源代码中的`generator/nanopb_generator.py`。
+- 通过[python](https://www.python.org/)的pip工具安装nanopb包，安装完成后若PATH变量设置正确则可直接使用`nanopb_generator`。此方法适用于所有支持python且支持pip的平台。
+- 通过系统的软件包管理工具安装nanopb软件包。此方法适用于python软件包被系统管理的情况，如ubuntu可使用`sudo apt-get install nanopb`安装相应工具，安装完成即可使用`nanopb_generator`。
+
 ## hbase64
 
 简易Base64编解码。可用于在Json中嵌入二进制编码。
