@@ -16,6 +16,7 @@ static int hunicode_test(int argc,const char *argv[]);
 static int hstacklesscoroutine_test(int argc,const char *argv[]);
 static int hbase64_test(int argc,const char *argv[]);
 static int hsimulator_test(int argc,const char *argv[]);
+static int h3rdparty_test(int argc,const char *argv[]);
 
 static int (*test_cb[])(int,const char *[])=
 {
@@ -31,7 +32,8 @@ static int (*test_cb[])(int,const char *[])=
     hunicode_test,
     hstacklesscoroutine_test,
     hbase64_test,
-    hsimulator_test
+    hsimulator_test,
+    h3rdparty_test
 };
 
 int main(int argc,const char *argv[])
@@ -1504,5 +1506,38 @@ static int hsimulator_test(int argc,const char *argv[])
         printf("hsimulator hs_rp_pio(simple_pins_out) end!\r\n");
     }
 
+    return 0;
+}
+
+static int h3rdparty_test(int argc,const char *argv[])
+{
+    printf("h3rdparty_test:start!\r\n");
+
+    h3rdparty_init();
+
+    {
+        //cJSON测试
+        printf("h3rdparty_test:cJSON start!\r\n");
+        cJSON * root=cJSON_Parse("{\"cJSON\":\"Testing\"}");
+        if(root!=NULL)
+        {
+            cJSON_AddBoolToObject(root,"bool",true);
+            cJSON_AddNullToObject(root,"null");
+            cJSON_AddNumberToObject(root,"number",12345);
+            cJSON_AddStringToObject(root,"string","ok");
+            {
+                char buffer[4096];
+                buffer[0]='\0';
+                if(cJSON_PrintPreallocated(root,buffer,sizeof(buffer),true))
+                {
+                    printf("%s\r\n",buffer);
+                }
+            }
+            cJSON_Delete(root);
+        }
+        printf("h3rdparty_test:cJSON end!\r\n");
+    }
+
+    printf("h3rdparty test:end!\r\n");
     return 0;
 }
