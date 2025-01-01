@@ -1,5 +1,5 @@
 /***************************************************************
- * Name:      h3rdparty_mqtt_packket.c
+ * Name:      h3rdparty_mqtt_packet.c
  * Purpose:   引入第三方源代码文件
  * Author:    HYH (hyhsystem.cn)
  * Created:   2025-01-01
