@@ -310,6 +310,7 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 - [cJSON](https://github.com/DaveGamble/cJSON/tree/master):JSON 解析器。
 - [printf](https://github.com/mpaland/printf.git)：嵌入式系统sprintf/printf实现。
 - [nanopb](https://github.com/nanopb/nanopb.git)：嵌入式系统Protocol Buffers。
+- [paho.mqtt.embedded-c](https://github.com/eclipse-paho/paho.mqtt.embedded-c)：嵌入式MQTT C/C++客户端。
 
  提供的配置宏定义如下：
 
