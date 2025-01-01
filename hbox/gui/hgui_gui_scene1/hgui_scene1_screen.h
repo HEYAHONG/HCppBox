@@ -21,7 +21,8 @@ extern "C"
 
 
 struct hgui_scene1_screen_base;
-typedef struct hgui_scene1_screen_base hgui_scene1_screen_base_t;
+//已在hgui_scene1_app.h定义
+//typedef struct hgui_scene1_screen_base hgui_scene1_screen_base_t;
 
 struct hgui_scene1_screen_base
 {
