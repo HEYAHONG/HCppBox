@@ -96,6 +96,13 @@ int hfctprintf(void (*out)(char character, void* arg), void* arg, const char* fo
 #include "pb_decode.h"
 #endif
 
+/*
+ * 引入paho.mqtt.embedded-c库,用户需要手动引入相应头文件
+ */
+#ifndef H3RDPARTY_PAHO_MQTT_EMBEDDED_C_PACKET_HEADER
+#define H3RDPARTY_PAHO_MQTT_EMBEDDED_C_PACKET_HEADER "3rdparty/paho.mqtt.embedded-c/MQTTPacket/src/MQTTPacket.h"
+#endif
+
 #endif // __H3RDPARTY_H__
 
 

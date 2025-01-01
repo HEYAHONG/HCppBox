@@ -1513,6 +1513,9 @@ static int hsimulator_test(int argc,const char *argv[])
 #include "pbinc/main_entry.pb.h"
 #include "pbinc/main_entry.pb.c"
 
+//测试paho.mqtt.embedded-c头文件引入功能
+#include H3RDPARTY_PAHO_MQTT_EMBEDDED_C_PACKET_HEADER
+
 static int h3rdparty_test(int argc,const char *argv[])
 {
     printf("h3rdparty_test:start!\r\n");
@@ -1622,3 +1625,5 @@ static int h3rdparty_test(int argc,const char *argv[])
     printf("h3rdparty test:end!\r\n");
     return 0;
 }
+
+
