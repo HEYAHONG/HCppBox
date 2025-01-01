@@ -28,6 +28,9 @@
 /* Disable support for error messages in order to save some code space. */
 /* #define PB_NO_ERRMSG 1 */
 
+/* Disable checks to ensure sub-message encoded size is consistent when re-run. */
+/* #define PB_NO_ENCODE_SIZE_CHECK 1 */
+
 /* Disable support for custom streams (support only memory buffers). */
 /* #define PB_BUFFER_ONLY 1 */
 
@@ -126,14 +129,31 @@ extern "C" {
 #   define pb_packed
 #endif
 
+/* Define for explicitly not inlining a given function */
+#if defined(__GNUC__) || defined(__clang__)
+    /* For GCC and clang */
+#   define pb_noinline __attribute__((noinline))
+#elif defined(__ICCARM__) || defined(__CC_ARM)
+    /* For IAR ARM and Keil MDK-ARM compilers */
+#   define pb_noinline
+#elif defined(_MSC_VER) && (_MSC_VER >= 1500)
+#   define pb_noinline __declspec(noinline)
+#else
+#   define pb_noinline
+#endif
+
 /* Detect endianness */
+#if !defined(CHAR_BIT) && defined(__CHAR_BIT__)
+#define CHAR_BIT __CHAR_BIT__
+#endif
+
 #ifndef PB_LITTLE_ENDIAN_8BIT
 #if ((defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN) || \
      (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || \
       defined(__LITTLE_ENDIAN__) || defined(__ARMEL__) || \
       defined(__THUMBEL__) || defined(__AARCH64EL__) || defined(_MIPSEL) || \
       defined(_M_IX86) || defined(_M_X64) || defined(_M_ARM)) \
-     && CHAR_BIT == 8
+     && defined(CHAR_BIT) && CHAR_BIT == 8
 #define PB_LITTLE_ENDIAN_8BIT 1
 #endif
 #endif
