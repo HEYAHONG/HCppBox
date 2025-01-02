@@ -135,9 +135,138 @@ static void monochromscreen_init()
  * 屏幕
  */
 
-//主屏幕
+//主屏幕(1)
 hdefaults_tick_t main_screen_tick=hdefaults_tick_get();
 static  int main_screen_key_count=0;
+static  const hgui_scene1_screen_base_t main1_screen=
+{
+    //进入屏幕
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app)
+    {
+        main_screen_tick=hdefaults_tick_get();
+    },
+    //离开屏幕
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app)
+    {
+
+    },
+    //更新屏幕
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app)
+    {
+        if((hdefaults_tick_get()-main_screen_tick)>500)
+        {
+            main_screen_tick=hdefaults_tick_get();
+            monochromscreen_screen_clear();
+            {
+                //将上1/8与下1/8像素设置为置位
+                for(size_t i=0; i<h; i++)
+                {
+                    for(size_t j=0; j<w; j++)
+                    {
+                        if(i<h/8 || i>=(h-h/8))
+                        {
+                            monochromescreen_set_pixel(j,i,true);
+                        }
+                    }
+                }
+            }
+            {
+                auto draw_pixel=[](const hgui_gui_dotfont_t * dotfont,size_t x,size_t y,bool point,void *usr)->bool
+                {
+                    (void)dotfont;
+                    (void)usr;
+                    if((x<w) && (y<h))
+                    {
+                        monochromescreen_set_pixel(x,y,!point);
+                    }
+                    return true;
+                };
+                {
+                    //显示标题
+                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,"Main",(w-6*4)/2,0,w,draw_pixel,NULL);
+                }
+                {
+                    //显示内容
+                    auto draw_pixel=[](const hgui_gui_dotfont_t * dotfont,size_t x,size_t y,bool point,void *usr)->bool
+                    {
+                        (void)dotfont;
+                        (void)usr;
+                        if((x<w) && (y<h))
+                        {
+                            monochromescreen_set_pixel(x,y,point);
+                        }
+                        return true;
+                    };
+                    char str[256];
+                    {
+                        sprintf(str,"This is %dx%d screen\nmonochrome screen\r\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\nhit LEFT(a)",(int)w,(int)h,main_screen_key_count);
+                    }
+                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,str,0,h/8+4,w,draw_pixel,NULL);
+                }
+                {
+                    //显示时间
+                    time_t now=time(NULL);
+                    struct tm tm_now=*localtime(&now);
+                    std::string  asctime_str{asctime(&tm_now)};
+                    asctime_str=asctime_str.substr(0,20);
+                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,asctime_str.c_str(),4,(h-h/8),w,draw_pixel,NULL);
+                }
+            }
+            hgui_scene1_app_need_refresh(app);
+        }
+    },
+    //事件处理
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app,uint8_t type,void *eventparam,size_t eventparam_length,void *usr) -> bool
+    {
+        {
+            hgui_gui_event_key_t key;
+            if(hgui_gui_event_key_get(&key,type,eventparam,eventparam_length,usr)!=NULL)
+            {
+                //按键事件
+                if(key.key_press_or_release==1)
+                {
+                    //按键按下
+                    switch(key.key_value)
+                    {
+                    case HGUI_GUI_EVENT_KEY_VALUE_w:
+                    case HGUI_GUI_EVENT_KEY_VALUE_UP:
+                    {
+                        //上键
+                        main_screen_key_count++;
+                    }
+                    break;
+                    case HGUI_GUI_EVENT_KEY_VALUE_s:
+                    case HGUI_GUI_EVENT_KEY_VALUE_DOWN:
+                    {
+                        //下键
+                        main_screen_key_count--;
+                    }
+                    break;
+                    case HGUI_GUI_EVENT_KEY_VALUE_a:
+                    case HGUI_GUI_EVENT_KEY_VALUE_LEFT:
+                    {
+                        //左键
+                        //退出当前界面
+                        hgui_scene1_app_screen_stack_pop(&g_hgui_scene1_app);
+                    }
+                    break;
+                    default:
+                    {
+
+                    }
+                    break;
+                    }
+                }
+
+                hgui_scene1_app_need_refresh(&g_hgui_scene1_app);
+            }
+        }
+        return true;
+    },
+    NULL
+};
+
+//主屏幕
 static  const hgui_scene1_screen_base_t main_screen=
 {
     //进入屏幕
@@ -199,7 +328,7 @@ static  const hgui_scene1_screen_base_t main_screen=
                     };
                     char str[256];
                     {
-                        sprintf(str,"This is %dx%d screen\nmonochrome screen\r\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\n",(int)w,(int)h,main_screen_key_count);
+                        sprintf(str,"This is %dx%d screen\nmonochrome screen\r\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\nhit RIGHT(d)",(int)w,(int)h,main_screen_key_count);
                     }
                     hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,str,0,h/8+4,w,draw_pixel,NULL);
                 }
@@ -242,6 +371,14 @@ static  const hgui_scene1_screen_base_t main_screen=
                         main_screen_key_count--;
                     }
                     break;
+                    case HGUI_GUI_EVENT_KEY_VALUE_d:
+                    case HGUI_GUI_EVENT_KEY_VALUE_RIGHT:
+                    {
+                        //右键
+                        //进入主屏幕1
+                        hgui_scene1_app_screen_stack_push(&g_hgui_scene1_app,(hgui_scene1_screen_base_t *)&main1_screen);
+                    }
+                    break;
                     default:
                     {
 
@@ -257,6 +394,7 @@ static  const hgui_scene1_screen_base_t main_screen=
     },
     NULL
 };
+
 
 /*
  * GUI应用
