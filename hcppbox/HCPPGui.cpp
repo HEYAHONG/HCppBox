@@ -326,6 +326,36 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         }
         switch (wParam)
         {
+        case VK_INSERT:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_INSERT;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_HOME:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_HOME;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_PRIOR:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_PAGEUP;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_END:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_END;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_NEXT:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_PAGEDOWN;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
         case VK_DELETE:
         {
             key.key_value = HGUI_GUI_EVENT_KEY_VALUE_DELETE;
@@ -462,6 +492,31 @@ static uint32_t sdl_keysym_convert(uint32_t keycode)
     uint32_t ret=keycode;
     switch(keycode)
     {
+    case SDLK_INSERT:
+    {
+        ret= HGUI_GUI_EVENT_KEY_VALUE_INSERT;
+    }
+    break;
+    case SDLK_HOME:
+    {
+        ret= HGUI_GUI_EVENT_KEY_VALUE_HOME;
+    }
+    break;
+    case SDLK_PAGEUP:
+    {
+        ret= HGUI_GUI_EVENT_KEY_VALUE_PAGEUP;
+    }
+    break;
+    case SDLK_END:
+    {
+        ret= HGUI_GUI_EVENT_KEY_VALUE_END;
+    }
+    break;
+    case SDLK_PAGEDOWN:
+    {
+        ret= HGUI_GUI_EVENT_KEY_VALUE_PAGEDOWN;
+    }
+    break;
     case SDLK_DELETE:
     {
         ret=HGUI_GUI_EVENT_KEY_VALUE_DELETE;
