@@ -44,7 +44,7 @@ bool hgui_gui_dotfont_show_ascii_string(const hgui_gui_dotfont_t * dotfont,const
                 {
                     if(hgui_gui_dotfont_show_char(dotfont,Char,x,y,draw_pixel,usr))
                     {
-                        if((x+dotfont->w) <= w)
+                        if((x+dotfont->w*2) <= w)
                         {
                             x+=dotfont->w;
                         }
@@ -118,7 +118,7 @@ bool hgui_gui_dotfont_show_unicode_string(const hgui_gui_dotfont_t * dotfont,con
                 {
                     if(hgui_gui_dotfont_show_char(dotfont,Char,x,y,draw_pixel,usr))
                     {
-                        if((x+dotfont->w) <= w)
+                        if((x+dotfont->w*2) <= w)
                         {
                             x+=dotfont->w;
                         }
