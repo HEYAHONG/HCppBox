@@ -183,7 +183,7 @@ static  const hgui_scene1_screen_base_t main1_screen=
                 };
                 {
                     //显示标题
-                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,"Main",(w-6*4)/2,0,w,draw_pixel,NULL);
+                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,"Main1",(w-6*4)/2,0,w,draw_pixel,NULL);
                 }
                 {
                     //显示内容
@@ -199,7 +199,7 @@ static  const hgui_scene1_screen_base_t main1_screen=
                     };
                     char str[256];
                     {
-                        sprintf(str,"This is %dx%d screen\nmonochrome screen\r\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\nhit LEFT(a)",(int)w,(int)h,main_screen_key_count);
+                        sprintf(str,"%dx%d screen\nmonochrome screen\r\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\nhit LEFT(a)",(int)w,(int)h,main_screen_key_count);
                     }
                     hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,str,0,h/8+4,w,draw_pixel,NULL);
                 }
@@ -328,7 +328,7 @@ static  const hgui_scene1_screen_base_t main_screen=
                     };
                     char str[256];
                     {
-                        sprintf(str,"This is %dx%d screen\nmonochrome screen\r\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\nhit RIGHT(d)",(int)w,(int)h,main_screen_key_count);
+                        sprintf(str,"%dx%d screen\nmonochrome screen\r\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\nhit RIGHT(d)",(int)w,(int)h,main_screen_key_count);
                     }
                     hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,str,0,h/8+4,w,draw_pixel,NULL);
                 }
