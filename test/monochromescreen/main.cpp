@@ -199,9 +199,14 @@ static  const hgui_scene1_screen_base_t main1_screen=
                     };
                     char str[256];
                     {
-                        sprintf(str,"%dx%d screen\nmonochrome screen\r\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\nhit LEFT(a)",(int)w,(int)h,main_screen_key_count);
+                        {
+                            const hgui_gui_dotfont_hdotfont_t font=hgui_gui_dotfont_hdotfont(hdotfont_char_set_20,hdotfont_char_set_20_size,20);
+                            hgui_gui_dotfont_show_unicode_string((const hgui_gui_dotfont_t *)&font,L"点阵屏中文",0,h/8,w,draw_pixel,NULL);
+                        }
+                        //空两行
+                        sprintf(str,"\n\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\nhit LEFT(a)",main_screen_key_count);
+                        hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,str,0,h/8+4,w,draw_pixel,NULL);
                     }
-                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,str,0,h/8+4,w,draw_pixel,NULL);
                 }
                 {
                     //显示时间
@@ -452,3 +457,6 @@ int main()
     }
     return 0;
 }
+
+//导入字体
+#include "../HCPPGuiTest/hdotfont.c"
