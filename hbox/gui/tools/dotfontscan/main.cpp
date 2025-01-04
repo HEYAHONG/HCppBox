@@ -13,6 +13,8 @@
 #include <set>
 #include <fstream>
 #include <algorithm>
+#include "stdio.h"
+#include "stdlib.h"
 
 
 static class ft_lib
@@ -601,6 +603,12 @@ static void generate_c_file()
     }
 }
 
+static void c_file_codestyle()
+{
+    std::string astyle_cmd=std::string("astyle -n ")+output_file_path;
+    system(astyle_cmd.c_str());
+}
+
 int main(int argc,const char *argv[])
 {
     arg_parse(argc,argv);
@@ -610,6 +618,8 @@ int main(int argc,const char *argv[])
     checkout_fontfile();
 
     generate_c_file();
+
+    c_file_codestyle();
 
     return 0;
 }
