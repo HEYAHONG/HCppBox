@@ -29,3 +29,7 @@ cmake --build .
 注意:scons构建并非主要构建，一般是为了测试[RT-Thread](https://www.rt-thread.org/)的scons构建。
 
 构建完成后可在build目录找到测试程序。
+
+# Android
+
+Android测试见目录[Android](Android)。Android测试项目需要Android Studio及最新的Android SDK,一般情况不与其它平台通用。
