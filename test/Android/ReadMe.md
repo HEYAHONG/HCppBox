@@ -16,3 +16,5 @@
 ## HelloWorld
 
 helloworld，一般用于测试编译。
+
+本项目可直接使用Android Studio打开工程目录[HelloWorld](HelloWorld)。
