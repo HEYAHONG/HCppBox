@@ -33,4 +33,16 @@ public class MainActivity extends AppCompatActivity {
      * which is packaged with this application.
      */
     public native String stringFromJNI();
+
+    /*
+     * 初始化     *
+     */
+    public native void Init();
+
+    public MainActivity()
+    {
+        //初始化
+        Init();
+    }
+
 }
