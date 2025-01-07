@@ -21,6 +21,15 @@ Android Studio是用于开发 Android 应用的官方集成开发环境 (IDE)。
 
 安装好Android Studio后，可通过SDK管理器安装最新版NDK与CMake。
 
+# 调试
+
+对于C/C++代码而言，除了IDE提供的方式（打断点），另外一种较为常用的方式是采用日志进行调试。
+
+可通过以下方式查看日志：
+
+- 在Android Studio的LogCat窗口查看日志。一般适用于开发过程中。
+- 在adb的shell中运行logcat命令查看日志。一般适用于只有安装包的情况。
+
 # 项目列表
 
 ## HelloWorld
