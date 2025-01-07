@@ -35,3 +35,17 @@ JNIEXPORT void JNICALL
 Java_cn_hyhsystem_hcppbox_helloworld_MainActivity_Init(JNIEnv *env, jobject thiz) {
     LOGI("Init");
 }
+
+/*
+ * 注意：毫秒定时器由定时器(在主活动实现)调用
+ */
+hdefaults_tick_t current_tick=0;
+extern "C"
+JNIEXPORT void JNICALL
+Java_cn_hyhsystem_hcppbox_helloworld_MainActivity_MsTick(JNIEnv *env, jobject thiz) {
+    current_tick++;
+    if(current_tick%5000==0)
+    {
+        LOGI("Current Tick=%llu",(unsigned  long long)current_tick);
+    }
+}
