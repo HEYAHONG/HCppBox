@@ -53,4 +53,5 @@ hrc_enable(${PROJECT_NAME})
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
-        log)
+        log
+        dl)

@@ -4,9 +4,27 @@
 #include "hbox.h"
 #include "HCPPBox.h"
 #include <android/log.h>
+#include <dlfcn.h>
 
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, "helloworld-libs::", __VA_ARGS__))
+
+
+static std::string GetCurrentLibPATH()
+{
+    std::string ret;
+    void * handle = dlopen(NULL,RTLD_LAZY);
+    if(handle!=NULL)
+    {
+        Dl_info info= {0};
+        if(dladdr((const void *)GetCurrentLibPATH,&info))
+        {
+            ret=info.dli_fname;
+        }
+        dlclose(handle);
+    }
+    return ret;
+}
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_cn_hyhsystem_hcppbox_helloworld_MainActivity_stringFromJNI(
@@ -34,6 +52,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_cn_hyhsystem_hcppbox_helloworld_MainActivity_Init(JNIEnv *env, jobject thiz) {
     LOGI("Init");
+    LOGI("Lib_PATH:%s",GetCurrentLibPATH().c_str());
 }
 
 /*
