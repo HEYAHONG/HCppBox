@@ -55,3 +55,12 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         android
         log
         dl)
+
+# Android NDK 会保留.so结尾的文件并打包到lib目录，可执行文件也打包到此目录
+set(CMAKE_EXECUTABLE_SUFFIX  ".so")
+
+#添加一个libexec_hellorworld.so作为可执行文件
+add_executable(libexec_helloworld libexec_helloworld.cpp)
+hcppbox_enable(libexec_helloworld)
+hrc_enable(libexec_helloworld)
+target_link_libraries(libexec_helloworld android log dl)
