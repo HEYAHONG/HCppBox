@@ -8,6 +8,10 @@
  **************************************************************/
 #include "HCPPSocket.h"
 #ifdef HCPPSOCKET_HAVE_SOCKET
+#ifdef __CYGWIN__
+void HCPPSocketCygwinHelperStartup();
+void HCPPSocketCygwinHelperCleanup();
+#endif // __CYGWIN__
 static class socket_manager
 {
 public:
@@ -28,12 +32,18 @@ public:
             }
         }
 #endif
+#ifdef __CYGWIN__
+        HCPPSocketCygwinHelperStartup();
+#endif // __CYGWIN__
     }
     ~socket_manager()
     {
 #ifdef WIN32
         WSACleanup();
 #endif
+#ifdef __CYGWIN__
+        HCPPSocketCygwinHelperCleanup();
+#endif // __CYGWIN__
     }
 } g_socket_manager;
 

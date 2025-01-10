@@ -89,6 +89,17 @@
 - HCPPTimer.cpp
 - HCPPTimer.h
 
+##  HCPPSocket
+
+对各种操作系统的套接字进行一定的封装，用于编写更加通用的套接字程序。
+
+### 文件列表
+
+- HCPPSocket.cpp
+- HCPPSocketCygwinHelper.cpp
+
+- HCPPSocket.h
+
 ## HCPPInit
 
 辅助实现动态注册初始化函数且按照一定顺序初始化。
