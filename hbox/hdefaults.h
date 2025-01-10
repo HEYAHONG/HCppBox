@@ -51,7 +51,12 @@ extern "C"
 #define HDEFAULTS_OS_UNIX 1
 #endif // HDEFAULTS_OS_UNIX
 #endif // __unix__
-
+#ifdef __ANDROID__
+#include "hdefaults/hdefaults_os_android.h"
+#ifndef HDEFAULTS_OS_ANDROID
+#define HDEFAULTS_OS_ANDROID 1
+#endif // HDEFAULTS_OS_ANDROID
+#endif
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
