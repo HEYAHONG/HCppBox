@@ -9,6 +9,7 @@
 #ifndef HCPPBOX_H_INCLUDED
 #define HCPPBOX_H_INCLUDED
 
+#include "hbox.h"
 #include "HCPPObject.h"
 #include "HCPPObjectPool.h"
 #include "HCPPThread.h"

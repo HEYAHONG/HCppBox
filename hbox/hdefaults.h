@@ -32,6 +32,23 @@ extern "C"
 #endif // WIN32
 #endif // __CYGWIN__
 
+//提高windows下的兼容性
+#ifdef _WIN32
+#ifndef WIN32
+#define WIN32 1
+#endif // WIN32
+#endif // _WIN32
+#ifdef __WIN32
+#ifndef WIN32
+#define WIN32 1
+#endif // WIN32
+#endif // __WIN32
+#ifdef __WIN32__
+#ifndef WIN32
+#define WIN32 1
+#endif // WIN32
+#endif // __WIN32__
+
 //定义操作系统
 #ifdef __RTTHREAD__
 #include "hdefaults/hdefaults_os_rtthread.h"

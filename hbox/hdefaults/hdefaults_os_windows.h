@@ -9,6 +9,7 @@
 #ifndef __HDEFAULTS_OS_WINDOWS_H__
 #define __HDEFAULTS_OS_WINDOWS_H__
 #include "hdefaults_common.h"
+#include "winsock2.h"
 #include "windows.h"
 
 

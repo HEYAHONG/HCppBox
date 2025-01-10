@@ -8,7 +8,7 @@
  **************************************************************/
 #ifndef __HCPPSOCKET_H__
 #define __HCPPSOCKET_H__
-
+#include "hbox.h"
 #if defined(__unix__) || defined(__linux__)
 #ifndef HCPPSOCKET_HAVE_SOCKET
 #define HCPPSOCKET_HAVE_SOCKET 1

@@ -8,6 +8,7 @@
  **************************************************************/
 #ifndef __HCPPGUI_H__
 #define __HCPPGUI_H__
+#include "hbox.h"
 
 #ifdef __cplusplus
 extern "C"
