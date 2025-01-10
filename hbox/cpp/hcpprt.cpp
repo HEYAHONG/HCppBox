@@ -10,14 +10,6 @@
 #include "hcompiler.h"
 #include "hdefaults.h"
 
-//CYGWIN当作Windows
-#ifdef __CYGWIN__
-#undef __unix__
-#ifndef WIN32
-#define WIN32 1
-#endif // WIN32
-#endif // __CYGWIN__
-
 /*
 通过此类判断构造函数是否被执行。
 */
