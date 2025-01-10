@@ -34,19 +34,19 @@ extern "C"
 
 //定义操作系统
 #ifdef __RTTHREAD__
-#include "rtthread.h"
+#include "hdefaults/hdefaults_os_rtthread.h"
 #ifndef HDEFAULTS_OS_RTTHREAD
 #define HDEFAULTS_OS_RTTHREAD 1
 #endif // HDEFAULTS_OS_RTTHREAD
 #endif // __RTTHREAD__
 #ifdef WIN32
-#include "windows.h"
+#include "hdefaults/hdefaults_os_windows.h"
 #ifndef HDEFAULTS_OS_WINDOWS
 #define HDEFAULTS_OS_WINDOWS 1
 #endif // HDEFAULTS_OS_WINDOWS
 #endif // WIN32
 #ifdef __unix__
-#include "pthread.h"
+#include "hdefaults/hdefaults_os_unix.h"
 #ifndef HDEFAULTS_OS_UNIX
 #define HDEFAULTS_OS_UNIX 1
 #endif // HDEFAULTS_OS_UNIX
