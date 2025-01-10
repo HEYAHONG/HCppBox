@@ -24,13 +24,8 @@ extern "C"
 #include "string.h"
 #include "stdbool.h"
 
-//CYGWIN当作Windows
-#ifdef __CYGWIN__
-#undef __unix__
-#ifndef WIN32
-#define WIN32 1
-#endif // WIN32
-#endif // __CYGWIN__
+
+
 
 //提高windows下的兼容性
 #ifdef _WIN32
@@ -74,6 +69,12 @@ extern "C"
 #define HDEFAULTS_OS_ANDROID 1
 #endif // HDEFAULTS_OS_ANDROID
 #endif
+#ifdef __CYGWIN__
+#include "hdefaults/hdefaults_os_cygwin.h"
+#ifndef HDEFAULTS_OS_CYGWIN
+#define HDEFAULTS_OS_CYGWIN 1
+#endif // HDEFAULTS_OS_CYGWIN
+#endif // __CYGWIN__
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
