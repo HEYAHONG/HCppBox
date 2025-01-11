@@ -13,9 +13,14 @@
   ((void)__android_log_print(ANDROID_LOG_INFO, "helloworld-libs::", __VA_ARGS__))
 
 
+static std::string CurrentLibPATH;
 static std::string GetCurrentLibPATH()
 {
-    std::string ret;
+    std::string ret=CurrentLibPATH;
+    if(!ret.empty())
+    {
+        return ret;
+    }
     void * handle = dlopen(NULL,RTLD_LAZY);
     if(handle!=NULL)
     {
@@ -26,6 +31,8 @@ static std::string GetCurrentLibPATH()
         }
         dlclose(handle);
     }
+
+    CurrentLibPATH=ret;
     return ret;
 }
 
@@ -46,6 +53,11 @@ static std::string GetCurrentLibDir()
 static std::string GetLibexecPath(std::string libexec_name)
 {
     std::string ret=GetCurrentLibDir()+libexec_name;
+    //检查执行权限
+    if(access(ret.c_str(), X_OK)!=0)
+    {
+        ret.clear();
+    }
     return ret;
 }
 
