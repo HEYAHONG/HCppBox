@@ -10,6 +10,9 @@
 #define __HDEFAULTS_OS_NONE_H__
 #include "hdefaults_common.h"
 
-
+#ifndef HCPPRT_USE_CTORS
+//使用此行对C++构造函数执行情况进行检查,需要调用hcpprt_init函数。
+//#define HCPPRT_USE_CTORS 1
+#endif // HCPPRT_USE_CTORS
 
 #endif
