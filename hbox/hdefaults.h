@@ -25,8 +25,6 @@ extern "C"
 #include "stdbool.h"
 
 
-
-
 //提高windows下的兼容性
 #ifdef _WIN32
 #ifndef WIN32
@@ -50,31 +48,55 @@ extern "C"
 #ifndef HDEFAULTS_OS_RTTHREAD
 #define HDEFAULTS_OS_RTTHREAD 1
 #endif // HDEFAULTS_OS_RTTHREAD
+#ifndef HDEFAULTS_HAVE_OS
+#define HDEFAULTS_HAVE_OS 1
+#endif
 #endif // __RTTHREAD__
 #ifdef WIN32
 #include "hdefaults/hdefaults_os_windows.h"
 #ifndef HDEFAULTS_OS_WINDOWS
 #define HDEFAULTS_OS_WINDOWS 1
 #endif // HDEFAULTS_OS_WINDOWS
+#ifndef HDEFAULTS_HAVE_OS
+#define HDEFAULTS_HAVE_OS 1
+#endif
 #endif // WIN32
 #ifdef __unix__
 #include "hdefaults/hdefaults_os_unix.h"
 #ifndef HDEFAULTS_OS_UNIX
 #define HDEFAULTS_OS_UNIX 1
 #endif // HDEFAULTS_OS_UNIX
+#ifndef HDEFAULTS_HAVE_OS
+#define HDEFAULTS_HAVE_OS 1
+#endif
 #endif // __unix__
 #ifdef __ANDROID__
 #include "hdefaults/hdefaults_os_android.h"
 #ifndef HDEFAULTS_OS_ANDROID
 #define HDEFAULTS_OS_ANDROID 1
 #endif // HDEFAULTS_OS_ANDROID
+#ifndef HDEFAULTS_HAVE_OS
+#define HDEFAULTS_HAVE_OS 1
+#endif
 #endif
 #ifdef __CYGWIN__
 #include "hdefaults/hdefaults_os_cygwin.h"
 #ifndef HDEFAULTS_OS_CYGWIN
 #define HDEFAULTS_OS_CYGWIN 1
 #endif // HDEFAULTS_OS_CYGWIN
+#ifndef HDEFAULTS_HAVE_OS
+#define HDEFAULTS_HAVE_OS 1
+#endif
 #endif // __CYGWIN__
+
+
+//无操作系统(裸机)
+#ifndef HDEFAULTS_HAVE_OS
+#include "hdefaults/hdefaults_os_none.h"
+#ifndef HDEFAULTS_OS_NONE
+#define HDEFAULTS_OS_NONE 1
+#endif // HDEFAULTS_OS_NONE
+#endif
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
