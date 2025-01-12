@@ -132,9 +132,18 @@ int main()
     LOGI("Hello World!\r\n");
 
     //循环运行
+    std::chrono::steady_clock::time_point start_timepoint=std::chrono::steady_clock::now();
+    LOGI("Loop Start!Tick=%u",(unsigned)hdefaults_tick_get());
     while(isrunning)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        if(std::chrono::steady_clock::now()-start_timepoint > std::chrono::seconds(10))
+        {
+            //时间已到，退出进程
+            LOGI("Time was reached!,Tick=%u",(unsigned)hdefaults_tick_get());
+            isrunning=false;
+        }
     }
     return 0;
 }
