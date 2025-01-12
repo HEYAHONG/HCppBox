@@ -12,6 +12,11 @@
 //在unix上常使用pthread库
 #include "pthread.h"
 
-
+/*
+ * 定义默认的堆大小，在使用hmemoryheap默认函数分配内存时生效
+ */
+#ifndef HMEMORYHEAP_DEFAULT_POOL_SIZE
+#define HMEMORYHEAP_DEFAULT_POOL_SIZE 100*1024
+#endif // HMEMORYHEAP_DEFAULT_POOL_SIZE
 
 #endif

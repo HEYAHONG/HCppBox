@@ -13,7 +13,9 @@
 
 #ifdef RT_USING_CPLUSPLUS
 
-//RT-Thread会重载new与delete
+/*
+ * RT-Thread会重载new与delete
+ */
 #ifndef HCPPRT_NO_NEW_AND_DELETE_OVERRIDE
 #define HCPPRT_NO_NEW_AND_DELETE_OVERRIDE 1
 #endif // HCPPRT_NO_NEW_AND_DELETE_OVERRIDE
