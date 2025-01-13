@@ -32,6 +32,7 @@ hbox意为HYH的工具箱。
 |      `__unix__`       |                        处于(类)unix中                        | 若处于linux中，可使用`__linux__` 判断。在(类)unix中将使用pthread及其相关库（有些可能需要手动启用）。 |
 |     `__ANDROID__`     |                        处于Android中                         | 通常也会定义`__unix__`、`__linux__`，即处于(类) unix、linux中。 |
 |     `__CYGWIN__`      |                         处于Cygwin中                         |         通常也会定义`__unix__`，即处于(类) unix中。          |
+|   `__EMSCRIPTEN__`    |                       处于emscripten中                       |         通常也会定义`__unix__`，即处于(类) unix中。          |
 | `__STDC_NO_ATOMICS__` | 当此宏定义被定义时，C不包含`_Atomic`原子类型名,即不支持原子操作。 |                            C11起                             |
 |    `HAVE_CONFIG_H`    |          `config.h`存在,当定义存在时包含`config.h`           |                    此宏定义一般由用户定义                    |
 | `HBOX_CONFIG_HEADER`  | `HBOX_CONFIG_HEADER`表示hbox的配置文件路径(不含引号)，若定义将由hdefaults包含该配置文件。 |                    此宏定义一般由用户定义                    |
@@ -78,16 +79,17 @@ hbox意为HYH的工具箱。
 
 提供的宏定义如下:
 
-|         宏定义          |               说明               | 备注                                                         |
-| :---------------------: | :------------------------------: | :----------------------------------------------------------- |
-|   `hdefaults_xstr(s)`   | 宏函数,将符号s的内容转换为字符串 |                                                              |
-|   `hdefaults_str(s)`    |    宏函数,将符号s转换为字符串    |                                                              |
-| `HDEFAULTS_OS_RTTHREAD` |         处于RT-Thread中          |                                                              |
-| `HDEFAULTS_OS_WINDOWS`  |          处于Windows中           |                                                              |
-|   `HDEFAULTS_OS_UNIX`   |        处于UNIX(类UNIX中)        |                                                              |
-| `HDEFAULTS_OS_ANDROID`  |          处于Android中           | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
-|  `HDEFAULTS_OS_CYGWIN`  |           处于Cygwin中           | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
-|   `HDEFAULTS_OS_NONE`   |            无操作系统            | 通常为裸机开发，也可用于某些SDK中裸机应用开发（有操作系统但应用不可见，且无MMU/MPU内存管理的情况）。 |
+|          宏定义           |               说明               | 备注                                                         |
+| :-----------------------: | :------------------------------: | :----------------------------------------------------------- |
+|    `hdefaults_xstr(s)`    | 宏函数,将符号s的内容转换为字符串 |                                                              |
+|    `hdefaults_str(s)`     |    宏函数,将符号s转换为字符串    |                                                              |
+|  `HDEFAULTS_OS_RTTHREAD`  |         处于RT-Thread中          |                                                              |
+|  `HDEFAULTS_OS_WINDOWS`   |          处于Windows中           |                                                              |
+|    `HDEFAULTS_OS_UNIX`    |        处于UNIX(类UNIX中)        |                                                              |
+|  `HDEFAULTS_OS_ANDROID`   |          处于Android中           | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+|   `HDEFAULTS_OS_CYGWIN`   |           处于Cygwin中           | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+| `HDEFAULTS_OS_EMSCRIPTEN` |         处于EMSCRIPTEN中         | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+|    `HDEFAULTS_OS_NONE`    |            无操作系统            | 通常为裸机开发，也可用于某些SDK中裸机应用开发（有操作系统但应用不可见，且无MMU/MPU内存管理的情况）。 |
 
 可外部配置的宏定义如下:
 

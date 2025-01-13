@@ -89,6 +89,16 @@ extern "C"
 #endif
 #endif // __CYGWIN__
 
+#ifdef __EMSCRIPTEN__
+#include "hdefaults/hdefaults_os_emscripten.h"
+#ifndef HDEFAULTS_OS_EMSCRIPTEN
+#define HDEFAULTS_OS_EMSCRIPTEN 1
+#endif // HDEFAULTS_OS_EMSCRIPTEN
+#ifndef HDEFAULTS_HAVE_OS
+#define HDEFAULTS_HAVE_OS 1
+#endif
+#endif // __EMSCRIPTEN__
+
 
 //无操作系统(裸机)
 #ifndef HDEFAULTS_HAVE_OS
