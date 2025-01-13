@@ -139,6 +139,14 @@
 #endif // HDEFAULTS_LIBC_GLIBC
 #endif
 
+//uclibc
+#ifdef __UCLIBC__
+#include "hdefaults/hdefaults_libc_uclibc.h"
+#ifndef HDEFAULTS_LIBC_UCLIBC
+#define HDEFAULTS_LIBC_UCLIBC 1
+#endif // HDEFAULTS_LIBC_UCLIBC
+#endif
+
 //导入配置文件
 
 //导入config.h
