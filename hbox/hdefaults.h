@@ -131,6 +131,14 @@
 #endif // HDEFAULTS_LIBC_MINGW
 #endif
 
+//glibc
+#ifdef __GLIBC__
+#include "hdefaults/hdefaults_libc_glibc.h"
+#ifndef HDEFAULTS_LIBC_GLIBC
+#define HDEFAULTS_LIBC_GLIBC 1
+#endif // HDEFAULTS_LIBC_GLIBC
+#endif
+
 //导入配置文件
 
 //导入config.h
