@@ -14,10 +14,6 @@
 本文件主要定义一些默认相关宏定义及函数。
 */
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
 
 #include "stdlib.h"
 #include "stdint.h"
@@ -142,6 +138,11 @@ extern "C"
 #ifndef hdefaults_tick_t
 #define hdefaults_tick_t uint32_t
 #endif // hdefaults_tick_t
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
 
 /** \brief 获取当前节拍
  *
