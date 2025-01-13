@@ -9,7 +9,8 @@
 #ifndef __HDEFAULTS_OS_EMSCRIPTEN_H__
 #define __HDEFAULTS_OS_EMSCRIPTEN_H__
 #include "hdefaults_os_unix.h"
+#ifdef __cplusplus
 #include "emscripten.h"
-
+#endif // __cplusplus
 
 #endif
