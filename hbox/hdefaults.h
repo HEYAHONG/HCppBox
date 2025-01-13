@@ -20,7 +20,20 @@
 #include "string.h"
 #include "stdbool.h"
 
+//定义操作系统
 
+//RT-Thread
+#ifdef __RTTHREAD__
+#include "hdefaults/hdefaults_os_rtthread.h"
+#ifndef HDEFAULTS_OS_RTTHREAD
+#define HDEFAULTS_OS_RTTHREAD 1
+#endif // HDEFAULTS_OS_RTTHREAD
+#ifndef HDEFAULTS_HAVE_OS
+#define HDEFAULTS_HAVE_OS 1
+#endif
+#endif // __RTTHREAD__
+
+//Windows
 //提高windows下的兼容性
 #ifdef _WIN32
 #ifndef WIN32
@@ -37,17 +50,6 @@
 #define WIN32 1
 #endif // WIN32
 #endif // __WIN32__
-
-//定义操作系统
-#ifdef __RTTHREAD__
-#include "hdefaults/hdefaults_os_rtthread.h"
-#ifndef HDEFAULTS_OS_RTTHREAD
-#define HDEFAULTS_OS_RTTHREAD 1
-#endif // HDEFAULTS_OS_RTTHREAD
-#ifndef HDEFAULTS_HAVE_OS
-#define HDEFAULTS_HAVE_OS 1
-#endif
-#endif // __RTTHREAD__
 #ifdef WIN32
 #include "hdefaults/hdefaults_os_windows.h"
 #ifndef HDEFAULTS_OS_WINDOWS
@@ -57,6 +59,8 @@
 #define HDEFAULTS_HAVE_OS 1
 #endif
 #endif // WIN32
+
+//(类)unix,注意：Linux也使用此配置。
 #ifdef __unix__
 #include "hdefaults/hdefaults_os_unix.h"
 #ifndef HDEFAULTS_OS_UNIX
@@ -66,6 +70,8 @@
 #define HDEFAULTS_HAVE_OS 1
 #endif
 #endif // __unix__
+
+//Android
 #ifdef __ANDROID__
 #include "hdefaults/hdefaults_os_android.h"
 #ifndef HDEFAULTS_OS_ANDROID
@@ -75,6 +81,8 @@
 #define HDEFAULTS_HAVE_OS 1
 #endif
 #endif
+
+//Cygwin
 #ifdef __CYGWIN__
 #include "hdefaults/hdefaults_os_cygwin.h"
 #ifndef HDEFAULTS_OS_CYGWIN
@@ -85,6 +93,7 @@
 #endif
 #endif // __CYGWIN__
 
+//emscripten
 #ifdef __EMSCRIPTEN__
 #include "hdefaults/hdefaults_os_emscripten.h"
 #ifndef HDEFAULTS_OS_EMSCRIPTEN
@@ -104,6 +113,7 @@
 #endif // HDEFAULTS_OS_NONE
 #endif
 
+//导入config.h
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif // HAVE_CONFIG_H
@@ -117,24 +127,23 @@
 #define hdefaults_str(s) #s
 #endif // hdefaults_str
 
+//导入外部配置，使用命令行定义HBOX_CONFIG_HEADER指定外部配置文件名。
 #ifdef HBOX_CONFIG_HEADER
 #include hdefaults_xstr(HBOX_CONFIG_HEADER)
 #endif
 
 
+//定义hdefaults_tick_t
 #ifdef HDEFAULTS_OS_RTTHREAD
 #define hdefaults_tick_t rt_tick_t
 #endif // HDEFAULTS_OS_RTTHREAD
-
 #ifdef HDEFAULTS_OS_WINDOWS
 #define hdefaults_tick_t DWORD
 #endif // HDEFAULTS_OS_WINDOWS
-
 #ifdef HDEFAULTS_OS_UNIX
 #include <time.h>
 #include <sys/time.h>
 #endif // HDEFAULTS_OS_UNIX
-
 #ifndef hdefaults_tick_t
 #define hdefaults_tick_t uint32_t
 #endif // hdefaults_tick_t
