@@ -96,7 +96,7 @@ static bool become_root()
         }
         if(system((std::string("su root ")+GetCurrentLibPATH()).c_str())==0)
         {
-            //成功执行，要求主程序需要正常退出（返回0）
+            //成功执行，要求主程序正常退出（返回0）
             LOGI("try become_root success!");
             exit(0);
         }
