@@ -90,7 +90,8 @@ hbox意为HYH的工具箱。
 |   `HDEFAULTS_OS_CYGWIN`   | 处于Cygwin中                     | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
 | `HDEFAULTS_OS_EMSCRIPTEN` | 处于emscripten中                 | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
 |    `HDEFAULTS_OS_NONE`    | 无操作系统                       | 通常为裸机开发，也可用于某些SDK中裸机应用开发（有操作系统但应用不可见，且无MMU/MPU内存管理的情况）。 |
-|  `HDEFAULTS_LIBC_NEWLIB`  | C运行库采用Newlib                | Newlib常用于裸机开发。与常见的C运行库不同，通常情况下，需要用户移植部分系统调用。 |
+|  `HDEFAULTS_LIBC_NEWLIB`  | C库采用Newlib                    | Newlib常用于裸机开发。与常见的C库不同，通常情况下，需要用户移植部分系统调用。 |
+|  `HDEFAULTS_LIBC_MINGW`   | C库采用mingw                     | mingw通常采用[mingw-w64](https://www.mingw-w64.org/)版本，常用于Windows(或者兼容环境如[Wine](https://www.winehq.org/))。使用GCC/LLVM编译Windows程序时通常使用此C库。与其作用类似的为MSVC的C库。 |
 
 可外部配置的宏定义如下:
 

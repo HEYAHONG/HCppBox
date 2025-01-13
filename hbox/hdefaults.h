@@ -123,6 +123,14 @@
 #endif // HDEFAULTS_LIBC_NEWLIB
 #endif // __NEWLIB__
 
+//mingw
+#ifdef __MINGW32__
+#include "hdefaults/hdefaults_libc_mingw.h"
+#ifndef HDEFAULTS_LIBC_MINGW
+#define HDEFAULTS_LIBC_MINGW 1
+#endif // HDEFAULTS_LIBC_MINGW
+#endif
+
 //导入配置文件
 
 //导入config.h
