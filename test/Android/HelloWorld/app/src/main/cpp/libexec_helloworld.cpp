@@ -94,21 +94,13 @@ static bool become_root()
             LOGI("current_uid=%d,current_gid=%d",(int)getuid(),(int)getgid());
             return false;
         }
-        FILE *file= popen("su","w");
-        if(file!=NULL)
+        if(system((std::string("su root ")+GetCurrentLibPATH()).c_str())==0)
         {
-            {
-                //以root权限执行命令
-                std::string exec_path=GetCurrentLibPATH()+"\r\n";
-                fwrite(exec_path.c_str(),exec_path.length(),1,file);
-            }
-            {
-                //成功执行
-                LOGI("try become_root success!");
-            }
-            pclose(file);
+            //成功执行，要求主程序需要正常退出（返回0）
+            LOGI("try become_root success!");
             exit(0);
         }
+        else
         {
             LOGI("try become_root failed!");
             LOGI("current_uid=%d,current_gid=%d",(int)getuid(),(int)getgid());
