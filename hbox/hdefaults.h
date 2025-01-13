@@ -113,6 +113,18 @@
 #endif // HDEFAULTS_OS_NONE
 #endif
 
+//判断Libc
+
+//newlib
+#ifdef __NEWLIB__
+#include "hdefaults/hdefaults_libc_newlib.h"
+#ifndef HDEFAULTS_LIBC_NEWLIB
+#define HDEFAULTS_LIBC_NEWLIB 1
+#endif // HDEFAULTS_LIBC_NEWLIB
+#endif // __NEWLIB__
+
+//导入配置文件
+
 //导入config.h
 #ifdef HAVE_CONFIG_H
 #include "config.h"

@@ -79,17 +79,18 @@ hbox意为HYH的工具箱。
 
 提供的宏定义如下:
 
-|          宏定义           |               说明               | 备注                                                         |
-| :-----------------------: | :------------------------------: | :----------------------------------------------------------- |
+|          宏定义           | 说明                             | 备注                                                         |
+| :-----------------------: | :------------------------------- | :----------------------------------------------------------- |
 |    `hdefaults_xstr(s)`    | 宏函数,将符号s的内容转换为字符串 |                                                              |
-|    `hdefaults_str(s)`     |    宏函数,将符号s转换为字符串    |                                                              |
-|  `HDEFAULTS_OS_RTTHREAD`  |         处于RT-Thread中          |                                                              |
-|  `HDEFAULTS_OS_WINDOWS`   |          处于Windows中           |                                                              |
-|    `HDEFAULTS_OS_UNIX`    |        处于UNIX(类UNIX中)        |                                                              |
-|  `HDEFAULTS_OS_ANDROID`   |          处于Android中           | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
-|   `HDEFAULTS_OS_CYGWIN`   |           处于Cygwin中           | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
-| `HDEFAULTS_OS_EMSCRIPTEN` |         处于emscripten中         | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
-|    `HDEFAULTS_OS_NONE`    |            无操作系统            | 通常为裸机开发，也可用于某些SDK中裸机应用开发（有操作系统但应用不可见，且无MMU/MPU内存管理的情况）。 |
+|    `hdefaults_str(s)`     | 宏函数,将符号s转换为字符串       |                                                              |
+|  `HDEFAULTS_OS_RTTHREAD`  | 处于RT-Thread中                  |                                                              |
+|  `HDEFAULTS_OS_WINDOWS`   | 处于Windows中                    |                                                              |
+|    `HDEFAULTS_OS_UNIX`    | 处于UNIX(类UNIX中)               |                                                              |
+|  `HDEFAULTS_OS_ANDROID`   | 处于Android中                    | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+|   `HDEFAULTS_OS_CYGWIN`   | 处于Cygwin中                     | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+| `HDEFAULTS_OS_EMSCRIPTEN` | 处于emscripten中                 | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+|    `HDEFAULTS_OS_NONE`    | 无操作系统                       | 通常为裸机开发，也可用于某些SDK中裸机应用开发（有操作系统但应用不可见，且无MMU/MPU内存管理的情况）。 |
+|  `HDEFAULTS_LIBC_NEWLIB`  | C运行库采用Newlib                | Newlib常用于裸机开发。与常见的C运行库不同，通常情况下，需要用户移植部分系统调用。 |
 
 可外部配置的宏定义如下:
 
