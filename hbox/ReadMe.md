@@ -30,6 +30,7 @@ hbox意为HYH的工具箱。
 |    `__RTTHREAD__`     |                    处于RT-Thread操作系统                     |                     RT-Thread 4.0.3+有效                     |
 |        `WIN32`        |                        处于windows中                         |                                                              |
 |      `__unix__`       |                        处于(类)unix中                        | 若处于linux中，可使用`__linux__` 判断。在(类)unix中将使用pthread及其相关库（有些可能需要手动启用）。 |
+|      `__linux__`      |                         处于linux中                          |         通常也会定义`__unix__`，即处于(类) unix中。          |
 |     `__ANDROID__`     |                        处于Android中                         | 通常也会定义`__unix__`、`__linux__`，即处于(类) unix、linux中。 |
 |     `__CYGWIN__`      |                         处于Cygwin中                         |         通常也会定义`__unix__`，即处于(类) unix中。          |
 |   `__EMSCRIPTEN__`    |                       处于emscripten中                       |         通常也会定义`__unix__`，即处于(类) unix中。          |
@@ -86,7 +87,8 @@ hbox意为HYH的工具箱。
 |  `HDEFAULTS_OS_RTTHREAD`  | 处于RT-Thread中                  |                                                              |
 |  `HDEFAULTS_OS_WINDOWS`   | 处于Windows中                    |                                                              |
 |    `HDEFAULTS_OS_UNIX`    | 处于UNIX(类UNIX中)               |                                                              |
-|  `HDEFAULTS_OS_ANDROID`   | 处于Android中                    | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+|   `HDEFAULTS_OS_LINUX`    | 处于Linux中                      | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+|  `HDEFAULTS_OS_ANDROID`   | 处于Android中                    | 通常也会定义`HDEFAULTS_OS_UNIX`、`HDEFAULTS_OS_LINUX`        |
 |   `HDEFAULTS_OS_CYGWIN`   | 处于Cygwin中                     | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
 | `HDEFAULTS_OS_EMSCRIPTEN` | 处于emscripten中                 | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
 |    `HDEFAULTS_OS_NONE`    | 无操作系统                       | 通常为裸机开发，也可用于某些SDK中裸机应用开发（有操作系统但应用不可见，且无MMU/MPU内存管理的情况）。 |

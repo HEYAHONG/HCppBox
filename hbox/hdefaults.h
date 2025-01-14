@@ -71,6 +71,17 @@
 #endif
 #endif // __unix__
 
+//linux
+#ifdef __linux__
+#include "hdefaults/hdefaults_os_linux.h"
+#ifndef HDEFAULTS_OS_LINUX
+#define HDEFAULTS_OS_LINUX 1
+#endif // HDEFAULTS_OS_LINUX
+#ifndef HDEFAULTS_HAVE_OS
+#define HDEFAULTS_HAVE_OS 1
+#endif
+#endif
+
 //Android
 #ifdef __ANDROID__
 #include "hdefaults/hdefaults_os_android.h"
