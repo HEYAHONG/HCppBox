@@ -174,6 +174,15 @@
 #endif // HDEFAULTS_LIBC_UCLIBC
 #endif
 
+//armclib
+#ifdef __ARMCLIB_VERSION
+#include "hdefaults/hdefaults_libc_armclib.h"
+#ifndef HDEFAULTS_LIBC_ARMCLIB
+#define HDEFAULTS_LIBC_ARMCLIB 1
+#endif // HDEFAULTS_LIBC_ARMCLIB
+#endif
+
+
 //导入配置文件
 
 //导入config.h
