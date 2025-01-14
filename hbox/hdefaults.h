@@ -182,6 +182,14 @@
 #endif // HDEFAULTS_LIBC_ARMCLIB
 #endif
 
+//iar icc
+#ifdef __IAR_SYSTEMS_ICC__
+#include "hdefaults/hdefaults_libc_icc.h"
+#ifndef HDEFAULTS_LIBC_ICC
+#define HDEFAULTS_LIBC_ICC 1
+#endif // HDEFAULTS_LIBC_ICC
+#endif
+
 
 //导入配置文件
 

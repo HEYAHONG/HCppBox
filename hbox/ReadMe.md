@@ -99,6 +99,7 @@ hbox意为HYH的工具箱。
 |   `HDEFAULTS_LIBC_MUSL`   | C库采用musl                      | [musl](http://musl.libc.org/)通常用于轻量级场景（如容器、嵌入式Linux），其体积一般相较glibc小，但其某些行为可能与glibc不同。 |
 |  `HDEFAULTS_LIBC_UCLIBC`  | C库采用uClibc                    | uclibc常采用[uClibc-ng](https://uclibc-ng.org/)版本。uClibc是一个用于嵌入式Linux系统的C库，其体积较小。 |
 | `HDEFAULTS_LIBC_ARMCLIB`  | C库采用ARM Compiler的C库         | ARM Compiler常见于Keil MDK。一般用于ARM架构的MCU开发。       |
+|   `HDEFAULTS_LIBC_ICC`    | C库采用IAR的C库                  | IAR是一种开发工具。ARM IAR可用于ARM架构的MCU开发。           |
 
 可外部配置的宏定义如下:
 
