@@ -142,6 +142,14 @@
 #endif // HDEFAULTS_LIBC_MINGW
 #endif
 
+//msvc
+#ifdef _MSC_VER
+#include "hdefaults/hdefaults_libc_msvc.h"
+#ifndef HDEFAULTS_LIBC_MSVC
+#define HDEFAULTS_LIBC_MSVC 1
+#endif // HDEFAULTS_LIBC_MSVC
+#endif
+
 //glibc
 #ifdef __GLIBC__
 #include "hdefaults/hdefaults_libc_glibc.h"
