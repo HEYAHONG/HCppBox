@@ -139,6 +139,14 @@
 #endif // HDEFAULTS_LIBC_GLIBC
 #endif
 
+//musl
+#if !defined(__GLIBC__) && !defined(__UCLIBC__) && (defined(HDEFAULTS_OS_EMSCRIPTEN) || defined(__linux__)) && !defined(HDEFAULTS_OS_ANDROID)
+#include "hdefaults/hdefaults_libc_musl.h"
+#ifndef HDEFAULTS_LIBC_MUSL
+#define HDEFAULTS_LIBC_MUSL 1
+#endif // HDEFAULTS_LIBC_MUSL
+#endif
+
 //uclibc
 #ifdef __UCLIBC__
 #include "hdefaults/hdefaults_libc_uclibc.h"
