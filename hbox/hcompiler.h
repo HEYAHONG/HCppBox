@@ -25,6 +25,7 @@
 #endif
 
 //gcc、clang
+#if !(defined(__CC_ARM) || defined(__ARMCC_VERSION))
 #ifdef __GNUC__
 #ifdef __clang__
 #include "hcompiler/hcompiler_clang.h"
@@ -38,6 +39,8 @@
 #endif
 #endif
 #endif
+#endif
+
 
 #ifdef  __CC_ARM
 /*
