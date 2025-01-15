@@ -42,6 +42,21 @@
 #endif
 
 
+//armcc、armclang
+#ifdef __ARMCC_VERSION
+#ifdef __clang__
+#include "hcompiler/hcompiler_armclang.h"
+#ifndef HCOMPILER_ARMCLANG
+#define HCOMPILER_ARMCLANG 1
+#endif
+#else
+#include "hcompiler/hcompiler_armcc.h"
+#ifndef HCOMPILER_ARMCC
+#define HCOMPILER_ARMCC 1
+#endif
+#endif
+#endif
+
 #ifdef  __CC_ARM
 /*
 Arm Compiler 4/5 (keil mdk)
