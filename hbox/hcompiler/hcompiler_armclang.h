@@ -9,6 +9,13 @@
 #ifndef __HCOMPILER_ARMCLANG_H__
 #define __HCOMPILER_ARMCLANG_H__
 
-
+/*
+ * 默认使用Clang的宏定义
+ */
+#include "hcompiler_clang.h"
+//不定义HCOMPILER_CLANG
+#ifdef HCOMPILER_CLANG
+#undef HCOMPILER_CLANG
+#endif
 
 #endif
