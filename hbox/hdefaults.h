@@ -134,6 +134,14 @@
 #endif // HDEFAULTS_LIBC_NEWLIB
 #endif // __NEWLIB__
 
+//picolibc
+#ifdef __PICOLIBC__
+#include "hdefaults/hdefaults_libc_picolibc.h"
+#ifndef HDEFAULTS_LIBC_PICOLIBC
+#define HDEFAULTS_LIBC_PICOLIBC 1
+#endif // HDEFAULTS_LIBC_PICOLIBC
+#endif
+
 //mingw
 #ifdef __MINGW32__
 #include "hdefaults/hdefaults_libc_mingw.h"
