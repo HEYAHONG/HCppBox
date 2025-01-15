@@ -14,6 +14,31 @@
 本文件主要定义一些编译器相关宏定义。
 */
 
+//定义常用编译器名称
+
+//MSVC
+#ifdef _MSC_VER
+#include "hcompiler/hcompiler_msvc.h"
+#ifndef HCOMPILER_MSVC
+#define HCOMPILER_MSVC 1
+#endif
+#endif
+
+//gcc、clang
+#ifdef __GNUC__
+#ifdef __clang__
+#include "hcompiler/hcompiler_clang.h"
+#ifndef HCOMPILER_CLANG
+#define HCOMPILER_CLANG 1
+#endif
+#else
+#include "hcompiler/hcompiler_gcc.h"
+#ifndef HCOMPILER_GCC
+#define HCOMPILER_GCC 1
+#endif
+#endif
+#endif
+
 #ifdef  __CC_ARM
 /*
 Arm Compiler 4/5 (keil mdk)
