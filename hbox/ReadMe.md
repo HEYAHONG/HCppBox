@@ -28,6 +28,7 @@ hbox意为HYH的工具箱。
 |        宏定义         |                             说明                             |                             备注                             |
 | :-------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
 |    `__RTTHREAD__`     |                    处于RT-Thread操作系统                     |                     RT-Thread 4.0.3+有效                     |
+|      `__NuttX__`      |                      处于NuttX操作系统                       |                                                              |
 |        `WIN32`        |                        处于windows中                         |                                                              |
 |      `__unix__`       |                        处于(类)unix中                        | 若处于linux中，可使用`__linux__` 判断。在(类)unix中将使用pthread及其相关库（有些可能需要手动启用）。 |
 |      `__linux__`      |                         处于linux中                          |         通常也会定义`__unix__`，即处于(类) unix中。          |
@@ -85,6 +86,7 @@ hbox意为HYH的工具箱。
 |    `hdefaults_xstr(s)`    | 宏函数,将符号s的内容转换为字符串 |                                                              |
 |    `hdefaults_str(s)`     | 宏函数,将符号s转换为字符串       |                                                              |
 |  `HDEFAULTS_OS_RTTHREAD`  | 处于RT-Thread中                  |                                                              |
+|   `HDEFAULTS_OS_NUTTX`    | 处于NuttX中                      |                                                              |
 |  `HDEFAULTS_OS_WINDOWS`   | 处于Windows中                    |                                                              |
 |    `HDEFAULTS_OS_UNIX`    | 处于UNIX(类UNIX中)               |                                                              |
 |   `HDEFAULTS_OS_LINUX`    | 处于Linux中                      | 通常也会定义`HDEFAULTS_OS_UNIX`                              |

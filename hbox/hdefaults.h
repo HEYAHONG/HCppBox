@@ -33,6 +33,17 @@
 #endif
 #endif // __RTTHREAD__
 
+//NuttX
+#ifdef __NuttX__
+#include "hdefaults/hdefaults_os_nuttx.h"
+#ifndef HDEFAULTS_OS_NUTTX
+#define HDEFAULTS_OS_NUTTX 1
+#endif // HDEFAULTS_OS_NUTTX
+#ifndef HDEFAULTS_HAVE_OS
+#define HDEFAULTS_HAVE_OS 1
+#endif
+#endif // __NuttX__
+
 //Windows
 //提高windows下的兼容性
 #ifdef _WIN32
