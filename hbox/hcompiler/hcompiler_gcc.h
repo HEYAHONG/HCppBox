@@ -53,6 +53,9 @@
 #define __NO_INIT                              __attribute__ ((section (".bss.noinit")))
 #endif
 
+#ifndef __ALIAS
+#define __ALIAS(x)                             __attribute__ ((alias(x)))
+#endif
 
 #ifndef __SECTION
 #define __SECTION(x)                          __attribute__((section(x)))
