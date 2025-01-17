@@ -26,13 +26,13 @@ private:
 public:
     hstaticobjectext(T & data,uint16_t usr_type=0,void (*onfree)(struct  __hobject_managed_struct *obj_ptr)=NULL)
     {
-        (*get_hobject_managed_struct_t())=HOBJECT_MANAGED_STRUCT_INITIALIZER;
+        memset(obj_data,0,sizeof(obj_data));
         hobject_managed_struct_init(get_hobject_managed_struct_t(),usr_type,onfree);
         (*(T *)((*get_hobject_managed_struct_t()).o_struct))=data;
     }
     hstaticobjectext(T && data,uint16_t usr_type=0,void (*onfree)(struct  __hobject_managed_struct *obj_ptr)=NULL)
     {
-        (*get_hobject_managed_struct_t())=HOBJECT_MANAGED_STRUCT_INITIALIZER;
+        memset(obj_data,0,sizeof(obj_data));
         hobject_managed_struct_init(get_hobject_managed_struct_t(),usr_type,onfree);
         (*(T *)((*get_hobject_managed_struct_t()).o_struct))=data;
     }
