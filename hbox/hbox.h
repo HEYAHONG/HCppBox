@@ -39,5 +39,6 @@
 #include "hslots.h"
 #include "hfifo.h"
 #include "hsoftdog.h"
+#include "hobj.h"
 
 #endif // HBOX_H_INCLUDED
