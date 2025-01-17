@@ -9,6 +9,7 @@
 #include "hcpprt.h"
 #include "hcompiler.h"
 #include "hdefaults.h"
+#include "h3rdparty.h"
 
 
 
@@ -88,8 +89,12 @@ static void ctors_execute()
 void hcpprt_init()
 {
     /*
-    执行构造函数
-    */
+     * 初始化第三方库
+     */
+    h3rdparty_init();
+    /*
+     * 执行构造函数
+     */
     ctors_execute();
 }
 

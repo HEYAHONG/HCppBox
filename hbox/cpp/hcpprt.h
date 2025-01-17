@@ -20,7 +20,7 @@ extern "C"
  *
  *
  */
-void hcpprt_init();
+void hcpprt_init(void);
 
 #ifdef __cplusplus
 }
