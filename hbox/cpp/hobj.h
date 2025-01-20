@@ -116,6 +116,14 @@ public:
     {
         return (T *)((*get_hobject_managed_struct_t()).o_struct);
     }
+    operator T &()
+    {
+        return *(T *)(*this);
+    }
+    T *operator->()
+    {
+        return (T *)(*this);
+    }
     /*
      * 获取当前引用计数，0表示无任何引用（此时可以删除对象）
      */
