@@ -13,6 +13,10 @@
 #include "hobject.h"
 #ifdef __cplusplus
 
+
+/*
+ * T主要用于C语言的结构体，不能是C++类。
+ */
 template<typename T>
 class hstaticobjectext
 {
@@ -43,6 +47,14 @@ public:
     virtual ~hstaticobjectext()
     {
         hobject_cleanup(HOBJECT_BASE(get_hobject_managed_struct_t()));
+    }
+    uint16_t obj_type()
+    {
+        return (HOBJECT_BASE(get_hobject_managed_struct_t()))->type;
+    }
+    uint16_t obj_usr_type()
+    {
+        return (HOBJECT_BASE(get_hobject_managed_struct_t()))->usr_type;
     }
     operator hobject_managed_struct_t *()
     {
@@ -170,6 +182,14 @@ public:
     operator hobject_managed_array_ptr_t *()
     {
         return hobject_managed_array_ptr((hobject_base_t *)&obj_data);
+    }
+    uint16_t obj_type()
+    {
+        return ((hobject_base_t *)&obj_data)->type;
+    }
+    uint16_t obj_usr_type()
+    {
+        return ((hobject_base_t *)&obj_data)->usr_type;
     }
     operator hobject_double_t *()
     {
