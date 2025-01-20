@@ -77,7 +77,7 @@ public:
         memset(obj_data,0,sizeof(obj_data));
         hobject_managed_struct_init(get_hobject_managed_struct_t(),usr_type,onfree);
         //(*(T *)((*get_hobject_managed_struct_t()).o_struct))=data;
-        new(((*get_hobject_managed_struct_t()).o_struct)) T(std::move(data));
+        new(((*get_hobject_managed_struct_t()).o_struct)) T((T &&)data);
     }
     hstaticobjectext(hstaticobjectext & oths)=delete;
     hstaticobjectext(hstaticobjectext && oths)=delete;
