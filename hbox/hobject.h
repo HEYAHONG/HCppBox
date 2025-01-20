@@ -49,9 +49,10 @@ typedef enum
 
 typedef struct
 {
-    uint16_t type; /**< 类型，类型必须为hobject_base_type_t规定的类型 */
-    uint16_t usr_type; /**< 用户类型,由用户自定义 */
-} hobject_base_t; /**< 对象基类 */
+    size_t ref_cnt;     /**< 引用计数,用于高层应用使用，本组件不使用且初始化为0（对于静态变量/栈上的变量而言，可为0）*/
+    uint16_t type;      /**< 类型，类型必须为hobject_base_type_t规定的类型 */
+    uint16_t usr_type;  /**< 用户类型,由用户自定义 */
+} hobject_base_t;       /**< 对象基类 */
 
 /** \brief 清理（注意:清理后将不能再使用该指针，除开free）
  *
@@ -82,7 +83,7 @@ typedef struct
 
 } hobject_simple_ptr_t; /**< SIMPLE_PTR结构体 */
 
-#define HOBJECT_SIMPLE_PTR_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},NULL} /**< SIMPLE_PTR初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_SIMPLE_PTR_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},NULL} /**< SIMPLE_PTR初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_simple_ptr_t初始化
  *
@@ -128,7 +129,7 @@ typedef struct
 
 } hobject_array_ptr_t; /**< ARRAY_PTR结构体 */
 
-#define HOBJECT_ARRAY_PTR_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},NULL,0} /**< ARRAY_PTR初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_ARRAY_PTR_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},NULL,0} /**< ARRAY_PTR初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_array_ptr_t初始化
  *
@@ -173,7 +174,7 @@ typedef struct __hobject_managed_ptr
     void (*onfree)(struct __hobject_managed_ptr *obj_ptr);
 } hobject_managed_ptr_t; /**< MANAGED_PTR结构体 */
 
-#define HOBJECT_MANAGED_PTR_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},NULL,NULL} /**< MANAGED_PTR初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_MANAGED_PTR_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},NULL,NULL} /**< MANAGED_PTR初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_managed_ptr_t初始化
  *
@@ -231,7 +232,7 @@ typedef struct __hobject_managed_array_ptr
 
 } hobject_managed_array_ptr_t; /**< MANAGED_ARRAY_PTR结构体 */
 
-#define HOBJECT_MANAGED_ARRAY_PTR_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},NULL,0,NULL} /**< MANAGED_ARRAY_PTR初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_MANAGED_ARRAY_PTR_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},NULL,0,NULL} /**< MANAGED_ARRAY_PTR初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_managed_array_ptr_t初始化
  *
@@ -281,7 +282,7 @@ typedef struct
 
 } hobject_double_t; /**< DOUBLE结构体 */
 
-#define HOBJECT_DOUBLE_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},0} /**< DOUBLE初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_DOUBLE_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},0} /**< DOUBLE初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_double_t初始化
  *
@@ -322,7 +323,7 @@ typedef struct
 
 } hobject_int8_t; /**< INT8结构体 */
 
-#define HOBJECT_INT8_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},0} /**< INT8初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_INT8_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},0} /**< INT8初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_int8_t初始化
  *
@@ -363,7 +364,7 @@ typedef struct
 
 } hobject_uint8_t; /**< UINT8结构体 */
 
-#define HOBJECT_UINT8_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},0} /**< UINT8初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_UINT8_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},0} /**< UINT8初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_uint8_t初始化
  *
@@ -404,7 +405,7 @@ typedef struct
 
 } hobject_int16_t; /**< INT16结构体 */
 
-#define HOBJECT_INT16_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},0} /**< INT16初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_INT16_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},0} /**< INT16初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_int16_t初始化
  *
@@ -445,7 +446,7 @@ typedef struct
 
 } hobject_uint16_t; /**< UINT16结构体 */
 
-#define HOBJECT_UINT16_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},0} /**< UINT16初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_UINT16_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},0} /**< UINT16初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_uint16_t初始化
  *
@@ -486,7 +487,7 @@ typedef struct
 
 } hobject_int32_t; /**< INT32结构体 */
 
-#define HOBJECT_INT32_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},0} /**< INT32初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_INT32_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},0} /**< INT32初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_int32_t初始化
  *
@@ -527,7 +528,7 @@ typedef struct
 
 } hobject_uint32_t; /**< UINT32结构体 */
 
-#define HOBJECT_UINT32_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},0} /**< UINT32初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_UINT32_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},0} /**< UINT32初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_uint32_t初始化
  *
@@ -568,7 +569,7 @@ typedef struct
 
 } hobject_int64_t; /**< INT64结构体 */
 
-#define HOBJECT_INT64_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},0} /**< INT64初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_INT64_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},0} /**< INT64初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_int64_t初始化
  *
@@ -609,7 +610,7 @@ typedef struct
 
 } hobject_uint64_t; /**< UINT64结构体 */
 
-#define HOBJECT_UINT64_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},0} /**< UINT64初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_UINT64_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},0} /**< UINT64初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief hobject_uint64_t初始化
  *
@@ -650,7 +651,7 @@ typedef struct
 
 } hobject_struct_t; /**< 结构体类型结构体 */
 
-#define HOBJECT_STRUCT_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0}} /**< STRUCT初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_STRUCT_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0}} /**< STRUCT初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief 获取实际需要申请的内存空间大小
  *
@@ -712,7 +713,7 @@ typedef struct __hobject_managed_struct
 
 } hobject_managed_struct_t; /**< 管理的结构体类型结构体 */
 
-#define HOBJECT_MANAGED_STRUCT_INITIALIZER {{HOBJECT_BASE_TYPE_INVALID,0},NULL} /**< MANAGED_STRUCT初始化值(用于初始化变量(包括指针所指变量)) */
+#define HOBJECT_MANAGED_STRUCT_INITIALIZER {{0,HOBJECT_BASE_TYPE_INVALID,0},NULL} /**< MANAGED_STRUCT初始化值(用于初始化变量(包括指针所指变量)) */
 
 /** \brief 获取实际需要申请的内存空间大小
  *

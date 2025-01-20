@@ -112,6 +112,34 @@ public:
     {
         return (T *)((*get_hobject_managed_struct_t()).o_struct);
     }
+    /*
+     * 获取当前引用计数，0表示无任何引用（此时可以删除对象）
+     */
+    virtual size_t ref_count()
+    {
+        return ((hobject_base_t *)(*this))->ref_cnt;
+    }
+    /*
+     * 引用计数加
+     */
+    virtual void  ref_inc()
+    {
+        lock();
+        ((hobject_base_t *)(*this))->ref_cnt++;
+        unlock();
+    }
+    /*
+     * 引用计数减
+     */
+    virtual void ref_dec()
+    {
+        lock();
+        if(ref_count()>0)
+        {
+            ((hobject_base_t *)(*this))->ref_cnt--;
+        }
+        unlock();
+    }
 };
 
 class hstaticobject:public hstaticobjectbase
@@ -277,6 +305,27 @@ public:
     operator hobject_uint64_t *()
     {
         return hobject_uint64((hobject_base_t *)&obj_data);
+    }
+    /*
+     * 引用计数加
+     */
+    virtual void  ref_inc()
+    {
+        lock();
+        ((hobject_base_t *)(*this))->ref_cnt++;
+        unlock();
+    }
+    /*
+     * 引用计数减
+     */
+    virtual void ref_dec()
+    {
+        lock();
+        if(ref_count()>0)
+        {
+            ((hobject_base_t *)(*this))->ref_cnt--;
+        }
+        unlock();
     }
 };
 
