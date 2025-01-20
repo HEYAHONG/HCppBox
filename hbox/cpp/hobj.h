@@ -124,21 +124,19 @@ public:
      */
     virtual void  ref_inc()
     {
-        lock();
+        hlockguard<hlock> m_lock(*this);
         ((hobject_base_t *)(*this))->ref_cnt++;
-        unlock();
     }
     /*
      * 引用计数减
      */
     virtual void ref_dec()
     {
-        lock();
+        hlockguard<hlock> m_lock(*this);
         if(ref_count()>0)
         {
             ((hobject_base_t *)(*this))->ref_cnt--;
         }
-        unlock();
     }
 };
 
@@ -307,25 +305,30 @@ public:
         return hobject_uint64((hobject_base_t *)&obj_data);
     }
     /*
+     * 获取当前引用计数，0表示无任何引用（此时可以删除对象）
+     */
+    virtual size_t ref_count()
+    {
+        return ((hobject_base_t *)(*this))->ref_cnt;
+    }
+    /*
      * 引用计数加
      */
     virtual void  ref_inc()
     {
-        lock();
+        hlockguard<hlock> m_lock(*this);
         ((hobject_base_t *)(*this))->ref_cnt++;
-        unlock();
     }
     /*
      * 引用计数减
      */
     virtual void ref_dec()
     {
-        lock();
+        hlockguard<hlock> m_lock(*this);
         if(ref_count()>0)
         {
             ((hobject_base_t *)(*this))->ref_cnt--;
         }
-        unlock();
     }
 };
 
