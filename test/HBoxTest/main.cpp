@@ -1099,11 +1099,13 @@ static int hobject_test(int argc,const char *argv[])
         {
             hstaticobjectext obj(5);
             printf("hobject_test: obj=%08X,hobject_base=%08X,this=%08X\r\n",(int)(intptr_t)&obj,(int)(intptr_t)(hobject_base_t *)obj,(int)(intptr_t)obj.get_this(obj));
+            printf("hobject_test: data=%d\r\n",*(int *)obj);
         }
         {
             int i=5;
             hstaticobjectext obj(i);
             printf("hobject_test: obj=%08X,hobject_base=%08X,this=%08X\r\n",(int)(intptr_t)&obj,(int)(intptr_t)(hobject_base_t *)obj,(int)(intptr_t)obj.get_this(obj));
+            printf("hobject_test: data=%d\r\n",*(int *)obj);
         }
         {
             hstaticobject obj(5);

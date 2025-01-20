@@ -52,7 +52,7 @@ public:
 };
 
 /*
- * T主要用于C语言的结构体，不能是C++类。
+ * T主要用于C语言的结构体，C++类需要支持赋值构造函数与析构函数。
  */
 template<typename T>
 class hstaticobjectext:public hstaticobjectbase
