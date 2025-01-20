@@ -56,6 +56,13 @@ public:
     {
         return (HOBJECT_BASE(get_hobject_managed_struct_t()))->usr_type;
     }
+    /*
+     * 通过hobject*指针获取this指针，用于onfree回调。
+     */
+    static const hstaticobjectext *get_this(const struct  __hobject_managed_struct *obj_ptr)
+    {
+        return static_cast<const hstaticobjectext *>(GET_STRUCT_PTR_BY_MEMBER_PTR(obj_ptr,hstaticobjectext,obj_data));
+    }
     operator hobject_managed_struct_t *()
     {
         return get_hobject_managed_struct_t();
@@ -162,6 +169,13 @@ public:
     virtual ~hstaticobject()
     {
         hobject_cleanup((hobject_base_t *)&obj_data);
+    }
+    /*
+     * 通过hobject*指针获取this指针，用于onfree回调（若有）。
+     */
+    static const hstaticobject *get_this(const hobject_base_t *obj_ptr)
+    {
+        return static_cast<const hstaticobject *>(GET_STRUCT_PTR_BY_MEMBER_PTR(obj_ptr,hstaticobject,obj_data));
     }
     operator hobject_base_t *()
     {
