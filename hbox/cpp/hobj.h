@@ -11,14 +11,51 @@
 #include "hcompiler.h"
 #include "hdefaults.h"
 #include "hobject.h"
+#include "hcpprt.h"
 #ifdef __cplusplus
 
+/*
+ * hobj公共基类，hobj.h中的类均由此派生
+ */
+class hstaticobjectbase:virtual public hlock
+{
+public:
+    hstaticobjectbase()
+    {
+
+    }
+    virtual ~hstaticobjectbase()
+    {
+
+    }
+    /*
+     * 获取当前引用计数，0表示无任何引用（此时可以删除对象）
+     */
+    virtual size_t ref_count()
+    {
+        return 1;
+    }
+    /*
+     * 引用计数加
+     */
+    virtual void  ref_inc()
+    {
+
+    }
+    /*
+     * 引用计数减
+     */
+    virtual void ref_dec()
+    {
+
+    }
+};
 
 /*
  * T主要用于C语言的结构体，不能是C++类。
  */
 template<typename T>
-class hstaticobjectext
+class hstaticobjectext:public hstaticobjectbase
 {
 private:
     //结构体数据存储
@@ -77,7 +114,7 @@ public:
     }
 };
 
-class hstaticobject
+class hstaticobject:public hstaticobjectbase
 {
 private:
     union
