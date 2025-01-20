@@ -69,13 +69,15 @@ public:
     {
         memset(obj_data,0,sizeof(obj_data));
         hobject_managed_struct_init(get_hobject_managed_struct_t(),usr_type,onfree);
-        (*(T *)((*get_hobject_managed_struct_t()).o_struct))=data;
+        //(*(T *)((*get_hobject_managed_struct_t()).o_struct))=data;
+        new(((*get_hobject_managed_struct_t()).o_struct)) T(data);
     }
     hstaticobjectext(T && data,uint16_t usr_type=0,void (*onfree)(struct  __hobject_managed_struct *obj_ptr)=NULL)
     {
         memset(obj_data,0,sizeof(obj_data));
         hobject_managed_struct_init(get_hobject_managed_struct_t(),usr_type,onfree);
-        (*(T *)((*get_hobject_managed_struct_t()).o_struct))=data;
+        //(*(T *)((*get_hobject_managed_struct_t()).o_struct))=data;
+        new(((*get_hobject_managed_struct_t()).o_struct)) T(std::move(data));
     }
     hstaticobjectext(hstaticobjectext & oths)=delete;
     hstaticobjectext(hstaticobjectext && oths)=delete;
@@ -84,6 +86,8 @@ public:
     virtual ~hstaticobjectext()
     {
         hobject_cleanup(HOBJECT_BASE(get_hobject_managed_struct_t()));
+        //支持C++析构
+        ((T *)((*get_hobject_managed_struct_t()).o_struct))->~T();
     }
     uint16_t obj_type()
     {
