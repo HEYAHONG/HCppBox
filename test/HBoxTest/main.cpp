@@ -1117,6 +1117,21 @@ static int hobject_test(int argc,const char *argv[])
             printf("hobject_test: obj=%08X,hobject_base=%08X,this=%08X\r\n",(int)(intptr_t)&obj,(int)(intptr_t)(hobject_base_t *)obj,(int)(intptr_t)obj.get_this(obj));
         }
     }
+    {
+        {
+            hdymaicobj obj(5);
+        }
+        {
+            typedef struct
+            {
+                int int_val;
+                double double_val;
+            } data_t;
+            hdymaicobj<data_t> obj(data_t(5,6));
+            obj->int_val=10;
+            obj->double_val=12;
+        }
+    }
     printf("hobject_test:end\r\n");
     return 0;
 }

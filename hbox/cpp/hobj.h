@@ -15,7 +15,7 @@
 #ifdef __cplusplus
 
 /*
- * hobj公共基类，hobj.h中的类均由此派生
+ * hobj公共基类，hobj.h中的静态类均由此派生
  */
 class hstaticobjectbase:virtual public hlock
 {
@@ -343,6 +343,374 @@ public:
         }
     }
 };
+
+/*
+ * 空类，用于占位
+ */
+class hdymaicobjdata
+{
+
+};
+
+template<class T=hdymaicobjdata>
+class hdymaicobj:virtual public hlock
+{
+private:
+    struct
+    {
+        uint8_t  ext_obj:1; //是否是ext_obj
+    } flags;
+    hstaticobjectbase *obj;
+    /*
+     * 释放obj
+     */
+    void release_obj()
+    {
+        hlockguard<hlock> lock(*this);
+        if(obj!=NULL)
+        {
+            obj->ref_dec();
+            if(obj->ref_count()==0)
+            {
+                delete obj;
+                obj=NULL;
+            }
+        }
+    }
+    /*
+     *  获取obj，一般由另外一个实例调用
+     */
+    hstaticobjectbase *acquire_obj()
+    {
+        hlockguard<hlock> lock(*this);
+        if(obj!=NULL)
+        {
+            obj->ref_inc();
+        }
+        return obj;
+    }
+public:
+    hdymaicobj():flags{0},obj{NULL}
+    {
+
+    }
+    hdymaicobj(T & data,uint16_t usr_type=0,void (*onfree)(struct  __hobject_managed_struct *obj_ptr)=NULL):flags{0},obj{NULL}
+    {
+        obj=new hstaticobjectext<T>(data,usr_type,onfree);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=1;
+    }
+    hdymaicobj(T && data,uint16_t usr_type=0,void (*onfree)(struct  __hobject_managed_struct *obj_ptr)=NULL):flags{0},obj{NULL}
+    {
+        obj=new hstaticobjectext<T>((T &&)data,usr_type,onfree);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=1;
+    }
+    explicit hdymaicobj(void *ptr,uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(ptr,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    hdymaicobj(void *array_ptr,size_t array_size,uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(array_ptr,array_size,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    explicit hdymaicobj(void *ptr,void (*onfree)(hobject_managed_ptr_t *obj_ptr),uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(ptr,onfree,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    hdymaicobj(void *array_ptr,size_t array_size,void (*onfree)(hobject_managed_array_ptr_t *obj_ptr),uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(array_ptr,array_size,onfree,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    explicit hdymaicobj(double val,uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(val,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    explicit hdymaicobj(int8_t val,uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(val,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    explicit hdymaicobj(uint8_t val,uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(val,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    explicit hdymaicobj(int16_t val,uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(val,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    explicit hdymaicobj(uint16_t val,uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(val,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    explicit hdymaicobj(int32_t val,uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(val,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    explicit hdymaicobj(uint32_t val,uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(val,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    explicit hdymaicobj(int64_t val,uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(val,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    explicit hdymaicobj(uint64_t val,uint16_t usr_type=0):flags{0},obj{NULL}
+    {
+        obj=new hstaticobject(val,usr_type);
+        if(obj!=NULL)
+        {
+            if(obj->ref_count()==0)
+            {
+                obj->ref_inc();
+            }
+        }
+        flags.ext_obj=0;
+    }
+    hdymaicobj(const hdymaicobj & oths):flags{0},obj{NULL}
+    {
+        flags=oths.flags;
+        release_obj();
+        obj=oths.acquire_obj();
+    }
+    hdymaicobj(const hdymaicobj && oths):flags{0},obj{NULL}
+    {
+        flags=oths.flags;
+        release_obj();
+        obj=oths.acquire_obj();
+    }
+    hdymaicobj &operator =(const hdymaicobj & oths)
+    {
+        if(&oths == this)
+        {
+            return *this;
+        }
+        flags=oths.flags;
+        release_obj();
+        obj=oths.acquire_obj();
+        return *this;
+    }
+    hdymaicobj &operator =(const hdymaicobj && oths)
+    {
+        if(&oths == this)
+        {
+            return *this;
+        }
+        flags=oths.flags;
+        release_obj();
+        obj=oths.acquire_obj();
+        return *this;
+    }
+    virtual ~hdymaicobj()
+    {
+        release_obj();
+    }
+
+    operator hobject_base_t *()
+    {
+        if(obj!=NULL)
+        {
+            if(flags.ext_obj!=0)
+            {
+                return static_cast<hobject_base_t *>(*(hstaticobjectext<T> *)obj);
+            }
+            else
+            {
+                return static_cast<hobject_base_t *>(*(hstaticobject *)obj);
+            }
+        }
+        return NULL;
+    }
+    uint16_t obj_type()
+    {
+        if(obj!=NULL)
+        {
+            if(flags.ext_obj!=0)
+            {
+                return (*(hstaticobjectext<T> *)obj).obj_type();
+            }
+            else
+            {
+                return (*(hstaticobject *)obj).obj_type();
+            }
+        }
+        return 0;
+    }
+    uint16_t obj_usr_type()
+    {
+        if(obj!=NULL)
+        {
+            if(flags.ext_obj!=0)
+            {
+                return (*(hstaticobjectext<T> *)obj).obj_usr_type();
+            }
+            else
+            {
+                return (*(hstaticobject *)obj).obj_usr_type();
+            }
+        }
+        return 0;
+    }
+    /*
+     * 仅hstaticobjectext可使用此函数
+     */
+    operator T *()
+    {
+        if(flags.ext_obj==0)
+        {
+            return NULL;
+        }
+        return (T *)(*(hstaticobjectext<T> *)obj);
+    }
+    /*
+     * 仅hstaticobjectext可使用此函数
+     */
+    operator T &()
+    {
+        return *(T *)(*this);
+    }
+    /*
+     * 仅hstaticobjectext可使用此函数
+     */
+    T *operator->()
+    {
+        return (T *)(*this);
+    }
+
+    /*
+     * 判断是否存储有数据
+     */
+    operator bool()
+    {
+        return obj!=NULL;
+    }
+
+    hstaticobjectext<T> *  get_hstaticobjectext()
+    {
+        if(flags.ext_obj!=0)
+        {
+            return (hstaticobjectext<T> *)obj;
+        }
+        return NULL;
+    }
+
+    hstaticobject *  get_hstaticobject()
+    {
+        if(flags.ext_obj==0)
+        {
+            return (hstaticobject *)obj;
+        }
+        return NULL;
+    }
+};
+
 
 #endif // __cplusplus
 
