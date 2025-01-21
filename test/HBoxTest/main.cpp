@@ -1127,7 +1127,8 @@ static int hobject_test(int argc,const char *argv[])
                 int int_val;
                 double double_val;
             } data_t;
-            hdymaicobj<data_t> obj(data_t(5,6));
+            data_t data = { 5,6 };
+            hdymaicobj<data_t> obj(data);
             obj->int_val=10;
             obj->double_val=12;
         }
