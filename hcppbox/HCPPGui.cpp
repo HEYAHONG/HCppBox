@@ -630,6 +630,7 @@ static class HCPPGuiDriver
 public:
     bool fill_rectangle(hgui_driver_t *driver,size_t x,size_t y,size_t w,size_t h,hgui_pixel_t pixel)
     {
+        (void)driver;
         std::lock_guard<std::recursive_mutex> lock(m_lock);
         if(screen!=NULL)
         {
@@ -659,6 +660,7 @@ public:
     }
     bool reset(hgui_driver_t *driver)
     {
+        (void)driver;
         std::lock_guard<std::recursive_mutex> lock(m_lock);
         if((SDL_WasInit(SDL_INIT_EVERYTHING)&SDL_INIT_VIDEO)==0)
         {
@@ -685,6 +687,7 @@ public:
     }
     bool is_ok(hgui_driver_t *driver)
     {
+        (void)driver;
         std::lock_guard<std::recursive_mutex> lock(m_lock);
         return screen!=NULL;
     }
@@ -696,6 +699,7 @@ public:
     }
     bool resize(hgui_driver_t *driver,ssize_t *w,ssize_t *h)
     {
+        (void)driver;
         std::lock_guard<std::recursive_mutex> lock(m_lock);
         if(w==NULL || h == NULL)
         {

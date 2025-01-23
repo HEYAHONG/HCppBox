@@ -102,6 +102,7 @@ static bool hgui_scene1_app_event_input_helper(uint8_t type,void *eventparam,siz
 
 static bool  hgui_scene1_app_init_callback(const hgui_scene1_app_t *app,void *usr)
 {
+    (void)usr;
     if(hgui_scene1_app_was_init(app))
     {
         return true;

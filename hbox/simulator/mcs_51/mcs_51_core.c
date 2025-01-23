@@ -1465,6 +1465,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             core->pc+=2;
             core->delay_tick=1;
         };
+        break;
         case 0x90://MOV DPTR,#data
         {
             uint8_t dph=instruction[1];
