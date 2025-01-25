@@ -25,6 +25,8 @@ if "msvc" in env["TOOLS"]:
 
 #gcc设置
 if "gcc" in env["TOOLS"]:
+    env.AppendUnique(CFLAGS='-std=gnu2x')
+    env.AppendUnique(CXXFLAGS='-std=gnu++2b')
     #pkg-config
     pkg_config_path=env.WhereIs("pkg-config")
     if pkg_config_path and len(pkg_config_path) > 0:
