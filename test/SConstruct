@@ -39,6 +39,8 @@ if "gcc" in env["TOOLS"]:
         if not env.Execute("pkg-config --exist sdl"):
             print("sdl found")
             env.MergeFlags(['!pkg-config sdl  --cflags --libs', '-DHAVE_SDL=1'])
+    if sys.platform.startswith("win32") or  sys.platform.startswith("cygwin"):
+        env.AppendUnique(LIBS=['kernel32','user32','gdi32','winspool','shell32','ole32','oleaut32','uuid','comdlg32','advapi32'])
             
 
 cwd = str(Dir('#'))
