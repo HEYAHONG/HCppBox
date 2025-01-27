@@ -438,7 +438,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
     {
         uint8_t instruction[HS_MCS_51_INSTRUCTION_MAX_LENGTH]= {0};
         core->io(core,HS_MCS_51_IO_READ_ROM,core->pc,instruction,sizeof(instruction),core->usr);
-        //TODO:执行指令
+        core->io(core,HS_MCS_51_IO_INSTRUCTION_ENTER,core->pc,instruction,sizeof(instruction),core->usr);
         switch(instruction[0])
         {
         case 0x01://AJMP addr
@@ -2181,6 +2181,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         }
         break;
         }
+        core->io(core,HS_MCS_51_IO_INSTRUCTION_EXIT,core->pc,instruction,sizeof(instruction),core->usr);
     }
 }
 
