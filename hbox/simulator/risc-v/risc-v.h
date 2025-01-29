@@ -22,6 +22,8 @@ extern "C"
 #include "encoding.out.h"
 #endif
 
+#include "risc-v_common.h"
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

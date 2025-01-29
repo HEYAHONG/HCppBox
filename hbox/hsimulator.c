@@ -21,4 +21,5 @@
 #define HS_RISC_V_BUILD_C_SOURCE    1
 #endif // HS_RISC_V_BUILD_C_SOURCE
 #include "simulator/risc-v/risc-v.h"
+#include "simulator/risc-v/risc-v_common.c"
 
