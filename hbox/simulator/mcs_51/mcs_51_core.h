@@ -45,8 +45,9 @@ typedef enum
     HS_MCS_51_IO_INTERRUPT_ENTER,       //中断进入，地址为中断号，数据为运行级别
     HS_MCS_51_IO_INTERRUPT_EXIT,        //中断退出，地址为中断号，数据为运行级别,通常用于自动清除某些标志
     HS_MCS_51_IO_INSTRUCTION_ENTER,     //指令进入,开始执行指令时调用。通常用于调试或者用户处理指令。地址为当前PC值,数据为已经执行的指令。
-    HS_MCS_51_IO_INSTRUCTION_EXIT       //指令退出,结束执行指令时调用。通常用于调试或者用户处理指令。地址为当前PC值(可能已被指令修改),数据为已经执行的指令。
-
+    HS_MCS_51_IO_INSTRUCTION_EXIT,      //指令退出,结束执行指令时调用。通常用于调试或者用户处理指令。地址为当前PC值(可能已被指令修改),数据为已经执行的指令。
+    HS_MCS_51_IO_TICK_ENTER,            //节拍进入,时钟节拍开始时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。
+    HS_MCS_51_IO_TICK_EXIT              //节拍退出,时钟节拍结束时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。
 } hs_mcs_51_io_opt_t;
 
 /** \brief MCS-51 IO操作

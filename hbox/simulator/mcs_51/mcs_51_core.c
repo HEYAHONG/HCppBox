@@ -2191,9 +2191,17 @@ void hs_mcs_51_core_tick(hs_mcs_51_core_t * core,size_t cycles)
     {
         while((cycles--)!=0)
         {
+            if(core->io==NULL)
+            {
+                //io无效，不工作
+                continue;
+            }
+
+            core->io(core,HS_MCS_51_IO_TICK_ENTER,core->pc,(uint8_t *)&cycles,sizeof(cycles),core->usr);
             if(core->delay_tick!=0)
             {
                 core->delay_tick--;
+                core->io(core,HS_MCS_51_IO_TICK_EXIT,core->pc,(uint8_t *)&cycles,sizeof(cycles),core->usr);
                 continue;
             }
 
@@ -2201,6 +2209,7 @@ void hs_mcs_51_core_tick(hs_mcs_51_core_t * core,size_t cycles)
 
             hs_mcs_51_core_exec(core);
 
+            core->io(core,HS_MCS_51_IO_TICK_EXIT,core->pc,(uint8_t *)&cycles,sizeof(cycles),core->usr);
         }
     }
 }
