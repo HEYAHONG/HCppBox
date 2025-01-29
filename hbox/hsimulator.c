@@ -11,8 +11,14 @@
 #include "simulator/rp_pio_sm/rp_pio_sm.h"
 #include "simulator/rp_pio_sm/rp_pio_sm.c"
 
-#include "simulator/mcs_51/mcs_51_core.h"
+#include "simulator/mcs_51/mcs_51.h"
 #include "simulator/mcs_51/mcs_51_core.c"
 
-
+#ifdef __HS_RISC_V_H__
+#undef __HS_RISC_V_H__
+#endif // __HS_RISC_V_H__
+#ifndef HS_RISC_V_BUILD_C_SOURCE
+#define HS_RISC_V_BUILD_C_SOURCE    1
+#endif // HS_RISC_V_BUILD_C_SOURCE
+#include "simulator/risc-v/risc-v.h"
 
