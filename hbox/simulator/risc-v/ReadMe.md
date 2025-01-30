@@ -20,7 +20,7 @@ RISC-V的指令集分为基本指令集+扩展指令集，可相对灵活地选�
 在ubuntu24.04及更新的ubuntu系统可采用以下命令安装：
 
 ```bash
-sudo apt-get install gcc-riscv64-unkown-elf
+sudo apt-get install gcc-riscv64-unknown-elf
 ```
 
 对于GCC而言(通常Clang兼容相应选项)，需要使用以下选项指定相应的指令集：
