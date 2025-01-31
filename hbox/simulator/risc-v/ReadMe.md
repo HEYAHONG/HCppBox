@@ -2,7 +2,11 @@
 
 # 说明
 
-本目录主要用于实现对RISC-V指令集的模拟，主要实现对裸机环境的模拟。
+本目录主要用于实现对RISC-V指令集的模拟，主要实现在低端嵌入式平台下对RISC-V裸机环境的模拟。
+
+对于非低端嵌入式平台上可采用[riscv-isa-sim](https://github.com/riscv-software-src/riscv-isa-sim.git)工具，本目录也参考其实现相应功能。
+
+对于系统级模拟(一般运行在非低端嵌入式平台)，推荐采用[qemu](https://www.qemu.org/)中对riscv32与riscv64的支持。
 
 RISC-V的指令集分为基本指令集+扩展指令集，可相对灵活地选择自己的实现。
 
