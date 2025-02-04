@@ -1546,6 +1546,11 @@ static int hsimulator_test(int argc,const char *argv[])
     }
 
     {
+        // 打印mcs_51_core大小。
+        printf("hsimulator hs_mcs_51_core_size=%d,HS_MCS_51_CORE_SIZE=%d!\r\n",(int)hs_mcs_51_core_size(),(int)HS_MCS_51_CORE_SIZE());
+    }
+
+    {
         //测试MCS-51 Core,足够存下hs_mcs_51_core_t、128字节SFR、256字节Ram、Flash(可变)。
         uint8_t mcs_51[4096]= {0};
         hs_mcs_51_core_t *core=hs_mcs_51_core_init(mcs_51,[](hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr)->bool

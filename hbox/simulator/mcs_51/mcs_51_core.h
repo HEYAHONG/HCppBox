@@ -27,6 +27,14 @@ typedef struct hs_mcs_51_core hs_mcs_51_core_t;
  */
 size_t hs_mcs_51_core_size(void);
 
+#ifndef HS_MCS_51_CORE_SIZE
+/** \brief hs_mcs_51_core_t结构体大小,一般用于静态分配，注意:可能大于hs_mcs_51_core_size()返回的值。
+ *
+ *
+ */
+#define HS_MCS_51_CORE_SIZE()  (sizeof(uintptr_t)*2+sizeof(uint32_t)*4)
+#endif // HS_MCS_51_CORE_SIZE
+
 #ifndef HS_MCS_51_INSTRUCTION_MAX_LENGTH
 #define HS_MCS_51_INSTRUCTION_MAX_LENGTH 3  /**< 指令最长字节数,默认每次读取此长度的指令 */
 #endif // HS_MCS_51_INSTRUCTION_MAX_SIZE
