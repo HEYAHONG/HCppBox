@@ -65,7 +65,7 @@ typedef union
  *  参数Data为变量名称。
  */
 #define HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(Data)             \
-({                                                              \
+{                                                               \
     hs_risc_v_common_memory_halfword_t m_hs_byteorder;          \
     m_hs_byteorder.value=0x01;                                  \
     if(m_hs_byteorder.bytes[0]==0)                              \
@@ -77,7 +77,7 @@ typedef union
             (Data).bytes[sizeof(Data)-1-i]=temp;                \
         }                                                       \
     };                                                          \
-})
+}
 #endif // HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX
 
 #ifdef __cplusplus
