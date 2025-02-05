@@ -1667,7 +1667,7 @@ static int hsimulator_test(int argc,const char *argv[])
                     while(1);
                 }
                  */
-                unsigned char helloworld_bin[] =
+                const unsigned char helloworld_bin[] =
                 {
                     0x02, 0x00, 0x4c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xe2, 0xfb,
                     0xea, 0xf2, 0x80, 0x2c, 0x00, 0x00, 0xe0, 0xfb, 0xea, 0xf0, 0x80, 0x24,
@@ -1703,6 +1703,18 @@ static int hsimulator_test(int argc,const char *argv[])
             }
 
         }
+    }
+
+    {
+        //测试RISC-V Common组件
+        uint8_t bytes[4]= {0x44,0x33,0x22,0x11};
+        hs_risc_v_common_memory_word_t word;
+        memcpy(word.bytes,bytes,sizeof(bytes));
+        printf("hsimulator risc-v common value(before fix)=%08X!\r\n",(int)word.value);
+        HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(word);
+        printf("hsimulator risc-v common value(after  fix)=%08X!\r\n",(int)word.value);
+        HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(word);
+        printf("hsimulator risc-v common bytes=%02X%02X%02X%02X!\r\n",(int)word.bytes[0],(int)word.bytes[1],(int)word.bytes[2],(int)word.bytes[3]);
     }
 
     return 0;
