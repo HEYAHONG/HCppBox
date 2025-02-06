@@ -1,0 +1,245 @@
+/***************************************************************
+ * Name:      hs_common.c
+ * Purpose:   实现hs_common接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2025-02-06
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+#include "8250.h"
+
+void  hs_common_serial_8250_init(hs_common_serial_8250_t *dev,hs_common_serial_8250_io_callback_t io,void *usr,size_t clk_freq)
+{
+    hs_common_serial_8250_t temp=HS_COMMON_SERIAL_8250_INITIALIZER;
+    temp.io=io;
+    temp.usr=usr;
+    if(clk_freq!=0)
+    {
+        temp.clk_freq=clk_freq;
+    }
+    if(dev!=NULL)
+    {
+        (*dev)=temp;
+    }
+}
+
+void hs_common_serial_8250_bus_write(hs_common_serial_8250_t *dev,uint8_t address,uint8_t reg_data)
+{
+    if(dev==NULL)
+    {
+        return;
+    }
+    //地址只允许0～7
+    address%=8;
+    bool DLAB=((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR] &0x80)!=0);
+    switch(address)
+    {
+    case 0:
+    {
+        if(DLAB)
+        {
+            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_DLL]=reg_data;
+        }
+        else
+        {
+            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_THR]=reg_data;
+            if(dev->io!=NULL)
+            {
+                dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_TRANSMIT_BYTE,&dev->registers[HS_COMMON_SERIAL_8250_REGISTER_THR]);
+            }
+        }
+    }
+    break;
+    case 1:
+    {
+        if(DLAB)
+        {
+            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_DLM]=reg_data;
+        }
+        else
+        {
+            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IER]=reg_data;
+        }
+    }
+    break;
+    case 2:
+    {
+        dev->registers[HS_COMMON_SERIAL_8250_REGISTER_FCR]=reg_data;
+    }
+    break;
+    case 3:
+    {
+        dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR]=reg_data;
+    }
+    break;
+    case 4:
+    {
+        dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MCR]=reg_data;
+    }
+    break;
+    case 5:
+    {
+        dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR]=reg_data;
+    }
+    break;
+    case 6:
+    {
+        dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MSR]=reg_data;
+    }
+    break;
+    case 7:
+    {
+        dev->registers[HS_COMMON_SERIAL_8250_REGISTER_SCR]=reg_data;
+    }
+    break;
+    default:
+    {
+
+    }
+    break;
+    }
+}
+void hs_common_serial_8250_bus_read(hs_common_serial_8250_t *dev,uint8_t address,uint8_t *reg_data)
+{
+    if(dev==NULL)
+    {
+        return;
+    }
+    //地址只允许0～7
+    address%=8;
+    bool DLAB=((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR] &0x80)!=0);
+    switch(address)
+    {
+    case 0:
+    {
+        if(DLAB)
+        {
+            if(reg_data!=NULL)
+            {
+                (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_DLL];
+            }
+        }
+        else
+        {
+            if(dev->io!=NULL)
+            {
+                dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_RECEIVE_BYTE,&dev->registers[HS_COMMON_SERIAL_8250_REGISTER_RBR]);
+            }
+            if(reg_data!=NULL)
+            {
+                (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_RBR];
+            }
+        }
+    }
+    break;
+    case 1:
+    {
+        if(DLAB)
+        {
+            if(reg_data!=NULL)
+            {
+                (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_DLM];
+            }
+        }
+        else
+        {
+            if(reg_data!=NULL)
+            {
+                (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IER];
+            }
+        }
+    }
+    break;
+    case 2:
+    {
+        if(reg_data!=NULL)
+        {
+            (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR];
+        }
+    }
+    break;
+    case 3:
+    {
+        if(reg_data!=NULL)
+        {
+            (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR];
+        }
+    }
+    break;
+    case 4:
+    {
+        if(reg_data!=NULL)
+        {
+            (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MCR];
+        }
+    }
+    break;
+    case 5:
+    {
+        if(reg_data!=NULL)
+        {
+            (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR];
+        }
+    }
+    break;
+    case 6:
+    {
+        if(reg_data!=NULL)
+        {
+            (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MSR];
+        }
+    }
+    break;
+    case 7:
+    {
+        if(reg_data!=NULL)
+        {
+            (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_SCR];
+        }
+    }
+    break;
+    default:
+    {
+
+    }
+    break;
+    }
+}
+
+void hs_common_serial_8250_bus_write32(hs_common_serial_8250_t *dev,uint8_t address,uint32_t reg_data)
+{
+    if(address%4!=0)
+    {
+        return;
+    }
+    hs_common_serial_8250_bus_write(dev,address/4,(uint8_t)reg_data);
+}
+
+void hs_common_serial_8250_bus_read32(hs_common_serial_8250_t *dev,uint8_t address,uint32_t *reg_data)
+{
+    if(address%4!=0)
+    {
+        return;
+    }
+    uint8_t data=0;
+    hs_common_serial_8250_bus_read(dev,address/4,&data);
+    if(reg_data!=NULL)
+    {
+        (*reg_data)=data;
+    }
+}
+
+void hs_common_serial_8250_bus_tick(hs_common_serial_8250_t *dev)
+{
+    if(dev==NULL)
+    {
+        return;
+    }
+    if(dev->io!=NULL)
+    {
+        uint8_t data=0;
+        dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_TICK,&data);
+    }
+
+    //TODO:进行8250内部处理
+}

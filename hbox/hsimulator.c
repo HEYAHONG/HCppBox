@@ -8,6 +8,10 @@
  **************************************************************/
 #include "hsimulator.h"
 
+#include "simulator/common/hs_common.h"
+#include "simulator/common/hs_common.c"
+
+
 #include "simulator/rp_pio_sm/rp_pio_sm.h"
 #include "simulator/rp_pio_sm/rp_pio_sm.c"
 
