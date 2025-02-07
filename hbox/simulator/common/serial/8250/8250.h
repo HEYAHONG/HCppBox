@@ -166,10 +166,93 @@ void hs_common_serial_8250_bus_read32(hs_common_serial_8250_t *dev,uint8_t addre
 
 /** \brief  8250总线节拍(一般由总线上的主设备(如CPU)调用)，在进行读写前调用，可用于更新寄存器状态或者调用中断
  *
- * \param dev hs_common_serial_8250_t*
+ * \param dev hs_common_serial_8250_t* 8250设备指针
  *
  */
 void hs_common_serial_8250_bus_tick(hs_common_serial_8250_t *dev);
+
+
+/** \brief  8250获取波特率。
+ *          注意：多线程操作时需要加锁
+ *
+ * \param dev hs_common_serial_8250_t* 8250设备指针
+ * \return size_t 波特率
+ *
+ */
+size_t hs_common_serial_8250_config_baud_get(hs_common_serial_8250_t *dev);
+
+/** \brief  8250设置波特率
+ *          注意：多线程操作时需要加锁
+ *
+ * \param dev hs_common_serial_8250_t*  8250设备指针
+ * \param baud size_t 波特率
+ *
+ */
+void hs_common_serial_8250_config_baud_set(hs_common_serial_8250_t *dev,size_t baud);
+
+typedef enum
+{
+    HS_COMMON_SERIAL_8250_CONFIG_PARITY_NONE=0,     /**< 无校验 */
+    HS_COMMON_SERIAL_8250_CONFIG_PARITY_EVEN,       /**< 偶校验*/
+    HS_COMMON_SERIAL_8250_CONFIG_PARITY_ODD,        /**< 奇校验 */
+    HS_COMMON_SERIAL_8250_CONFIG_PARITY_MARK,       /**< 校验值固定为1 */
+    HS_COMMON_SERIAL_8250_CONFIG_PARITY_SPACE       /**< 校验值固定为0 */
+} hs_common_serial_8250_config_parity_t;            /**< 校验类型定义 */
+
+/** \brief  8250获取校验位
+ *          注意：多线程操作时需要加锁
+ *
+ * \param dev hs_common_serial_8250_t*  8250设备指针
+ * \return hs_common_serial_8250_config_parity_t    校验类型
+ *
+ */
+hs_common_serial_8250_config_parity_t hs_common_serial_8250_config_parity_get(hs_common_serial_8250_t *dev);
+
+/** \brief  8250设置校验位
+ *          注意：多线程操作时需要加锁
+ *
+ * \param dev hs_common_serial_8250_t*  8250设备指针
+ * \param parity hs_common_serial_8250_config_parity_t    校验类型
+ *
+ */
+void hs_common_serial_8250_config_parity_set(hs_common_serial_8250_t *dev,hs_common_serial_8250_config_parity_t parity);
+
+/** \brief  8250获取停止位
+ *          注意：多线程操作时需要加锁
+ *
+ * \param dev hs_common_serial_8250_t* 8250设备指针
+ * \return size_t 停止位 1=停止位为1，2=停止位为2（字长为5时为1.5停止位）
+ *
+ */
+size_t hs_common_serial_8250_config_stopbits_get(hs_common_serial_8250_t *dev);
+
+/** \brief  8250设置停止位
+ *          注意：多线程操作时需要加锁
+ *
+ * \param dev hs_common_serial_8250_t* 8250设备指针
+ * \param  stopbits size_t 停止位 1=停止位为1，2=停止位为2（字长为5时为1.5停止位）
+ *
+ */
+void hs_common_serial_8250_config_stopbits_set(hs_common_serial_8250_t *dev,size_t stopbits);
+
+
+/** \brief  8250获取数据位
+ *          注意：多线程操作时需要加锁
+ *
+ * \param dev hs_common_serial_8250_t*  8250设备指针
+ * \return size_t 数据位
+ *
+ */
+size_t hs_common_serial_8250_config_databits_get(hs_common_serial_8250_t *dev);
+
+/** \brief  8250设置数据位
+ *          注意：多线程操作时需要加锁
+ *
+ * \param dev hs_common_serial_8250_t*  8250设备指针
+ * \param databits size_t 数据位
+ *
+ */
+void hs_common_serial_8250_config_databits_set(hs_common_serial_8250_t *dev,size_t databits);
 
 #ifdef __cplusplus
 }

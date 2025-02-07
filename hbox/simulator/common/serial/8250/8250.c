@@ -243,3 +243,186 @@ void hs_common_serial_8250_bus_tick(hs_common_serial_8250_t *dev)
 
     //TODO:进行8250内部处理
 }
+
+size_t hs_common_serial_8250_config_baud_get(hs_common_serial_8250_t *dev)
+{
+    if(dev==NULL)
+    {
+        return 0;
+    }
+    size_t divisor_latch=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_DLM]*256UL+dev->registers[HS_COMMON_SERIAL_8250_REGISTER_DLL];
+    if(divisor_latch==0)
+    {
+        divisor_latch=1;
+    }
+    return dev->clk_freq/(16*divisor_latch);
+}
+
+void hs_common_serial_8250_config_baud_set(hs_common_serial_8250_t *dev,size_t baud)
+{
+    if(dev==NULL)
+    {
+        return ;
+    }
+    if(baud==0)
+    {
+        //默认波特率115200
+        baud=115200;
+    }
+    size_t divisor_latch=dev->clk_freq/(16*baud);
+    dev->registers[HS_COMMON_SERIAL_8250_REGISTER_DLM]=((divisor_latch>>8)&0xFF);
+    dev->registers[HS_COMMON_SERIAL_8250_REGISTER_DLL]=(divisor_latch&0xFF);
+}
+
+
+hs_common_serial_8250_config_parity_t hs_common_serial_8250_config_parity_get(hs_common_serial_8250_t *dev)
+{
+    if(dev==NULL)
+    {
+        return HS_COMMON_SERIAL_8250_CONFIG_PARITY_NONE;
+    }
+    uint8_t LCR=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR];
+    if((LCR&0x08)==0)   //PEN
+    {
+        return HS_COMMON_SERIAL_8250_CONFIG_PARITY_NONE;
+    }
+    else
+    {
+        if((LCR&0x20)!=0)    //Stick Parity
+        {
+            if((LCR&0x10)!=0) //EPS
+            {
+                return HS_COMMON_SERIAL_8250_CONFIG_PARITY_SPACE;
+            }
+            else
+            {
+                return HS_COMMON_SERIAL_8250_CONFIG_PARITY_MARK;
+            }
+        }
+        else
+        {
+            if((LCR&0x10)!=0) //EPS
+            {
+                return HS_COMMON_SERIAL_8250_CONFIG_PARITY_EVEN;
+            }
+            else
+            {
+                return HS_COMMON_SERIAL_8250_CONFIG_PARITY_ODD;
+            }
+        }
+    }
+}
+
+void hs_common_serial_8250_config_parity_set(hs_common_serial_8250_t *dev,hs_common_serial_8250_config_parity_t parity)
+{
+    if(dev==NULL)
+    {
+        return;
+    }
+    uint8_t LCR=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR];
+    switch(parity)
+    {
+    case HS_COMMON_SERIAL_8250_CONFIG_PARITY_NONE:
+    {
+        LCR&=(~0x08);//PEN
+    }
+    break;
+    case HS_COMMON_SERIAL_8250_CONFIG_PARITY_EVEN:
+    {
+        LCR|=(0x08);    //PEN
+        LCR|=(0x10);    //EPS
+        LCR&=(~0x20);   //Stick Parity
+    }
+    break;
+    case HS_COMMON_SERIAL_8250_CONFIG_PARITY_ODD:
+    {
+        LCR|=(0x08);    //PEN
+        LCR&=(~0x10);    //EPS
+        LCR&=(~0x20);   //Stick Parity
+    }
+    break;
+    case HS_COMMON_SERIAL_8250_CONFIG_PARITY_SPACE:
+    {
+        LCR|=(0x08);    //PEN
+        LCR|=(0x10);    //EPS
+        LCR|=(0x20);   //Stick Parity
+    }
+    break;
+    case HS_COMMON_SERIAL_8250_CONFIG_PARITY_MARK:
+    {
+        LCR|=(0x08);    //PEN
+        LCR&=(~0x10);    //EPS
+        LCR|=(0x20);   //Stick Parity
+    }
+    break;
+    default:
+    {
+    }
+    break;
+    }
+    dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR]=LCR;
+}
+
+size_t hs_common_serial_8250_config_stopbits_get(hs_common_serial_8250_t *dev)
+{
+    if(dev==NULL)
+    {
+        return 1;
+    }
+    uint8_t LCR=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR];
+    if((LCR&0x04)!=0)
+    {
+        return 2;
+    }
+    return 1;
+}
+
+
+void hs_common_serial_8250_config_stopbits_set(hs_common_serial_8250_t *dev,size_t stopbits)
+{
+    if(dev==NULL)
+    {
+        return;
+    }
+    uint8_t LCR=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR];
+    if(stopbits >= 2)
+    {
+        LCR|=(0x04);
+    }
+    else
+    {
+        LCR&=(~0x04);
+    }
+    dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR]=LCR;
+}
+
+
+size_t hs_common_serial_8250_config_databits_get(hs_common_serial_8250_t *dev)
+{
+    if(dev==NULL)
+    {
+        return 8;
+    }
+    uint8_t LCR=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR];
+    return 5+(LCR&0x03);
+}
+
+void hs_common_serial_8250_config_databits_set(hs_common_serial_8250_t *dev,size_t databits)
+{
+    if(dev==NULL)
+    {
+        return ;
+    }
+    if(databits<5)
+    {
+        databits=5;
+    }
+    if(databits>8)
+    {
+        databits=8;
+    }
+    uint8_t LCR=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR];
+    LCR&=(0x03);
+    LCR|=(databits-5);
+    dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR]=LCR;
+}
