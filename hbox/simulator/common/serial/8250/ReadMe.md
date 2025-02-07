@@ -96,7 +96,7 @@
 | ---- | ------------------------------------------------------------ |
 | 7    | Error in RCVR FIFO。                                         |
 | 6    | TE。Transmitter Empty。此标志表示THR与发送shift寄存器均为空。1=空。 |
-| 5    | THRE。Transmitter Holding Register Empty。                   |
+| 5    | THRE。Transmitter Holding Register Empty。1=空               |
 | 4    | BI。Break Interrupt。                                        |
 | 3    | FE。Framing Error。                                          |
 | 2    | PE。Framing Error。                                          |
@@ -105,16 +105,16 @@
 
 ## MSR
 
-| 位   | 说明                     |
-| ---- | ------------------------ |
-| 7    | DCD,由外部输入直接驱动。 |
-| 6    | RI,由外部输入直接驱动。  |
-| 5    | DSR,由外部输入直接驱动。 |
-| 4    | CTS,由外部输入直接驱动。 |
-| 3    | DDCD                     |
-| 2    | TERI                     |
-| 1    | DDSR                     |
-| 0    | DCTS                     |
+| 位   | 说明                               |
+| ---- | ---------------------------------- |
+| 7    | DCD,由外部输入直接驱动。           |
+| 6    | RI,由外部输入直接驱动。            |
+| 5    | DSR,由外部输入直接驱动。           |
+| 4    | CTS,由外部输入直接驱动。           |
+| 3    | DDCD,DCD自上次读取已改变。         |
+| 2    | TERI，RI自上次读取已改变(低到高)。 |
+| 1    | DDSR，DSR自上次读取已改变。        |
+| 0    | DCTS，CTS自上次读取已改变。        |
 
 ## SCR
 
