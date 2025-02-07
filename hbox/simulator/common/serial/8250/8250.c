@@ -69,6 +69,8 @@ void hs_common_serial_8250_bus_write(hs_common_serial_8250_t *dev,uint8_t addres
         }
         else
         {
+            //高4位为保留
+            reg_data&=0x0F;
             dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IER]=reg_data;
         }
     }
@@ -318,6 +320,114 @@ void hs_common_serial_8250_bus_tick(hs_common_serial_8250_t *dev)
     {
         uint8_t data=0;
         dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_TICK,&data);
+    }
+
+    if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IER]&0x0F)==0)
+    {
+        //无中断使能，直接清除现有中断等待标志
+        dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]|=0x01;
+    }
+    else
+    {
+        if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]&0x01)!=0)
+        {
+            //当前无中断，按照优先级顺序进行中断扫描
+            for(size_t i=0; i<8; i++)
+            {
+                switch(i)
+                {
+                case 0:
+                {
+                    //接收器线中断（INTID=0x3）
+                }
+                break;
+                case 1:
+                {
+                    //接收数据有效中断（INTID=0x2）
+                    if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IER]&0x01)!=0)
+                    {
+                        if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR]&0x01)!=0)
+                        {
+                            //指示等待接收数据中断
+                            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]&=0xF0;
+                            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]|=((0x2)<<1);
+                        }
+                    }
+                }
+                break;
+                case 2:
+                {
+                    //字符超时中断（INTID=0x6）
+                }
+                break;
+                case 3:
+                {
+                    //THR空中断（INTID=0x1）
+                    if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IER]&0x02)!=0)
+                    {
+                        if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR]&0x20)!=0)
+                        {
+                            //THR空中断
+                            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]&=0xF0;
+                            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]|=((0x1)<<1);
+                        }
+                    }
+                }
+                break;
+                case 4:
+                {
+                    //Modem状态（INTID=0x0）
+                    if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IER]&0x08)!=0)
+                    {
+                        if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MSR]&0x0F)!=0)
+                        {
+                            //Modem状态中断(注意：中断过程中应当读取MSR寄存器以清空相应标志)
+                            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]&=0xF0;
+                            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]|=((0x0)<<1);
+                        }
+                    }
+                }
+                break;
+                case 5:
+                {
+
+                }
+                break;
+                case 6:
+                {
+
+                }
+                break;
+                case 7:
+                {
+
+                }
+                break;
+                default:
+                {
+
+                }
+                break;
+                }
+                if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]&0x01)==0)
+                {
+                    //已有中断等待处理，退出中断扫描。
+                    break;
+                }
+            }
+        }
+    }
+
+    if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]&0x01)==0)
+    {
+        //有中断正在等待
+        if(dev->io!=NULL)
+        {
+            //调用中断,在中断中应该清除中断标志，否则会再次中断。
+            dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_IRQ,&dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]);
+            //清除保留位
+            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_IIR]&=(~0x30);
+        }
     }
 
     //TODO:进行8250内部处理
