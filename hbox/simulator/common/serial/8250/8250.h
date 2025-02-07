@@ -55,6 +55,10 @@ typedef enum
     HS_COMMON_SERIAL_8250_IO_OPERATE_RI,                    /**< RI信号， 数据返回1表示有效（并非指高电平）*/
     HS_COMMON_SERIAL_8250_IO_OPERATE_DSR,                   /**< DSR信号， 数据返回1表示有效（并非指高电平）*/
     HS_COMMON_SERIAL_8250_IO_OPERATE_CTS,                   /**< CTS信号， 数据返回1表示有效（并非指高电平）*/
+    HS_COMMON_SERIAL_8250_IO_OPERATE_OUT2,                  /**< 输出OUT2信号， 数据为1表示有效（并非指高电平，通常低电平有效）*/
+    HS_COMMON_SERIAL_8250_IO_OPERATE_OUT1,                  /**< 输出OUT1信号， 数据为1表示有效（并非指高电平，通常低电平有效）*/
+    HS_COMMON_SERIAL_8250_IO_OPERATE_RTS,                   /**< 输出RTS信号， 数据为1表示有效（并非指高电平，通常低电平有效）*/
+    HS_COMMON_SERIAL_8250_IO_OPERATE_DTR,                   /**< 输出DTR信号， 数据为1表示有效（并非指高电平，通常低电平有效）*/
 } hs_common_serial_8250_io_operate_t;                       /**< IO操作 */
 
 

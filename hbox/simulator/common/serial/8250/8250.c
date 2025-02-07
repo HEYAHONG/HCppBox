@@ -74,6 +74,25 @@ void hs_common_serial_8250_bus_write(hs_common_serial_8250_t *dev,uint8_t addres
     break;
     case 4:
     {
+        if(dev->io!=NULL)
+        {
+            {
+                uint8_t out2=(((reg_data&0x08)!=0)?1:0);
+                dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_OUT2,&out2);
+            }
+            {
+                uint8_t out1=(((reg_data&0x04)!=0)?1:0);
+                dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_OUT1,&out1);
+            }
+            {
+                uint8_t rts=(((reg_data&0x02)!=0)?1:0);
+                dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_RTS,&rts);
+            }
+            {
+                uint8_t dtr=(((reg_data&0x01)!=0)?1:0);
+                dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_DTR,&dtr);
+            }
+        }
         dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MCR]=reg_data;
     }
     break;
