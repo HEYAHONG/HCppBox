@@ -43,6 +43,17 @@ void hs_common_serial_8250_bus_write(hs_common_serial_8250_t *dev,uint8_t addres
         else
         {
             dev->registers[HS_COMMON_SERIAL_8250_REGISTER_THR]=reg_data;
+            if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MCR]&0x10)!=0)
+            {
+                //Loop Back
+                if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR]&0x01)==0)
+                {
+                    //当前未接收到数据
+                    dev->registers[HS_COMMON_SERIAL_8250_REGISTER_RBR]=reg_data;
+                    //当前数据就绪
+                    dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR]|=0x01;
+                }
+            }
             if(dev->io!=NULL)
             {
                 dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_TRANSMIT_BYTE,&dev->registers[HS_COMMON_SERIAL_8250_REGISTER_THR]);
@@ -93,6 +104,8 @@ void hs_common_serial_8250_bus_write(hs_common_serial_8250_t *dev,uint8_t addres
                 dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_DTR,&dtr);
             }
         }
+        //高3位为保留位，始终为0
+        reg_data&=0x1F;
         dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MCR]=reg_data;
     }
     break;
@@ -140,6 +153,22 @@ void hs_common_serial_8250_bus_read(hs_common_serial_8250_t *dev,uint8_t address
         }
         else
         {
+            if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MCR]&0x10)!=0)
+            {
+                //Loop Back
+                if((dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR]&0x01)!=0)
+                {
+                    //有数据
+                    if(reg_data!=NULL)
+                    {
+                        (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_RBR];
+                    }
+                    //自动清除，数据准备好标志
+                    dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR]&=0xFE;
+                    break;
+                }
+            }
+            //非Loopback模式或者Loopback模式下无数据
             if(dev->io!=NULL)
             {
                 dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_RECEIVE_BYTE,&dev->registers[HS_COMMON_SERIAL_8250_REGISTER_RBR]);
