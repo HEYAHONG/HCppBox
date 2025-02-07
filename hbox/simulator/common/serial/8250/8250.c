@@ -611,7 +611,7 @@ void hs_common_serial_8250_config_databits_set(hs_common_serial_8250_t *dev,size
         databits=8;
     }
     uint8_t LCR=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR];
-    LCR&=(0x03);
+    LCR&=(~0x03);
     LCR|=(databits-5);
     dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR]=LCR;
 }
