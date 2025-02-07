@@ -186,6 +186,37 @@ void hs_common_serial_8250_bus_read(hs_common_serial_8250_t *dev,uint8_t address
     {
         if(reg_data!=NULL)
         {
+            if(dev->io!=NULL)
+            {
+                uint8_t new_msr=0;
+                uint8_t value=0;
+                dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_DCD,&value);
+                if(value!=0)
+                {
+                    new_msr|=0x80;
+                }
+                value=0;
+                dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_RI,&value);
+                if(value!=0)
+                {
+                    new_msr|=0x40;
+                }
+                value=0;
+                dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_DSR,&value);
+                if(value!=0)
+                {
+                    new_msr|=0x20;
+                }
+                value=0;
+                dev->io(dev,HS_COMMON_SERIAL_8250_IO_OPERATE_CTS,&value);
+                if(value!=0)
+                {
+                    new_msr|=0x10;
+                }
+
+                new_msr |= ((new_msr^dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MSR])>>4);
+                dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MSR]=new_msr;
+            }
             (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_MSR];
         }
     }

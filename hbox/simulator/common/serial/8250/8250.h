@@ -50,7 +50,11 @@ typedef enum
     HS_COMMON_SERIAL_8250_IO_OPERATE_TRANSMIT_BYTE=0,       /**< 发送数据,写THR时触发*/
     HS_COMMON_SERIAL_8250_IO_OPERATE_RECEIVE_BYTE,          /**< 接收数据,读RBR时触发 */
     HS_COMMON_SERIAL_8250_IO_OPERATE_IRQ,                   /**< 中断请求，当中断使能且发生相应中断时触发，数据为IIR寄存器 */
-    HS_COMMON_SERIAL_8250_IO_OPERATE_TICK                   /**< 时钟节拍，一般用于8250内部寄存器更新 */
+    HS_COMMON_SERIAL_8250_IO_OPERATE_TICK,                  /**< 时钟节拍，一般用于8250内部寄存器更新 */
+    HS_COMMON_SERIAL_8250_IO_OPERATE_DCD,                   /**< DCD信号，数据返回1表示有效（并非指高电平） */
+    HS_COMMON_SERIAL_8250_IO_OPERATE_RI,                    /**< RI信号， 数据返回1表示有效（并非指高电平）*/
+    HS_COMMON_SERIAL_8250_IO_OPERATE_DSR,                   /**< DSR信号， 数据返回1表示有效（并非指高电平）*/
+    HS_COMMON_SERIAL_8250_IO_OPERATE_CTS,                   /**< CTS信号， 数据返回1表示有效（并非指高电平）*/
 } hs_common_serial_8250_io_operate_t;                       /**< IO操作 */
 
 
