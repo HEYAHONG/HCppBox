@@ -13,8 +13,6 @@
 - hbox_enable(targetname):为目标名为targetname的目标启用HBox。
 - hrc_enable(targetname):为目标名为targetname的目标启用HRC。
 
-代码示例请参考[test](test)目录。
-
 ## 编译器支持
 
 注意:应当尽可能使用最新版编译器。
@@ -32,6 +30,12 @@ MSVC的编译器对C/C++标准支持随着版本的升级而逐渐完善，较�
 
 - 推荐测试需要C99标准的IDE：VS2015及更新版本的IDE。
 - 推荐测试需要C++11标准的IDE：VS 2019 16.8及更新版本的IDE.
+
+# 测试
+
+如需使用各种IDE/编辑器（如[vscode](https://code.visualstudio.com/)）打开源代码，请不要直接打开当前目录，而是打开测试目录，这样才可以顺利运行测试例程。
+
+测试目录见[test](test)目录。
 
 # 组件
 
