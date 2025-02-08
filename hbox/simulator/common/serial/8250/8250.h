@@ -36,9 +36,9 @@ typedef enum
     HS_COMMON_SERIAL_8250_REGISTER_FCR,             /**< FIFO控制寄存器，只可写入*/
     HS_COMMON_SERIAL_8250_REGISTER_LCR,             /**< 线路控制寄存器，可读写*/
     HS_COMMON_SERIAL_8250_REGISTER_MCR,             /**< Modem控制寄存器，可读写*/
-    HS_COMMON_SERIAL_8250_REGISTER_LSR,             /**< 线路状态寄存器，只可读取*/
-    HS_COMMON_SERIAL_8250_REGISTER_MSR,             /**< Modem状态寄存器，只可读取*/
-    HS_COMMON_SERIAL_8250_REGISTER_SCR,             /**< Scratch寄存器，只可读取*/
+    HS_COMMON_SERIAL_8250_REGISTER_LSR,             /**< 线路状态寄存器，可读写**/
+    HS_COMMON_SERIAL_8250_REGISTER_MSR,             /**< Modem状态寄存器，可读写**/
+    HS_COMMON_SERIAL_8250_REGISTER_SCR,             /**< Scratch寄存器，可读写**/
     HS_COMMON_SERIAL_8250_REGISTER_DLL,             /**< 除数低字节寄存器，DLAB=1访问此寄存器 */
     HS_COMMON_SERIAL_8250_REGISTER_DLM,             /**< 除数高字节寄存器，DLAB=1访问此寄存器 */
     HS_COMMON_SERIAL_8250_REGISTER_MAX              //用于确定寄存器的数量
