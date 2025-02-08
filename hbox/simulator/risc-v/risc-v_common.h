@@ -80,6 +80,39 @@ typedef union
 }
 #endif // HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX
 
+typedef enum
+{
+    /*
+     *  基本指令集（整数）。注意：基本指令集不可组合分配低4位作为基本指令集的标识,扩展指令集每个扩展占1位。
+     */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32I= (0ULL << (0)),               /**< RV32I基本指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32E= (1ULL << (0)),               /**< RV32E基本指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64I= (2ULL << (0)),               /**< RV64I基本指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64E= (3ULL << (0)),               /**< RV64E基本指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV128I=(4ULL << (0)),               /**< RV128I基本指令集 */
+
+    /*
+     * 扩展指令集。扩展指令集通常可组合（有些扩展指令值相同表示需要需要根据基本指令集确定最终的指令集）
+     */
+
+    //"C"扩展：压缩指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RVC=   (1ULL << (4)),              /**< RVC扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32C= (1ULL << (4)),              /**< RV32C扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64C= (1ULL << (4)),              /**< RV64C扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV128C=(1ULL << (4)),              /**< RV128C扩展指令集 */
+
+    //"A"扩展：原子操作指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32A= (1ULL << (5)),              /**< RV32A扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64A= (1ULL << (5)),              /**< RV64A扩展指令集 */
+
+    //"M"扩展：整数乘除
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M= (1ULL << (6)),              /**< RV32M扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64M= (1ULL << (6)),              /**< RV64M扩展指令集 */
+
+} hs_risc_v_common_instruction_set_t;                                   /**< 指令集类型 */
+
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
