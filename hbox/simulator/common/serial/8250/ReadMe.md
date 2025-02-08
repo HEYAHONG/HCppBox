@@ -149,3 +149,11 @@
 与除数低字节共同构成除数。
 
 波特率=时钟频率/（16×除数）
+
+# 相关链接
+
+## 硬件数据手册
+
+- [INS8250](https://www.alldatasheetcn.com/datasheet-pdf/view/89961/NSC/INS8250.html)
+- [PC16550D](https://www.alldatasheetcn.com/datasheet-pdf/view/839262/TI1/PC16550D.html)
+
