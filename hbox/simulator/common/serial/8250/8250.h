@@ -128,9 +128,9 @@ void  hs_common_serial_8250_init(hs_common_serial_8250_t *dev,hs_common_serial_8
 #define HS_COMMON_SERIAL_8250_REGISTER_ADDRESS_FCR      2   /**< FIFO控制寄存器，只可写入*/
 #define HS_COMMON_SERIAL_8250_REGISTER_ADDRESS_LCR      3   /**< 线路控制寄存器，可读写*/
 #define HS_COMMON_SERIAL_8250_REGISTER_ADDRESS_MCR      4   /**< Modem控制寄存器，可读写*/
-#define HS_COMMON_SERIAL_8250_REGISTER_ADDRESS_LSR      5   /**< 线路状态寄存器，只可读取*/
-#define HS_COMMON_SERIAL_8250_REGISTER_ADDRESS_MSR      6   /**< Modem状态寄存器，只可读取*/
-#define HS_COMMON_SERIAL_8250_REGISTER_ADDRESS_SCR      7   /**< Scratch寄存器，只可读取*/
+#define HS_COMMON_SERIAL_8250_REGISTER_ADDRESS_LSR      5   /**< 线路状态寄存器，可读写*/
+#define HS_COMMON_SERIAL_8250_REGISTER_ADDRESS_MSR      6   /**< Modem状态寄存器，可读写*/
+#define HS_COMMON_SERIAL_8250_REGISTER_ADDRESS_SCR      7   /**< Scratch寄存器，可读写*/
 #define HS_COMMON_SERIAL_8250_REGISTER_ADDRESS_DLL      0   /**< 除数低字节寄存器，DLAB=1访问此寄存器 */
 #define HS_COMMON_SERIAL_8250_REGISTER_ADDRESS_DLM      1   /**< 除数高字节寄存器，DLAB=1访问此寄存器 */
 
