@@ -262,6 +262,27 @@ size_t hs_common_serial_8250_config_databits_get(hs_common_serial_8250_t *dev);
  */
 void hs_common_serial_8250_config_databits_set(hs_common_serial_8250_t *dev,size_t databits);
 
+
+/** \brief  8250获取是否有数据
+ *          注意：多线程操作时需要加锁
+ *
+ * \param dev hs_common_serial_8250_t* 8250设备指针
+ * \return bool 数据是否准备好，当为true时，表示8250中有数据待读取,此时不可写入数据。
+ *
+ */
+bool hs_common_serial_8250_status_dataready_get(hs_common_serial_8250_t *dev);
+
+/** \brief  8250设置数据
+ *          注意：多线程操作时需要加锁
+ *
+ * \param dev hs_common_serial_8250_t* 8250设备指针
+ * \param data uint8_t  串口数据。注意：即使将数据已写入RBR，总线读取时仍然会调用io操作回调，如果用户选择在io操作回调中接收数据，此处可使用假数据。
+ * \return bool 是否成功写入。
+ *
+ */
+bool hs_common_serial_8250_status_dataready_set(hs_common_serial_8250_t *dev,uint8_t data);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

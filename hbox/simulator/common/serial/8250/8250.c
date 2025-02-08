@@ -179,6 +179,8 @@ void hs_common_serial_8250_bus_read(hs_common_serial_8250_t *dev,uint8_t address
             {
                 (*reg_data)=dev->registers[HS_COMMON_SERIAL_8250_REGISTER_RBR];
             }
+            //自动清除，数据准备好标志
+            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR]&=0xFE;
         }
     }
     break;
@@ -614,4 +616,31 @@ void hs_common_serial_8250_config_databits_set(hs_common_serial_8250_t *dev,size
     LCR&=(~0x03);
     LCR|=(databits-5);
     dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LCR]=LCR;
+}
+
+
+bool hs_common_serial_8250_status_dataready_get(hs_common_serial_8250_t *dev)
+{
+    if(dev==NULL)
+    {
+        return false;
+    }
+
+    return (dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR]&0x01)!=0;
+}
+
+bool hs_common_serial_8250_status_dataready_set(hs_common_serial_8250_t *dev,uint8_t data)
+{
+    if(dev==NULL)
+    {
+        return false;
+    }
+
+    if(!hs_common_serial_8250_status_dataready_get(dev))
+    {
+        dev->registers[HS_COMMON_SERIAL_8250_REGISTER_RBR]=data;
+        dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR]|=0x01;
+        return true;
+    }
+    return false;
 }
