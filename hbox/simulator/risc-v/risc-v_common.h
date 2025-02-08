@@ -16,6 +16,7 @@ extern "C"
 
 #include "stdlib.h"
 #include "stdint.h"
+#include "stdbool.h"
 #include "string.h"
 
 
@@ -83,7 +84,7 @@ typedef union
 typedef enum
 {
     /*
-     *  基本指令集（整数）。注意：基本指令集不可组合分配低4位作为基本指令集的标识,扩展指令集每个扩展占1位。
+     *  基本指令集（整数）。注意：基本指令集不可组合，分配低4位作为基本指令集的标识,扩展指令集每个扩展占1位。
      */
     HS_RISC_V_COMMON_INSTRUCTION_SET_RV32I= (0ULL << (0)),               /**< RV32I基本指令集 */
     HS_RISC_V_COMMON_INSTRUCTION_SET_RV32E= (1ULL << (0)),               /**< RV32E基本指令集 */
@@ -111,7 +112,23 @@ typedef enum
 
 } hs_risc_v_common_instruction_set_t;                                   /**< 指令集类型 */
 
+/** \brief 指令集集合中是否有某个指令集
+ *
+ * \param sets uint32_t 指令集集合
+ * \param instruction_set hs_risc_v_common_instruction_set_t  指令集类型
+ * \return bool 是否指令集
+ *
+ */
+bool hs_risc_v_common_instruction_set_sets_has_set(uint32_t sets,hs_risc_v_common_instruction_set_t instruction_set);
 
+
+/** \brief 指令集集合格式化（去除其中不合理的值如不存在的基本指令集、添加某些指令集依赖（指一个指令集依赖另一个指令集））
+ *
+ * \param sets uint32_t 指令集集合
+ * \return uint32_t 格式化后的指令集集合
+ *
+ */
+uint32_t hs_risc_v_common_instruction_set_sets_format(uint32_t sets);
 
 #ifdef __cplusplus
 }
