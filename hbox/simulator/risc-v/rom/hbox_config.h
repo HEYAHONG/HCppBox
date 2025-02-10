@@ -15,6 +15,6 @@
 /*
  * 启用C++初始化
  */
- #define HCPPRT_USE_CTORS       1
+#define HCPPRT_USE_CTORS       1
 
 #endif // __HBOX_CONFIG_H__

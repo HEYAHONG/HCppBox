@@ -1,10 +1,17 @@
 #include "hbox.h"
 #include "stdint.h"
 
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
 static void vector_table_default_handler();
 static void vector_table_trap();
-static void vector_table_reset_handler();
-
+static __attribute__((naked)) void vector_table_reset_handler();
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
  * 向量表.定义中断或者库函数的地址向量
@@ -104,8 +111,9 @@ static void vector_table_trap()
  * 复位中断处理
  */
 extern "C"  void _start();
-static void vector_table_reset_handler()
+static __attribute__((naked)) void vector_table_reset_handler()
 {
     _start();
+    while(true);
 }
 
