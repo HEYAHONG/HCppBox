@@ -25,13 +25,10 @@ int _kill(int pid, int sig)
 
 void _exit (int status)
 {
-    _kill(status, -1);
     while (1) {}		/* Make sure we hang here */
 }
 
 
-
-extern int read_tty(char *ptr,int len);
 __attribute__((weak)) int _read(int file, char *ptr, int len)
 {
 
@@ -48,7 +45,6 @@ __attribute__((weak)) int _read(int file, char *ptr, int len)
     return 0;
 }
 
-extern int write_tty(char *ptr,int len);
 __attribute__((weak)) int _write(int file, char *ptr, int len)
 {
     if(ptr==NULL)
