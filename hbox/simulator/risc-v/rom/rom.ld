@@ -64,15 +64,27 @@ SECTIONS
 
 	/*
 	 * 向量表
-	*/
+	 */
 	.vector : {
 		KEEP (*(.vector))
 	} >flash AT>flash :text
 
 	.init : {
+		. = ORIGIN(flash)+0x400;
 		KEEP (*(.text.init.enter))
 		KEEP (*(.data.init.enter))
 		KEEP (*(SORT_BY_NAME(.init) SORT_BY_NAME(.init.*)))
+		
+		/*
+		 * 默认中断/库函数地址
+		 */
+		. = ORIGIN(flash)+0x500;
+		KEEP (*(.vector.default_handler))
+		. = ORIGIN(flash)+0x540;
+		KEEP (*(.vector.trap))
+		. = ORIGIN(flash)+0x580;
+		KEEP (*(.vector.reset_handler))
+
 	} >flash AT>flash :text
 
 	.text : {

@@ -27,7 +27,7 @@
 
 本ROM代码中，向量表共256项，其中前64项为异常向量或者中断向量，其余为库函数向量。
 
-向量表的实现见[vector.cpp](vector.cpp)。
+向量表的实现见各个ROM代码的vector.cpp。
 
 # 编译
 
@@ -71,4 +71,5 @@ cmake --build .
 # 目录说明
 
 - [rv32i](rv32i):RISC-V 32位ROM代码.
+- [rv64i](rv64i):RISC-V 64位ROM代码.
 
