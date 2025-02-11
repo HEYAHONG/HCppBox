@@ -74,6 +74,7 @@ SECTIONS
 		KEEP (*(.text.init.enter))
 		KEEP (*(.data.init.enter))
 		KEEP (*(SORT_BY_NAME(.init) SORT_BY_NAME(.init.*)))
+		KEEP (*crt0.*(.text*))
 		
 		/*
 		 * 默认中断/库函数地址
