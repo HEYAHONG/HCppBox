@@ -192,6 +192,24 @@ bool hs_risc_v_common_instruction_set_sets_has_set(uint32_t sets,hs_risc_v_commo
  */
 uint32_t hs_risc_v_common_instruction_set_sets_format(uint32_t sets);
 
+/** \brief 指令集集合添加指令集类型
+ *
+ * \param sets uint32_t 指令集集合
+ * \param instruction_set hs_risc_v_common_instruction_set_t 指令集类型
+ * \return uint32_t 添加后的指令集集合
+ *
+ */
+uint32_t hs_risc_v_common_instruction_set_sets_set_set(uint32_t sets,hs_risc_v_common_instruction_set_t instruction_set);
+
+/** \brief 指令集集合删除指令集类型。注意：只可以删除扩展指令且仅当没有指令依赖待删除的指令时可成功删除
+ *
+ * \param sets uint32_t 指令集集合
+ * \param instruction_set hs_risc_v_common_instruction_set_t 指令集类型
+ * \return uint32_t  清理后的指令集集合
+ *
+ */
+uint32_t hs_risc_v_common_instruction_set_sets_clear_set(uint32_t sets,hs_risc_v_common_instruction_set_t instruction_set);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

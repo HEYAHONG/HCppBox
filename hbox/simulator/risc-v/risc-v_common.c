@@ -114,8 +114,45 @@ uint32_t hs_risc_v_common_instruction_set_sets_format(uint32_t sets)
     }
 
     {
-        //扩展指令集依赖添加
+        //扩展指令集依赖添加(默认使用32位的枚举值，64位及更高位通常枚举值相同)
 
+
+        //指令扩展"D"依赖指令扩展"F"
+        if(hs_risc_v_common_instruction_set_sets_has_set(sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32D))
+        {
+            sets|=HS_RISC_V_COMMON_INSTRUCTION_SET_RV32F;
+        }
+
+        //指令扩展"F"依赖指令扩展"Zicsr"
+        if(hs_risc_v_common_instruction_set_sets_has_set(sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32F))
+        {
+            sets|=HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICSR;
+        }
     }
     return sets;
 }
+
+uint32_t hs_risc_v_common_instruction_set_sets_set_set(uint32_t sets,hs_risc_v_common_instruction_set_t instruction_set)
+{
+    if(instruction_set >= (1ULL<<(4)))
+    {
+        sets|=instruction_set;
+    }
+    else
+    {
+        sets &=0xFFFFFFF0;
+        sets |=instruction_set;
+    }
+
+    return hs_risc_v_common_instruction_set_sets_format(sets);
+}
+
+uint32_t hs_risc_v_common_instruction_set_sets_clear_set(uint32_t sets,hs_risc_v_common_instruction_set_t instruction_set)
+{
+    if(instruction_set >= (1ULL<<(4)))
+    {
+        sets&=((~instruction_set)&0xFFFFFFF0);
+    }
+    return hs_risc_v_common_instruction_set_sets_format(sets);
+}
+
