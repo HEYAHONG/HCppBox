@@ -667,3 +667,9 @@ PCON的SFR地址为87H。
 0xff	MOV R7,A			1		12
 ```
 
+# ROM
+
+rom在此处指主要程序ROM,对于MCS-51而言，主要指一些demo。
+
+见[rom](rom)目录,通常需要单独编译。
+
