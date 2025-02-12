@@ -11,6 +11,8 @@ set(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} \
     -mabi=ilp32\
     -std=gnu11\
     -fPIC\
+    -ffunction-sections\
+    -fdata-sections\
     --specs=picolibcpp.specs\
 ")
 set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
@@ -18,6 +20,8 @@ set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
     -mabi=ilp32\
     -std=gnu++11\
     -fPIC\
+    -ffunction-sections\
+    -fdata-sections\
     --specs=picolibcpp.specs\
 ")
 set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS}\
@@ -36,6 +40,8 @@ set(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} \
     -mabi=ilp32\
 	-std=gnu11\
     -fPIC\
+    -ffunction-sections\
+    -fdata-sections\
     --specs=nano.specs\
 ")
 set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
@@ -43,6 +49,8 @@ set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
     -mabi=ilp32\
     -std=gnu++11\
     -fPIC\
+    -ffunction-sections\
+    -fdata-sections\
     --specs=nano.specs\
 ")
 set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS}\
