@@ -43,6 +43,34 @@ size_t hs_risc_v_common_instruction_length(uint32_t instruction)
 }
 
 
+bool hs_risc_v_common_instruction_set_sets_has_rv32g(uint32_t sets)
+{
+    uint32_t rv32g=HS_RISC_V_COMMON_INSTRUCTION_SET_RV32G;
+    if((sets&0xF)==(rv32g&0xF))
+    {
+        //基本指令集相同,比较指令集扩展
+        if(((sets&rv32g)&0xFFFFFFF0)==(rv32g&0xFFFFFFF0))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool hs_risc_v_common_instruction_set_sets_has_rv64g(uint32_t sets)
+{
+    uint32_t rv64g=HS_RISC_V_COMMON_INSTRUCTION_SET_RV64G;
+    if((sets&0xF)==(rv64g&0xF))
+    {
+        //基本指令集相同,比较指令集扩展
+        if(((sets&rv64g)&0xFFFFFFF0)==(rv64g&0xFFFFFFF0))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool hs_risc_v_common_instruction_set_sets_has_set(uint32_t sets,hs_risc_v_common_instruction_set_t instruction_set)
 {
     if(instruction_set >= (1ULL<<(4)))

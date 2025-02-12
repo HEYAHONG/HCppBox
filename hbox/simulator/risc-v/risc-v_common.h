@@ -110,13 +110,75 @@ typedef enum
     HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M= (1ULL << (6)),              /**< RV32M扩展指令集 */
     HS_RISC_V_COMMON_INSTRUCTION_SET_RV64M= (1ULL << (6)),              /**< RV64M扩展指令集 */
 
+    //"F"扩展：单精度浮点，依赖"Zicsr"扩展
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32F= (1ULL << (7)),              /**< RV32F扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64F= (1ULL << (7)),              /**< RV64F扩展指令集 */
+
+    //"D"扩展：双精度浮点，依赖"F"扩展
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32D= (1ULL << (8)),              /**< RV32D扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64D= (1ULL << (8)),              /**< RV64D扩展指令集 */
+
+
+    //"Zicsr"扩展：控制状态寄存器
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICSR= (1ULL << (sizeof(uint32_t)*8-1)),                 /**< RV32Zicsr扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZICSR= (1ULL << (sizeof(uint32_t)*8-1)),                 /**< RV64Zicsr扩展指令集 */
+
+    //"Zifencei"扩展：控制状态寄存器
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI= (1ULL << (sizeof(uint32_t)*8-2)),              /**< RV32Zicsr扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZIFENCEI= (1ULL << (sizeof(uint32_t)*8-2)),              /**< RV64Zicsr扩展指令集 */
+
 } hs_risc_v_common_instruction_set_t;                                   /**< 指令集类型 */
+
+
+/** \brief RISC-V 32位通用指令集RV32G（包括IMAFDZicsr_Zifencei）
+ *
+ *
+ */
+#define HS_RISC_V_COMMON_INSTRUCTION_SET_RV32G  (\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV32I |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV32A |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV32F |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV32D |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICSR |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI )
+
+/** \brief 指令集集合中是否含有32位通用指令集
+ *
+ * \param sets uint32_t 指令集集合
+ * \return bool 是否有指令集
+ *
+ */
+bool hs_risc_v_common_instruction_set_sets_has_rv32g(uint32_t sets);
+
+
+/** \brief RISC-V 64位通用指令集RV64G（包括IMAFDZicsr_Zifencei）
+ *
+ *
+ */
+#define HS_RISC_V_COMMON_INSTRUCTION_SET_RV64G  (\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV64I |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV64M |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV64A |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV64F |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV64D |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZICSR |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZIFENCEI )
+
+/** \brief 指令集集合中是否含有64位通用指令集
+ *
+ * \param sets uint32_t 指令集集合
+ * \return bool 是否有指令集
+ *
+ */
+bool hs_risc_v_common_instruction_set_sets_has_rv64g(uint32_t sets);
+
 
 /** \brief 指令集集合中是否有某个指令集
  *
  * \param sets uint32_t 指令集集合
  * \param instruction_set hs_risc_v_common_instruction_set_t  指令集类型
- * \return bool 是否指令集
+ * \return bool 是否有指令集
  *
  */
 bool hs_risc_v_common_instruction_set_sets_has_set(uint32_t sets,hs_risc_v_common_instruction_set_t instruction_set);
