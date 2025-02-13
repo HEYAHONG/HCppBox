@@ -41,7 +41,7 @@ void hs_mcs_51_serial_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint1
         {
             //中断已使能
 
-            if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_RI) && hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_TI))
+            if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_RI) || hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_TI))
             {
                 //需要中断
 
