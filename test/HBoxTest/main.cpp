@@ -1551,7 +1551,7 @@ static int hsimulator_test(int argc,const char *argv[])
     }
 
     {
-        //测试MCS-51 Core,足够存下hs_mcs_51_core_t、128字节SFR、256字节Ram、Flash(可变)。
+        //测试MCS-51 Core,足够存下hs_mcs_51_core_t、128字节SFR、256字节Ram、256字节xRam，Flash(可变)。
         uint8_t mcs_51[4096]= {0};
         static hs_mcs_51_serial_t mcs_51_uart;
         hs_mcs_51_serial_init(&mcs_51_uart,[](hs_mcs_51_serial_t *serial,hs_mcs_51_serial_io_t io_type,uint16_t *data) -> bool
@@ -1570,13 +1570,13 @@ static int hsimulator_test(int argc,const char *argv[])
             case HS_MCS_51_IO_RESET:                //IO复位
             {
                 //清空内存内容
-                memset(&mem[hs_mcs_51_core_size()],0,256+128);
+                memset(&mem[hs_mcs_51_core_size()],0,256+128+256);
             };
             break;
             case HS_MCS_51_IO_READ_ROM:             //读取ROM
             {
                 //Ram末尾接程序
-                memcpy(data,&mem[hs_mcs_51_core_size()+256+128+address],length);
+                memcpy(data,&mem[hs_mcs_51_core_size()+256+128+256+address],length);
 
             };
             break;
@@ -1614,6 +1614,16 @@ static int hsimulator_test(int argc,const char *argv[])
                 }
             }
             break;
+            case HS_MCS_51_IO_READ_EXTERNAL_RAM:          //读取内部低128字节RAM与SFR
+            {
+                memcpy(data,&mem[hs_mcs_51_core_size()+256+128+address],length);
+            }
+            break;
+            case HS_MCS_51_IO_WRITE_EXTERNAL_RAM:
+            {
+                memcpy(&mem[hs_mcs_51_core_size()+256+128+address],data,length);
+            }
+            break;
             default:
                 break;
             }
@@ -1627,74 +1637,31 @@ static int hsimulator_test(int argc,const char *argv[])
 
         {
             printf("hsimulator mcs_51_core(helloworld) loading!\r\n");
-            hs_mcs_51_core_reset(core);
+            //将程序代码放到Ram后
+            memcpy(&mcs_51[hs_mcs_51_core_size()+256+128+256],hs_mcs_51_rom_helloworld,hs_mcs_51_rom_helloworld_len);
+            printf("hsimulator mcs_51_core(helloworld) start!\r\n");
+            hs_mcs_51_core_tick(core,10000);
             {
-                /*
-                 * MCU 8051 IDE AT89S52程序
-                #include "stdio.h"
-                #include "stdint.h"
-                #include "8051.h"
-
-                void uart_init(void)
+                const char * serialport_str="SerialPort Ok!\n";
+                while((*serialport_str)!='\0')
                 {
-                    SCON=0x90;
-                }
-
-                void uart_send_char(int ch)
-                {
-                    SBUF=(uint8_t)ch;
-                }
-
-                void uart_send_str(char *str)
-                {
-                    while(*str!='\0')
+                    if(hs_mcs_51_serial_status_dataready_set(core,&mcs_51_uart,((*serialport_str))))
                     {
-                        uart_send_char(*(str++));
+                        //等待内核处理数据
+                        hs_mcs_51_core_tick(core,100);
+                        serialport_str++;
+                    }
+                    else
+                    {
+                        //等待内核处理数据
+                        hs_mcs_51_core_tick(core,1);
                     }
                 }
-
-                void main(void)
-                {
-                    uart_init();
-                    uart_send_str("Hello World!\n");
-                    while(1);
-                }
-                 */
-                const unsigned char helloworld_bin[] =
-                {
-                    0x02, 0x00, 0x4c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xe2, 0xfb,
-                    0xea, 0xf2, 0x80, 0x2c, 0x00, 0x00, 0xe0, 0xfb, 0xea, 0xf0, 0x80, 0x24,
-                    0xe6, 0xb5, 0x02, 0x02, 0xeb, 0xf6, 0x22, 0x00, 0xe2, 0xb5, 0x02, 0x02,
-                    0xeb, 0xf2, 0x22, 0x00, 0xe0, 0xb5, 0x02, 0x02, 0xeb, 0xf0, 0x22, 0x30,
-                    0xf6, 0xe0, 0xa8, 0x82, 0x20, 0xf5, 0xd3, 0xea, 0xc6, 0xf5, 0x82, 0x22,
-                    0x8b, 0x82, 0x22, 0x30, 0xf6, 0xe6, 0xa8, 0x82, 0x20, 0xf5, 0xd9, 0x80,
-                    0xcf, 0x02, 0x00, 0xe0, 0x75, 0x81, 0x07, 0x12, 0x01, 0x0b, 0xe5, 0x82,
-                    0x60, 0x03, 0x02, 0x00, 0x49, 0x79, 0x00, 0xe9, 0x44, 0x00, 0x60, 0x1b,
-                    0x7a, 0x00, 0x90, 0x01, 0x1d, 0x78, 0x01, 0x75, 0xa0, 0x00, 0xe4, 0x93,
-                    0xf2, 0xa3, 0x08, 0xb8, 0x00, 0x02, 0x05, 0xa0, 0xd9, 0xf4, 0xda, 0xf2,
-                    0x75, 0xa0, 0xff, 0xe4, 0x78, 0xff, 0xf6, 0xd8, 0xfd, 0x78, 0x00, 0xe8,
-                    0x44, 0x00, 0x60, 0x0a, 0x79, 0x01, 0x75, 0xa0, 0x00, 0xe4, 0xf3, 0x09,
-                    0xd8, 0xfc, 0x78, 0x00, 0xe8, 0x44, 0x00, 0x60, 0x0c, 0x79, 0x00, 0x90,
-                    0x00, 0x01, 0xe4, 0xf0, 0xa3, 0xd8, 0xfc, 0xd9, 0xfa, 0x02, 0x00, 0x49,
-                    0x75, 0x98, 0x90, 0x22, 0xae, 0x82, 0x8e, 0x99, 0x22, 0xad, 0x82, 0xae,
-                    0x83, 0xaf, 0xf0, 0x8d, 0x82, 0x8e, 0x83, 0x8f, 0xf0, 0x12, 0x00, 0xef,
-                    0xfc, 0x60, 0x1c, 0x0d, 0xbd, 0x00, 0x01, 0x0e, 0x7b, 0x00, 0x8c, 0x82,
-                    0x8b, 0x83, 0xc0, 0x07, 0xc0, 0x06, 0xc0, 0x05, 0x12, 0x00, 0xac, 0xd0,
-                    0x05, 0xd0, 0x06, 0xd0, 0x07, 0x80, 0xd8, 0x22, 0x12, 0x00, 0xa8, 0x90,
-                    0x01, 0x0f, 0x75, 0xf0, 0x80, 0x12, 0x00, 0xb1, 0x80, 0xfe, 0x22, 0x20,
-                    0xf7, 0x14, 0x30, 0xf6, 0x14, 0x88, 0x83, 0xa8, 0x82, 0x20, 0xf5, 0x07,
-                    0xe6, 0xa8, 0x83, 0x75, 0x83, 0x00, 0x22, 0xe2, 0x80, 0xf7, 0xe4, 0x93,
-                    0x22, 0xe0, 0x22, 0x75, 0x82, 0x00, 0x22, 0x48, 0x65, 0x6c, 0x6c, 0x6f,
-                    0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x0a, 0x00
-                };
-                //将程序代码放到Ram后
-                memcpy(&mcs_51[hs_mcs_51_core_size()+256+128],helloworld_bin,sizeof(helloworld_bin));
-                printf("hsimulator mcs_51_core(helloworld) start!\r\n");
+                //内核处理最后一个数据
                 hs_mcs_51_core_tick(core,10000);
-                printf("hsimulator mcs_51_core(helloworld) end!\r\n");
-                printf("hsimulator mcs_51_serial mode=%d,baud=%d!\r\n",(int)hs_mcs_51_serial_config_mode_get(core,&mcs_51_uart),(int)hs_mcs_51_serial_config_baud_get(core,&mcs_51_uart));
-
             }
+            printf("hsimulator mcs_51_core(helloworld) end!\r\n");
+            printf("hsimulator mcs_51_serial mode=%d,baud=%d!\r\n",(int)hs_mcs_51_serial_config_mode_get(core,&mcs_51_uart),(int)hs_mcs_51_serial_config_baud_get(core,&mcs_51_uart));
 
         }
     }

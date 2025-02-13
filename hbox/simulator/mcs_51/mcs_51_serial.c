@@ -82,10 +82,10 @@ void hs_mcs_51_serial_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint1
             if(serial->io!=NULL)
             {
                 serial->io(serial,HS_MCS_51_SERIAL_IO_RECEIVE,&serial->RB);
-                if(data!=NULL)
-                {
-                    (*data)=(serial->RB&0xF);
-                }
+            }
+            if(data!=NULL)
+            {
+                (*data)=(serial->RB&0xFF);
             }
         }
         break;
@@ -165,20 +165,20 @@ size_t hs_mcs_51_serial_config_baud_get(hs_mcs_51_core_t *core,hs_mcs_51_serial_
     case 1:
     case 3:
     {
-         uint8_t pcon=0;
-         hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_PCON,&pcon);
-         bool smod=pcon&0x80;
-         uint8_t th1=0;
-         hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_TH1,&th1);
-         baud=HS_MCS_51_COMMON_CLK_FREQ*(smod?2:1)/32/((256-th1)*12);
+        uint8_t pcon=0;
+        hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_PCON,&pcon);
+        bool smod=pcon&0x80;
+        uint8_t th1=0;
+        hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_TH1,&th1);
+        baud=HS_MCS_51_COMMON_CLK_FREQ*(smod?2:1)/32/((256-th1)*12);
     }
     break;
     case 2:
     {
-         uint8_t pcon=0;
-         hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_PCON,&pcon);
-         bool smod=pcon&0x80;
-         baud=HS_MCS_51_COMMON_CLK_FREQ*(smod?2:1)/64;
+        uint8_t pcon=0;
+        hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_PCON,&pcon);
+        bool smod=pcon&0x80;
+        baud=HS_MCS_51_COMMON_CLK_FREQ*(smod?2:1)/64;
     }
     break;
     default:
