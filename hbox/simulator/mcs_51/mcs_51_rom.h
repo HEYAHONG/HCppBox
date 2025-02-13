@@ -1,6 +1,6 @@
 /***************************************************************
- * Name:      mcs_51_rom.c
- * Purpose:   实现mcs_51_rom接口
+ * Name:      mcs_51_rom.h
+ * Purpose:   声明mcs_51_rom接口
  * Author:    HYH (hyhsystem.cn)
  * Created:   2025-02-13
  * Copyright: HYH (hyhsystem.cn)
