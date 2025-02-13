@@ -14,6 +14,7 @@ extern "C"
 {
 #endif // __cplusplus
 
+#include "mcs_51_common.h"
 #include "mcs_51_core.h"
 
 #ifdef __cplusplus
