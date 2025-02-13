@@ -1438,8 +1438,8 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         break;
         case 0x85://MOV addr,addr
         {
-            uint8_t addr_dst=instruction[1];
-            uint8_t addr_src=instruction[2];
+            uint8_t addr_src=instruction[1];
+            uint8_t addr_dst=instruction[2];
             uint8_t val=0;
             core->io(core,HS_MCS_51_IO_READ_RAM_SFR,addr_src,&val,sizeof(val),core->usr);
             core->io(core,HS_MCS_51_IO_WRITE_RAM_SFR,addr_dst,&val,sizeof(val),core->usr);
