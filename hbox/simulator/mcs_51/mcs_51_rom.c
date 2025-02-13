@@ -9,7 +9,7 @@
 #include "mcs_51_rom.h"
 
 /*
-*  helloworld程序(见rom/hellworld目录)
+*  helloworld程序(见rom/helloworld目录)
 */
 const unsigned char  hs_mcs_51_rom_helloworld[]= {
     0x02, 0x00, 0x29, 0x02, 0x00, 0x85, 0xff, 0xff, 0xff, 0xff, 0xff, 0x02,
