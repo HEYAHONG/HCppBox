@@ -15,7 +15,7 @@ struct hs_mcs_51_core
     struct
     {
         uint16_t delay_tick:2;//MCS-51具有多周期指令。为保证执行效果，对于多周期指令需要延时,最多延时3周期。
-        uint16_t interrupt_nested:2;//中断嵌套层数，0=正常运行
+        uint16_t interrupt_nested:2;//中断嵌套层数，0=正常运行,3=直接进入高优先级中断
         uint16_t pc;//PC
         uint32_t interrupt_low_priority_scan_table;//中断(低优先级)扫描表，位0表示中断0，最高支持32个中断
         uint32_t interrupt_high_priority_scan_table;//中断(高优先级)扫描表，位0表示中断0，最高支持32个中断
@@ -54,7 +54,14 @@ static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
                     {
                         core->interrupt_high_priority_scan_table &= (~(1ULL<<i));
                         uint16_t address=3+8*i;
-                        core->interrupt_nested++;//增加中断嵌套，RETI指令时自减1
+                        if(core->interrupt_nested==0)
+                        {
+                             core->interrupt_nested=3;
+                        }
+                        else
+                        {
+                             core->interrupt_nested++;//增加中断嵌套，RETI指令时自减1
+                        }
                         {
 
                             uint8_t sp=0;
@@ -870,7 +877,14 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
             //调整中断嵌套级别
             if(core->interrupt_nested!=0)
             {
-                core->interrupt_nested--;
+                if(core->interrupt_nested==3)
+                {
+                    core->interrupt_nested=0;
+                }
+                else
+                {
+                    core->interrupt_nested--;
+                }
             }
         }
         break;

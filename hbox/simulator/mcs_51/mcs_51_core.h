@@ -152,7 +152,7 @@ void hs_mcs_51_core_interrupt_set(hs_mcs_51_core_t * core,hs_mcs_51_interrupt_nu
 /** \brief MCS-51内核获取中断嵌套层数
  *
  * \param core hs_mcs_51_core_t* 内核指针
- * \return int 嵌套层数,失败返回-1
+ * \return int 嵌套层数,失败返回-1,0、1、2表示正在运行的中断个数，3表示正在运行高优先级中断（无低优先级中断运行）。
  *
  */
 int  hs_mcs_51_core_interrupt_nested_get(hs_mcs_51_core_t * core);
