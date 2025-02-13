@@ -1692,6 +1692,7 @@ static int hsimulator_test(int argc,const char *argv[])
                 printf("hsimulator mcs_51_core(helloworld) start!\r\n");
                 hs_mcs_51_core_tick(core,10000);
                 printf("hsimulator mcs_51_core(helloworld) end!\r\n");
+                printf("hsimulator mcs_51_serial mode=%d,baud=%d!\r\n",(int)hs_mcs_51_serial_config_mode_get(core,&mcs_51_uart),(int)hs_mcs_51_serial_config_baud_get(core,&mcs_51_uart));
 
             }
 
