@@ -1553,6 +1553,15 @@ static int hsimulator_test(int argc,const char *argv[])
     {
         //测试MCS-51 Core,足够存下hs_mcs_51_core_t、128字节SFR、256字节Ram、Flash(可变)。
         uint8_t mcs_51[4096]= {0};
+        static hs_mcs_51_serial_t mcs_51_uart;
+        hs_mcs_51_serial_init(&mcs_51_uart,[](hs_mcs_51_serial_t *serial,hs_mcs_51_serial_io_t io_type,uint16_t *data) -> bool
+        {
+            if(io_type==HS_MCS_51_SERIAL_IO_TRANSMIT)
+            {
+                putchar((uint8_t)(*data));
+            }
+            return true;
+        },NULL);
         hs_mcs_51_core_t *core=hs_mcs_51_core_init(mcs_51,[](hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr)->bool
         {
             uint8_t *mem=(uint8_t *)usr;
@@ -1579,26 +1588,6 @@ static int hsimulator_test(int argc,const char *argv[])
             case HS_MCS_51_IO_WRITE_RAM_SFR:         //写入内部低128字节RAM与SFR
             {
                 memcpy(&mem[hs_mcs_51_core_size()+address],data,length);
-                {
-                    switch(address)
-                    {
-                    case HS_MCS_51_SFR_SCON:    //配置串口
-                    {
-
-                    }
-                    break;
-                    case HS_MCS_51_SFR_SBUF:    //SBUF,将串口数据打印出来
-                    {
-                        putchar(*data);
-                    }
-                    break;
-                    default:
-                    {
-
-                    }
-                    break;
-                    }
-                }
             }
             break;
             case HS_MCS_51_IO_READ_HIGH_RAM:         //读取内部RAM(包括低128B与高128B)
@@ -1628,6 +1617,10 @@ static int hsimulator_test(int argc,const char *argv[])
             default:
                 break;
             }
+
+            //处理串口外设
+            hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&mcs_51_uart);
+
             return true;
         }
         ,mcs_51);

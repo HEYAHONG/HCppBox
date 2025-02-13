@@ -56,11 +56,11 @@ static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
                         uint16_t address=3+8*i;
                         if(core->interrupt_nested==0)
                         {
-                             core->interrupt_nested=3;
+                            core->interrupt_nested=3;
                         }
                         else
                         {
-                             core->interrupt_nested++;//增加中断嵌套，RETI指令时自减1
+                            core->interrupt_nested++;//增加中断嵌套，RETI指令时自减1
                         }
                         {
 

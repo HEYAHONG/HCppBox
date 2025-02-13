@@ -16,6 +16,7 @@ extern "C"
 
 #include "mcs_51_common.h"
 #include "mcs_51_core.h"
+#include "mcs_51_serial.h"
 
 #ifdef __cplusplus
 }

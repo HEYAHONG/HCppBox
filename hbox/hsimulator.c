@@ -18,6 +18,7 @@
 #include "simulator/mcs_51/mcs_51.h"
 #include "simulator/mcs_51/mcs_51_common.c"
 #include "simulator/mcs_51/mcs_51_core.c"
+#include "simulator/mcs_51/mcs_51_serial.c"
 
 #ifdef __HS_RISC_V_H__
 #undef __HS_RISC_V_H__
