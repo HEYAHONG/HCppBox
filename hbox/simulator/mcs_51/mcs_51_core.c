@@ -6,6 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+#include "mcs_51_core.h"
 
 struct hs_mcs_51_core
 {

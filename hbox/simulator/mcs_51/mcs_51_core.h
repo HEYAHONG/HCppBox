@@ -143,7 +143,7 @@ typedef enum
 /** \brief MCS-51内核设置中断到中断扫描表（将在下一个周期执行中断），执行后自动清除，一般由外设调用，注意：此函数不是线程安全的，必要时需要加锁。
  *
  * \param core hs_mcs_51_core_t* MCS-51 内核指针
- * \param number hs_mcs_51_interrupt_number_t 中断号
+ * \param number hs_mcs_51_interrupt_number_t 中断号,注意：中断使能与中断优先级由用户实现，中断号通过此函数设置后，会在下一条指令跳转至中断处理函数。
  * \param is_high_priority bool 是否是高优先级中断
  *
  */
