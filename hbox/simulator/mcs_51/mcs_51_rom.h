@@ -18,7 +18,7 @@ extern "C"
  *  helloworld程序(见rom/helloworld目录)
  */
 extern const unsigned char  hs_mcs_51_rom_helloworld[];
-extern unsigned int         hs_mcs_51_rom_helloworld_len;
+extern const unsigned int   hs_mcs_51_rom_helloworld_len;
 
 #ifdef __cplusplus
 }

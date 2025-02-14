@@ -38,6 +38,8 @@ static int (*test_cb[])(int,const char *[])=
 
 int main(int argc,const char *argv[])
 {
+    //关闭缓冲，便于调试
+    setbuf(stdout,NULL);
     for(size_t i=0; i<(sizeof(test_cb)/sizeof(test_cb[0])); i++)
     {
         int ret=0;
@@ -1575,6 +1577,7 @@ static int hsimulator_test(int argc,const char *argv[])
             break;
             case HS_MCS_51_IO_READ_ROM:             //读取ROM
             {
+
                 //Ram末尾接程序
                 memcpy(data,&mem[hs_mcs_51_core_size()+256+128+256+address],length);
 

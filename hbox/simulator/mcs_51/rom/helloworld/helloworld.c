@@ -56,8 +56,9 @@ uint8_t uart_receive_char(void)
      * 注意：此代码要求实现串口功能，即接收数据时RI需要被硬件（模拟器）置1。
      */
     while(RI==0);
+    uint8_t data=SBUF;
     RI=0;
-    return SBUF;
+    return data;
 }
 
 void uart_send_str(char *str)
@@ -68,10 +69,37 @@ void uart_send_str(char *str)
     }
 }
 
+
+
 void main(void)
 {
     uart_init();
     uart_send_str("Hello World!\n");
+    {
+        //打印9x9乘法表
+        uart_send_str("9x9 multiplication table:\n");
+        for(uint8_t i=1; i<=9; i++)
+        {
+            for(uint8_t j=1; j<=i; j++)
+            {
+                uart_send_char(i+'0');
+                uart_send_char('*');
+                uart_send_char(j+'0');
+                uart_send_char('=');
+                if(i*j >= 10)
+                {
+                    uart_send_char('0'+i*j/10);
+                }
+                uart_send_char('0'+i*j%10);
+                if(i*j < 10)
+                {
+                    uart_send_char(' ');
+                }
+                uart_send_char(' ');
+            }
+            uart_send_char('\n');
+        }
+    }
     while(1)
     {
         int data=uart_receive_char();
