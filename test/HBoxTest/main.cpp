@@ -1640,6 +1640,7 @@ static int hsimulator_test(int argc,const char *argv[])
 
         {
             printf("hsimulator mcs_51_core(helloworld) loading!\r\n");
+            printf("hsimulator mcs_51_core(helloworld) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(hs_mcs_51_rom_helloworld,hs_mcs_51_rom_helloworld_len),(int)hs_mcs_51_disassembly_code_instruction_type_count(hs_mcs_51_rom_helloworld,hs_mcs_51_rom_helloworld_len));
             //将程序代码放到Ram后
             memcpy(&mcs_51[hs_mcs_51_core_size()+256+128+256],hs_mcs_51_rom_helloworld,hs_mcs_51_rom_helloworld_len);
             printf("hsimulator mcs_51_core(helloworld) start!\r\n");

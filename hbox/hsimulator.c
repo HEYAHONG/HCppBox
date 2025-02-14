@@ -17,6 +17,7 @@
 
 #include "simulator/mcs_51/mcs_51.h"
 #include "simulator/mcs_51/mcs_51_common.c"
+#include "simulator/mcs_51/mcs_51_disassembly.c"
 #include "simulator/mcs_51/mcs_51_rom.c"
 #include "simulator/mcs_51/mcs_51_core.c"
 #include "simulator/mcs_51/mcs_51_serial.c"
