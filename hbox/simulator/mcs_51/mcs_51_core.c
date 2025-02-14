@@ -1528,7 +1528,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 uint8_t Ov= (((acc<0x80 && data>0x7f && result>0x7f) || (acc>0x7f && data<0x80 && result<0x80))?1:0);
                 psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
                 hs_mcs_51_sfr_psw_write(core,psw);
-                hs_mcs_51_sfr_psw_write(core,result);
+                hs_mcs_51_sfr_acc_write(core,result);
             }
             core->pc+=2;
         }
@@ -1554,7 +1554,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 uint8_t Ov= (((acc<0x80 && data>0x7f && result>0x7f) || (acc>0x7f && data<0x80 && result<0x80))?1:0);
                 psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
                 hs_mcs_51_sfr_psw_write(core,psw);
-                hs_mcs_51_sfr_psw_write(core,result);
+                hs_mcs_51_sfr_acc_write(core,result);
             }
             core->pc+=2;
         }
@@ -1584,7 +1584,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 uint8_t Ov= (((acc<0x80 && data>0x7f && result>0x7f) || (acc>0x7f && data<0x80 && result<0x80))?1:0);
                 psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
                 hs_mcs_51_sfr_psw_write(core,psw);
-                hs_mcs_51_sfr_psw_write(core,result);
+                hs_mcs_51_sfr_acc_write(core,result);
             }
             core->pc+=1;
         }
@@ -1618,7 +1618,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 uint8_t Ov= (((acc<0x80 && data>0x7f && result>0x7f) || (acc>0x7f && data<0x80 && result<0x80))?1:0);
                 psw|=((Cy<<7)|(Ac<<6)|(Ov<<2));
                 hs_mcs_51_sfr_psw_write(core,psw);
-                hs_mcs_51_sfr_psw_write(core,result);
+                hs_mcs_51_sfr_acc_write(core,result);
             }
             core->pc+=1;
         }
