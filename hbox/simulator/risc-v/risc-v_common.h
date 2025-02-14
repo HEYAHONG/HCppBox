@@ -120,12 +120,12 @@ typedef enum
 
 
     //"Zicsr"扩展：控制状态寄存器
-    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICSR= (1ULL << (sizeof(uint32_t)*8-1)),                 /**< RV32Zicsr扩展指令集 */
-    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZICSR= (1ULL << (sizeof(uint32_t)*8-1)),                 /**< RV64Zicsr扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICSR= (1ULL << (26+1)),                 /**< RV32Zicsr扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZICSR= (1ULL << (26+1)),                 /**< RV64Zicsr扩展指令集 */
 
     //"Zifencei"扩展：控制状态寄存器
-    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI= (1ULL << (sizeof(uint32_t)*8-2)),              /**< RV32Zicsr扩展指令集 */
-    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZIFENCEI= (1ULL << (sizeof(uint32_t)*8-2)),              /**< RV64Zicsr扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI= (1ULL << (26+2)),              /**< RV32Zicsr扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZIFENCEI= (1ULL << (26+2)),              /**< RV64Zicsr扩展指令集 */
 
 } hs_risc_v_common_instruction_set_t;                                   /**< 指令集类型 */
 
