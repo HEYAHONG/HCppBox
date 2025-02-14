@@ -1553,9 +1553,10 @@ static int hsimulator_test(int argc,const char *argv[])
     }
 
     {
-        //测试MCS-51 Core,足够存下hs_mcs_51_core_t、128字节SFR、256字节Ram、256字节xRam，Flash(可变)。
+        //测试MCS-51 Core,足够存下hs_mcs_51_core_t、128字节SFR、256字节Ram、256字节xRam
         uint8_t mcs_51[4096]= {0};
-        static hs_mcs_51_serial_t mcs_51_uart;
+        static hs_mcs_51_serial_t   mcs_51_uart;
+        static hs_mcs_51_rom_t      mcs_51_rom=HS_MCS_51_ROM_INITIALIZER;
         hs_mcs_51_serial_init(&mcs_51_uart,[](hs_mcs_51_serial_t *serial,hs_mcs_51_serial_io_t io_type,uint16_t *data) -> bool
         {
             if(io_type==HS_MCS_51_SERIAL_IO_TRANSMIT)
@@ -1573,14 +1574,6 @@ static int hsimulator_test(int argc,const char *argv[])
             {
                 //清空内存内容
                 memset(&mem[hs_mcs_51_core_size()],0,256+128+256);
-            };
-            break;
-            case HS_MCS_51_IO_READ_ROM:             //读取ROM
-            {
-
-                //Ram末尾接程序
-                memcpy(data,&mem[hs_mcs_51_core_size()+256+128+256+address],length);
-
             };
             break;
             case HS_MCS_51_IO_READ_RAM_SFR:          //读取内部低128字节RAM与SFR
@@ -1617,13 +1610,23 @@ static int hsimulator_test(int argc,const char *argv[])
                 }
             }
             break;
-            case HS_MCS_51_IO_READ_EXTERNAL_RAM:          //读取内部低128字节RAM与SFR
+            case HS_MCS_51_IO_READ_EXTERNAL_RAM:
             {
+                if(address+length > (4096-(hs_mcs_51_core_size()+256+128)))
+                {
+                    //超出范围
+                    break;
+                }
                 memcpy(data,&mem[hs_mcs_51_core_size()+256+128+address],length);
             }
             break;
             case HS_MCS_51_IO_WRITE_EXTERNAL_RAM:
             {
+                if(address+length > (4096-(hs_mcs_51_core_size()+256+128)))
+                {
+                    //超出范围
+                    break;
+                }
                 memcpy(&mem[hs_mcs_51_core_size()+256+128+address],data,length);
             }
             break;
@@ -1631,6 +1634,8 @@ static int hsimulator_test(int argc,const char *argv[])
                 break;
             }
 
+            //ROM操作
+            hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&mcs_51_rom);
             //处理串口外设
             hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&mcs_51_uart);
 
@@ -1640,9 +1645,8 @@ static int hsimulator_test(int argc,const char *argv[])
 
         {
             printf("hsimulator mcs_51_core(helloworld) loading!\r\n");
-            printf("hsimulator mcs_51_core(helloworld) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(hs_mcs_51_rom_helloworld,hs_mcs_51_rom_helloworld_len),(int)hs_mcs_51_disassembly_code_instruction_type_count(hs_mcs_51_rom_helloworld,hs_mcs_51_rom_helloworld_len));
-            //将程序代码放到Ram后
-            memcpy(&mcs_51[hs_mcs_51_core_size()+256+128+256],hs_mcs_51_rom_helloworld,hs_mcs_51_rom_helloworld_len);
+            mcs_51_rom=hs_mcs_51_rom_helloworld;
+            printf("hsimulator mcs_51_core(helloworld) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(hs_mcs_51_rom_helloworld.code,hs_mcs_51_rom_helloworld.len),(int)hs_mcs_51_disassembly_code_instruction_type_count(hs_mcs_51_rom_helloworld.code,hs_mcs_51_rom_helloworld.len));
             printf("hsimulator mcs_51_core(helloworld) start!\r\n");
             hs_mcs_51_core_tick(core,10000);
             {

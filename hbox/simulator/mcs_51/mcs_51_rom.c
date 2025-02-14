@@ -8,10 +8,31 @@
  **************************************************************/
 #include "mcs_51_rom.h"
 
+void hs_mcs_51_rom_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr,hs_mcs_51_rom_t *rom)
+{
+    if(opt==HS_MCS_51_IO_READ_ROM)
+    {
+        if(rom!=NULL)
+        {
+            if((rom->len >= (address+length)) && (rom->code!=NULL))
+            {
+                memcpy(data,&rom->code[address],length);
+                //成功读取指令
+                return;
+            }
+        }
+        {
+            //失败跳转至0地址
+            uint8_t ljmp_zero[]= {0x02,0x00,0x00};
+            memcpy(data,ljmp_zero,(length>sizeof(ljmp_zero))?(sizeof(ljmp_zero)):(length));
+        }
+    }
+}
+
 /*
 *  helloworld程序(见rom/helloworld目录)
 */
-const unsigned char hs_mcs_51_rom_helloworld[] = {
+static const unsigned char hs_mcs_51_rom_helloworld_bin[] = {
     0x02, 0x00, 0x29, 0x02, 0x00, 0x85, 0xff, 0xff, 0xff, 0xff, 0xff, 0x02,
     0x00, 0x86, 0xff, 0xff, 0xff, 0xff, 0xff, 0x02, 0x00, 0x87, 0xff, 0xff,
     0xff, 0xff, 0xff, 0x02, 0x00, 0x88, 0xff, 0xff, 0xff, 0xff, 0xff, 0x02,
@@ -79,9 +100,13 @@ const unsigned char hs_mcs_51_rom_helloworld[] = {
     0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x20, 0x74, 0x61, 0x62, 0x6c,
     0x65, 0x3a, 0x0a, 0x00
 };
-const unsigned int hs_mcs_51_rom_helloworld_len = 784;
+static const unsigned int hs_mcs_51_rom_helloworld_len = 784;
 
-
+const hs_mcs_51_rom_t hs_mcs_51_rom_helloworld=
+{
+    hs_mcs_51_rom_helloworld_bin,
+    hs_mcs_51_rom_helloworld_len
+};
 
 
 
