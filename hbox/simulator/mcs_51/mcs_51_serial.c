@@ -28,6 +28,12 @@ void hs_mcs_51_serial_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint1
     {
     case HS_MCS_51_IO_TICK_ENTER:
     {
+        if(serial->io!=NULL)
+        {
+            uint16_t core_pc= hs_mcs_51_pc_get(core);
+            serial->io(serial,HS_MCS_51_SERIAL_IO_TICK,&core_pc);
+        }
+
         if((serial->RB&((1ULL<<8)))!=0)
         {
             hs_mcs_51_bit_write(core,HS_MCS_51_BIT_ADDRESS_RB8,true);

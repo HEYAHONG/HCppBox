@@ -23,6 +23,7 @@ typedef enum
 {
     HS_MCS_51_SERIAL_IO_TRANSMIT=0,       /**< 发送数据,写SBUF时触发*/
     HS_MCS_51_SERIAL_IO_RECEIVE,          /**< 接收数据,读SBUF时触发 */
+    HS_MCS_51_SERIAL_IO_TICK,             /**< 节拍，总线节拍时触发，数据为内核PC值*/
 } hs_mcs_51_serial_io_t;
 
 /** \brief
