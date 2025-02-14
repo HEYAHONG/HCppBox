@@ -21,8 +21,8 @@ typedef struct hs_mcs_51_rom hs_mcs_51_rom_t;
 
 struct hs_mcs_51_rom
 {
-    const unsigned char *code;
-    unsigned int  len;
+    const unsigned char *code;  /**< 程序指针 */
+    unsigned int  len;          /**< 程序长度 */
 };
 
 /** \brief MCS-51 ROM初始化参数

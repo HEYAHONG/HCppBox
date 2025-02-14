@@ -100,7 +100,7 @@ static const unsigned char hs_mcs_51_rom_helloworld_bin[] = {
     0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x20, 0x74, 0x61, 0x62, 0x6c,
     0x65, 0x3a, 0x0a, 0x00
 };
-static const unsigned int hs_mcs_51_rom_helloworld_len = 784;
+#define hs_mcs_51_rom_helloworld_len  784
 
 const hs_mcs_51_rom_t hs_mcs_51_rom_helloworld=
 {
