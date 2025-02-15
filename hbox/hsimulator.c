@@ -12,8 +12,9 @@
 #include "simulator/common/hs_common.c"
 
 
-#include "simulator/rp_pio_sm/rp_pio_sm.h"
+#include "simulator/rp_pio_sm/rp_pio.h"
 #include "simulator/rp_pio_sm/rp_pio_sm.c"
+#include "simulator/rp_pio_sm/rp_pio_rom.c"
 
 #include "simulator/mcs_51/mcs_51.h"
 #include "simulator/mcs_51/mcs_51_common.c"

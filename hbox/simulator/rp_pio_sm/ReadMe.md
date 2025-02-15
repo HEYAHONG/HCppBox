@@ -21,9 +21,34 @@
 
 可查看数据手册的PIO章节。
 
-# PIO程序编译
+# PIO程序
+
+## 编译
 
 - [pico-sdk](https://github.com/raspberrypi/pico-sdk.git):此为树莓派官方Pico SDK，其tools/pioasm目录为pioasm源代码目录。
-
 - [pioasm-wasm](https://github.com/wokwi/pioasm-wasm.git)：此为第三方工具，可使用[https://wokwi.com/tools/pioasm](https://wokwi.com/tools/pioasm)在线访问。
+
+## 示例
+
+官方示例链接：[https://github.com/raspberrypi/pico-examples/pio](https://github.com/raspberrypi/pico-examples/tree/master/pio)
+
+### hello_pio
+
+```pio
+;
+; Copyright (c) 2020 Raspberry Pi (Trading) Ltd.
+;
+; SPDX-License-Identifier: BSD-3-Clause
+;
+
+.program hello
+
+; Repeatedly get one word of data from the TX FIFO, stalling when the FIFO is
+; empty. Write the least significant bit to the OUT pin group.
+
+loop:
+    pull
+    out pins, 1
+    jmp loop
+```
 

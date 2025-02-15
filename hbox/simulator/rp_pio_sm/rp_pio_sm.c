@@ -1795,29 +1795,4 @@ bool  hs_rp_pio_rxfifo_get(hs_rp_pio_t *pio,uint32_t addr,uint32_t* data)
     return false;
 }
 
-/** \brief 程序，主要将TX FIFO中的数据（无数据则stall）中的最低位通过PINS发送出去。。
- *
- * loop:
- *      pull
- *      out pins, 1
- *      jmp loop
- *
- */
-const hs_rp_pio_sm_memory_t hs_rp_pio_sm_program_simple_pins_out=
-{
-    {
-        0x80a0, //  0: pull   block
-        0x6001, //  1: out    pins, 1
-        0x0000  //  2: jmp    0
-    },
-    {
-        0,
-        0,
-        1,
-        1,
-        0,
-        0,
-        0,
-        0
-    }
-};
+
