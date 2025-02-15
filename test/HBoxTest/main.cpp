@@ -1553,10 +1553,11 @@ static int hsimulator_test(int argc,const char *argv[])
     }
 
     {
-        //测试MCS-51 Core,足够存下hs_mcs_51_core_t、128字节SFR、256字节Ram、256字节xRam
+        //测试MCS-51 Core,足够存下hs_mcs_51_core_t
         uint8_t mcs_51[4096]= {0};
         static hs_mcs_51_serial_t   mcs_51_uart;
         static hs_mcs_51_rom_t      mcs_51_rom=HS_MCS_51_ROM_INITIALIZER;
+        static hs_mcs_51_ram_model_huge_t mcs_51_ram;
         hs_mcs_51_serial_init(&mcs_51_uart,[](hs_mcs_51_serial_t *serial,hs_mcs_51_serial_io_t io_type,uint16_t *data) -> bool
         {
             if(io_type==HS_MCS_51_SERIAL_IO_TRANSMIT)
@@ -1567,78 +1568,12 @@ static int hsimulator_test(int argc,const char *argv[])
         },NULL);
         hs_mcs_51_core_t *core=hs_mcs_51_core_init(mcs_51,[](hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr)->bool
         {
-            uint8_t *mem=(uint8_t *)usr;
-            switch(opt)
-            {
-            case HS_MCS_51_IO_RESET:                //IO复位
-            {
-                //清空内存内容
-                memset(&mem[hs_mcs_51_core_size()],0,256+128+256);
-            };
-            break;
-            case HS_MCS_51_IO_READ_RAM_SFR:          //读取内部低128字节RAM与SFR
-            {
-                memcpy(data,&mem[hs_mcs_51_core_size()+address],length);
-            }
-            break;
-            case HS_MCS_51_IO_WRITE_RAM_SFR:         //写入内部低128字节RAM与SFR
-            {
-                memcpy(&mem[hs_mcs_51_core_size()+address],data,length);
-            }
-            break;
-            case HS_MCS_51_IO_READ_HIGH_RAM:         //读取内部RAM(包括低128B与高128B)
-            {
-                if(address < 128)
-                {
-                    memcpy(data,&mem[hs_mcs_51_core_size()+address],length);
-                }
-                else
-                {
-                    memcpy(data,&mem[hs_mcs_51_core_size()+256+(address-128)],length);
-                }
-            }
-            break;
-            case HS_MCS_51_IO_WRITE_HIGH_RAM:
-            {
-                if(address < 128)
-                {
-                    memcpy(&mem[hs_mcs_51_core_size()+address],data,length);
-                }
-                else
-                {
-                    memcpy(&mem[hs_mcs_51_core_size()+256+(address-128)],data,length);
-                }
-            }
-            break;
-            case HS_MCS_51_IO_READ_EXTERNAL_RAM:
-            {
-                if(address+length > (4096-(hs_mcs_51_core_size()+256+128)))
-                {
-                    //超出范围
-                    break;
-                }
-                memcpy(data,&mem[hs_mcs_51_core_size()+256+128+address],length);
-            }
-            break;
-            case HS_MCS_51_IO_WRITE_EXTERNAL_RAM:
-            {
-                if(address+length > (4096-(hs_mcs_51_core_size()+256+128)))
-                {
-                    //超出范围
-                    break;
-                }
-                memcpy(&mem[hs_mcs_51_core_size()+256+128+address],data,length);
-            }
-            break;
-            default:
-                break;
-            }
-
+            //RAM操作(注意：此操作前不应当有外设操作)
+            hs_mcs_51_ram_model_huge_bus_io(core,opt,address,data,length,usr,&mcs_51_ram);
             //ROM操作
             hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&mcs_51_rom);
             //处理串口外设
             hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&mcs_51_uart);
-
             return true;
         }
         ,mcs_51);
