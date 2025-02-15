@@ -2,6 +2,13 @@
 #include "stdint.h"
 #include "8051.h"
 
+
+/*
+ *	定义PSBANK的SFR，用于兼容model-huge,此变量用于SDCC的C运行库crtbank.asm。
+ */
+__sfr __at (0xB1) PSBANK;
+
+
 //外部中断0
 void ie0_isr(void) __interrupt(IE0_VECTOR)
 {
