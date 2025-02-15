@@ -10,12 +10,57 @@
 
 void hs_mcs_51_rom_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr,hs_mcs_51_rom_t *rom)
 {
+    if(opt==HS_MCS_51_IO_RESET)
+    {
+        if(rom!=NULL)
+        {
+            if((rom->code!=NULL)&& (rom->len > (64*1024)))
+            {
+                //超过2个Bank
+                uint8_t psbank_addr=HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS;
+                if(rom->psbank_addr >= 0x80)
+                {
+                    psbank_addr=rom->psbank_addr;
+                }
+                //常数Bank与指令Bank选择1
+                hs_mcs_51_sfr_write(core,psbank_addr,0x11);
+            }
+        }
+    }
+
     if(opt==HS_MCS_51_IO_READ_ROM)
     {
         if(rom!=NULL)
         {
             if((rom->code!=NULL))
             {
+                if((rom->code!=NULL)&& (rom->len > (64*1024)))
+                {
+                    //超过2个Bank(未超过64KB不启用PSBANK)
+                    uint8_t psbank_addr=HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS;
+                    if(rom->psbank_addr >= 0x80)
+                    {
+                        psbank_addr=rom->psbank_addr;
+                    }
+                    uint8_t psbank_val=0x11;
+                    hs_mcs_51_sfr_read(core,psbank_addr,&psbank_val);
+                    if(address >= 0x8000)
+                    {
+                        //访问高地址，需要进行Bank选择,低地址永远访问Bank0
+
+                        address-=0x8000;
+                        if(length == 1)
+                        {
+                            //常数访问
+                            address+=(((psbank_val&0xF0)>>4)*0x8000);
+                        }
+                        else
+                        {
+                            //指令访问
+                            address+=((psbank_val&0xF)*0x8000);
+                        }
+                    }
+                }
                 if((rom->len >= (address+length)) )
                 {
                     memcpy(data,&rom->code[address],length);
@@ -114,7 +159,8 @@ static const unsigned char hs_mcs_51_rom_helloworld_bin[] = {
 const hs_mcs_51_rom_t hs_mcs_51_rom_helloworld=
 {
     hs_mcs_51_rom_helloworld_bin,
-    hs_mcs_51_rom_helloworld_len
+    hs_mcs_51_rom_helloworld_len,
+    HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS
 };
 
 
