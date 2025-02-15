@@ -14,11 +14,20 @@ void hs_mcs_51_rom_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t
     {
         if(rom!=NULL)
         {
-            if((rom->len >= (address+length)) && (rom->code!=NULL))
+            if((rom->code!=NULL))
             {
-                memcpy(data,&rom->code[address],length);
-                //成功读取指令
-                return;
+                if((rom->len >= (address+length)) )
+                {
+                    memcpy(data,&rom->code[address],length);
+                    //成功读取指令
+                    return;
+                }
+                else if((rom->len > (address)))
+                {
+                    memcpy(data,&rom->code[address],rom->len-address);
+                    //成功读取指令
+                    return;
+                }
             }
         }
         {
