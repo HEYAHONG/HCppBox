@@ -38,8 +38,14 @@ void hs_mcs_51_rom_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t
     {
         if(rom!=NULL)
         {
+            //使用size_t用作临时地址
+            size_t address_32=address;
+
             if((rom->code!=NULL))
             {
+                //使用size_t用作地址,16位地址在地址映射后可能溢出
+                size_t address=address_32;
+
                 //进行地址映射
                 if((rom->code!=NULL)&& (rom->len > (64*1024)))
                 {
