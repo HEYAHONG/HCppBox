@@ -29,7 +29,7 @@ void hs_mcs_51_rom_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t
                     psbank_val=0x01;
                 }
                 //常数Bank与指令Bank选择1
-                hs_mcs_51_sfr_write(core,psbank_addr, psbank_val);
+                hs_mcs_51_sfr_write(core,(hs_mcs_51_sfr_addr_t)psbank_addr, psbank_val);
             }
         }
     }
@@ -56,7 +56,7 @@ void hs_mcs_51_rom_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t
                         psbank_addr=rom->psbank_addr;
                     }
                     uint8_t psbank_val=0x11;
-                    hs_mcs_51_sfr_read(core,psbank_addr,&psbank_val);
+                    hs_mcs_51_sfr_read(core,(hs_mcs_51_sfr_addr_t)psbank_addr,&psbank_val);
                     if(address >= 0x8000)
                     {
                         //访问高地址，需要进行Bank选择,低地址永远访问Bank0

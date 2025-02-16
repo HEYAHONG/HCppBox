@@ -79,4 +79,5 @@ bool hs_rp_pio_hello_pio_push(hs_rp_pio_hello_pio_t *pio,uint32_t data)
     {
         return hs_rp_pio_push(&pio->pio,data);
     }
+    return false;
 }
