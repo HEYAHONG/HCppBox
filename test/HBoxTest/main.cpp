@@ -1497,21 +1497,21 @@ static int hsimulator_test(int argc,const char *argv[])
     }
 
     {
-        printf("hsimulator hs_rp_pio(hello_pio) start!\r\n");
-        hs_rp_pio_t pio;
-        hs_rp_pio_init(&pio,[](hs_rp_pio_sm_t *sm,hs_rp_pio_sm_io_opt_t opt,uint32_t *val,void *usr)->bool
+        printf("hsimulator hs_rp_pio_hello_pio start!\r\n");
+        hs_rp_pio_hello_pio_t pio;
+        hs_rp_pio_hello_pio_init(&pio,[](hs_rp_pio_hello_pio_t *sm,hs_rp_pio_sm_hello_pio_io_opt_t opt,uint32_t *val,void *usr)->bool
         {
             bool ret=true;
             switch(opt)
             {
-            case HS_RP_PIO_SM_IO_RESET://IO复位，无参数
+            case HS_RP_PIO_SM_HELLO_PIO_IO_RESET://IO复位，无参数
             {
-                printf("hsimulator hs_rp_pio(hello_pio) reset!\r\n");
+                printf("hsimulator hs_rp_pio_hello_pio reset!\r\n");
             }
             break;
-            case HS_RP_PIO_SM_IO_WRITE_PINS:
+            case HS_RP_PIO_SM_HELLO_PIO_IO_WRITE_PINS:
             {
-                printf("hsimulator hs_rp_pio(hello_pio) pins=%08X!\r\n",(int)(*val));
+                printf("hsimulator hs_rp_pio_hello_pio pins=%08X!\r\n",(int)(*val));
             }
             break;
             default:
@@ -1525,26 +1525,19 @@ static int hsimulator_test(int argc,const char *argv[])
 
 
 
-        //装载程序
-        printf("hsimulator hs_rp_pio(hello_pio) loading!\r\n");
-        pio.memory=hs_rp_pio_sm_rom_hello_pio;
-        //复位
-        printf("hsimulator hs_rp_pio(hello_pio) reset!\r\n");
-        hs_rp_pio_reset(&pio);
-
-        printf("hsimulator hs_rp_pio(hello_pio) 40 ticks !\r\n");
-        hs_rp_pio_tick(&pio,40);
-        printf("hsimulator hs_rp_pio(hello_pio) push tx_fifo 0xFFFFFFFF!\r\n");
-        hs_rp_pio_push(&pio,0xFFFFFFFF);
-        printf("hsimulator hs_rp_pio(hello_pio) push tx_fifo 0xFFFFFFFF!\r\n");
-        hs_rp_pio_push(&pio,0xFFFFFFFF);
-        printf("hsimulator hs_rp_pio(hello_pio) push tx_fifo 0x0!\r\n");
-        hs_rp_pio_push(&pio,0x0);
-        printf("hsimulator hs_rp_pio(hello_pio) push tx_fifo 0xFFFFFFFF!\r\n");
-        hs_rp_pio_push(&pio,0xFFFFFFFF);
-        printf("hsimulator hs_rp_pio(hello_pio) 40 ticks !\r\n");
-        hs_rp_pio_tick(&pio,40);
-        printf("hsimulator hs_rp_pio(hello_pio) end!\r\n");
+        printf("hsimulator hs_rp_pio_hello_pio 40 ticks !\r\n");
+        hs_rp_pio_hello_pio_tick(&pio,40);
+        printf("hsimulator hs_rp_pio_hello_pio push tx_fifo 0xFFFFFFFF!\r\n");
+        hs_rp_pio_hello_pio_push(&pio,0xFFFFFFFF);
+        printf("hsimulator hs_rp_pio_hello_pio push tx_fifo 0xFFFFFFFF!\r\n");
+        hs_rp_pio_hello_pio_push(&pio,0xFFFFFFFF);
+        printf("hsimulator hs_rp_pio_hello_pio push tx_fifo 0x0!\r\n");
+        hs_rp_pio_hello_pio_push(&pio,0x0);
+        printf("hsimulator hs_rp_pio_hello_pio push tx_fifo 0xFFFFFFFF!\r\n");
+        hs_rp_pio_hello_pio_push(&pio,0xFFFFFFFF);
+        printf("hsimulator hs_rp_pio_hello_pio 40 ticks !\r\n");
+        hs_rp_pio_hello_pio_tick(&pio,40);
+        printf("hsimulator hs_rp_pio_hello_pio end!\r\n");
     }
 
     {

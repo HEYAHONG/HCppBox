@@ -35,3 +35,48 @@ const hs_rp_pio_sm_memory_t hs_rp_pio_sm_rom_hello_pio=
         0
     }
 };
+
+static bool hs_rp_pio_hello_pio_io_process(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_io_opt_t opt,uint32_t *val,void *usr)
+{
+    hs_rp_pio_hello_pio_t *pio=(hs_rp_pio_hello_pio_t *)sm;
+    if(pio->io!=NULL)
+    {
+        pio->io(pio,(hs_rp_pio_sm_hello_pio_io_opt_t)(int)opt,val,usr);
+    }
+    return true;
+}
+
+void hs_rp_pio_hello_pio_init(hs_rp_pio_hello_pio_t *pio,hs_rp_pio_hello_pio_io_t hook,void *usr)
+{
+    if(pio==NULL)
+    {
+        return;
+    }
+    pio->io=hook;
+    hs_rp_pio_init(&pio->pio,hs_rp_pio_hello_pio_io_process,usr);
+    pio->pio.memory=hs_rp_pio_sm_rom_hello_pio;
+}
+
+void hs_rp_pio_hello_pio_tick(hs_rp_pio_hello_pio_t* pio,size_t cycles)
+{
+    if(pio!=NULL)
+    {
+        hs_rp_pio_tick(&pio->pio,cycles);
+    }
+}
+
+void hs_rp_pio_hello_pio_reset(hs_rp_pio_hello_pio_t *pio)
+{
+    if(pio!=NULL)
+    {
+        hs_rp_pio_reset(&pio->pio);
+    }
+}
+
+bool hs_rp_pio_hello_pio_push(hs_rp_pio_hello_pio_t *pio,uint32_t data)
+{
+    if(pio!=NULL)
+    {
+        hs_rp_pio_push(&pio->pio,data);
+    }
+}
