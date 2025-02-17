@@ -1353,6 +1353,8 @@ static int hbase64_test(int argc,const char *argv[])
     return 0;
 }
 
+HS_RISC_V_OPCODES_INSN_DECLARE(add);
+HS_RISC_V_OPCODES_CSR_DECLARE(misa);
 static int hsimulator_test(int argc,const char *argv[])
 {
     {
@@ -1604,11 +1606,9 @@ static int hsimulator_test(int argc,const char *argv[])
 
     {
         //测试RISC-V opcodes组件
-        HS_RISC_V_OPCODES_INSN_DECLARE(add);
         hs_risc_v_opcodes_insn_t insn=HS_RISC_V_OPCODES_INSN_NAME(add);
         printf("hsimulator risc-v opcodes insn add name=%s,mask=%08X,match=%08X\r\n",insn.name,insn.mask,insn.match);
 
-        HS_RISC_V_OPCODES_CSR_DECLARE(misa);
         hs_risc_v_opcodes_csr_t csr=HS_RISC_V_OPCODES_CSR_NAME(misa);
         printf("hsimulator risc-v opcodes csr misa name=%s,addr=%08X\r\n",csr.name,(int)csr.addr);
     }

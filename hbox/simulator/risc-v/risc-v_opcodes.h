@@ -29,7 +29,7 @@ struct  hs_risc_v_opcodes_insn
  *
  *
  */
-#ifndef __cplusplus
+#ifdef __cplusplus
 #define HS_RISC_V_OPCODES_INSN_DECLARE(NAME) \
 extern "C" const hs_risc_v_opcodes_insn_t hs_risc_v_opcodes_insn_##NAME
 #else
@@ -57,7 +57,7 @@ struct  hs_risc_v_opcodes_csr
  *
  *
  */
-#ifndef __cplusplus
+#ifdef __cplusplus
 #define HS_RISC_V_OPCODES_CSR_DECLARE(NAME) \
 extern "C" const hs_risc_v_opcodes_csr_t hs_risc_v_opcodes_csr_##NAME
 #else
