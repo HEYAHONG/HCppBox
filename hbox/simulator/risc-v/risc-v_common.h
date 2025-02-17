@@ -72,11 +72,29 @@ typedef enum
     HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_TO_80BIT_OR_HIGHER           =   0b1111111,
 } hs_risc_v_common_instruction_32bit_base_opcode;
 
+/** \brief 将12位数扩展为32位有符号数
+ *
+ * \param data uint16_t 12位数(以无符号数形式存储)
+ * \return int32_t  32位有符号数(可通过直接赋值转换64位有符号数,C语言支持的类型可直接符号扩展)
+ *
+ */
+int32_t hs_risc_v_common_sign_extend_uint12(uint16_t data);
+
+
+/** \brief 将32位数扩展为64位有符号数
+ *
+ * \param data uint16_t 32位数(以无符号数形式存储)
+ * \return int32_t  64位有符号数
+ *
+ */
+int64_t hs_risc_v_common_sign_extend_uint32(uint32_t data);
+
 
 typedef union
 {
     uint8_t bytes[1];
     uint8_t value;
+    int8_t  s_value;
 }   hs_risc_v_common_memory_byte_t;         /**< 字节类型 */
 
 
@@ -84,18 +102,21 @@ typedef union
 {
     uint8_t  bytes[2];
     uint16_t value;
+    int16_t  s_value;
 }   hs_risc_v_common_memory_halfword_t;     /**< 半字类型 */
 
 typedef union
 {
     uint8_t  bytes[4];
     uint32_t value;
+    int32_t  s_value;
 }   hs_risc_v_common_memory_word_t;         /**< 字类型 */
 
 typedef union
 {
     uint8_t  bytes[8];
     uint64_t value;
+    int64_t  s_value;
 }   hs_risc_v_common_memory_doubleword_t;   /**< 双字类型 */
 
 typedef union

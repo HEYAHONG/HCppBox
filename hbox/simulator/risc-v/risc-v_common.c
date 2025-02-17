@@ -43,6 +43,40 @@ size_t hs_risc_v_common_instruction_length(uint32_t instruction)
 }
 
 
+int32_t hs_risc_v_common_sign_extend_uint12(uint16_t data)
+{
+    union
+    {
+        struct
+        {
+            uint16_t val:12;
+        } unsigned_data;
+        struct
+        {
+            int16_t val:12;
+        } signed_data;
+    } cvt;
+    cvt.unsigned_data.val=data;
+    return cvt.signed_data.val;
+}
+
+int64_t hs_risc_v_common_sign_extend_uint32(uint32_t data)
+{
+    union
+    {
+        struct
+        {
+            uint64_t val:32;
+        } unsigned_data;
+        struct
+        {
+            int64_t val:32;
+        } signed_data;
+    } cvt;
+    cvt.unsigned_data.val=data;
+    return cvt.signed_data.val;
+}
+
 bool hs_risc_v_common_instruction_set_sets_has_rv32g(uint32_t sets)
 {
     uint32_t rv32g=HS_RISC_V_COMMON_INSTRUCTION_SET_RV32G;
