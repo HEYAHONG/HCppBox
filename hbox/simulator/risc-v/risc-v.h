@@ -14,15 +14,9 @@ extern "C"
 {
 #endif // __cplusplus
 
-/*
- *  由riscv-opcodes（https://github.com/riscv/riscv-opcodes.git）生成的C语言头文件。
- *  如需使用，需要在包含头文件前定义HS_RISC_V_BUILD_C_SOURCE
- */
-#ifdef HS_RISC_V_BUILD_C_SOURCE
-#include "encoding.out.h"
-#endif
 
 #include "risc-v_common.h"
+#include "risc-v_opcodes.h"
 
 #ifdef __cplusplus
 }

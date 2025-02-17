@@ -24,12 +24,8 @@
 #include "simulator/mcs_51/mcs_51_core.c"
 #include "simulator/mcs_51/mcs_51_serial.c"
 
-#ifdef __HS_RISC_V_H__
-#undef __HS_RISC_V_H__
-#endif // __HS_RISC_V_H__
-#ifndef HS_RISC_V_BUILD_C_SOURCE
-#define HS_RISC_V_BUILD_C_SOURCE    1
-#endif // HS_RISC_V_BUILD_C_SOURCE
+
 #include "simulator/risc-v/risc-v.h"
+#include "simulator/risc-v/risc-v_opcodes.c"
 #include "simulator/risc-v/risc-v_common.c"
 
