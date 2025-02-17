@@ -67,7 +67,7 @@ typedef enum
      *  下列编码并非操作码，一般用于指示该指令为更高位数的指令
      */
     HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_TO_48BIT_0                   =   0b0011111,
-    HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_TO_64B                       =   0b0111111,
+    HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_TO_64BIT                     =   0b0111111,
     HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_TO_48BIT_1                   =   0b1011111,
     HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_TO_80BIT_OR_HIGHER           =   0b1111111,
 } hs_risc_v_common_instruction_32bit_base_opcode;
