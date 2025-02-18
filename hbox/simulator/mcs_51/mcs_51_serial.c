@@ -10,7 +10,7 @@
 
 void hs_mcs_51_serial_init(hs_mcs_51_serial_t *serial,hs_mcs_51_serial_io_callback_t io,void *usr)
 {
-    hs_mcs_51_serial_t new_serial= {io,usr};
+    hs_mcs_51_serial_t new_serial= {io,usr,0,0};
     if(serial!=NULL)
     {
         (*serial)=new_serial;
