@@ -267,7 +267,7 @@ const hs_mcs_51_disassembly_instruction_t hs_mcs_51_disassembly_instruction_tabl
     { 0xfd, 0xff, ' ', 1, "MOV R5,A",false},
     { 0xfe, 0xff, ' ', 1, "MOV R6,A",false},
     { 0xff, 0xff, ' ', 1, "MOV R7,A",false},
-    { 0, 0, 0, 0, NULL }
+    { 0, 0, 0, 0, NULL,false }
 };
 
 const hs_mcs_51_disassembly_instruction_t *hs_mcs_51_disassembly_instruction_table_get(const uint8_t *instruction)
