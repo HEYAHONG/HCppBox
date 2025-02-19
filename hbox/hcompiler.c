@@ -10,6 +10,8 @@
 #include "hcompiler.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "stdbool.h"
+#include "string.h"
 
 long hcompiler_get_stdc_version(void)
 {
@@ -20,6 +22,70 @@ long hcompiler_get_stdc_version(void)
 #endif // __STDC_VERSION__
 }
 
+static bool is_number(const char c)
+{
+    return c >= '0' && c <= '9';
+}
+
+static size_t get_number(const char *str,size_t index)
+{
+    if(str==NULL)
+    {
+        return 0;
+    }
+    size_t str_len=strlen(str);
+    const char *number_str=NULL;
+    size_t      number_len=0;
+    for(size_t i=0; i<str_len; i++)
+    {
+        if(is_number(str[i]))
+        {
+            if(number_str==NULL)
+            {
+                number_len=1;
+                number_str=&str[i];
+            }
+            else
+            {
+                number_len++;
+            }
+        }
+        else
+        {
+            if(number_str!=NULL)
+            {
+                if(index!=0)
+                {
+                    number_str=NULL;
+                    index--;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    if(index!=0)
+    {
+        number_str=NULL;
+        number_len=0;
+    }
+
+    if(number_str!=NULL && number_len > 0)
+    {
+        size_t ret=0;
+        for(size_t i=0; i<number_len; i++)
+        {
+            ret*=10;
+            ret+=(number_str[i]-'0');
+        }
+        return ret;
+    }
+
+    return 0;
+}
 
 const char * hcompiler_get_date(void)
 {
@@ -75,7 +141,7 @@ static int month_strcmp(const char *str1,const char *str2)
 int hcompiler_get_date_year(void)
 {
     const char *date=hcompiler_get_date();
-    return (date[7]-'0')*1000+(date[8]-'0')*100+(date[9]-'0')*10+(date[10]-'0');
+    return get_number(date,1);
 }
 
 
@@ -95,25 +161,25 @@ int hcompiler_get_date_month(void)
 int hcompiler_get_date_day(void)
 {
     const char *date=hcompiler_get_date();
-    return (date[4]-'0')*10+(date[5]-'0');
+    return get_number(date,0);
 }
 
 int hcompiler_get_time_hour(void)
 {
     const char *timestr=hcompiler_get_time();
-    return (timestr[0]-'0')*10+(timestr[1]-'0');
+    return get_number(timestr,0);
 }
 
 
 int hcompiler_get_time_minute(void)
 {
     const char *timestr=hcompiler_get_time();
-    return (timestr[3]-'0')*10+(timestr[4]-'0');
+    return get_number(timestr,1);
 }
 
 
 int hcompiler_get_time_second(void)
 {
     const char *timestr=hcompiler_get_time();
-    return (timestr[6]-'0')*10+(timestr[7]-'0');
+    return get_number(timestr,2);
 }

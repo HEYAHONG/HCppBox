@@ -56,6 +56,8 @@ static int hcompiler_test(int argc,const char *argv[])
 {
     c_compiler_test();
 
+    printf("hcompiler: " __DATE__ " " __TIME__ "\r\n");
+
     printf("hcompiler:C Compiler __SDTC_VERSION__=%d\r\n",(int)hcompiler_get_stdc_version());
 
     printf("hcompiler:build time %04d/%02d/%02d %02d:%02d:%02d\r\n",hcompiler_get_date_year(),hcompiler_get_date_month(),hcompiler_get_date_day(),hcompiler_get_time_hour(),hcompiler_get_time_minute(),hcompiler_get_time_second());
