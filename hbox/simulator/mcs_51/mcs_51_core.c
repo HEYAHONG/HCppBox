@@ -41,6 +41,66 @@ hs_mcs_51_core_t *hs_mcs_51_core_init(void *mem,hs_mcs_51_io_t io,void *usr)
     return NULL;
 }
 
+static void hs_mcs_51_core_pc_push(hs_mcs_51_core_t * core)
+{
+    if(core!=NULL)
+    {
+        uint8_t sp=0;
+        hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
+        //压栈PC高字节
+        sp++;
+        {
+            if(core->io!=NULL)
+            {
+                uint8_t val=(core->pc>>8);
+                core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+            }
+        }
+        hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+        //压栈PC低字节
+        sp++;
+        {
+            if(core->io!=NULL)
+            {
+                uint8_t val=(core->pc);
+                core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+            }
+        }
+        hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+    }
+}
+
+static void hs_mcs_51_core_pc_pop(hs_mcs_51_core_t * core)
+{
+    uint16_t pc=0;
+    {
+        //出栈PC
+        uint8_t sp=0;
+        hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
+        //出栈PC低字节
+        {
+            {
+                uint8_t val=0;
+                core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                pc+=val;
+            }
+        }
+        sp--;
+        hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+        //出栈PC高字节
+        {
+            {
+                uint8_t val=0;
+                core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                pc+=256*val;
+            }
+        }
+        sp--;
+        hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+    }
+    core->pc=pc;
+}
+
 static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
 {
     if(core != NULL)
@@ -64,29 +124,7 @@ static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
                             core->interrupt_nested++;//增加中断嵌套，RETI指令时自减1
                         }
                         {
-
-                            uint8_t sp=0;
-                            hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
-                            //压栈PC高字节
-                            sp++;
-                            {
-                                if(core->io!=NULL)
-                                {
-                                    uint8_t val=(core->pc>>8);
-                                    core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                                }
-                            }
-                            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
-                            //压栈PC低字节
-                            sp++;
-                            {
-                                if(core->io!=NULL)
-                                {
-                                    uint8_t val=(core->pc);
-                                    core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                                }
-                            }
-                            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+                            hs_mcs_51_core_pc_push(core);
 
                             //跳转至中断入口地址
                             core->pc=address;
@@ -116,28 +154,7 @@ static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
                         uint16_t address=3+8*i;
                         core->interrupt_nested++;//增加中断嵌套，RETI指令时自减1
                         {
-                            uint8_t sp=0;
-                            hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
-                            //压栈PC高字节
-                            sp++;
-                            {
-                                if(core->io!=NULL)
-                                {
-                                    uint8_t val=(core->pc>>8);
-                                    core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                                }
-                            }
-                            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
-                            //压栈PC低字节
-                            sp++;
-                            {
-                                if(core->io!=NULL)
-                                {
-                                    uint8_t val=(core->pc);
-                                    core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                                }
-                            }
-                            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+                            hs_mcs_51_core_pc_push(core);
 
                             //跳转至中断入口地址
                             core->pc=address;
@@ -422,27 +439,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         {
             core->pc+=2;
             {
-                //压栈PC
-                uint8_t sp=0;
-                hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
-                //压栈PC高字节
-                sp++;
-                {
-                    {
-                        uint8_t val=(core->pc>>8);
-                        core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                    }
-                }
-                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
-                //压栈PC低字节
-                sp++;
-                {
-                    {
-                        uint8_t val=(core->pc);
-                        core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                    }
-                }
-                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+                hs_mcs_51_core_pc_push(core);
             }
             uint16_t addr11=256*(instruction[0]>>5)+instruction[1];
             core->delay_tick=1;
@@ -453,27 +450,7 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         {
             core->pc+=3;
             {
-                //压栈PC
-                uint8_t sp=0;
-                hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
-                //压栈PC高字节
-                sp++;
-                {
-                    {
-                        uint8_t val=(core->pc>>8);
-                        core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                    }
-                }
-                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
-                //压栈PC低字节
-                sp++;
-                {
-                    {
-                        uint8_t val=(core->pc);
-                        core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                    }
-                }
-                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+                hs_mcs_51_core_pc_push(core);
             }
             core->delay_tick=1;
             core->pc=256*instruction[1]+instruction[2];
@@ -558,34 +535,8 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         break;
         case 0x22://RET
         {
-            uint16_t pc=0;
-            {
-                //出栈PC
-                uint8_t sp=0;
-                hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
-                //出栈PC低字节
-                {
-                    {
-                        uint8_t val=0;
-                        core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                        pc+=val;
-                    }
-                }
-                sp--;
-                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
-                //出栈PC高字节
-                {
-                    {
-                        uint8_t val=0;
-                        core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                        pc+=256*val;
-                    }
-                }
-                sp--;
-                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
-            }
+            hs_mcs_51_core_pc_pop(core);
             core->delay_tick=1;
-            core->pc=pc;
         }
         break;
         case 0x23: //RL A
@@ -707,34 +658,8 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
         break;
         case 0x32://RETI
         {
-            uint16_t pc=0;
-            {
-                //出栈PC
-                uint8_t sp=0;
-                hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
-                //出栈PC低字节
-                {
-                    {
-                        uint8_t val=0;
-                        core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                        pc+=val;
-                    }
-                }
-                sp--;
-                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
-                //出栈PC高字节
-                {
-                    {
-                        uint8_t val=0;
-                        core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                        pc+=256*val;
-                    }
-                }
-                sp--;
-                hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
-            }
+            hs_mcs_51_core_pc_pop(core);
             core->delay_tick=1;
-            core->pc=pc;
             {
                 //调用中断回调
                 if(core->io!=NULL)
