@@ -7,6 +7,10 @@
  * License:   MIT
  **************************************************************/
 #include "h3rdparty.h"
+#include "hdefaults.h"
+#if defined(HDEFAULTS_OS_WINDOWS) || defined(HDEFAULTS_OS_UNIX)
+#include "stdio.h"
+#endif
 
 #ifdef _putchar
 #undef  _putchar
@@ -22,6 +26,12 @@ void _putchar(char c)
     if(putchar_cb!=NULL)
     {
         putchar_cb(c);
+    }
+    else
+    {
+#if defined(HDEFAULTS_OS_WINDOWS) || defined(HDEFAULTS_OS_UNIX)
+        putchar(c);
+#endif
     }
 }
 
