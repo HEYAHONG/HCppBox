@@ -9,7 +9,7 @@
 #include "h3rdparty.h"
 #include "hdefaults.h"
 #if defined(HDEFAULTS_OS_WINDOWS) || defined(HDEFAULTS_OS_UNIX)
-#include "stdio.h"
+extern int putchar( int ch );
 #endif
 
 #ifdef _putchar
