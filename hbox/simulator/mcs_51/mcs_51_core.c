@@ -43,7 +43,7 @@ hs_mcs_51_core_t *hs_mcs_51_core_init(void *mem,hs_mcs_51_io_t io,void *usr)
 
 static void hs_mcs_51_core_pc_push(hs_mcs_51_core_t * core)
 {
-    if(core!=NULL)
+    if(core!=NULL && core->io!=NULL)
     {
         uint8_t sp=0;
         hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
@@ -57,6 +57,11 @@ static void hs_mcs_51_core_pc_push(hs_mcs_51_core_t * core)
             }
         }
         hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+        if(sp==0xff)
+        {
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_STACK_OVERFLOW,core->pc,&val,sizeof(val),core->usr);
+        }
         //压栈PC低字节
         sp++;
         {
@@ -67,38 +72,46 @@ static void hs_mcs_51_core_pc_push(hs_mcs_51_core_t * core)
             }
         }
         hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+        if(sp==0xff)
+        {
+            uint8_t val=0;
+            core->io(core,HS_MCS_51_IO_STACK_OVERFLOW,core->pc,&val,sizeof(val),core->usr);
+        }
     }
 }
 
 static void hs_mcs_51_core_pc_pop(hs_mcs_51_core_t * core)
 {
-    uint16_t pc=0;
+    if(core!=NULL && core->io!=NULL)
     {
-        //出栈PC
-        uint8_t sp=0;
-        hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
-        //出栈PC低字节
+        uint16_t pc=0;
         {
+            //出栈PC
+            uint8_t sp=0;
+            hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
+            //出栈PC低字节
             {
-                uint8_t val=0;
-                core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                pc+=val;
+                {
+                    uint8_t val=0;
+                    core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                    pc+=val;
+                }
             }
-        }
-        sp--;
-        hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
-        //出栈PC高字节
-        {
+            sp--;
+            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+            //出栈PC高字节
             {
-                uint8_t val=0;
-                core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                pc+=256*val;
+                {
+                    uint8_t val=0;
+                    core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                    pc+=256*val;
+                }
             }
+            sp--;
+            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
         }
-        sp--;
-        hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+        core->pc=pc;
     }
-    core->pc=pc;
 }
 
 static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
@@ -1583,6 +1596,11 @@ static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
                 }
             }
             hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+            if(sp==0xff)
+            {
+                uint8_t val=0;
+                core->io(core,HS_MCS_51_IO_STACK_OVERFLOW,core->pc,&val,sizeof(val),core->usr);
+            }
             core->delay_tick=1;
         }
         break;

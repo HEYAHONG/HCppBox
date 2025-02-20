@@ -55,7 +55,8 @@ typedef enum
     HS_MCS_51_IO_INSTRUCTION_ENTER,     //指令进入,开始执行指令时调用。通常用于调试或者用户处理指令。地址为当前PC值,数据为已经执行的指令。
     HS_MCS_51_IO_INSTRUCTION_EXIT,      //指令退出,结束执行指令时调用。通常用于调试或者用户处理指令。地址为当前PC值(可能已被指令修改),数据为已经执行的指令。
     HS_MCS_51_IO_TICK_ENTER,            //节拍进入,时钟节拍开始时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。
-    HS_MCS_51_IO_TICK_EXIT              //节拍退出,时钟节拍结束时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。
+    HS_MCS_51_IO_TICK_EXIT,             //节拍退出,时钟节拍结束时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。
+    HS_MCS_51_IO_STACK_OVERFLOW         //栈溢出。地址为当前PC值,数据为假数据。
 } hs_mcs_51_io_opt_t;
 
 /** \brief MCS-51 IO操作
