@@ -1578,7 +1578,7 @@ static int hsimulator_test(int argc,const char *argv[])
         {
             printf("hsimulator mcs_51_core(helloworld) loading!\r\n");
             mcs_51_rom=hs_mcs_51_rom_helloworld;
-            printf("hsimulator mcs_51_core(helloworld) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(hs_mcs_51_rom_helloworld.code,hs_mcs_51_rom_helloworld.len),(int)hs_mcs_51_disassembly_code_instruction_type_count(hs_mcs_51_rom_helloworld.code,hs_mcs_51_rom_helloworld.len));
+            printf("hsimulator mcs_51_core(helloworld_stdio) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(mcs_51_rom.code,mcs_51_rom.len),(int)hs_mcs_51_disassembly_code_instruction_type_count(mcs_51_rom.code,mcs_51_rom.len));
             printf("hsimulator mcs_51_core(helloworld) start!\r\n");
             hs_mcs_51_core_tick(core,10000);
             {
@@ -1601,6 +1601,37 @@ static int hsimulator_test(int argc,const char *argv[])
                 hs_mcs_51_core_tick(core,10000);
             }
             printf("hsimulator mcs_51_core(helloworld) end!\r\n");
+            printf("hsimulator mcs_51_serial mode=%d,baud=%d!\r\n",(int)hs_mcs_51_serial_config_mode_get(core,&mcs_51_uart),(int)hs_mcs_51_serial_config_baud_get(core,&mcs_51_uart));
+
+        }
+
+        {
+            printf("hsimulator mcs_51_core(helloworld_stdio) loading!\r\n");
+            hs_mcs_51_core_reset(core);
+            mcs_51_rom=hs_mcs_51_rom_helloworld_stdio;
+            printf("hsimulator mcs_51_core(helloworld_stdio) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(mcs_51_rom.code,mcs_51_rom.len),(int)hs_mcs_51_disassembly_code_instruction_type_count(mcs_51_rom.code,mcs_51_rom.len));
+            printf("hsimulator mcs_51_core(helloworld_stdio) start!\r\n");
+            hs_mcs_51_core_tick(core,10000);
+            {
+                const char * serialport_str="SerialPort Ok!\n";
+                while((*serialport_str)!='\0')
+                {
+                    if(hs_mcs_51_serial_status_dataready_set(core,&mcs_51_uart,((*serialport_str))))
+                    {
+                        //等待内核处理数据
+                        hs_mcs_51_core_tick(core,100);
+                        serialport_str++;
+                    }
+                    else
+                    {
+                        //等待内核处理数据
+                        hs_mcs_51_core_tick(core,1);
+                    }
+                }
+                //内核处理最后一个数据
+                hs_mcs_51_core_tick(core,10000);
+            }
+            printf("hsimulator mcs_51_core(helloworld_stdio) end!\r\n");
             printf("hsimulator mcs_51_serial mode=%d,baud=%d!\r\n",(int)hs_mcs_51_serial_config_mode_get(core,&mcs_51_uart),(int)hs_mcs_51_serial_config_baud_get(core,&mcs_51_uart));
 
         }

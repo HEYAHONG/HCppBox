@@ -59,6 +59,11 @@ void hs_mcs_51_rom_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t
  */
 extern const hs_mcs_51_rom_t hs_mcs_51_rom_helloworld;
 
+/*
+ *  helloworld_stdio程序(见rom/helloworld_stdio目录)
+ */
+extern const hs_mcs_51_rom_t hs_mcs_51_rom_helloworld_stdio;
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
