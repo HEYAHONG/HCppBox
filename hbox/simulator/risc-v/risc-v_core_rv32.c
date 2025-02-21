@@ -59,6 +59,20 @@ static void hs_risc_v_core_rv32_pc_write(hs_risc_v_core_rv32_t *core,uint32_t pc
     }
 }
 
+static uint32_t  hs_risc_v_core_rv32_instruction_read(hs_risc_v_core_rv32_t *core)
+{
+    if(core!=NULL && core->io!=NULL)
+    {
+        hs_risc_v_common_memory_word_t instruction;
+        instruction.value=0;
+        core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,hs_risc_v_core_rv32_pc_read(core),instruction.bytes,sizeof(instruction.bytes),core->usr);
+        HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(instruction);
+        return instruction.value;
+    }
+    return 0;
+}
+
+
 static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
 {
     if(core==NULL || core->io==NULL)
@@ -66,6 +80,22 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         return;
     }
 
+
+    uint32_t instruction= hs_risc_v_core_rv32_instruction_read(core);
+    uint32_t pc=hs_risc_v_core_rv32_pc_read(core);
+    pc+=hs_risc_v_common_instruction_length(instruction);
+    hs_risc_v_core_rv32_pc_write(core,pc);
+
+    //指令是否正确处理，当指令被正确处理时，需要将此标志置位true
+    bool is_instruction_processed=false;
+
+
+
+    if(!is_instruction_processed)
+    {
+        //指令未处理，可能是custom指令
+        core->io(core,HS_RISC_V_CORE_RV32_IO_CUSTOM_INSTRUCTION_EXEC,pc,(uint8_t*)&instruction,sizeof(instruction),core->usr);
+    }
 }
 
 

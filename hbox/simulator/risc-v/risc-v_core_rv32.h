@@ -46,6 +46,7 @@ typedef enum
     HS_RISC_V_CORE_RV32_IO_PC_REGISTER_WRITE,                           /**< PC寄存器写入，此选项必须实现 */
     HS_RISC_V_CORE_RV32_IO_TICK_ENTER,                                  /**< 节拍进入,时钟节拍开始时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。 */
     HS_RISC_V_CORE_RV32_IO_TICK_EXIT,                                   /**< 节拍退出,时钟节拍开始时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。 */
+    HS_RISC_V_CORE_RV32_IO_CUSTOM_INSTRUCTION_EXEC,                     /**< custom指令（RISC-V预留了部分自定义指令空间）执行。地址为下一条指令PC值,数据为待执行的指令(类型为uint32_t)。 */
 } hs_risc_v_core_rv32_io_opt_t;                                         /**< RISC-V RV32 IO选项 */
 
 
