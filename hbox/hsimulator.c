@@ -28,4 +28,5 @@
 #include "simulator/risc-v/risc-v.h"
 #include "simulator/risc-v/risc-v_opcodes.c"
 #include "simulator/risc-v/risc-v_common.c"
+#include "simulator/risc-v/risc-v_core_rv32.c"
 

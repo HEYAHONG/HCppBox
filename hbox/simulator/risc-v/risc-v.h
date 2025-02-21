@@ -17,6 +17,7 @@ extern "C"
 
 #include "risc-v_common.h"
 #include "risc-v_opcodes.h"
+#include "risc-v_core_rv32.h"
 
 #ifdef __cplusplus
 }
