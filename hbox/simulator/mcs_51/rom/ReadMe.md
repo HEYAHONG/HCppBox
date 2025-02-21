@@ -32,4 +32,5 @@ sudo apt-get install build-essential sdcc
 # 目录说明
 
 - [helloworld](helloworld):helloworld程序
+- [helloworld_stdio](helloworld_stdio):helloworld程序(采用C库实现)
 
