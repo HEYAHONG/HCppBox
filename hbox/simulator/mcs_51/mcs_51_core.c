@@ -47,12 +47,12 @@ static void hs_mcs_51_core_pc_push(hs_mcs_51_core_t * core)
     {
         uint8_t sp=0;
         hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
-        //压栈PC高字节
+        //压栈PC低字节
         sp++;
         {
             if(core->io!=NULL)
             {
-                uint8_t val=(core->pc>>8);
+                uint8_t val=(core->pc);
                 core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
             }
         }
@@ -62,12 +62,12 @@ static void hs_mcs_51_core_pc_push(hs_mcs_51_core_t * core)
             uint8_t val=0;
             core->io(core,HS_MCS_51_IO_STACK_OVERFLOW,core->pc,&val,sizeof(val),core->usr);
         }
-        //压栈PC低字节
+        //压栈PC高字节
         sp++;
         {
             if(core->io!=NULL)
             {
-                uint8_t val=(core->pc);
+                uint8_t val=(core->pc>>8);
                 core->io(core,HS_MCS_51_IO_WRITE_HIGH_RAM,sp,&val,sizeof(val),core->usr);
             }
         }
@@ -89,22 +89,22 @@ static void hs_mcs_51_core_pc_pop(hs_mcs_51_core_t * core)
             //出栈PC
             uint8_t sp=0;
             hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_SP,&sp);
-            //出栈PC低字节
-            {
-                {
-                    uint8_t val=0;
-                    core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
-                    pc+=val;
-                }
-            }
-            sp--;
-            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
             //出栈PC高字节
             {
                 {
                     uint8_t val=0;
                     core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
                     pc+=256*val;
+                }
+            }
+            sp--;
+            hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_SP,sp);
+            //出栈PC低字节
+            {
+                {
+                    uint8_t val=0;
+                    core->io(core,HS_MCS_51_IO_READ_HIGH_RAM,sp,&val,sizeof(val),core->usr);
+                    pc+=val;
                 }
             }
             sp--;
