@@ -390,3 +390,24 @@ uint32_t hs_risc_v_core_rv32_sets_disable_set(hs_risc_v_core_rv32_t *core,hs_ris
 
     return core->instruction_sets;
 }
+
+bool hs_risc_v_core_rv32_exception_raise(hs_risc_v_core_rv32_t *core,int cause,bool interrupt)
+{
+    if(core==NULL || core->io == NULL)
+    {
+        return false;
+    }
+    if(cause > 31 || cause < 0)
+    {
+        return false;
+    }
+    if(interrupt)
+    {
+
+    }
+    else
+    {
+
+    }
+    return false;
+}
