@@ -1578,7 +1578,7 @@ static int hsimulator_test(int argc,const char *argv[])
         {
             printf("hsimulator mcs_51_core(helloworld) loading!\r\n");
             mcs_51_rom=hs_mcs_51_rom_helloworld;
-            printf("hsimulator mcs_51_core(helloworld_stdio) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(mcs_51_rom.code,mcs_51_rom.len),(int)hs_mcs_51_disassembly_code_instruction_type_count(mcs_51_rom.code,mcs_51_rom.len));
+            printf("hsimulator mcs_51_core(helloworld) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(mcs_51_rom.code,mcs_51_rom.len),(int)hs_mcs_51_disassembly_code_instruction_type_count(mcs_51_rom.code,mcs_51_rom.len));
             printf("hsimulator mcs_51_core(helloworld) start!\r\n");
             hs_mcs_51_core_tick(core,10000);
             {
