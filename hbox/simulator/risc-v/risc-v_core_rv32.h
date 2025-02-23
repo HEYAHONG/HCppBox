@@ -44,6 +44,8 @@ typedef enum
     HS_RISC_V_CORE_RV32_IO_X_REGISTER_WRITE,                            /**< X寄存器写入，此选项必须实现 */
     HS_RISC_V_CORE_RV32_IO_PC_REGISTER_READ,                            /**< PC寄存器读取，此选项必须实现 */
     HS_RISC_V_CORE_RV32_IO_PC_REGISTER_WRITE,                           /**< PC寄存器写入，此选项必须实现 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_ENTER,                           /**< 指令进入,开始执行指令时调用。通常用于调试或者用户处理指令。地址为当前PC值,数据为已经执行的指令(类型为uint32_t)。*/
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_EXIT,                            /**< 指令退出,结束执行指令时调用。通常用于调试或者用户处理指令。地址为当前PC值(可能已被指令修改),数据为已经执行的指令(类型为uint32_t)。*/
     HS_RISC_V_CORE_RV32_IO_TICK_ENTER,                                  /**< 节拍进入,时钟节拍开始时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。 */
     HS_RISC_V_CORE_RV32_IO_TICK_EXIT,                                   /**< 节拍退出,时钟节拍开始时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。 */
     HS_RISC_V_CORE_RV32_IO_CUSTOM_INSTRUCTION_EXEC,                     /**< custom指令（RISC-V预留了部分自定义指令空间）执行。地址为下一条指令PC值,数据为待执行的指令(类型为uint32_t)。 */
@@ -55,7 +57,7 @@ typedef enum
  * \param core hs_risc_v_core_rv32_t*           RISC-V内核指针
  * \param opt hs_risc_v_core_rv32_io_opt_t      IO选项
  * \param address uint32_t                      地址
- * \param data uint8_t*                         数据指针
+ * \param data uint8_t*                         数据指针,若IO选项未特殊说明数据类型，IO操作读写的数据均为小端序（若在大端序平台上运行，需要先转化为小端序再返回），若已说明数据类型，可直接强制转换指针类型然后访问。
  * \param len size_t                            数据长度
  * \param usr void*                             用户参数
  * \return bool 是否操作成功。注意：对于某些必须成功的操作（如读写X寄存器与PC寄存器）无需判断返回值。

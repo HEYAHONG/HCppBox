@@ -83,6 +83,7 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
 
     uint32_t instruction= hs_risc_v_core_rv32_instruction_read(core);
     uint32_t pc=hs_risc_v_core_rv32_pc_read(core);
+    core->io(core,HS_RISC_V_CORE_RV32_IO_INSTRUCTION_ENTER,pc,(uint8_t*)&instruction,sizeof(instruction),core->usr);
     pc+=hs_risc_v_common_instruction_length(instruction);
     hs_risc_v_core_rv32_pc_write(core,pc);
 
@@ -96,6 +97,8 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         //指令未处理，可能是custom指令
         core->io(core,HS_RISC_V_CORE_RV32_IO_CUSTOM_INSTRUCTION_EXEC,pc,(uint8_t*)&instruction,sizeof(instruction),core->usr);
     }
+
+    core->io(core,HS_RISC_V_CORE_RV32_IO_INSTRUCTION_EXIT,pc,(uint8_t*)&instruction,sizeof(instruction),core->usr);
 }
 
 
