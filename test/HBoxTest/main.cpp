@@ -1658,7 +1658,7 @@ static int hsimulator_test(int argc,const char *argv[])
     }
 
     {
-        // 打印mcs_51_core大小。
+        // 打印hs_risc_v_core_rv32大小。
         printf("hsimulator hs_risc_v_core_rv32_size=%d,HS_RISC_V_CORE_RV32_SIZE=%d!\r\n",(int)hs_risc_v_core_rv32_size(),(int)HS_RISC_V_CORE_RV32_SIZE());
     }
 
