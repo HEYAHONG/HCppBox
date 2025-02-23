@@ -129,7 +129,7 @@ uint32_t hs_risc_v_core_rv32_sets_disable_set(hs_risc_v_core_rv32_t *core,hs_ris
 /** \brief  RISC-V RV32 异常提升
  *
  * \param core hs_risc_v_core_rv32_t*   RISC-V内核指针
- * \param cause int                     case值。当为狭义的异常时，可见HS_RISC_V_OPCODES_EXCEPTION_*，否则表示中断号。在本模拟器中，RV32一般大于0且不应超过31。
+ * \param cause int                     case值。当为狭义的异常时，可见HS_RISC_V_OPCODES_EXCEPTION_*，否则表示中断号。在本模拟器中，RV32一般不小于0且不应超过31。
  * \param interrupt bool                是否为中断。RISC-V将狭义的异常与中断统称为异常。当此值为false时表示狭义的异常，否则表示中断
  * \return bool 是否成功进入处理流程（如设置中断请求标志），若未进入处理流程，用户可选择重试
  *
