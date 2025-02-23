@@ -25,12 +25,14 @@ typedef struct hs_risc_v_core_rv32 hs_risc_v_core_rv32_t;
  */
 size_t hs_risc_v_core_rv32_size(void);
 
+#define HS_RISC_V_CORE_RV32_ALIGNED_FILL_SIZE(MAXTYPE,TYPE) (sizeof(MAXTYPE)>(sizeof(TYPE))?sizeof(MAXTYPE)-(sizeof(TYPE)):0)
+
 #ifndef HS_RISC_V_CORE_RV32_SIZE
 /** \brief hs_risc_v_core_rv32_t结构体大小,一般用于静态分配，注意:可能大于hs_risc_v_core_rv32_size()返回的值。
  *
  *
  */
-#define HS_RISC_V_CORE_RV32_SIZE()  (sizeof(uintptr_t)*2+sizeof(uint32_t))
+#define HS_RISC_V_CORE_RV32_SIZE()  (sizeof(uintptr_t)*2+sizeof(uint32_t)+HS_RISC_V_CORE_RV32_ALIGNED_FILL_SIZE(uintptr_t,uint32_t))
 #endif // HS_RISC_V_CORE_RV32_SIZE
 
 

@@ -1657,6 +1657,11 @@ static int hsimulator_test(int argc,const char *argv[])
         printf("hsimulator risc-v common bytes=%02X%02X%02X%02X!\r\n",(int)word.bytes[0],(int)word.bytes[1],(int)word.bytes[2],(int)word.bytes[3]);
     }
 
+    {
+        // 打印mcs_51_core大小。
+        printf("hsimulator hs_risc_v_core_rv32_size=%d,HS_RISC_V_CORE_RV32_SIZE=%d!\r\n",(int)hs_risc_v_core_rv32_size(),(int)HS_RISC_V_CORE_RV32_SIZE());
+    }
+
     return 0;
 }
 

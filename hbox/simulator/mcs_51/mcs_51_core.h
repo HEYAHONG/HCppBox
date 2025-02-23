@@ -27,12 +27,14 @@ typedef struct hs_mcs_51_core hs_mcs_51_core_t;
  */
 size_t hs_mcs_51_core_size(void);
 
+#define HS_MCS_51_CORE_ALIGNED_FILL_SIZE(MAXTYPE,TYPE) (sizeof(MAXTYPE)>(sizeof(TYPE))?sizeof(MAXTYPE)-(sizeof(TYPE)):0)
+
 #ifndef HS_MCS_51_CORE_SIZE
 /** \brief hs_mcs_51_core_t结构体大小,一般用于静态分配，注意:可能大于hs_mcs_51_core_size()返回的值。
  *
  *
  */
-#define HS_MCS_51_CORE_SIZE()  (sizeof(uintptr_t)*2+sizeof(uint32_t)*4)
+#define HS_MCS_51_CORE_SIZE()  (sizeof(uintptr_t)*2+sizeof(uint16_t)*2+sizeof(uint32_t)*2+HS_MCS_51_CORE_ALIGNED_FILL_SIZE(uintptr_t,uint32_t))
 #endif // HS_MCS_51_CORE_SIZE
 
 #ifndef HS_MCS_51_INSTRUCTION_MAX_LENGTH
