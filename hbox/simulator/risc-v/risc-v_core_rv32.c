@@ -107,6 +107,197 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
     //指令是否正确处理，当指令被正确处理时，需要将此标志置位true
     bool is_instruction_processed=false;
 
+
+    if((0x3&instruction)==0x3)
+    {
+        //RV32I/RV32E基本指令集
+
+        /*
+         *  使用低7位opcode初步分类
+         */
+        switch(0x7F&instruction)
+        {
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_LOAD :
+        {
+
+        }
+        break;
+        case  HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_STORE :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_MADD:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_BRANCH :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_LOAD_FP:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_STORE_FP:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_MSUB :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_JALR :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_CUSTOM_0:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_CUSTOM_1:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_NMSUB :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_RESERVED :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_MISC_MEM:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_AMO :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_NMADD:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_JAL:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP_IMM :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP  :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP_FP:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_SYSTEM:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_AUIPC:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_LUI:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP_V:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP_VE :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP_IMM_32:
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP_32 :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_CUSTOM_3 :
+        {
+
+        }
+        break;
+        case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_CUSTOM_4:
+        {
+
+        }
+        break;
+        default:
+        {
+
+        }
+        break;
+        }
+    }
+    else
+    {
+        //RVC扩展指令集
+        if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32C))
+        {
+            /*
+             *  使用象限初步分类
+             */
+            switch(0x3&instruction)
+            {
+            case 0:                     //象限0
+            {
+
+            }
+            break;
+            case 1:                     //象限1
+            {
+
+            }
+            break;
+            case 2:                     //象限2
+            {
+
+            }
+            break;
+            default:                    //象限3（32位指令与更高位数指令）,理论上不会出现这种情况。
+            {
+
+            }
+            break;
+            }
+        }
+    }
+
     //Zifencei扩展指令集
     if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI))
     {
