@@ -316,6 +316,12 @@ HS_RISC_V_OPCODES_INSN_DECLARE(c_swsp);
 HS_RISC_V_OPCODES_INSN_DECLARE(c_fswsp);
 HS_RISC_V_OPCODES_INSN_DECLARE(c_sdsp);
 
+/*
+ * Zifencei
+ */
+HS_RISC_V_OPCODES_INSN_DECLARE(fence_i);
+
+
 struct hs_risc_v_opcodes_csr;
 typedef struct hs_risc_v_opcodes_csr hs_risc_v_opcodes_csr_t;
 

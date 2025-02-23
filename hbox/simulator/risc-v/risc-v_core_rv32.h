@@ -30,7 +30,7 @@ size_t hs_risc_v_core_rv32_size(void);
  *
  *
  */
-#define HS_RISC_V_CORE_RV32_SIZE()  (sizeof(uintptr_t)*2)
+#define HS_RISC_V_CORE_RV32_SIZE()  (sizeof(uintptr_t)*2+sizeof(uint32_t))
 #endif // HS_RISC_V_CORE_RV32_SIZE
 
 
@@ -49,6 +49,7 @@ typedef enum
     HS_RISC_V_CORE_RV32_IO_TICK_ENTER,                                  /**< 节拍进入,时钟节拍开始时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。 */
     HS_RISC_V_CORE_RV32_IO_TICK_EXIT,                                   /**< 节拍退出,时钟节拍开始时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。 */
     HS_RISC_V_CORE_RV32_IO_CUSTOM_INSTRUCTION_EXEC,                     /**< custom指令（RISC-V预留了部分自定义指令空间）执行。地址为下一条指令PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_FENCE_I_EXEC,                    /**< fence_i指令(Zifencei扩展指令集)执行。地址为下一条指令PC值,数据为待执行的指令(类型为uint32_t)。 */
 } hs_risc_v_core_rv32_io_opt_t;                                         /**< RISC-V RV32 IO选项 */
 
 
@@ -103,6 +104,24 @@ void hs_risc_v_core_rv32_reset(hs_risc_v_core_rv32_t * core);
  *
  */
 bool hs_risc_v_core_rv32_io(hs_risc_v_core_rv32_t *core,hs_risc_v_core_rv32_io_opt_t opt,uint32_t address,uint8_t *data,size_t len);
+
+/** \brief  RISC-V RV32  获取支持的指令集集合
+ *
+ * \param core hs_risc_v_core_rv32_t*   RISC-V内核指针
+ * \return uint32_t 支持的指令集集合（见hs_risc_v_common_instruction_set_t）
+ *
+ */
+uint32_t hs_risc_v_core_rv32_sets_get(hs_risc_v_core_rv32_t *core);
+
+
+/** \brief  RISC-V RV32  关闭某个指令集（此时用户可通过HS_RISC_V_CORE_RV32_IO_CUSTOM_INSTRUCTION_EXEC执行原指令集的工作），注意：复位后此操作的设置将失效
+ *
+ * \param core hs_risc_v_core_rv32_t*                   RISC-V内核指针
+ * \param ins_set hs_risc_v_common_instruction_set_t    指令集类型，注意：需要先关闭依赖的指令才能关闭被依赖的指令
+ * \return uint32_t 支持的指令集集合（见hs_risc_v_common_instruction_set_t）
+ *
+ */
+uint32_t hs_risc_v_core_rv32_sets_disable_set(hs_risc_v_core_rv32_t *core,hs_risc_v_common_instruction_set_t ins_set);
 
 #ifdef __cplusplus
 }

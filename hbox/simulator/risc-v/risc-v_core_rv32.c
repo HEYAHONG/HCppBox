@@ -11,8 +11,9 @@
 
 struct hs_risc_v_core_rv32
 {
-    hs_risc_v_core_rv32_io_t io;
-    void*                    usr;
+    hs_risc_v_core_rv32_io_t    io;
+    void*                       usr;
+    uint32_t                    instruction_sets; /**< 支持的扩展指令集 */
 };
 
 
@@ -72,6 +73,22 @@ static uint32_t  hs_risc_v_core_rv32_instruction_read(hs_risc_v_core_rv32_t *cor
     return 0;
 }
 
+#ifndef HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH
+#define HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(NAME,CODE)      \
+if(!is_instruction_processed)\
+{\
+    const hs_risc_v_opcodes_insn_t insn=HS_RISC_V_OPCODES_INSN_NAME(NAME);\
+    if((instruction&insn.mask)==insn.match)\
+    {\
+        is_instruction_processed=true;\
+        {\
+            CODE;\
+        }\
+    }\
+}
+
+#endif // HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH
+
 
 static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
 {
@@ -89,6 +106,15 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
 
     //指令是否正确处理，当指令被正确处理时，需要将此标志置位true
     bool is_instruction_processed=false;
+
+    //Zifencei扩展指令集
+    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI))
+    {
+        HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(fence_i,
+        {
+            core->io(core,HS_RISC_V_CORE_RV32_IO_INSTRUCTION_FENCE_I_EXEC,pc,(uint8_t*)&instruction,sizeof(instruction),core->usr);
+        })
+    }
 
 
 
@@ -123,6 +149,10 @@ void hs_risc_v_core_rv32_reset(hs_risc_v_core_rv32_t * core)
 {
     if(core!=NULL && core->io!=NULL)
     {
+        {
+            //初始化指令集支持
+            core->instruction_sets=hs_risc_v_common_instruction_set_sets_set_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI);
+        }
         uint32_t val=0;
         core->io(core,HS_RISC_V_CORE_RV32_IO_RESET,0,(uint8_t *)&val,sizeof(val),core->usr);
 
@@ -144,4 +174,28 @@ bool hs_risc_v_core_rv32_io(hs_risc_v_core_rv32_t *core,hs_risc_v_core_rv32_io_o
         return core->io(core,opt,address,data,len,core->usr);
     }
     return false;
+}
+
+uint32_t hs_risc_v_core_rv32_sets_get(hs_risc_v_core_rv32_t *core)
+{
+    if(core==NULL)
+    {
+        return 0;
+    }
+
+    core->instruction_sets=hs_risc_v_common_instruction_set_sets_format(core->instruction_sets);
+
+    return core->instruction_sets;
+}
+
+uint32_t hs_risc_v_core_rv32_sets_disable_set(hs_risc_v_core_rv32_t *core,hs_risc_v_common_instruction_set_t ins_set)
+{
+    if(core==NULL)
+    {
+        return 0;
+    }
+
+    core->instruction_sets=hs_risc_v_common_instruction_set_sets_clear_set(core->instruction_sets,ins_set);
+
+    return core->instruction_sets;
 }

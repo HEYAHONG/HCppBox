@@ -187,7 +187,7 @@ typedef enum
     HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICSR= (1ULL << (26+1)),                 /**< RV32Zicsr扩展指令集 */
     HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZICSR= (1ULL << (26+1)),                 /**< RV64Zicsr扩展指令集 */
 
-    //"Zifencei"扩展：控制状态寄存器
+    //"Zifencei"扩展：指令获取屏障
     HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI= (1ULL << (26+2)),              /**< RV32Zicsr扩展指令集 */
     HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZIFENCEI= (1ULL << (26+2)),              /**< RV64Zicsr扩展指令集 */
 
