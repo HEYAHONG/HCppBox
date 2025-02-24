@@ -1555,6 +1555,7 @@ static int hsimulator_test(int argc,const char *argv[])
         static hs_mcs_51_serial_t   mcs_51_uart;
         static hs_mcs_51_rom_t      mcs_51_rom=HS_MCS_51_ROM_INITIALIZER;
         static hs_mcs_51_ram_model_huge_t mcs_51_ram;
+        static hs_mcs_51_pin    mcs_51_pin;
         hs_mcs_51_serial_init(&mcs_51_uart,[](hs_mcs_51_serial_t *serial,hs_mcs_51_serial_io_t io_type,uint16_t *data) -> bool
         {
             if(io_type==HS_MCS_51_SERIAL_IO_TRANSMIT)
@@ -1571,6 +1572,8 @@ static int hsimulator_test(int argc,const char *argv[])
             hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&mcs_51_rom);
             //处理串口外设
             hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&mcs_51_uart);
+            //处理PIN
+            hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&mcs_51_pin);
             return true;
         }
         ,mcs_51);

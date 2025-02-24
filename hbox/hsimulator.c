@@ -23,6 +23,7 @@
 #include "simulator/mcs_51/mcs_51_ram.c"
 #include "simulator/mcs_51/mcs_51_core.c"
 #include "simulator/mcs_51/mcs_51_serial.c"
+#include "simulator/mcs_51/mcs_51_pin.c"
 
 
 #include "simulator/risc-v/risc-v.h"
