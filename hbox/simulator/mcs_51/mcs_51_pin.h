@@ -92,6 +92,27 @@ bool hs_mcs_51_pin_port_pin_get(hs_mcs_51_core_t *core,hs_mcs_51_pin_t *pin,hs_m
  */
 void hs_mcs_51_pin_port_pin_set(hs_mcs_51_core_t *core,hs_mcs_51_pin_t *pin,hs_mcs_51_pin_port_t port,uint8_t pinnum,bool value);
 
+
+/** \brief  MCS-51 PIN获取PIN
+ *
+ * \param core hs_mcs_51_core_t*        MCS-51内核指针
+ * \param pin hs_mcs_51_pin_t*          MCS-51 PIN指针
+ * \param bit_addr uint8_t              引脚在SFR的位地址
+ * \return bool 当前端口值
+ *
+ */
+bool hs_mcs_51_pin_port_pin_get_by_bitaddr(hs_mcs_51_core_t *core,hs_mcs_51_pin_t *pin,uint8_t bit_addr);
+
+/** \brief  MCS-51 PIN设置PIN
+ *
+ * \param core hs_mcs_51_core_t*        MCS-51内核指针
+ * \param pin hs_mcs_51_pin_t*          MCS-51 PIN指针
+ * \param bit_addr uint8_t              引脚在SFR的位地址
+ * \param value bool                    当前端口值
+ *
+ */
+void hs_mcs_51_pin_port_pin_set_by_bitaddr(hs_mcs_51_core_t *core,hs_mcs_51_pin_t *pin,uint8_t bit_addr,bool value);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

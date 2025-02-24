@@ -272,3 +272,13 @@ void hs_mcs_51_pin_port_pin_set(hs_mcs_51_core_t *core,hs_mcs_51_pin_t *pin,hs_m
     }
     hs_mcs_51_pin_port_set(core,pin,port,new_value);
 }
+
+bool hs_mcs_51_pin_port_pin_get_by_bitaddr(hs_mcs_51_core_t *core,hs_mcs_51_pin_t *pin,uint8_t bit_addr)
+{
+    return hs_mcs_51_pin_port_pin_get(core,pin,(hs_mcs_51_pin_port_t)(HS_MCS_51_PIN_PORT_0+((bit_addr-HS_MCS_51_BIT_ADDRESS_P0_0)/0x10)),bit_addr%8);
+}
+
+void hs_mcs_51_pin_port_pin_set_by_bitaddr(hs_mcs_51_core_t *core,hs_mcs_51_pin_t *pin,uint8_t bit_addr,bool value)
+{
+    hs_mcs_51_pin_port_pin_set(core,pin,(hs_mcs_51_pin_port_t)(HS_MCS_51_PIN_PORT_0+((bit_addr-HS_MCS_51_BIT_ADDRESS_P0_0)/0x10)),bit_addr%8,value);
+}
