@@ -186,66 +186,69 @@ void hs_mcs_51_pin_port_set(hs_mcs_51_core_t *core,hs_mcs_51_pin_t *pin,hs_mcs_5
     {
     case HS_MCS_51_PIN_PORT_3:  //P3口
     {
+        if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_EA))
         {
-            bool int0=(((pin->port[HS_MCS_51_PIN_PORT_3]&(1ULL<<2))!=0) && ((value&(1ULL<<2))==0));
-            if(int0 &&hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_IT0))
             {
-                //下降边沿中断
-                hs_mcs_51_bit_write(core,HS_MCS_51_BIT_ADDRESS_IE0,true);
-                if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_EX0))
+                bool int0=(((pin->port[HS_MCS_51_PIN_PORT_3]&(1ULL<<2))!=0) && ((value&(1ULL<<2))==0));
+                if(int0 &&hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_IT0))
                 {
-                    if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_PX0))
+                    //下降边沿中断
+                    hs_mcs_51_bit_write(core,HS_MCS_51_BIT_ADDRESS_IE0,true);
+                    if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_EX0))
                     {
-                        //高优先级
-
-                        if(hs_mcs_51_core_interrupt_nested_get(core) < 2)
+                        if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_PX0))
                         {
-                            hs_mcs_51_core_interrupt_set(core,HS_MCS_51_INTERRUPT_8051_IE0,true);
+                            //高优先级
+
+                            if(hs_mcs_51_core_interrupt_nested_get(core) < 2)
+                            {
+                                hs_mcs_51_core_interrupt_set(core,HS_MCS_51_INTERRUPT_8051_IE0,true);
+                            }
+
+                        }
+                        else
+                        {
+                            //低优先级
+
+                            if(hs_mcs_51_core_interrupt_nested_get(core) < 1)
+                            {
+                                hs_mcs_51_core_interrupt_set(core,HS_MCS_51_INTERRUPT_8051_IE0,false);
+                            }
                         }
 
                     }
-                    else
-                    {
-                        //低优先级
-
-                        if(hs_mcs_51_core_interrupt_nested_get(core) < 1)
-                        {
-                            hs_mcs_51_core_interrupt_set(core,HS_MCS_51_INTERRUPT_8051_IE0,false);
-                        }
-                    }
-
                 }
             }
-        }
 
-        {
-            bool int1=(((pin->port[HS_MCS_51_PIN_PORT_3]&(1ULL<<3))!=0) && ((value&(1ULL<<3))==0));
-            if(int1 &&hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_IT1))
             {
-                //下降边沿中断
-                hs_mcs_51_bit_write(core,HS_MCS_51_BIT_ADDRESS_IE1,true);
-                if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_EX1))
+                bool int1=(((pin->port[HS_MCS_51_PIN_PORT_3]&(1ULL<<3))!=0) && ((value&(1ULL<<3))==0));
+                if(int1 &&hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_IT1))
                 {
-                    if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_PX1))
+                    //下降边沿中断
+                    hs_mcs_51_bit_write(core,HS_MCS_51_BIT_ADDRESS_IE1,true);
+                    if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_EX1))
                     {
-                        //高优先级
-
-                        if(hs_mcs_51_core_interrupt_nested_get(core) < 2)
+                        if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_PX1))
                         {
-                            hs_mcs_51_core_interrupt_set(core,HS_MCS_51_INTERRUPT_8051_IE1,true);
+                            //高优先级
+
+                            if(hs_mcs_51_core_interrupt_nested_get(core) < 2)
+                            {
+                                hs_mcs_51_core_interrupt_set(core,HS_MCS_51_INTERRUPT_8051_IE1,true);
+                            }
+
+                        }
+                        else
+                        {
+                            //低优先级
+
+                            if(hs_mcs_51_core_interrupt_nested_get(core) < 1)
+                            {
+                                hs_mcs_51_core_interrupt_set(core,HS_MCS_51_INTERRUPT_8051_IE1,false);
+                            }
                         }
 
                     }
-                    else
-                    {
-                        //低优先级
-
-                        if(hs_mcs_51_core_interrupt_nested_get(core) < 1)
-                        {
-                            hs_mcs_51_core_interrupt_set(core,HS_MCS_51_INTERRUPT_8051_IE1,false);
-                        }
-                    }
-
                 }
             }
         }
