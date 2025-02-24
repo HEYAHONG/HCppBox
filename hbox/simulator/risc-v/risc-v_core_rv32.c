@@ -14,6 +14,8 @@ struct hs_risc_v_core_rv32
     hs_risc_v_core_rv32_io_t    io;
     void*                       usr;
     uint32_t                    instruction_sets; /**< 支持的扩展指令集 */
+    uint32_t                    exception_pending; /**< 等待执行的异常（狭义的异常） */
+    uint32_t                    interrupt_pending; /**< 等待执行的中断 */
 };
 
 
@@ -403,11 +405,11 @@ bool hs_risc_v_core_rv32_exception_raise(hs_risc_v_core_rv32_t *core,int cause,b
     }
     if(interrupt)
     {
-
+        core->interrupt_pending |= (1ULL<<cause);
     }
     else
     {
-
+        core->exception_pending |= (1ULL<<cause);
     }
     return false;
 }
