@@ -9,6 +9,15 @@
 #include "mcs_51_core.h"
 #include "mcs_51_pin.h"
 
+void hs_mcs_51_pin_init(hs_mcs_51_pin_t *pin,hs_mcs_51_pin_io_callback_t io,void *usr)
+{
+    if(pin!=NULL)
+    {
+        pin->io=io;
+        pin->usr=usr;
+    }
+}
+
 void hs_mcs_51_pin_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr,hs_mcs_51_pin_t *pin)
 {
     if(core==NULL || pin ==NULL)
@@ -38,10 +47,78 @@ void hs_mcs_51_pin_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t
     break;
     case HS_MCS_51_IO_INSTRUCTION_EXIT:
     {
-        hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_P0,&pin->port[HS_MCS_51_PIN_PORT_0]);
-        hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_P1,&pin->port[HS_MCS_51_PIN_PORT_1]);
-        hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_P2,&pin->port[HS_MCS_51_PIN_PORT_2]);
-        hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_P3,&pin->port[HS_MCS_51_PIN_PORT_3]);
+        {
+            uint8_t value=pin->port[HS_MCS_51_PIN_PORT_0];
+            hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_P0,&pin->port[HS_MCS_51_PIN_PORT_0]);
+            value^=pin->port[HS_MCS_51_PIN_PORT_0];
+            if(value!=0)
+            {
+                for(size_t i=0; i<8; i++)
+                {
+                    if((value&(1ULL<<(i)))!=0)
+                    {
+                        if(pin->io!=NULL)
+                        {
+                            pin->io(pin,HS_MCS_51_PIN_IO_PIN_CHANGE,HS_MCS_51_PIN_PORT_0,i);
+                        }
+                    }
+                }
+            }
+        }
+        {
+            uint8_t value=pin->port[HS_MCS_51_PIN_PORT_1];
+            hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_P1,&pin->port[HS_MCS_51_PIN_PORT_1]);
+            value^=pin->port[HS_MCS_51_PIN_PORT_1];
+            if(value!=0)
+            {
+                for(size_t i=0; i<8; i++)
+                {
+                    if((value&(1ULL<<(i)))!=0)
+                    {
+                        if(pin->io!=NULL)
+                        {
+                            pin->io(pin,HS_MCS_51_PIN_IO_PIN_CHANGE,HS_MCS_51_PIN_PORT_1,i);
+                        }
+                    }
+                }
+            }
+        }
+        {
+            uint8_t value=pin->port[HS_MCS_51_PIN_PORT_2];
+            hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_P2,&pin->port[HS_MCS_51_PIN_PORT_2]);
+            value^=pin->port[HS_MCS_51_PIN_PORT_2];
+            if(value!=0)
+            {
+                for(size_t i=0; i<8; i++)
+                {
+                    if((value&(1ULL<<(i)))!=0)
+                    {
+                        if(pin->io!=NULL)
+                        {
+                            pin->io(pin,HS_MCS_51_PIN_IO_PIN_CHANGE,HS_MCS_51_PIN_PORT_2,i);
+                        }
+                    }
+                }
+            }
+        }
+        {
+            uint8_t value=pin->port[HS_MCS_51_PIN_PORT_3];
+            hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_P3,&pin->port[HS_MCS_51_PIN_PORT_3]);
+            value^=pin->port[HS_MCS_51_PIN_PORT_3];
+            if(value!=0)
+            {
+                for(size_t i=0; i<8; i++)
+                {
+                    if((value&(1ULL<<(i)))!=0)
+                    {
+                        if(pin->io!=NULL)
+                        {
+                            pin->io(pin,HS_MCS_51_PIN_IO_PIN_CHANGE,HS_MCS_51_PIN_PORT_3,i);
+                        }
+                    }
+                }
+            }
+        }
     }
     break;
     case HS_MCS_51_IO_TICK_ENTER:

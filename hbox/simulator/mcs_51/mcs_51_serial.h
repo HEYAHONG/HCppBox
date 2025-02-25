@@ -26,14 +26,14 @@ typedef enum
     HS_MCS_51_SERIAL_IO_TICK,             /**< 节拍，总线节拍时触发，数据为内核PC值*/
 } hs_mcs_51_serial_io_t;
 
-/** \brief
-     *
-     * \param serial hs_mcs_51_serial_t*     MCS-51串口指针
-     * \param io_type hs_mcs_51_serial_io_t io类型
-     * \param data uint16_t* 待发送/接收的数据
-     * \return bool 是否成功操作
-     *
-     */
+/** \brief MCS-51串口IO回调
+ *
+ * \param serial hs_mcs_51_serial_t*     MCS-51串口指针
+ * \param io_type hs_mcs_51_serial_io_t io类型
+ * \param data uint16_t* 待发送/接收的数据
+ * \return bool 是否成功操作
+ *
+ */
 typedef bool  (*hs_mcs_51_serial_io_callback_t)(hs_mcs_51_serial_t *serial,hs_mcs_51_serial_io_t io_type,uint16_t *data);
 
 struct hs_mcs_51_serial

@@ -1564,6 +1564,14 @@ static int hsimulator_test(int argc,const char *argv[])
             }
             return true;
         },NULL);
+        hs_mcs_51_pin_init(&mcs_51_pin,[](hs_mcs_51_pin_t *pin,hs_mcs_51_pin_io_t io_type,hs_mcs_51_pin_port_t port,uint8_t pinnum) -> void
+        {
+            if(io_type==HS_MCS_51_PIN_IO_PIN_CHANGE)
+            {
+                bool value=hs_mcs_51_pin_port_pin_get((hs_mcs_51_core_t *)pin->usr,pin,port,pinnum);
+                printf("hsimulator mcs_51_pin port=%d pinnum=%d value=%s\r\n",static_cast<int>(port),(int)pinnum,value?"HIGH":"LOW");
+            }
+        },mcs_51);
         hs_mcs_51_core_t *core=hs_mcs_51_core_init(mcs_51,[](hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr)->bool
         {
             //RAM操作(注意：此操作前不应当有外设操作)

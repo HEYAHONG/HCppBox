@@ -17,9 +17,34 @@ extern "C"
 struct hs_mcs_51_pin;
 typedef struct hs_mcs_51_pin hs_mcs_51_pin_t;
 
+
+typedef enum
+{
+    HS_MCS_51_PIN_PORT_0=0,
+    HS_MCS_51_PIN_PORT_1=1,
+    HS_MCS_51_PIN_PORT_2=2,
+    HS_MCS_51_PIN_PORT_3=3,
+} hs_mcs_51_pin_port_t;         /**< 端口 */
+
+typedef enum
+{
+    HS_MCS_51_PIN_IO_PIN_CHANGE=0,       /**< pin被（内核）改变 */
+} hs_mcs_51_pin_io_t;
+
+/** \brief MCS-51 PIN IO回调
+ *
+ * \param pin hs_mcs_51_pin_t*              MCS-51 PIN指针
+ * \param port hs_mcs_51_pin_port_t         端口
+ * \param pinnum uint8_t                    引脚编号,范围为0～7
+ *
+ */
+typedef void  (*hs_mcs_51_pin_io_callback_t)(hs_mcs_51_pin_t *pin,hs_mcs_51_pin_io_t io_type,hs_mcs_51_pin_port_t port,uint8_t pinnum);
+
 struct hs_mcs_51_pin
 {
-    uint8_t     port[4];        /**< 4个IO端口 */
+    hs_mcs_51_pin_io_callback_t io;         /**< IO回调 */
+    void*                       usr;        /**< 用户指针 */
+    uint8_t     port[4];                    /**< 4个IO端口 */
     struct
     {
         uint8_t ie0:1;
@@ -27,6 +52,14 @@ struct hs_mcs_51_pin
     } flag;
 };
 
+/** \brief MCS-51 PIN初始化
+ *
+ * \param pin hs_mcs_51_pin_t*              MCS-51 PIN指针
+ * \param io hs_mcs_51_pin_io_callback_t    IO回调
+ * \param usr void*                         用户指针
+ *
+ */
+void hs_mcs_51_pin_init(hs_mcs_51_pin_t *pin,hs_mcs_51_pin_io_callback_t io,void *usr);
 
 /** \brief  MCS-51 PIN总线IO操作(一般由总线上的主设备(如CPU)调用)
  *
@@ -42,13 +75,6 @@ struct hs_mcs_51_pin
 void hs_mcs_51_pin_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr,hs_mcs_51_pin_t *pin);
 
 
-typedef enum
-{
-    HS_MCS_51_PIN_PORT_0=0,
-    HS_MCS_51_PIN_PORT_1=1,
-    HS_MCS_51_PIN_PORT_2=2,
-    HS_MCS_51_PIN_PORT_3=3,
-} hs_mcs_51_pin_port_t;         /**< 端口 */
 
 /** \brief  MCS-51 PIN获取端口值
  *
