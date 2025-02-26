@@ -21,8 +21,9 @@ extern "C"
  *
  *
  */
+extern size_t hs_mcs_51_common_clk_freq;
 #ifndef HS_MCS_51_COMMON_CLK_FREQ
-#define HS_MCS_51_COMMON_CLK_FREQ                   (11059200)
+#define HS_MCS_51_COMMON_CLK_FREQ                   (hs_mcs_51_common_clk_freq)
 #endif // HS_MCS_51_COMMON_CLK_FREQ
 
 #ifdef __cplusplus

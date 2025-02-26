@@ -6,5 +6,5 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-
-
+#include "mcs_51_common.h"
+size_t hs_mcs_51_common_clk_freq=11059200;
