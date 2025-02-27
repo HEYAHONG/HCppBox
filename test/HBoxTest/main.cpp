@@ -1556,6 +1556,7 @@ static int hsimulator_test(int argc,const char *argv[])
         static hs_mcs_51_rom_t      mcs_51_rom=HS_MCS_51_ROM_INITIALIZER;
         static hs_mcs_51_ram_model_huge_t mcs_51_ram;
         static hs_mcs_51_pin    mcs_51_pin;
+        static hs_mcs_51_timer  mcs_51_timer;
         hs_mcs_51_serial_init(&mcs_51_uart,[](hs_mcs_51_serial_t *serial,hs_mcs_51_serial_io_t io_type,uint16_t *data) -> bool
         {
             if(io_type==HS_MCS_51_SERIAL_IO_TRANSMIT)
@@ -1572,6 +1573,7 @@ static int hsimulator_test(int argc,const char *argv[])
                 printf("hsimulator mcs_51_pin port=%d pinnum=%d value=%s\r\n",static_cast<int>(port),(int)pinnum,value?"HIGH":"LOW");
             }
         },mcs_51);
+        hs_mcs_51_timer_init(&mcs_51_timer);
         hs_mcs_51_core_t *core=hs_mcs_51_core_init(mcs_51,[](hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr)->bool
         {
             //RAM操作(注意：此操作前不应当有外设操作)
@@ -1582,6 +1584,8 @@ static int hsimulator_test(int argc,const char *argv[])
             hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&mcs_51_uart);
             //处理PIN
             hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&mcs_51_pin);
+            //处理定时器
+            hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&mcs_51_timer);
             return true;
         }
         ,mcs_51);
