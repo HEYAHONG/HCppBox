@@ -41,8 +41,9 @@ static void hs_mcs_51_timer_timer_counter_inc(hs_mcs_51_core_t *core,hs_mcs_51_t
                 {
                 case 0:
                 {
-                    if(tl==31)
+                    if((tl&0x1F)==31)
                     {
+                        tl&=(~0x1F);
                         if(th==255)
                         {
                             //溢出
@@ -50,7 +51,10 @@ static void hs_mcs_51_timer_timer_counter_inc(hs_mcs_51_core_t *core,hs_mcs_51_t
                         }
                         th++;
                     }
-                    tl++;
+                    else
+                    {
+                        tl++;
+                    }
                 }
                 break;
                 case 1:
@@ -123,8 +127,9 @@ static void hs_mcs_51_timer_timer_counter_inc(hs_mcs_51_core_t *core,hs_mcs_51_t
                     {
                     case 0:
                     {
-                        if(tl==31)
+                        if((tl&0x1F)==31)
                         {
+                            tl&=(~0x1F);
                             if(th==255)
                             {
                                 //溢出
@@ -132,7 +137,10 @@ static void hs_mcs_51_timer_timer_counter_inc(hs_mcs_51_core_t *core,hs_mcs_51_t
                             }
                             th++;
                         }
-                        tl++;
+                        else
+                        {
+                            tl++;
+                        }
                     }
                     break;
                     case 1:
