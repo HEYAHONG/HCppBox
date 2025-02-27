@@ -26,6 +26,8 @@ struct hs_mcs_51_timer
     struct
     {
         uint32_t    external_clk:1;     /**< 是否使用外部时钟Tick，默认情况下使用Core的时钟Tick，当为1时用户必须单独调用定时器的Tick */
+        uint32_t    enable_t2:1;        /**< 定时器2使能 */
+        uint32_t    t2ex:1;             /**< 定时器2 T2EX值 */
         uint32_t    tf0:1;              /**< 定时器0标志，当进入中断服务程序时置1 */
         uint32_t    tf1:1;              /**< 定时器1标志，当进入中断服务程序时置1 */
         uint32_t    tf2:1;              /**< 定时器2标志，当进入中断服务程序时置1 */
@@ -100,6 +102,23 @@ size_t hs_mcs_51_timer_clk_freq_get(hs_mcs_51_timer_t *timer);
  *
  */
 void hs_mcs_51_timer_clk_freq_set(hs_mcs_51_timer_t *timer,size_t clk_freq);
+
+/** \brief MCS-51 定时器2使能设置
+ *
+ * \param timer hs_mcs_51_timer_t* MCS-51 定时器指针
+ * \param enable bool 是否使能
+ *
+ */
+void hs_mcs_51_timer_timer2_enable(hs_mcs_51_timer_t *timer,bool enable);
+
+/** \brief MCS-51 定时器2设置T2EX
+ *
+ * \param core hs_mcs_51_core_t*  MCS-51内核指针
+ * \param timer hs_mcs_51_timer_t* MCS-51 定时器指针
+ * \param value bool 值
+ *
+ */
+void hs_mcs_51_timer_timer2_t2ex_set(hs_mcs_51_core_t *core,hs_mcs_51_timer_t *timer,bool value);
 
 #ifdef __cplusplus
 }
