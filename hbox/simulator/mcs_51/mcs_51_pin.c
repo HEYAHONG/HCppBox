@@ -259,6 +259,20 @@ void hs_mcs_51_pin_port_set(hs_mcs_51_core_t *core,hs_mcs_51_pin_t *pin,hs_mcs_5
     {
         return;
     }
+    {
+        uint8_t old_value=pin->port[((size_t)port)%(sizeof(pin->port)/sizeof(pin->port[0]))];
+        uint8_t diff_value=(old_value^value);
+        for(size_t i=0; i<8; i++)
+        {
+            if((diff_value & (1ULL << i))!=0)
+            {
+                if(pin->io!=NULL)
+                {
+                    pin->io(pin,HS_MCS_51_PIN_IO_USR_PIN_CHANGE,port,i);
+                }
+            }
+        }
+    }
     switch(port)
     {
     case HS_MCS_51_PIN_PORT_3:  //P3口

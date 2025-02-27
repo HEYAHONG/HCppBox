@@ -29,6 +29,7 @@ typedef enum
 typedef enum
 {
     HS_MCS_51_PIN_IO_PIN_CHANGE=0,          /**< pin被（内核）改变 */
+    HS_MCS_51_PIN_IO_USR_PIN_CHANGE,        /**< pin被（用户）改变 */
     HS_MCS_51_PIN_IO_INT0_PIN_CHANGE,       /**< int0引脚被（用户）改变，通常用于实现定时器相关操作 */
     HS_MCS_51_PIN_IO_INT1_PIN_CHANGE,       /**< int1引脚被（用户）改变，通常用于实现定时器相关操作 */
     HS_MCS_51_PIN_IO_T0_PIN_CHANGE,         /**< t0引脚被（用户）改变，通常用于实现定时器相关操作 */
