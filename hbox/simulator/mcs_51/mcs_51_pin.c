@@ -263,6 +263,40 @@ void hs_mcs_51_pin_port_set(hs_mcs_51_core_t *core,hs_mcs_51_pin_t *pin,hs_mcs_5
     {
     case HS_MCS_51_PIN_PORT_3:  //P3口
     {
+        {
+            //对特殊引脚的操作执行回调函数
+            uint8_t old_value =pin->port[HS_MCS_51_PIN_PORT_3];
+            uint8_t diff_value=(old_value^value);
+            if((diff_value&(1ULL<<(2)))!=0)
+            {
+                if(pin->io!=NULL)
+                {
+                    pin->io(pin,HS_MCS_51_PIN_IO_INT0_PIN_CHANGE,HS_MCS_51_PIN_PORT_3,2);
+                }
+            }
+            if((diff_value&(1ULL<<(3)))!=0)
+            {
+                if(pin->io!=NULL)
+                {
+                    pin->io(pin,HS_MCS_51_PIN_IO_INT1_PIN_CHANGE,HS_MCS_51_PIN_PORT_3,3);
+                }
+            }
+            if((diff_value&(1ULL<<(4)))!=0)
+            {
+                if(pin->io!=NULL)
+                {
+                    pin->io(pin,HS_MCS_51_PIN_IO_T0_PIN_CHANGE,HS_MCS_51_PIN_PORT_3,4);
+                }
+            }
+            if((diff_value&(1ULL<<(5)))!=0)
+            {
+                if(pin->io!=NULL)
+                {
+                    pin->io(pin,HS_MCS_51_PIN_IO_T1_PIN_CHANGE,HS_MCS_51_PIN_PORT_3,5);
+                }
+            }
+        }
+
         if(hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_EA))
         {
             {
