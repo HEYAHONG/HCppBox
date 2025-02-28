@@ -168,43 +168,43 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
             uint32_t i_imm=(((instruction >> 20)&((1ULL << (12))-1)) << (0))+(((instruction&(1ULL<<(31)))!=0)?(0xFFFFF000):0);
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(lw,
             {
-                    hs_risc_v_common_memory_word_t value;
-                    value.value=0;
-                    core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,rs1_value+((int32_t)i_imm),value.bytes,sizeof(value.bytes),core->usr);
-                    HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
-                    hs_risc_v_core_rv32_x_register_write(core,rd,value.value);
+                hs_risc_v_common_memory_word_t value;
+                value.value=0;
+                core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,rs1_value+((int32_t)i_imm),value.bytes,sizeof(value.bytes),core->usr);
+                HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+                hs_risc_v_core_rv32_x_register_write(core,rd,value.value);
             });
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(lh,
             {
-                    hs_risc_v_common_memory_halfword_t value;
-                    value.value=0;
-                    core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,rs1_value+((int32_t)i_imm),value.bytes,sizeof(value.bytes),core->usr);
-                    HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
-                    hs_risc_v_core_rv32_x_register_write(core,rd,(int32_t)value.s_value);
+                hs_risc_v_common_memory_halfword_t value;
+                value.value=0;
+                core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,rs1_value+((int32_t)i_imm),value.bytes,sizeof(value.bytes),core->usr);
+                HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+                hs_risc_v_core_rv32_x_register_write(core,rd,(int32_t)value.s_value);
             });
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(lb,
             {
-                    hs_risc_v_common_memory_byte_t value;
-                    value.value=0;
-                    core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,rs1_value+((int32_t)i_imm),value.bytes,sizeof(value.bytes),core->usr);
-                    HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
-                    hs_risc_v_core_rv32_x_register_write(core,rd,(int32_t)value.s_value);
+                hs_risc_v_common_memory_byte_t value;
+                value.value=0;
+                core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,rs1_value+((int32_t)i_imm),value.bytes,sizeof(value.bytes),core->usr);
+                HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+                hs_risc_v_core_rv32_x_register_write(core,rd,(int32_t)value.s_value);
             });
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(lhu,
             {
-                    hs_risc_v_common_memory_halfword_t value;
-                    value.value=0;
-                    core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,rs1_value+((int32_t)i_imm),value.bytes,sizeof(value.bytes),core->usr);
-                    HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
-                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)value.value);
+                hs_risc_v_common_memory_halfword_t value;
+                value.value=0;
+                core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,rs1_value+((int32_t)i_imm),value.bytes,sizeof(value.bytes),core->usr);
+                HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+                hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)value.value);
             });
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(lbu,
             {
-                    hs_risc_v_common_memory_byte_t value;
-                    value.value=0;
-                    core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,rs1_value+((int32_t)i_imm),value.bytes,sizeof(value.bytes),core->usr);
-                    HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
-                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)value.value);
+                hs_risc_v_common_memory_byte_t value;
+                value.value=0;
+                core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,rs1_value+((int32_t)i_imm),value.bytes,sizeof(value.bytes),core->usr);
+                HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+                hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)value.value);
             });
         }
         break;
@@ -217,24 +217,24 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
             uint32_t imm=(((instruction >> 7)&((1ULL << (5))-1)) << (0))+(((instruction >> 25)&((1ULL << (7))-1)) << (5))+(((instruction&(1ULL<<(31)))!=0)?(0xFFFFF000):0);
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(sw,
             {
-                    hs_risc_v_common_memory_word_t value;
-                    value.value=rs2_value;
-                    HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
-                    core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_WRITE,rs1_value+((int32_t)imm),value.bytes,sizeof(value.bytes),core->usr);
+                hs_risc_v_common_memory_word_t value;
+                value.value=rs2_value;
+                HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+                core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_WRITE,rs1_value+((int32_t)imm),value.bytes,sizeof(value.bytes),core->usr);
             });
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(sh,
             {
-                    hs_risc_v_common_memory_halfword_t value;
-                    value.value=rs2_value;
-                    HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
-                    core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_WRITE,rs1_value+((int32_t)imm),value.bytes,sizeof(value.bytes),core->usr);
+                hs_risc_v_common_memory_halfword_t value;
+                value.value=rs2_value;
+                HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+                core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_WRITE,rs1_value+((int32_t)imm),value.bytes,sizeof(value.bytes),core->usr);
             });
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(sb,
             {
-                    hs_risc_v_common_memory_byte_t value;
-                    value.value=rs2_value;
-                    HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
-                    core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_WRITE,rs1_value+((int32_t)imm),value.bytes,sizeof(value.bytes),core->usr);
+                hs_risc_v_common_memory_byte_t value;
+                value.value=rs2_value;
+                HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+                core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_WRITE,rs1_value+((int32_t)imm),value.bytes,sizeof(value.bytes),core->usr);
             });
         }
         break;
@@ -370,7 +370,34 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP_IMM :
         {
-
+            uint32_t rd=((instruction&INSN_FIELD_RD)>>7);
+            uint32_t rs1=((instruction&INSN_FIELD_RS1)>>15);
+            uint32_t rs1_value=hs_risc_v_core_rv32_x_register_read(core,rs1);
+            uint32_t i_imm=(((instruction >> 20)&((1ULL << (12))-1)) << (0))+(((instruction&(1ULL<<(31)))!=0)?(0xFFFFF000):0);
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(addi,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,((int32_t)rs1_value)+((int32_t)i_imm));
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(slti,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,(((int32_t)rs1_value)<((int32_t)i_imm))?1:0);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(sltiu,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,(((uint32_t)rs1_value)<((uint32_t)i_imm))?1:0);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(xori,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value^i_imm);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(ori,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value|i_imm);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(andi,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value&i_imm);
+            });
         }
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP  :
