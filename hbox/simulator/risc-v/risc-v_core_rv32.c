@@ -177,7 +177,53 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_BRANCH :
         {
-
+            uint32_t rs1=((instruction&INSN_FIELD_RS1)>>15);
+            uint32_t rs1_value=hs_risc_v_core_rv32_x_register_read(core,rs1);
+            uint32_t rs2=((instruction&INSN_FIELD_RS2)>>20);
+            uint32_t rs2_value=hs_risc_v_core_rv32_x_register_read(core,rs2);
+            uint32_t sb_imm=(((instruction >> 8)&((1ULL << (4))-1)) << (1))+(((instruction >> 25)&((1ULL << (6))-1)) << (5))+(((instruction >> 7)&((1ULL << (1))-1)) << (11))+(((instruction&(1ULL<<(31)))!=0)?(0xFFFFF000):0);
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(beq,
+            {
+                if(rs1_value==rs2_value)
+                {
+                    hs_risc_v_core_rv32_pc_write(core,pc+(int32_t)sb_imm);
+                }
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(bne,
+            {
+                if(rs1_value!=rs2_value)
+                {
+                    hs_risc_v_core_rv32_pc_write(core,pc+(int32_t)sb_imm);
+                }
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(blt,
+            {
+                if(((int32_t)rs1_value)<((int32_t)rs2_value))
+                {
+                    hs_risc_v_core_rv32_pc_write(core,pc+(int32_t)sb_imm);
+                }
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(bltu,
+            {
+                if(((uint32_t)rs1_value)<((uint32_t)rs2_value))
+                {
+                    hs_risc_v_core_rv32_pc_write(core,pc+(int32_t)sb_imm);
+                }
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(bge,
+            {
+                if(((int32_t)rs1_value)>=((int32_t)rs2_value))
+                {
+                    hs_risc_v_core_rv32_pc_write(core,pc+(int32_t)sb_imm);
+                }
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(bgeu,
+            {
+                if(((uint32_t)rs1_value)>=((uint32_t)rs2_value))
+                {
+                    hs_risc_v_core_rv32_pc_write(core,pc+(int32_t)sb_imm);
+                }
+            });
         }
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_LOAD_FP:
