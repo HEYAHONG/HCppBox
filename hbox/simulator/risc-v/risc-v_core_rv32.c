@@ -344,7 +344,14 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_MISC_MEM:
         {
-
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(fence,
+            {
+                core->io(core,HS_RISC_V_CORE_RV32_IO_INSTRUCTION_FENCE_EXEC,pc,(uint8_t*)&instruction,sizeof(instruction),core->usr);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(pause,
+            {
+                core->io(core,HS_RISC_V_CORE_RV32_IO_INSTRUCTION_PAUSE_EXEC,pc,(uint8_t*)&instruction,sizeof(instruction),core->usr);
+            });
         }
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_AMO :
@@ -471,7 +478,14 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_SYSTEM:
         {
-
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(ecall,
+            {
+                core->io(core,HS_RISC_V_CORE_RV32_IO_INSTRUCTION_ECALL_EXEC,pc,(uint8_t*)&instruction,sizeof(instruction),core->usr);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(ebreak,
+            {
+                core->io(core,HS_RISC_V_CORE_RV32_IO_INSTRUCTION_EBREAK_EXEC,pc,(uint8_t*)&instruction,sizeof(instruction),core->usr);
+            });
         }
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_AUIPC:

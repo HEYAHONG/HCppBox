@@ -47,11 +47,15 @@ typedef enum
     HS_RISC_V_CORE_RV32_IO_PC_REGISTER_READ,                            /**< PC寄存器读取，此选项必须实现 */
     HS_RISC_V_CORE_RV32_IO_PC_REGISTER_WRITE,                           /**< PC寄存器写入，此选项必须实现 */
     HS_RISC_V_CORE_RV32_IO_INSTRUCTION_ENTER,                           /**< 指令进入,开始执行指令时调用。通常用于调试或者用户处理指令。地址为当前PC值,数据为已经执行的指令(类型为uint32_t)。*/
-    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_EXIT,                            /**< 指令退出,结束执行指令时调用。通常用于调试或者用户处理指令。地址为当前PC值(可能已被指令修改),数据为已经执行的指令(类型为uint32_t)。*/
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_EXIT,                            /**< 指令退出,结束执行指令时调用。通常用于调试或者用户处理指令。地址为当前PC值,数据为已经执行的指令(类型为uint32_t)。*/
     HS_RISC_V_CORE_RV32_IO_TICK_ENTER,                                  /**< 节拍进入,时钟节拍开始时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。 */
     HS_RISC_V_CORE_RV32_IO_TICK_EXIT,                                   /**< 节拍退出,时钟节拍开始时调用。地址为当前PC值,数据为剩余节拍数(类型为size_t)。 */
-    HS_RISC_V_CORE_RV32_IO_CUSTOM_INSTRUCTION_EXEC,                     /**< custom指令（RISC-V预留了部分自定义指令空间）执行。地址为下一条指令PC值,数据为待执行的指令(类型为uint32_t)。 */
-    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_FENCE_I_EXEC,                    /**< fence_i指令(Zifencei扩展指令集)执行。地址为下一条指令PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_CUSTOM_INSTRUCTION_EXEC,                     /**< custom指令（RISC-V预留了部分自定义指令空间）执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_FENCE_I_EXEC,                    /**< fence_i指令(Zifencei扩展指令集)执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_FENCE_EXEC,                      /**< fence指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_PAUSE_EXEC,                      /**< pause指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_ECALL_EXEC,                      /**< ecall指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_EBREAK_EXEC,                     /**< ebreak指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
 } hs_risc_v_core_rv32_io_opt_t;                                         /**< RISC-V RV32 IO选项 */
 
 
