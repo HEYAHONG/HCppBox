@@ -7,7 +7,9 @@
  * License:   MIT
  **************************************************************/
 #include "risc-v_core_rv32.h"
-
+#ifndef  RISCV_ENCODING_H
+#include "encoding.out.h"
+#endif
 
 struct hs_risc_v_core_rv32
 {
@@ -62,6 +64,39 @@ static void hs_risc_v_core_rv32_pc_write(hs_risc_v_core_rv32_t *core,uint32_t pc
     }
 }
 
+
+static uint32_t hs_risc_v_core_rv32_x_register_read(hs_risc_v_core_rv32_t *core,size_t address)
+{
+    if(address==0)
+    {
+        return 0;
+    }
+    if(core!=NULL && core->io!=NULL)
+    {
+        hs_risc_v_common_memory_word_t value;
+        value.value=0;
+        core->io(core,HS_RISC_V_CORE_RV32_IO_X_REGISTER_READ,address,value.bytes,sizeof(value.bytes),core->usr);
+        HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+        return value.value;
+    }
+    return 0;
+}
+
+static void hs_risc_v_core_rv32_x_register_write(hs_risc_v_core_rv32_t *core,size_t address,uint32_t reg_value)
+{
+    if(address==0)
+    {
+        return;
+    }
+    if(core!=NULL && core->io!=NULL)
+    {
+        hs_risc_v_common_memory_word_t value;
+        value.value=reg_value;
+        HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+        core->io(core,HS_RISC_V_CORE_RV32_IO_X_REGISTER_WRITE,address,value.bytes,sizeof(value.bytes),core->usr);
+    }
+}
+
 static uint32_t  hs_risc_v_core_rv32_instruction_read(hs_risc_v_core_rv32_t *core)
 {
     if(core!=NULL && core->io!=NULL)
@@ -91,6 +126,12 @@ if(!is_instruction_processed)\
 
 #endif // HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH
 
+static void hs_risc_v_core_rv32_exec_exception_raise(hs_risc_v_core_rv32_t *core,int cause,uint32_t instruction_pc,uint32_t instruction)
+{
+    //设置标志位，下次指令执行时可能进入跳转相应处理函数。
+    hs_risc_v_core_rv32_exception_raise(core,cause,false);
+}
+
 
 static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
 {
@@ -103,8 +144,8 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
     uint32_t instruction= hs_risc_v_core_rv32_instruction_read(core);
     uint32_t pc=hs_risc_v_core_rv32_pc_read(core);
     core->io(core,HS_RISC_V_CORE_RV32_IO_INSTRUCTION_ENTER,pc,(uint8_t*)&instruction,sizeof(instruction),core->usr);
-    pc+=hs_risc_v_common_instruction_length(instruction);
-    hs_risc_v_core_rv32_pc_write(core,pc);
+    uint32_t next_pc=pc+hs_risc_v_common_instruction_length(instruction);
+    hs_risc_v_core_rv32_pc_write(core,next_pc);
 
     //指令是否正确处理，当指令被正确处理时，需要将此标志置位true
     bool is_instruction_processed=false;
@@ -156,7 +197,15 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_JALR :
         {
-
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(jalr,
+            {
+                uint32_t rd=((instruction&INSN_FIELD_RD)>>7);
+                uint32_t rs1=((instruction&INSN_FIELD_RS1)>>15);
+                uint32_t rs1_value=hs_risc_v_core_rv32_x_register_read(core,rs1);
+                uint32_t i_imm=(((instruction >> 20)&((1ULL << (12))-1)) << (0))+(((instruction&(1ULL<<(31)))!=0)?(0xFFFFF000):0);
+                hs_risc_v_core_rv32_pc_write(core,(rs1_value+(int32_t)i_imm)&(~(1ULL)));
+                hs_risc_v_core_rv32_x_register_write(core,rd,next_pc);
+            })
         }
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_CUSTOM_0:
@@ -196,7 +245,13 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_JAL:
         {
-
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(jal,
+            {
+                uint32_t rd=((instruction&INSN_FIELD_RD)>>7);
+                uint32_t ju_imm=(((instruction >> 21)&((1ULL << (10))-1)) << (1))+(((instruction >> 20)&((1ULL << (1))-1)) << (11))+(((instruction >> 12)&((1ULL << (8))-1)) << (12))+(((instruction&(1ULL<<(31)))!=0)?(0xFFF00000):0);
+                hs_risc_v_core_rv32_pc_write(core,pc+(int32_t)ju_imm);
+                hs_risc_v_core_rv32_x_register_write(core,rd,next_pc);
+            })
         }
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP_IMM :
@@ -221,12 +276,22 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_AUIPC:
         {
-
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(auipc,
+            {
+                uint32_t u_imm=(instruction&INSN_FIELD_IMM20);
+                uint32_t rd=((instruction&INSN_FIELD_RD)>>7);
+                hs_risc_v_core_rv32_x_register_write(core,rd,u_imm+pc);
+            })
         }
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_LUI:
         {
-
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(lui,
+            {
+                uint32_t u_imm=(instruction&INSN_FIELD_IMM20);
+                uint32_t rd=((instruction&INSN_FIELD_RD)>>7);
+                hs_risc_v_core_rv32_x_register_write(core,rd,u_imm);
+            })
         }
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP_V:
