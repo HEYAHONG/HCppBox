@@ -398,11 +398,70 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
             {
                 hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value&i_imm);
             });
+            {
+                uint32_t shamt=((instruction>>20)&0x1F);
+                HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(slli,
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value<<shamt);
+                });
+                HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(srli,
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value>>shamt);
+                });
+                HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(srai,
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,((int64_t)((int32_t)rs1_value))>>shamt);
+                });
+            }
         }
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP  :
         {
-
+            uint32_t rd=((instruction&INSN_FIELD_RD)>>7);
+            uint32_t rs1=((instruction&INSN_FIELD_RS1)>>15);
+            uint32_t rs1_value=hs_risc_v_core_rv32_x_register_read(core,rs1);
+            uint32_t rs2=((instruction&INSN_FIELD_RS2)>>20);
+            uint32_t rs2_value=hs_risc_v_core_rv32_x_register_read(core,rs2);
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(add,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value+rs2_value);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(sub,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value-rs2_value);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(sll,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value<<(rs2_value&((sizeof(rs1_value)*8)-1)));
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(slt,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,(((int32_t)rs1_value)<((int32_t)rs2_value))?1:0);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(sltu,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,(((uint32_t)rs1_value)<((uint32_t)rs2_value))?1:0);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(xor,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value^rs2_value);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(srl,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value>>(rs2_value&((sizeof(rs1_value)*8)-1)));
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(sra,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,((int64_t)((int32_t)rs1_value))>>(rs2_value&((sizeof(rs1_value)*8)-1)));
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(or,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value|rs2_value);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(and,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,rs1_value&rs2_value);
+            });
         }
         break;
         case HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP_FP:
