@@ -6,9 +6,9 @@
 extern "C"
 {
 #endif // __cplusplus
-__WEAK __SECTION(".vector.default_handler")  void vector_table_default_handler();
-__WEAK __SECTION(".vector.trap") void vector_table_trap();
-__WEAK __SECTION(".vector.reset_handler") __attribute__((naked)) void vector_table_reset_handler();
+__WEAK __SECTION(".vector.default_handler") __attribute__((interrupt)) void vector_table_default_handler();
+__WEAK __SECTION(".vector.trap") __attribute__((interrupt)) void vector_table_trap();
+__WEAK __SECTION(".vector.reset_handler") __attribute__((naked))  void vector_table_reset_handler();
 extern const uint32_t vector_table[256] __SECTION(".vector");
 #ifdef __cplusplus
 }
@@ -95,7 +95,7 @@ const uint32_t vector_table[256] __SECTION(".vector") =
 /*
  * 默认处理函数
  */
-__WEAK __SECTION(".vector.default_handler")  void vector_table_default_handler()
+__WEAK __SECTION(".vector.default_handler") __attribute__((interrupt))  void vector_table_default_handler()
 {
     while(true);
 }
@@ -103,7 +103,7 @@ __WEAK __SECTION(".vector.default_handler")  void vector_table_default_handler()
 /*
  * 陷入函数，当中断模式为向量时用于处理异常
  */
-__WEAK __SECTION(".vector.trap") void vector_table_trap()
+__WEAK __SECTION(".vector.trap") __attribute__((interrupt))  void vector_table_trap()
 {
     while(true);
 }
@@ -112,7 +112,7 @@ __WEAK __SECTION(".vector.trap") void vector_table_trap()
  * 复位中断处理
  */
 extern "C"  void _start();
-__WEAK __SECTION(".vector.reset_handler") __attribute__((naked)) void vector_table_reset_handler()
+__WEAK __SECTION(".vector.reset_handler")  __attribute__((naked)) void vector_table_reset_handler()
 {
     _start();
     while(true);
