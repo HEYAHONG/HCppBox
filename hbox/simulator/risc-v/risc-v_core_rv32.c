@@ -589,6 +589,97 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
     }
 
 
+    //RV32M
+    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M))
+    {
+        if((instruction&0x7F)==HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP)
+        {
+            //RV32M
+            uint32_t rd=((instruction&INSN_FIELD_RD)>>7);
+            uint32_t rs1=((instruction&INSN_FIELD_RS1)>>15);
+            uint32_t rs1_value=hs_risc_v_core_rv32_x_register_read(core,rs1);
+            uint32_t rs2=((instruction&INSN_FIELD_RS2)>>20);
+            uint32_t rs2_value=hs_risc_v_core_rv32_x_register_read(core,rs2);
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(mul,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,((uint64_t)(((int64_t)((int32_t)rs1_value))*((int64_t)((int32_t)rs2_value)))));
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(mulh,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,((uint64_t)(((int64_t)((int32_t)rs1_value))*((int64_t)((int32_t)rs2_value)))) >> 32);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(mulhu,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,((uint64_t)(((uint64_t)((uint32_t)rs1_value))*((uint64_t)((uint32_t)rs2_value)))) >> 32);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(mulhsu,
+            {
+                hs_risc_v_core_rv32_x_register_write(core,rd,((uint64_t)(((int64_t)((int32_t)rs1_value))*((uint64_t)((uint32_t)rs2_value)))) >> 32);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(div,
+            {
+                int64_t lhs=(int32_t)rs1_value;
+                int64_t rhs=(int32_t)rs2_value;
+                if(rhs==0)
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)(uint64_t)UINT64_MAX);
+                }
+                else if(lhs==INT64_MIN && rhs== -1)
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)(uint64_t)lhs);
+                }
+                else
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)(uint64_t)(lhs/rhs));
+                }
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(divu,
+            {
+                uint64_t lhs=(uint32_t)rs1_value;
+                uint64_t rhs=(uint32_t)rs2_value;
+                if(rhs==0)
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)(uint64_t)UINT64_MAX);
+                }
+                else
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)(uint64_t)(lhs/rhs));
+                }
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(rem,
+            {
+                int64_t lhs=(int32_t)rs1_value;
+                int64_t rhs=(int32_t)rs2_value;
+                if(rhs==0)
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)(uint64_t)lhs);
+                }
+                else if(lhs==INT64_MIN && rhs== -1)
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)(uint64_t)0);
+                }
+                else
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)(uint64_t)(lhs%rhs));
+                }
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(remu,
+            {
+                uint64_t lhs=(uint32_t)rs1_value;
+                uint64_t rhs=(uint32_t)rs2_value;
+                if(rhs==0)
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)(uint64_t)(int64_t)(int32_t)rs1_value);
+                }
+                else
+                {
+                    hs_risc_v_core_rv32_x_register_write(core,rd,(uint32_t)(uint64_t)(lhs%rhs));
+                }
+            });
+        }
+    }
+
+
 
     if(!is_instruction_processed)
     {
@@ -624,6 +715,7 @@ void hs_risc_v_core_rv32_reset(hs_risc_v_core_rv32_t * core)
         {
             //初始化指令集支持
             core->instruction_sets=hs_risc_v_common_instruction_set_sets_set_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI);
+            core->instruction_sets=hs_risc_v_common_instruction_set_sets_set_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M);
         }
         uint32_t val=0;
         core->io(core,HS_RISC_V_CORE_RV32_IO_RESET,0,(uint8_t *)&val,sizeof(val),core->usr);
