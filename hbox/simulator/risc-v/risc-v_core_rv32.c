@@ -714,6 +714,7 @@ void hs_risc_v_core_rv32_reset(hs_risc_v_core_rv32_t * core)
     {
         {
             //初始化指令集支持
+            core->instruction_sets=HS_RISC_V_COMMON_INSTRUCTION_SET_RV32I;
             core->instruction_sets=hs_risc_v_common_instruction_set_sets_set_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI);
             core->instruction_sets=hs_risc_v_common_instruction_set_sets_set_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M);
         }
