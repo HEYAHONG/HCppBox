@@ -97,6 +97,39 @@ static void hs_risc_v_core_rv32_x_register_write(hs_risc_v_core_rv32_t *core,siz
     }
 }
 
+
+static uint32_t hs_risc_v_core_rv32_csr_read(hs_risc_v_core_rv32_t *core,size_t address)
+{
+    if(address==0)
+    {
+        return 0;
+    }
+    if(core!=NULL && core->io!=NULL)
+    {
+        hs_risc_v_common_memory_word_t value;
+        value.value=0;
+        core->io(core,HS_RISC_V_CORE_RV32_IO_CSR_READ,address,value.bytes,sizeof(value.bytes),core->usr);
+        HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+        return value.value;
+    }
+    return 0;
+}
+
+static void hs_risc_v_core_rv32_csr_write(hs_risc_v_core_rv32_t *core,size_t address,uint32_t reg_value)
+{
+    if(address==0)
+    {
+        return;
+    }
+    if(core!=NULL && core->io!=NULL)
+    {
+        hs_risc_v_common_memory_word_t value;
+        value.value=reg_value;
+        HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+        core->io(core,HS_RISC_V_CORE_RV32_IO_CSR_WRITE,address,value.bytes,sizeof(value.bytes),core->usr);
+    }
+}
+
 static uint32_t  hs_risc_v_core_rv32_instruction_read(hs_risc_v_core_rv32_t *core)
 {
     if(core!=NULL && core->io!=NULL)
@@ -588,6 +621,74 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         })
     }
 
+    //Zicsr扩展指令集
+    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICSR))
+    {
+        if((instruction&0x7F)==HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_SYSTEM)
+        {
+            uint32_t rd=((instruction&INSN_FIELD_RD)>>7);
+            uint32_t rs1=((instruction&INSN_FIELD_RS1)>>15);
+            uint32_t rs1_value=hs_risc_v_core_rv32_x_register_read(core,rs1);
+            uint32_t uimm=rs1;
+            uint32_t csr=((instruction&INSN_FIELD_CSR)>>20);
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(csrrw,
+            {
+                if(rd!=0)
+                {
+                    uint32_t csr_value=hs_risc_v_core_rv32_csr_read(core,csr);
+                    hs_risc_v_core_rv32_x_register_write(core,rd,csr_value);
+                }
+                hs_risc_v_core_rv32_csr_write(core,csr,rs1_value);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(csrrs,
+            {
+                uint32_t csr_value=hs_risc_v_core_rv32_csr_read(core,csr);
+                if(rs1!=0)
+                {
+                    hs_risc_v_core_rv32_csr_write(core,csr,csr_value|rs1_value);
+                }
+                hs_risc_v_core_rv32_x_register_write(core,rd,csr_value);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(csrrc,
+            {
+                uint32_t csr_value=hs_risc_v_core_rv32_csr_read(core,csr);
+                if(rs1!=0)
+                {
+                    hs_risc_v_core_rv32_csr_write(core,csr,csr_value&(~rs1_value));
+                }
+                hs_risc_v_core_rv32_x_register_write(core,rd,csr_value);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(csrrwi,
+            {
+                if(rd!=0)
+                {
+                    uint32_t csr_value=hs_risc_v_core_rv32_csr_read(core,csr);
+                    hs_risc_v_core_rv32_x_register_write(core,rd,csr_value);
+                }
+                hs_risc_v_core_rv32_csr_write(core,csr,uimm);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(csrrsi,
+            {
+                uint32_t csr_value=hs_risc_v_core_rv32_csr_read(core,csr);
+                if(uimm!=0)
+                {
+                    hs_risc_v_core_rv32_csr_write(core,csr,csr_value|uimm);
+                }
+                hs_risc_v_core_rv32_x_register_write(core,rd,csr_value);
+            });
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(csrrci,
+            {
+                uint32_t csr_value=hs_risc_v_core_rv32_csr_read(core,csr);
+                if(uimm!=0)
+                {
+                    hs_risc_v_core_rv32_csr_write(core,csr,csr_value&(~uimm));
+                }
+                hs_risc_v_core_rv32_x_register_write(core,rd,csr_value);
+            });
+        }
+    }
+
+
 
     //RV32M
     if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M))
@@ -716,6 +817,7 @@ void hs_risc_v_core_rv32_reset(hs_risc_v_core_rv32_t * core)
             //初始化指令集支持
             core->instruction_sets=HS_RISC_V_COMMON_INSTRUCTION_SET_RV32I;
             core->instruction_sets=hs_risc_v_common_instruction_set_sets_set_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI);
+            core->instruction_sets=hs_risc_v_common_instruction_set_sets_set_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICSR);
             core->instruction_sets=hs_risc_v_common_instruction_set_sets_set_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M);
         }
         uint32_t val=0;
