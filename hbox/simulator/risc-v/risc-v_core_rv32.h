@@ -42,6 +42,10 @@ typedef enum
     HS_RISC_V_CORE_RV32_IO_ENTRY_PC_READ,                               /**< 入口PC值读取，必须实现，否则复位状态将异常*/
     HS_RISC_V_CORE_RV32_IO_MEMORY_READ,                                 /**< 内存读取，内存包括数据与程序 */
     HS_RISC_V_CORE_RV32_IO_MEMORY_WRITE,                                /**< 内存写入，内存包括数据与程序 */
+    HS_RISC_V_CORE_RV32_IO_MEMORY_AMO_LR,                               /**< 内存原子操作LR，读取地址上的数据并对地址设置保留标记 */
+    HS_RISC_V_CORE_RV32_IO_MEMORY_AMO_SC,                               /**< 内存原子操作SC对有保留标记的地址进行写入(无标记则不写)，并返回是否有保留标记。SC与LR总是成对出现 */
+    HS_RISC_V_CORE_RV32_IO_MEMORY_AMO_READ,                             /**< 内存原子读取（类似LR），内存包括数据与程序 */
+    HS_RISC_V_CORE_RV32_IO_MEMORY_AMO_WRITE,                            /**< 内存原子写入（类似SC），内存包括数据与程序，原子读取与原子写入总是成对出现，原子读取与原子写入之间应确保地址独占（类似LR与SC） */
     HS_RISC_V_CORE_RV32_IO_CSR_READ,                                    /**< CSR读取，对于RISC-V而言，CSR是独立的地址空间 */
     HS_RISC_V_CORE_RV32_IO_CSR_WRITE,                                   /**< CSR写入，对于RISC-V而言，CSR是独立的地址空间  */
     HS_RISC_V_CORE_RV32_IO_X_REGISTER_READ,                             /**< X寄存器读取，此选项必须实现 */
