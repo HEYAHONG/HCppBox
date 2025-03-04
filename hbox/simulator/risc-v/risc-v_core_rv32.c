@@ -20,7 +20,6 @@ struct hs_risc_v_core_rv32
     uint32_t                    interrupt_pending; /**< 等待执行的中断 */
 };
 
-
 size_t hs_risc_v_core_rv32_size(void)
 {
     return sizeof(hs_risc_v_core_rv32_t);
@@ -97,6 +96,92 @@ static void hs_risc_v_core_rv32_x_register_write(hs_risc_v_core_rv32_t *core,siz
     }
 }
 
+static uint32_t hs_risc_v_core_rv32_csr_read_default_value(hs_risc_v_core_rv32_t *core,size_t address)
+{
+    if(core==NULL)
+    {
+        return 0;
+    }
+    uint32_t reg_value=0;
+    switch(address)
+    {
+    case HS_RISC_V_OPCODES_CSR_NAME(misa).addr:
+    {
+        reg_value |= (1ULL<<(30));         //XLEN=32
+        reg_value |= (1ULL<<(8));          //RV32I
+        if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32A))
+        {
+            reg_value |= (1ULL<<(0));          //RV32A
+        }
+        if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M))
+        {
+            reg_value |= (1ULL<<(12));          //RV32M
+        }
+    }
+    break;
+    case HS_RISC_V_OPCODES_CSR_NAME(mvendorid).addr:
+    {
+        reg_value=0;                        //0=未实现
+    }
+    break;
+    case HS_RISC_V_OPCODES_CSR_NAME(marchid).addr:
+    {
+        reg_value=0;                        //0=未实现
+    }
+    break;
+    case HS_RISC_V_OPCODES_CSR_NAME(mimpid).addr:
+    {
+        reg_value=0;                        //0=未实现
+    }
+    break;
+    case HS_RISC_V_OPCODES_CSR_NAME(mhartid).addr:
+    {
+        reg_value=0;                        //0=hart0,必须存在hartid为0的内核
+    }
+    break;
+    case HS_RISC_V_OPCODES_CSR_NAME(mstatus).addr:
+    {
+
+    }
+    break;
+    case HS_RISC_V_OPCODES_CSR_NAME(mstatush).addr:
+    {
+
+    }
+    break;
+    case HS_RISC_V_OPCODES_CSR_NAME(mtvec).addr:
+    {
+        reg_value=0x00000001;           //基地址为0,向量模式
+    }
+    break;
+    case HS_RISC_V_OPCODES_CSR_NAME(medeleg).addr:
+    {
+
+    }
+    break;
+    case HS_RISC_V_OPCODES_CSR_NAME(mideleg).addr:
+    {
+
+    }
+    break;
+    case HS_RISC_V_OPCODES_CSR_NAME(mip).addr:
+    {
+
+    }
+    break;
+    case HS_RISC_V_OPCODES_CSR_NAME(mie).addr:
+    {
+
+    }
+    break;
+    default:
+    {
+
+    }
+    break;
+    }
+    return 0;
+}
 
 static uint32_t hs_risc_v_core_rv32_csr_read(hs_risc_v_core_rv32_t *core,size_t address)
 {
@@ -107,7 +192,8 @@ static uint32_t hs_risc_v_core_rv32_csr_read(hs_risc_v_core_rv32_t *core,size_t 
     if(core!=NULL && core->io!=NULL)
     {
         hs_risc_v_common_memory_word_t value;
-        value.value=0;
+        value.value=hs_risc_v_core_rv32_csr_read_default_value(core,address);
+        HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
         core->io(core,HS_RISC_V_CORE_RV32_IO_CSR_READ,address,value.bytes,sizeof(value.bytes),core->usr);
         HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
         return value.value;
