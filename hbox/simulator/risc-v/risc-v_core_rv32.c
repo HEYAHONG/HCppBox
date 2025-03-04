@@ -166,7 +166,10 @@ static uint32_t hs_risc_v_core_rv32_csr_read_default_value(hs_risc_v_core_rv32_t
     break;
     case CSR_MIP:
     {
-
+        /*
+         * 默认为内核等待执行的中断（不包括正在执行的中断）。如果涉及到比较复杂的中断系统，用户需要自行实现mip。
+         */
+        reg_value=core->interrupt_pending;
     }
     break;
     case CSR_MIE:
