@@ -67,6 +67,8 @@ SECTIONS
 	 */
 	.vector : {
 		KEEP (*(.vector))
+		KEEP (*(.vector.interrupt))
+		KEEP (*(.vector.usr))
 	} >flash AT>flash :text
 
 	.init : {
@@ -75,16 +77,6 @@ SECTIONS
 		KEEP (*(.data.init.enter))
 		KEEP (*(SORT_BY_NAME(.init) SORT_BY_NAME(.init.*)))
 		KEEP (*crt0.*(.text*))
-		
-		/*
-		 * 默认中断/库函数地址
-		 */
-		. = ORIGIN(flash)+0x500;
-		KEEP (*(.vector.default_handler))
-		. = ORIGIN(flash)+0x540;
-		KEEP (*(.vector.trap))
-		. = ORIGIN(flash)+0x580;
-		KEEP (*(.vector.reset_handler))
 
 	} >flash AT>flash :text
 
