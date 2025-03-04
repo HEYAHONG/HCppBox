@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <thread>
 #include "hbox.h"
-
 static int hcompiler_test(int argc,const char *argv[]);
 static int hdefaults_test(int argc,const char *argv[]);
 static int heventloop_test(int argc,const char *argv[]);

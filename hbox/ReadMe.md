@@ -331,6 +331,7 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 - [printf](https://github.com/mpaland/printf.git)：嵌入式系统sprintf/printf实现。
 - [nanopb](https://github.com/nanopb/nanopb.git)：嵌入式系统Protocol Buffers。
 - [paho.mqtt.embedded-c](https://github.com/eclipse-paho/paho.mqtt.embedded-c)：嵌入式MQTT C/C++客户端。
+- [softfp](https://bellard.org/softfp/)：软件浮点库。
 
  提供的配置宏定义如下：
 
@@ -339,6 +340,7 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 |            `H3RDPARTY_USING_SYSTEM_CJSON`            |         使用系统cJSON库          |     需要手动引入第三方库，只定义此宏定义可能不能通过编译     |
 |           `H3RDPARTY_USING_SYSTEM_NANOPB`            |         使用系统nanopb库         |     需要手动引入第三方库，只定义此宏定义可能不能通过编译     |
 | `H3RDPARTY_USING_SYSTEM_PAHO_MQTT_EMBEDDED_C_PACKET` | 使用系统`paho.mqtt.embedded-c`库 | 某些环境内置`paho.mqtt.embedded-c`库，可使用此宏定义防止冲突 |
+|           `H3RDPARTY_USING_SYSTEM_SOFTFP`            |        使用系统`softfp`库        |        某些环境下函数可能冲突，可使用此宏定义防止冲突        |
 
 ### nanopb
 
@@ -366,6 +368,17 @@ nanopb_generator可通过以下方式获取：
 //引入MQTT包解析功能
 #include H3RDPARTY_PAHO_MQTT_EMBEDDED_C_PACKET_HEADER
 
+```
+
+### softfp
+
+对IEEE 754-2008 32/64/128位浮点支持，主要用于hsimulator组件。
+
+若要使用相应库功能，请使用以下代码：
+
+```c++
+#include H3RDPARTY_SOFTFP_HEADER
+#include H3RDPARTY_SOFTFLOAT_HEADER
 ```
 
 ## hbase64

@@ -103,6 +103,16 @@ int hfctprintf(void (*out)(char character, void* arg), void* arg, const char* fo
 #define H3RDPARTY_PAHO_MQTT_EMBEDDED_C_PACKET_HEADER "3rdparty/paho.mqtt.embedded-c/MQTTPacket/src/MQTTPacket.h"
 #endif
 
+/*
+ * 引入softfp库,用户需要手动引入相应头文件
+ */
+#ifndef H3RDPARTY_SOFTFP_HEADER
+#define H3RDPARTY_SOFTFP_HEADER "3rdparty/softfp/softfp.h"
+#endif
+#ifndef H3RDPARTY_SOFTFLOAT_HEADER
+#define H3RDPARTY_SOFTFLOAT_HEADER "3rdparty/softfp/softfloat.h"
+#endif
+
 #endif // __H3RDPARTY_H__
 
 
