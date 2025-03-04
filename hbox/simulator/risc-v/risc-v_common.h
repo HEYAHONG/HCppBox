@@ -133,7 +133,7 @@ typedef union
 {                                                               \
     hs_risc_v_common_memory_halfword_t m_hs_byteorder;          \
     m_hs_byteorder.value=0x01;                                  \
-    if(m_hs_byteorder.bytes[0]==0)                              \
+    if(m_hs_byteorder.bytes[0]==0 && (sizeof(Data) > 1))        \
     {                                                           \
         for(size_t i=0;i<sizeof(Data)/2;i++)                    \
         {                                                       \
