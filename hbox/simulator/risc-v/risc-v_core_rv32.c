@@ -105,7 +105,7 @@ static uint32_t hs_risc_v_core_rv32_csr_read_default_value(hs_risc_v_core_rv32_t
     uint32_t reg_value=0;
     switch(address)
     {
-    case HS_RISC_V_OPCODES_CSR_NAME(misa).addr:
+    case CSR_MISA:
     {
         reg_value |= (1ULL<<(30));         //XLEN=32
         reg_value |= (1ULL<<(8));          //RV32I
@@ -119,57 +119,57 @@ static uint32_t hs_risc_v_core_rv32_csr_read_default_value(hs_risc_v_core_rv32_t
         }
     }
     break;
-    case HS_RISC_V_OPCODES_CSR_NAME(mvendorid).addr:
+    case CSR_MVENDORID:
     {
         reg_value=0;                        //0=未实现
     }
     break;
-    case HS_RISC_V_OPCODES_CSR_NAME(marchid).addr:
+    case CSR_MARCHID:
     {
         reg_value=0;                        //0=未实现
     }
     break;
-    case HS_RISC_V_OPCODES_CSR_NAME(mimpid).addr:
+    case CSR_MIMPID:
     {
         reg_value=0;                        //0=未实现
     }
     break;
-    case HS_RISC_V_OPCODES_CSR_NAME(mhartid).addr:
+    case CSR_MHARTID:
     {
         reg_value=0;                        //0=hart0,必须存在hartid为0的内核
     }
     break;
-    case HS_RISC_V_OPCODES_CSR_NAME(mstatus).addr:
+    case CSR_MSTATUS:
     {
 
     }
     break;
-    case HS_RISC_V_OPCODES_CSR_NAME(mstatush).addr:
+    case CSR_MSTATUSH:
     {
 
     }
     break;
-    case HS_RISC_V_OPCODES_CSR_NAME(mtvec).addr:
+    case CSR_MTVEC:
     {
         reg_value=0x00000001;           //基地址为0,向量模式
     }
     break;
-    case HS_RISC_V_OPCODES_CSR_NAME(medeleg).addr:
+    case CSR_MEDELEG:
     {
 
     }
     break;
-    case HS_RISC_V_OPCODES_CSR_NAME(mideleg).addr:
+    case CSR_MIDELEG:
     {
 
     }
     break;
-    case HS_RISC_V_OPCODES_CSR_NAME(mip).addr:
+    case CSR_MIP:
     {
 
     }
     break;
-    case HS_RISC_V_OPCODES_CSR_NAME(mie).addr:
+    case CSR_MIE:
     {
 
     }
