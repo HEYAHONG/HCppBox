@@ -3,17 +3,17 @@
     .option norvc
 _interrupt_vector_table:
     j vector_table_trap
+    j vector_table_ssi_handler
     j vector_table_default_handler
+    j vector_table_msi_handler
     j vector_table_default_handler
+    j vector_table_sti_handler
     j vector_table_default_handler
+    j vector_table_mti_handler
     j vector_table_default_handler
+    j vector_table_sei_handler
     j vector_table_default_handler
-    j vector_table_default_handler
-    j vector_table_default_handler
-    j vector_table_default_handler
-    j vector_table_default_handler
-    j vector_table_default_handler
-    j vector_table_default_handler
+    j vector_table_mei_handler
     j vector_table_default_handler
     j vector_table_default_handler
     j vector_table_default_handler
