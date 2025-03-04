@@ -87,8 +87,6 @@ this code that are retained.
 #endif
 
 #include <inttypes.h>
-//#include "config-host.h"
-//#include "qemu/osdep.h"
 
 /*----------------------------------------------------------------------------
 | Each of the following `typedef's defines the most convenient type that holds
@@ -455,7 +453,7 @@ static inline int float32_is_zero(float32 a)
 
 static inline int float32_is_any_nan(float32 a)
 {
-    return ((float32_val(a) & ~(1 << 31)) > 0x7f800000UL);
+    return ((float32_val(a) & ~(1UL << 31)) > 0x7f800000UL);
 }
 
 static inline int float32_is_zero_or_denormal(float32 a)
