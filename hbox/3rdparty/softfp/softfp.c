@@ -35,7 +35,19 @@ static inline int clz32(uint32_t a)
     if (a == 0) {
         r = 32;
     } else {
+#if !defined(__GNUC__) || (defined(__GNUC__)  && defined(__ARMCC_VERSION))
+        {
+            for (r = 0; r < 32; r++)
+            {
+                if ((a & (1ULL << (31 - r))) != 0)
+                {
+                    break;
+                }
+            }
+        }
+#else
         r = __builtin_clz(a);
+#endif
     }
     return r;
 }
@@ -47,7 +59,19 @@ static inline int clz64(uint64_t a)
         r = 64;
     } else 
     {
+#if !defined(__GNUC__) || (defined(__GNUC__)  && defined(__ARMCC_VERSION))
+        {
+            for (r = 0; r < 64; r++)
+            {
+                if ((a & (1ULL << (63 - r))) != 0)
+                {
+                    break;
+                }
+            }
+        }
+#else
         r = __builtin_clzll(a);
+#endif
     }
     return r;
 }

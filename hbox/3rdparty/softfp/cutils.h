@@ -26,6 +26,13 @@
 
 #include <inttypes.h>
 
+#if !defined(__GNUC__) || (defined(__GNUC__)  && defined(__ARMCC_VERSION))
+#ifndef __builtin_expect
+#define __builtin_expect(EXP,C) (EXP)
+#endif
+#endif
+
+
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 #define force_inline inline __attribute__((always_inline))
@@ -169,22 +176,5 @@ static inline int ctz32(uint32_t a)
     return 32;
 }
 
-
-void *mallocz(size_t size);
-void pstrcpy(char *buf, int buf_size, const char *str);
-char *pstrcat(char *buf, int buf_size, const char *s);
-int strstart(const char *str, const char *val, const char **ptr);
-
-typedef struct {
-    uint8_t *buf;
-    size_t size;
-    size_t allocated_size;
-} DynBuf;
-
-void dbuf_init(DynBuf *s);
-void dbuf_write(DynBuf *s, size_t offset, const uint8_t *data, size_t len);
-void dbuf_putc(DynBuf *s, uint8_t c);
-void dbuf_putstr(DynBuf *s, const char *str);
-void dbuf_free(DynBuf *s);
 
 #endif /* CUTILS_H */
