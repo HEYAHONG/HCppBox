@@ -1,6 +1,6 @@
 /*
  * C utilities
- * 
+ *
  * Copyright (c) 2016 Fabrice Bellard
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -82,17 +82,13 @@ static inline int min_int(int a, int b)
         return b;
 }
 
-void *mallocz(size_t size);
-
-#if defined(_WIN32)
+#ifndef bswap_32
 static inline uint32_t bswap_32(uint32_t v)
 {
     return ((v & 0xff000000) >> 24) | ((v & 0x00ff0000) >>  8) |
         ((v & 0x0000ff00) <<  8) | ((v & 0x000000ff) << 24);
 }
-#else
-#include <byteswap.h>
-#endif
+#endif // bswap_32
 
 static inline uint16_t get_le16(const uint8_t *ptr)
 {
