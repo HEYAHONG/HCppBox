@@ -10,6 +10,9 @@
 #ifndef  RISCV_ENCODING_H
 #include "encoding.out.h"
 #endif
+#include "h3rdparty.h"
+#include H3RDPARTY_SOFTFP_HEADER
+#include H3RDPARTY_SOFTFLOAT_HEADER
 
 struct hs_risc_v_core_rv32
 {
@@ -96,12 +99,32 @@ static void hs_risc_v_core_rv32_x_register_write(hs_risc_v_core_rv32_t *core,siz
     }
 }
 
+static uint32_t hs_risc_v_core_rv32_f_register_read32(hs_risc_v_core_rv32_t *core,size_t address)
+{
+    if(core!=NULL && core->io!=NULL)
+    {
+        hs_risc_v_common_memory_word_t value;
+        value.value=0;
+        core->io(core,HS_RISC_V_CORE_RV32_IO_F_REGISTER_READ,address,value.bytes,sizeof(value.bytes),core->usr);
+        HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+        return value.value;
+    }
+    return 0;
+}
+
+static void hs_risc_v_core_rv32_f_register_write32(hs_risc_v_core_rv32_t *core,size_t address,uint32_t reg_value)
+{
+    if(core!=NULL && core->io!=NULL)
+    {
+        hs_risc_v_common_memory_word_t value;
+        value.value=reg_value;
+        HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+        core->io(core,HS_RISC_V_CORE_RV32_IO_F_REGISTER_WRITE,address,value.bytes,sizeof(value.bytes),core->usr);
+    }
+}
+
 static uint32_t hs_risc_v_core_rv32_csr_read_default_value(hs_risc_v_core_rv32_t *core,size_t address)
 {
-    if(core==NULL)
-    {
-        return 0;
-    }
     uint32_t reg_value=0;
     switch(address)
     {
@@ -188,10 +211,6 @@ static uint32_t hs_risc_v_core_rv32_csr_read_default_value(hs_risc_v_core_rv32_t
 
 static uint32_t hs_risc_v_core_rv32_csr_read(hs_risc_v_core_rv32_t *core,size_t address)
 {
-    if(address==0)
-    {
-        return 0;
-    }
     if(core!=NULL && core->io!=NULL)
     {
         hs_risc_v_common_memory_word_t value;
@@ -206,10 +225,6 @@ static uint32_t hs_risc_v_core_rv32_csr_read(hs_risc_v_core_rv32_t *core,size_t 
 
 static void hs_risc_v_core_rv32_csr_write(hs_risc_v_core_rv32_t *core,size_t address,uint32_t reg_value)
 {
-    if(address==0)
-    {
-        return;
-    }
     if(core!=NULL && core->io!=NULL)
     {
         hs_risc_v_common_memory_word_t value;
@@ -602,6 +617,8 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         {
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(ecall,
             {
+                int cause=HS_RISC_V_OPCODES_EXCEPTION_NAME(CAUSE_MACHINE_ECALL);    //默认将执行MACHINE_ECALL
+                hs_risc_v_core_rv32_exec_exception_raise(core,cause,pc,instruction);
                 core->io(core,HS_RISC_V_CORE_RV32_IO_INSTRUCTION_ECALL_EXEC,pc,(uint8_t*)&instruction,sizeof(instruction),core->usr);
             });
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(ebreak,
@@ -702,7 +719,7 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
     }
 
     //Zifencei扩展指令集
-    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI))
+    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI)&& !is_instruction_processed)
     {
         HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(fence_i,
         {
@@ -711,7 +728,7 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
     }
 
     //Zicsr扩展指令集
-    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICSR))
+    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICSR) && !is_instruction_processed)
     {
         if((instruction&0x7F)==HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_SYSTEM)
         {
@@ -780,7 +797,7 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
 
 
     //RV32M
-    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M))
+    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M)&& !is_instruction_processed)
     {
         if((instruction&0x7F)==HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP)
         {
@@ -870,7 +887,7 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
     }
 
     //RV32A
-    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32A))
+    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32A) && !is_instruction_processed)
     {
         if((instruction&0x7F)==HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_AMO)
         {
@@ -1011,7 +1028,45 @@ static void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         }
     }
 
+    if(hs_risc_v_common_instruction_set_sets_has_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32F) && !is_instruction_processed)
+    {
+        if((instruction&0x7F)==HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_LOAD_FP)
+        {
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(flw,
+            {
+                uint32_t rd=((instruction&INSN_FIELD_RD)>>7);
+                uint32_t rs1=((instruction&INSN_FIELD_RS1)>>15);
+                uint32_t rs1_value=hs_risc_v_core_rv32_x_register_read(core,rs1);
+                uint32_t i_imm=(((instruction >> 20)&((1ULL << (12))-1)) << (0))+(((instruction&(1ULL<<(31)))!=0)?(0xFFFFF000):0);
+                hs_risc_v_common_memory_word_t value;
+                value.value=0;
+                core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_READ,rs1_value+((int32_t)i_imm),value.bytes,sizeof(value.bytes),core->usr);
+                HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+                hs_risc_v_core_rv32_f_register_write32(core,rd,value.value);
+            });
+        }
+        if((instruction&0x7F)==HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_STORE_FP)
+        {
+            HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(fsw,
+            {
+                uint32_t rs1=((instruction&INSN_FIELD_RS1)>>15);
+                uint32_t rs1_value=hs_risc_v_core_rv32_x_register_read(core,rs1);
+                uint32_t rs2=((instruction&INSN_FIELD_RS2)>>20);
+                uint32_t rs2_value=hs_risc_v_core_rv32_f_register_read32(core,rs2);
+                uint32_t imm=(((instruction >> 7)&((1ULL << (5))-1)) << (0))+(((instruction >> 25)&((1ULL << (7))-1)) << (5))+(((instruction&(1ULL<<(31)))!=0)?(0xFFFFF000):0);
+                hs_risc_v_common_memory_word_t value;
+                value.value=rs2_value;
+                HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(value);
+                core->io(core,HS_RISC_V_CORE_RV32_IO_MEMORY_WRITE,rs1_value+((int32_t)imm),value.bytes,sizeof(value.bytes),core->usr);
+            });
+        }
+        if((instruction&0x7F)==HS_RISC_V_COMMON_INSTRUCTION_32BIT_BASE_OPCODE_OP_FP)
+        {
+            uint32_t fcsr=hs_risc_v_core_rv32_csr_read(core,CSR_FCSR);
 
+            hs_risc_v_core_rv32_csr_write(core,CSR_FCSR,fcsr);
+        }
+    }
 
     if(!is_instruction_processed)
     {
