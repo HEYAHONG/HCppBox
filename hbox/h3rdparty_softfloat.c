@@ -1,5 +1,5 @@
 /***************************************************************
- * Name:      h3rdparty_softfp.c
+ * Name:      h3rdparty_softfloat.c
  * Purpose:   引入第三方源代码文件
  * Author:    HYH (hyhsystem.cn)
  * Created:   2025-03-04
