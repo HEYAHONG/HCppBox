@@ -64,13 +64,20 @@ typedef enum
     HS_RISC_V_CORE_RV32_IO_INSTRUCTION_PAUSE_EXEC,                      /**< pause指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
     HS_RISC_V_CORE_RV32_IO_INSTRUCTION_ECALL_EXEC,                      /**< ecall指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
     HS_RISC_V_CORE_RV32_IO_INSTRUCTION_EBREAK_EXEC,                     /**< ebreak指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
-} hs_risc_v_core_rv32_io_opt_t;                                         /**< RISC-V RV32 IO选项 */
+} hs_risc_v_core_rv32_io_opt_t;                                         /**< RISC-V RV32 IO选项。IO选项通常占32位中的低24位 */
 
+typedef enum
+{
+    HS_RISC_V_CORE_RV32_IO_OPERATOR_CORE=       (0UL << 24),                        /**< 操作者为内核，通常表示是由指令操作的 */
+    HS_RISC_V_CORE_RV32_IO_OPERATOR_HW=         (1UL << 24),                        /**< 操作者为硬件实现，表示该操作由硬件自动操作时调用。 */
+    HS_RISC_V_CORE_RV32_IO_OPERATOR_EXTERN=     (2UL << 24),                        /**< 操作者为外部操作，表示该操作由外部调用者调用，通常用于外部获取内核状态信息*/
+    HS_RISC_V_CORE_RV32_IO_OPERATOR_DEFAULT=HS_RISC_V_CORE_RV32_IO_OPERATOR_HW,     /**< 默认操作者 */
+} hs_risc_v_core_rv32_io_operator_t;                                                    /**< RISC-V RV32 IO选项。IO选项通常占32位中的高8位 */
 
 /** \brief RISC-V RV32 IO操作
  *
  * \param core hs_risc_v_core_rv32_t*           RISC-V内核指针
- * \param opt hs_risc_v_core_rv32_io_opt_t      IO选项
+ * \param opt uint32_t                          IO选项，可对hs_risc_v_core_rv32_io_opt_t与hs_risc_v_core_rv32_io_operator_t进行按位或后传入。
  * \param address uint32_t                      地址
  * \param data uint8_t*                         数据指针,若IO选项未特殊说明数据类型，IO操作读写的数据均为小端序（若在大端序平台上运行，需要先转化为小端序再返回），若已说明数据类型，可直接强制转换指针类型然后访问。
  * \param len size_t                            数据长度
@@ -78,7 +85,7 @@ typedef enum
  * \return bool 是否操作成功。注意：对于某些必须成功的操作（如读写X寄存器与PC寄存器）无需判断返回值。
  *
  */
-typedef bool (*hs_risc_v_core_rv32_io_t)(hs_risc_v_core_rv32_t *core,hs_risc_v_core_rv32_io_opt_t opt,uint32_t address,uint8_t *data,size_t len,void *usr);
+typedef bool (*hs_risc_v_core_rv32_io_t)(hs_risc_v_core_rv32_t *core,uint32_t opt,uint32_t address,uint8_t *data,size_t len,void *usr);
 
 
 /** \brief  初始化 hs_risc_v_core_rv32_io_t
