@@ -38,8 +38,9 @@ size_t hs_risc_v_core_rv32_size(void);
 
 typedef enum
 {
-    HS_RISC_V_CORE_RV32_IO_RESET,                                       /**< IO初始化 */
+    HS_RISC_V_CORE_RV32_IO_RESET=0,                                     /**< IO初始化 */
     HS_RISC_V_CORE_RV32_IO_ENTRY_PC_READ,                               /**< 入口PC值读取，必须实现，否则复位状态将异常*/
+    HS_RISC_V_CORE_RV32_IO_INITIAL_SP_READ,                             /**< 初始SP值读取，若读取的值为0表示未实现此选项，用户应自行在软件的启动代码中设置SP*/
     HS_RISC_V_CORE_RV32_IO_MEMORY_READ,                                 /**< 内存读取，内存包括数据与程序 */
     HS_RISC_V_CORE_RV32_IO_MEMORY_WRITE,                                /**< 内存写入，内存包括数据与程序 */
     HS_RISC_V_CORE_RV32_IO_MEMORY_AMO_LR,                               /**< 内存原子操作LR，读取地址上的数据并对地址设置保留标记 */
@@ -71,7 +72,7 @@ typedef enum
     HS_RISC_V_CORE_RV32_IO_OPERATOR_CORE=       (0UL << 24),                        /**< 操作者为内核，通常表示是由指令操作的 */
     HS_RISC_V_CORE_RV32_IO_OPERATOR_HW=         (1UL << 24),                        /**< 操作者为硬件实现，表示该操作由硬件自动操作时调用。 */
     HS_RISC_V_CORE_RV32_IO_OPERATOR_EXTERN=     (2UL << 24),                        /**< 操作者为外部操作，表示该操作由外部调用者调用，通常用于外部获取内核状态信息*/
-    HS_RISC_V_CORE_RV32_IO_OPERATOR_DEFAULT=HS_RISC_V_CORE_RV32_IO_OPERATOR_HW,     /**< 默认操作者 */
+    HS_RISC_V_CORE_RV32_IO_OPERATOR_DEFAULT=HS_RISC_V_CORE_RV32_IO_OPERATOR_EXTERN,     /**< 默认操作者 */
 } hs_risc_v_core_rv32_io_operator_t;                                                    /**< RISC-V RV32 IO选项。IO选项通常占32位中的高8位 */
 
 /** \brief RISC-V RV32 IO操作

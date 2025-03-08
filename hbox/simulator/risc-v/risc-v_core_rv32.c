@@ -1109,6 +1109,13 @@ void hs_risc_v_core_rv32_reset(hs_risc_v_core_rv32_t * core)
     if(core!=NULL && core->io!=NULL)
     {
         {
+            hs_risc_v_core_rv32_io_t    io=core->io;
+            void* usr=core->usr;
+            memset(core,0,sizeof(hs_risc_v_core_rv32_t));
+            core->usr=usr;
+            core->io=io;
+        }
+        {
             //初始化指令集支持
             core->instruction_sets=HS_RISC_V_COMMON_INSTRUCTION_SET_RV32I;
             core->instruction_sets=hs_risc_v_common_instruction_set_sets_set_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI);
@@ -1116,16 +1123,32 @@ void hs_risc_v_core_rv32_reset(hs_risc_v_core_rv32_t * core)
             core->instruction_sets=hs_risc_v_common_instruction_set_sets_set_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32M);
             core->instruction_sets=hs_risc_v_common_instruction_set_sets_set_set(core->instruction_sets,HS_RISC_V_COMMON_INSTRUCTION_SET_RV32A);
         }
-        uint32_t val=0;
-        core->io(core,HS_RISC_V_CORE_RV32_IO_RESET | HS_RISC_V_CORE_RV32_IO_OPERATOR_HW,0,(uint8_t *)&val,sizeof(val),core->usr);
-
+        {
+            uint32_t val=0;
+            core->io(core,HS_RISC_V_CORE_RV32_IO_RESET | HS_RISC_V_CORE_RV32_IO_OPERATOR_HW,0,(uint8_t *)&val,sizeof(val),core->usr);
+        }
         {
             //初始化PC值
             hs_risc_v_common_memory_word_t pc;
             pc.value=0;
             core->io(core,HS_RISC_V_CORE_RV32_IO_ENTRY_PC_READ | HS_RISC_V_CORE_RV32_IO_OPERATOR_HW,0,pc.bytes,sizeof(pc.bytes),core->usr);
-            HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(pc);
-            hs_risc_v_core_rv32_pc_write(core,pc.value);
+            /*
+             *   由于传入传出皆为字节数据，因此可不进行字节序修复
+             */
+            core->io(core,HS_RISC_V_CORE_RV32_IO_PC_REGISTER_WRITE | HS_RISC_V_CORE_RV32_IO_OPERATOR_HW,0,pc.bytes,sizeof(pc.bytes),core->usr);
+        }
+        {
+            //初始化SP值(X2)
+            hs_risc_v_common_memory_word_t x;
+            x.value=0;
+            core->io(core,HS_RISC_V_CORE_RV32_IO_INITIAL_SP_READ | HS_RISC_V_CORE_RV32_IO_OPERATOR_HW,0,x.bytes,sizeof(x.bytes),core->usr);
+            if(x.value!=0)
+            {
+                /*
+                *   由于传入传出皆为字节数据，因此可不进行字节序修复
+                */
+                core->io(core,HS_RISC_V_CORE_RV32_IO_X_REGISTER_WRITE | HS_RISC_V_CORE_RV32_IO_OPERATOR_HW,2,x.bytes,sizeof(x.bytes),core->usr);
+            }
         }
     }
 }
