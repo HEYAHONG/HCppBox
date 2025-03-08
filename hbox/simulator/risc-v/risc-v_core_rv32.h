@@ -69,11 +69,11 @@ typedef enum
 
 typedef enum
 {
-    HS_RISC_V_CORE_RV32_IO_OPERATOR_CORE=       (0UL << 24),                        /**< 操作者为内核，通常表示是由指令操作的 */
-    HS_RISC_V_CORE_RV32_IO_OPERATOR_HW=         (1UL << 24),                        /**< 操作者为硬件实现，表示该操作由硬件自动操作时调用。 */
-    HS_RISC_V_CORE_RV32_IO_OPERATOR_EXTERN=     (2UL << 24),                        /**< 操作者为外部操作，表示该操作由外部调用者调用，通常用于外部获取内核状态信息*/
+    HS_RISC_V_CORE_RV32_IO_OPERATOR_CORE=       (0UL << 24),                            /**< 操作者为内核，通常表示是由指令操作的 */
+    HS_RISC_V_CORE_RV32_IO_OPERATOR_HW=         (1UL << 24),                            /**< 操作者为硬件实现，表示该操作由硬件自动操作时调用。 */
+    HS_RISC_V_CORE_RV32_IO_OPERATOR_EXTERN=     (2UL << 24),                            /**< 操作者为外部操作，表示该操作由外部调用者调用，通常用于外部获取内核状态信息*/
     HS_RISC_V_CORE_RV32_IO_OPERATOR_DEFAULT=HS_RISC_V_CORE_RV32_IO_OPERATOR_EXTERN,     /**< 默认操作者 */
-} hs_risc_v_core_rv32_io_operator_t;                                                    /**< RISC-V RV32 IO选项。IO选项通常占32位中的高8位 */
+} hs_risc_v_core_rv32_io_operator_t;                                                    /**< RISC-V RV32 IO操作者选项。IO选项通常占32位中的高8位 */
 
 /** \brief RISC-V RV32 IO操作
  *

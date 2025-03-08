@@ -1145,8 +1145,8 @@ void hs_risc_v_core_rv32_reset(hs_risc_v_core_rv32_t * core)
             if(x.value!=0)
             {
                 /*
-                *   由于传入传出皆为字节数据，因此可不进行字节序修复
-                */
+                 *   由于传入传出皆为字节数据，因此可不进行字节序修复
+                 */
                 core->io(core,HS_RISC_V_CORE_RV32_IO_X_REGISTER_WRITE | HS_RISC_V_CORE_RV32_IO_OPERATOR_HW,2,x.bytes,sizeof(x.bytes),core->usr);
             }
         }

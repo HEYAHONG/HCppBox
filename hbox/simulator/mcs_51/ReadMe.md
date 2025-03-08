@@ -2,7 +2,14 @@
 
 # 说明
 
-本目录主要用于实现MCS-51模拟器。对于非嵌入式平台可采用[ucsim](https://www.ucsim.hu/)工具，本目录也参考其实现相应功能。
+本目录主要用于实现MCS-51模拟器。
+
+对于非嵌入式平台可采用SDCC自带的[ucsim](https://www.ucsim.hu/)工具。
+
+本目录参考以下模拟器代码：
+
+- [ucsim](https://www.ucsim.hu/)
+- [emu8051](https://github.com/jarikomppa/emu8051.git)
 
 # 编译器/开发环境
 
