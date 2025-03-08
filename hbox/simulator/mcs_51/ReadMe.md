@@ -8,8 +8,9 @@
 
 本目录参考以下模拟器代码：
 
-- [ucsim](https://www.ucsim.hu/)
-- [emu8051](https://github.com/jarikomppa/emu8051.git)
+- [ucsim](https://www.ucsim.hu/)：微控制器软件模拟器。
+- [emu8051](https://github.com/jarikomppa/emu8051.git):基于curses的8051/8052模拟器。
+- [emu8051](http://www.hugovil.com/projet.php?proj=emu8051):8051模拟器，支持CLI与GUI。此软件被debian系操作系统收录，可使用`apt`命令安装。
 
 # 编译器/开发环境
 
