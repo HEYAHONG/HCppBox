@@ -113,7 +113,7 @@ void hdefaults_free(void *ptr,void *usr)
 
 
 #ifdef HDEFAULTS_MUTEX_LOCK
-extern void HDEFAULTS_MUTEX_LOCK();
+extern void HDEFAULTS_MUTEX_LOCK(void);
 #endif // HDEFAULTS_MUTEX_LOCK
 
 void  hdefaults_mutex_lock(void *usr)
@@ -135,7 +135,7 @@ void  hdefaults_mutex_lock(void *usr)
 }
 
 #ifdef HDEFAULTS_MUTEX_UNLOCK
-extern void HDEFAULTS_MUTEX_UNLOCK();
+extern void HDEFAULTS_MUTEX_UNLOCK(void);
 #endif // HDEFAULTS_MUTEX_UNLOCK
 
 void  hdefaults_mutex_unlock(void *usr)
