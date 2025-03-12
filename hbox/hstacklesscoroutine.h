@@ -22,6 +22,7 @@ extern "C"
 #endif // __cplusplus
 
 
+
 typedef struct
 {
     int event; /**< 事件 */
@@ -33,6 +34,16 @@ typedef struct
     bool (*wait_for_ready)(void *usr,hstacklesscoroutine_event_t *event);/**< 等待准备好,返回true退出等待*/
     void *usr;/**< 用户参数 */
 } hstacklesscoroutine_awaiter_t;
+
+typedef enum
+{
+    HSTACKLESSCOROUTE_HOOK_TYPE_EXEC_PROCESS_ENTER,                         /**< 协程执行过程进入*/
+    HSTACKLESSCOROUTE_HOOK_TYPE_EXEC_PROCESS_EXIT,                          /**< 协程执行过程退出*/
+    HSTACKLESSCOROUTE_HOOK_TYPE_AWAITER_PROCESS_START,                      /**< 协程Awaiter过程开始*/
+    HSTACKLESSCOROUTE_HOOK_TYPE_AWAITER_PROCESS_END,                        /**< 协程Awaiter过程结束*/
+    HSTACKLESSCOROUTE_HOOK_TYPE_CODEBLOCK_PROCESS_START,                    /**< 协程代码块过程开始*/
+    HSTACKLESSCOROUTE_HOOK_TYPE_CODEBLOCK_PROCESS_END,                      /**< 协程代码块过程结束*/
+} hstacklesscoroutine_hook_type_t;
 
 struct hstacklesscoroutine_control_block;
 typedef struct hstacklesscoroutine_control_block hstacklesscoroutine_control_block_t;
@@ -58,9 +69,11 @@ struct hstacklesscoroutine_control_block
     int max_nested;//最大嵌套层数
 
     hstacklesscoroutine_awaiter_t awaiter;/**< 当协程暂停时的等待参数 */
+
+    void (*hook)(hstacklesscoroutine_control_block_t *ccb, hstacklesscoroutine_hook_type_t type, hstacklesscoroutine_event_t *event); /**< 钩子函数 */
 };
 
-#define HSTACKLESSCOROUTINE_CONTROL_BLOCK_INIT_VALUE {0,0,0,1,NULL,NULL}
+#define HSTACKLESSCOROUTINE_CONTROL_BLOCK_INIT_VALUE {0,0,0,1,{NULL,NULL},NULL}
 
 #define __HSTACKLESSCOROUTINE_BLOCK_START(NAME) \
 hstacklesscoroutine_control_block_t g_hstacklesscoroutine_##NAME##_ccb = HSTACKLESSCOROUTINE_CONTROL_BLOCK_INIT_VALUE;\
@@ -74,7 +87,9 @@ void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event(hstacklesscoroutine_c
     ccb->nested++;\
     if(ccb->nested<=ccb->max_nested)\
     {\
+        if(ccb->hook!=NULL) ccb->hook(ccb,HSTACKLESSCOROUTE_HOOK_TYPE_EXEC_PROCESS_ENTER,event);\
         hstacklesscoroutine_##NAME##_entry_with_ccb_and_event_impl(ccb,event);\
+        if(ccb->hook!=NULL) ccb->hook(ccb,HSTACKLESSCOROUTE_HOOK_TYPE_EXEC_PROCESS_EXIT,event);\
     }\
     ccb->nested--;\
 }\
@@ -94,6 +109,7 @@ static void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event_impl(hstackles
     }\
     if((hstacklesscoroutine_is_suspend(ccb))!=0)\
     {\
+        if(ccb->hook!=NULL) ccb->hook(ccb,HSTACKLESSCOROUTE_HOOK_TYPE_AWAITER_PROCESS_START,event);\
         if(ccb->awaiter.wait_for_ready!=NULL)\
         {\
             if(ccb->awaiter.wait_for_ready(ccb->awaiter.usr,event))\
@@ -102,8 +118,10 @@ static void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event_impl(hstackles
                 hstacklesscoroutine_coroutine_resume(ccb);\
             }\
         }\
+        if(ccb->hook!=NULL) ccb->hook(ccb,HSTACKLESSCOROUTE_HOOK_TYPE_AWAITER_PROCESS_END,event);\
         return;\
     }\
+    if(ccb->hook!=NULL) ccb->hook(ccb,HSTACKLESSCOROUTE_HOOK_TYPE_CODEBLOCK_PROCESS_START,event);\
     switch(ccb->corevalue)\
     {\
         case 0:\
@@ -118,6 +136,7 @@ static void hstacklesscoroutine_##NAME##_entry_with_ccb_and_event_impl(hstackles
         }\
     }\
     hstacklesscoroutine_break:;\
+    if(ccb->hook!=NULL) ccb->hook(ccb,HSTACKLESSCOROUTE_HOOK_TYPE_CODEBLOCK_PROCESS_END,event);\
 }\
 
 
