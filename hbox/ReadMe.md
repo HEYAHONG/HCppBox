@@ -317,7 +317,7 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 
 实际应用中，需要将这些数据类型映射到实际的功能上。
 
-具体实现见[modbus](modbus)目录（注意：此目录的源代码需要添加构建的源代码列表）
+具体实现见[modbus](modbus)目录
 
 ## h3rdparty
 

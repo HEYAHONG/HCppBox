@@ -6,7 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "modbus.h"
+#include "hmodbus.h"
 
 
 bool modbus_tcp_client_request(modbus_tcp_client_io_interface_t *io,uint8_t function_code,void *context,size_t context_length)

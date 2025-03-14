@@ -1,13 +1,13 @@
 /***************************************************************
- * Name:      modbus.h
- * Purpose:   modbus接口
+ * Name:      hmodbus.h
+ * Purpose:   hmodbus接口
  * Author:    HYH (hyhsystem.cn)
  * Created:   2024-09-02
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#ifndef __MODBUS_MODBUS_H_INCLUDED__
-#define __MODBUS_MODBUS_H_INCLUDED__
+#ifndef __MODBUS_HMODBUS_H_INCLUDED__
+#define __MODBUS_HMODBUS_H_INCLUDED__
 
 #include "hmodbus_common.h"
 #include "hmodbus_crc.h"
@@ -23,4 +23,4 @@
 //导入用户扩展定义(由标准文档保留但被本库使用的定义)头文件
 #include "hmodbus_user_extend.h"
 
-#endif // MODBUS_H_INCLUDED
+#endif // HMODBUS_H_INCLUDED

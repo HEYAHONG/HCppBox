@@ -6,11 +6,11 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "modbus.h"
+#include "hmodbus.h"
 
 
 
-static bool pdu_process_broadcast(modbus_rtu_slave_tiny_context_t* ctx,const uint8_t *pdu,size_t pdu_length)
+static bool modbus_rtu_slave_tiny_pdu_process_broadcast(modbus_rtu_slave_tiny_context_t* ctx,const uint8_t *pdu,size_t pdu_length)
 {
     //广播操作，一般只允许写寄存器
     if(pdu_length < 1)
@@ -113,7 +113,7 @@ static bool pdu_process_broadcast(modbus_rtu_slave_tiny_context_t* ctx,const uin
     return ret;
 }
 
-static bool pdu_process_unicast(modbus_rtu_slave_tiny_context_t* ctx,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,uint8_t *buffer,size_t buffer_length)
+static bool modbus_rtu_slave_tiny_pdu_process_unicast(modbus_rtu_slave_tiny_context_t* ctx,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,uint8_t *buffer,size_t buffer_length)
 {
     if(pdu_length < 1 || node_address != ctx->addr)
     {
@@ -404,7 +404,7 @@ static bool pdu_process_unicast(modbus_rtu_slave_tiny_context_t* ctx,uint8_t nod
     return ret;
 }
 
-static bool pdu_process(modbus_rtu_slave_tiny_context_t* ctx,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,uint8_t *buffer,size_t buffer_length)
+static bool modbus_rtu_slave_tiny_pdu_process(modbus_rtu_slave_tiny_context_t* ctx,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,uint8_t *buffer,size_t buffer_length)
 {
     if(node_address==MODBUS_ANYCAST_ADDRESS)
     {
@@ -427,25 +427,25 @@ static bool pdu_process(modbus_rtu_slave_tiny_context_t* ctx,uint8_t node_addres
     }
     if(node_address==MODBUS_BROADCAST_ADDRESS)
     {
-        return pdu_process_broadcast(ctx,pdu,pdu_length);
+        return modbus_rtu_slave_tiny_pdu_process_broadcast(ctx,pdu,pdu_length);
     }
     else
     {
-        return pdu_process_unicast(ctx,node_address,pdu,pdu_length,buffer,buffer_length);
+        return modbus_rtu_slave_tiny_pdu_process_unicast(ctx,node_address,pdu,pdu_length,buffer,buffer_length);
     }
 }
 
-static bool modbus_rtu_pdu(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static bool modbus_rtu_slave_tiny_modbus_rtu_pdu(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_rtu_slave_tiny_context_t* ctx=(modbus_rtu_slave_tiny_context_t*)usr;
     if(ctx->buffer==NULL)
     {
         uint8_t  buffer[MODBUS_RTU_MAX_ADU_LENGTH];
-        return pdu_process(ctx,node_address,pdu,pdu_length,buffer,MODBUS_RTU_MAX_ADU_LENGTH);
+        return modbus_rtu_slave_tiny_pdu_process(ctx,node_address,pdu,pdu_length,buffer,MODBUS_RTU_MAX_ADU_LENGTH);
     }
     else
     {
-        return pdu_process(ctx,node_address,pdu,pdu_length,ctx->buffer,MODBUS_RTU_MAX_ADU_LENGTH);
+        return modbus_rtu_slave_tiny_pdu_process(ctx,node_address,pdu,pdu_length,ctx->buffer,MODBUS_RTU_MAX_ADU_LENGTH);
     }
 }
 
@@ -455,23 +455,23 @@ bool modbus_rtu_slave_tiny_parse_input(modbus_rtu_slave_tiny_context_t* ctx,uint
     {
         return false;
     }
-    return modbus_rtu_get_pdu_from_adu(adu,adu_length,modbus_rtu_pdu,ctx);
+    return modbus_rtu_get_pdu_from_adu(adu,adu_length,modbus_rtu_slave_tiny_modbus_rtu_pdu,ctx);
 }
 
 
-static bool    read_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+static bool    modbus_rtu_slave_tiny_read_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
 {
     (void)ctx;
     //返回地址是否奇数
     return addr%2!=0;
 }
-static bool    read_discrete_input(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+static bool    modbus_rtu_slave_tiny_read_discrete_input(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
 {
     (void)ctx;
     //返回地址是否偶数
     return addr%2==0;
 }
-static modbus_data_register_t  read_holding_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+static modbus_data_register_t  modbus_rtu_slave_tiny_read_holding_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
 {
     (void)ctx;
     //返回 0xDEADBEEF;
@@ -484,7 +484,7 @@ static modbus_data_register_t  read_holding_register(modbus_rtu_slave_tiny_conte
         return 0xBEEF;
     }
 }
-static modbus_data_register_t  read_input_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
+static modbus_data_register_t  modbus_rtu_slave_tiny_read_input_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr)
 {
     (void)ctx;
     //返回 0xBEEFDEAD;
@@ -497,21 +497,21 @@ static modbus_data_register_t  read_input_register(modbus_rtu_slave_tiny_context
         return 0xBEEF;
     }
 }
-static void    write_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,bool value)
+static void    modbus_rtu_slave_tiny_write_coil(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,bool value)
 {
     (void)ctx;
     (void)addr;
     (void)value;
     //啥也不做
 }
-static void    write_holding_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,modbus_data_register_t value)
+static void    modbus_rtu_slave_tiny_write_holding_register(modbus_rtu_slave_tiny_context_t* ctx,modbus_data_address_t addr,modbus_data_register_t value)
 {
     (void)ctx;
     (void)addr;
     (void)value;
     //啥也不做
 }
-static bool    check_anycast_condition(modbus_rtu_slave_tiny_context_t* ctx)
+static bool    modbus_rtu_slave_tiny_check_anycast_condition(modbus_rtu_slave_tiny_context_t* ctx)
 {
     (void)ctx;
     //默认不回应
@@ -522,13 +522,13 @@ modbus_rtu_slave_tiny_context_t modbus_rtu_slave_tiny_context_default(void)
 {
     modbus_rtu_slave_tiny_context_t ctx= {0};
     ctx.addr=MODBUS_NODE_ADDRESS_DEFAULT;
-    ctx.read_coil=read_coil;
-    ctx.read_discrete_input=read_discrete_input;
-    ctx.read_holding_register=read_holding_register;
-    ctx.read_input_register=read_input_register;
-    ctx.write_coil=write_coil;
-    ctx.write_holding_register=write_holding_register;
-    ctx.check_anycast_condition=check_anycast_condition;
+    ctx.read_coil=modbus_rtu_slave_tiny_read_coil;
+    ctx.read_discrete_input=modbus_rtu_slave_tiny_read_discrete_input;
+    ctx.read_holding_register=modbus_rtu_slave_tiny_read_holding_register;
+    ctx.read_input_register=modbus_rtu_slave_tiny_read_input_register;
+    ctx.write_coil=modbus_rtu_slave_tiny_write_coil;
+    ctx.write_holding_register=modbus_rtu_slave_tiny_write_holding_register;
+    ctx.check_anycast_condition=modbus_rtu_slave_tiny_check_anycast_condition;
     ctx.buffer=NULL;
     return ctx;
 }

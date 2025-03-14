@@ -8,7 +8,7 @@
  **************************************************************/
 #ifndef __MODBUS_HMODBUS_USER_EXTEND_H__
 #define __MODBUS_HMODBUS_USER_EXTEND_H__
-#include "modbus.h"
+#include "hmodbus.h"
 /*
  * 此文件用于标准modbus进行扩展，通常使用modbus标准协议保留的功能。
  */

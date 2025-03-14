@@ -6,7 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "modbus.h"
+#include "hmodbus.h"
 
 modbus_io_interface_t modbus_io_interface_default(void)
 {

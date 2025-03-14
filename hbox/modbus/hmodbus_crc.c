@@ -6,7 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "modbus.h"
+#include "hmodbus.h"
 
 static uint16_t CRC16(const uint8_t *arr_buff,size_t len)
 {

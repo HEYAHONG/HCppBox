@@ -6,7 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "modbus.h"
+#include "hmodbus.h"
 
 /** \brief 从TCP的ADU数据中提取PDU数据
  *

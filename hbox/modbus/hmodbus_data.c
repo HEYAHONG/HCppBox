@@ -6,7 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "modbus.h"
+#include "hmodbus.h"
 
 /** \brief 从数据帧中获取uint16_t数据
  *

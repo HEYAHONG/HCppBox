@@ -6,9 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "modbus.h"
+#include "hmodbus.h"
 
-static bool tcp_reply(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static bool modbus_tcp_gateway_server_tcp_reply(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_tcp_gateway_server_context_t *ctx=(modbus_tcp_gateway_server_context_t *)usr;
     if(ctx->reply!=NULL)
@@ -34,16 +34,16 @@ static bool tcp_reply(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,
 }
 
 
-static bool rtu_reply(modbus_tcp_gateway_server_context_t* ctx,const uint8_t *adu,size_t adu_length)
+static bool modbus_tcp_gateway_server_rtu_reply(modbus_tcp_gateway_server_context_t* ctx,const uint8_t *adu,size_t adu_length)
 {
     if(ctx==NULL || adu == NULL || adu_length == 0 || ctx->reply == NULL)
     {
         return false;
     }
-    return modbus_rtu_get_pdu_from_adu(adu,adu_length,tcp_reply,ctx);
+    return modbus_rtu_get_pdu_from_adu(adu,adu_length,modbus_tcp_gateway_server_tcp_reply,ctx);
 }
 
-static bool pdu_process(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static bool modbus_tcp_gateway_server_pdu_process(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_tcp_gateway_server_context_t *ctx=(modbus_tcp_gateway_server_context_t *)usr;
     ctx->TId=TId;
@@ -56,7 +56,7 @@ static bool pdu_process(uint16_t TId,uint8_t node_address,const uint8_t *pdu,siz
             size_t rtu_adu_len=modbus_rtu_set_pdu_to_adu(rtu_buffer,MODBUS_RTU_MAX_ADU_LENGTH,node_address,pdu,pdu_length);
             if(rtu_adu_len!=0)
             {
-                ret=ctx->rtu_request(ctx,rtu_buffer,rtu_adu_len,rtu_reply);
+                ret=ctx->rtu_request(ctx,rtu_buffer,rtu_adu_len,modbus_tcp_gateway_server_rtu_reply);
             }
         }
         else
@@ -65,7 +65,7 @@ static bool pdu_process(uint16_t TId,uint8_t node_address,const uint8_t *pdu,siz
             size_t rtu_adu_len=modbus_rtu_set_pdu_to_adu(rtu_buffer,MODBUS_RTU_MAX_ADU_LENGTH,node_address,pdu,pdu_length);
             if(rtu_adu_len!=0)
             {
-                ret=ctx->rtu_request(ctx,rtu_buffer,rtu_adu_len,rtu_reply);
+                ret=ctx->rtu_request(ctx,rtu_buffer,rtu_adu_len,modbus_tcp_gateway_server_rtu_reply);
             }
         }
     }
@@ -109,7 +109,7 @@ bool modbus_tcp_gateway_server_parse_input(modbus_tcp_gateway_server_context_t* 
         return false;
     }
 
-    return modbus_tcp_get_pdu_from_adu(adu,adu_length,pdu_process,ctx);
+    return modbus_tcp_get_pdu_from_adu(adu,adu_length,modbus_tcp_gateway_server_pdu_process,ctx);
 }
 
 /** \brief 默认modbus_tcp_gateway_server上下文,用于初始化上下文
