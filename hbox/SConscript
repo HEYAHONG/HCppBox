@@ -6,8 +6,6 @@ import sys
 cwd = GetCurrentDir()
 src = Glob('*.c')
 src += Glob('*.cpp')
-src += Glob('gui/*.c')
-src += Glob('gui/*.cpp')
 CPPPATH = [
 cwd,
 cwd+'/cpp'
