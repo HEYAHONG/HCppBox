@@ -1,13 +1,13 @@
 /***************************************************************
- * Name:      modbususerextend.h
- * Purpose:   modbus用户扩展接口
+ * Name:      hmodbus_user_extend.h
+ * Purpose:   hmodbus用户扩展接口
  * Author:    HYH (hyhsystem.cn)
  * Created:   2024-09-02
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#ifndef __MODBUS_MODBUSUSEREXTEND_H__
-#define __MODBUS_MODBUSUSEREXTEND_H__
+#ifndef __MODBUS_HMODBUS_USER_EXTEND_H__
+#define __MODBUS_HMODBUS_USER_EXTEND_H__
 #include "modbus.h"
 /*
  * 此文件用于标准modbus进行扩展，通常使用modbus标准协议保留的功能。
@@ -46,7 +46,7 @@ extern "C"
 }
 #endif
 
-#endif // __MODBUS_MODBUSUSEREXTEND_H__
+#endif // __MODBUS_HMODBUS_USER_EXTEND_H__
 
 
 
