@@ -29,8 +29,7 @@ struct modbus_io_interface
     size_t (*send)(modbus_io_interface_t *io,const uint8_t *adu,size_t adu_length); /**< 发送数据,注意:用户必须在此函数中将一帧数据发送完并且返回已发送的数据长度 */
     size_t (*recv)(modbus_io_interface_t *io,uint8_t *buffer,size_t buffer_length); /**< 接收数据,注意:用户必须在此函数中将一帧数据接收完并且返回已接收的数据长度 */
 };
-typedef modbus_io_interface_t modbus_rtu_master_io_interface_t;
-typedef modbus_io_interface_t modbus_tcp_client_io_interface_t;
+
 
 /** \brief 默认io接口,用于初始化接口
  *

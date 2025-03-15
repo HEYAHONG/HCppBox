@@ -12,11 +12,14 @@
 #include "stdbool.h"
 #include "stdlib.h"
 #include "string.h"
+#include "hmodbus_io_interface.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+typedef modbus_io_interface_t modbus_rtu_master_io_interface_t;
 
 /** \brief modbus rtu主机请求
  *          注意：此函数对栈的要求较高，需要保证栈足够大
