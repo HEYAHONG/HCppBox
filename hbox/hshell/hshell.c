@@ -264,6 +264,7 @@ static int hshell_process_execute(hshell_context_t *ctx)
         ret=hshell_process_execute_command(context,argc,&argv[2]);
     }
 
+    if(context->flags.login!=0)
     {
         //打印提示符
         hshell_printf(context,"%s",(context->prompt!=NULL)?context->prompt:"");

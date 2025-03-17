@@ -1,6 +1,6 @@
 /***************************************************************
  * Name:      hshell.h
- * Purpose:   声明shell接口
+ * Purpose:   声明hshell接口
  * Author:    HYH (hyhsystem.cn)
  * Created:   2025-03-17
  * Copyright: HYH (hyhsystem.cn)
