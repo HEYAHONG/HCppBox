@@ -29,6 +29,7 @@
 #include "hbase64.h"
 #include "hsimulator.h"
 #include "hgui.h"
+#include "hshell.h"
 
 /*
 由C++编写的组件

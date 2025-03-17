@@ -79,6 +79,12 @@ int hvprintf(const char* format, va_list va);
  */
 int hfctprintf(void (*out)(char character, void* arg), void* arg, const char* format, ...);
 
+/** \brief 用于使用自定义输出函数(out)输出打印
+ *
+ *
+ */
+int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* format, va_list va);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
