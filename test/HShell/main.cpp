@@ -11,6 +11,6 @@ int main(int argc,const char *argv[])
     {
         std::this_thread::yield();
     }
-    hshell_printf(NULL,"hshell exit!\r\n");
+    hshell_printf(NULL,"\rhshell exit!\r\n");
     return 0;
 }

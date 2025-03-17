@@ -9,6 +9,7 @@
 
 #include "hshell.h"
 #include "h3rdparty.h"
+#include "hcompiler.h"
 #include "stdarg.h"
 
 extern int getchar(void);
@@ -153,6 +154,14 @@ int hshell_printf(hshell_context_t *ctx,const char *fmt,...)
     return ret;
 }
 
+static void hshell_show_banner(hshell_context_t *ctx)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_printf(context," \\ | /\r\n");
+    hshell_printf(context," | H |   build %04d/%02d/%02d %02d:%02d:%02d\r\n",hcompiler_get_date_year(),hcompiler_get_date_month(),hcompiler_get_date_day(),hcompiler_get_time_hour(),hcompiler_get_time_minute(),hcompiler_get_time_second());
+    hshell_printf(context," / | \\\r\n");
+}
+
 static int hshell_login(hshell_context_t *ctx)
 {
     hshell_context_t *context=hshell_context_check_context(ctx);
@@ -161,6 +170,7 @@ static int hshell_login(hshell_context_t *ctx)
         context->flags.login=1;
         //处理登录操作
 
+        hshell_show_banner(context);
     }
     return 0;
 }
@@ -168,6 +178,18 @@ static int hshell_login(hshell_context_t *ctx)
 static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const char *argv[])
 {
     int ret=0;
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    {
+        //处理内部命令
+
+
+        if(strcmp(argv[0],"exit")==0)
+        {
+            ret=-1;
+            //退出登录
+            context->flags.login=0;
+        }
+    }
 
     return ret;
 }
