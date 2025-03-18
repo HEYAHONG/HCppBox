@@ -401,6 +401,18 @@ static int hshell_process_execute(hshell_context_t *ctx)
         }
     }
 
+    {
+        //修复 末尾为空格导致崩溃的BUG
+        while (argc > 1)
+        {
+            if (argv[2 + argc - 1] != NULL && strlen(argv[2 + argc - 1]) > 0)
+            {
+                break;
+            }
+            argc--;
+        }
+    }
+
     if(argc > 0)
     {
         // 执行命令
