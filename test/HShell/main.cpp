@@ -56,9 +56,6 @@ int main(int argc,const char *argv[])
     //关闭输出缓冲
     setbuf(stdout,NULL);
     setbuf(stdin,NULL);
-#ifndef WIN32
-    hshell_printf(NULL,"press Ctrl-D to exit!\r\n");
-#endif
 #if !defined(__unix__)
     //一般终端中无需开启回显，串口终端才开启回显
     hshell_echo_set(NULL,false);
