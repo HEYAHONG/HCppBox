@@ -65,6 +65,7 @@ struct hshell_context
     {
         uint32_t init:1;                        /**< 是否初始化，当未初始化时，调用上下文相关API时会执行初始化 */
         uint32_t login:1;                       /**< 是否已登录 */
+        uint32_t prompt:1;                      /**< 当prompt为0时，将打印提示字符串并置为1 */
         uint32_t echo:1;                        /**< 是否回显 */
     } flags;                                    /**< 标志 */
     uint8_t buffer[HSHELL_CONTEXT_BUFFER_SIZE]; /**< 缓冲 */
