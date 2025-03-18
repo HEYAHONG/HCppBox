@@ -189,6 +189,7 @@ static int hshell_login(hshell_context_t *ctx)
         //处理登录操作
 
         hshell_show_banner(context);
+        context->flags.prompt=0;        //显示提示符
     }
     return 0;
 }
@@ -519,7 +520,11 @@ static int hshell_process_input(hshell_context_t *ctx)
     case '\r':
     {
         context->flags.return_newline_compatible=1;
+        context->buffer_ptr=strlen((char *)context->buffer);//将指针放在末尾
+        ret=hshell_process_execute(context);
+
     }
+    break;
     case '\n':
     {
         //处理字符串
