@@ -545,7 +545,11 @@ static int hshell_process_input(hshell_context_t *ctx)
         }
     }
     break;
+#if defined(HCOMPILER_MSVC)
+    case 0x1b:
+#else
     case '\e':
+#endif
     {
         //处理特殊转义序列
         need_echo=false;
@@ -560,7 +564,7 @@ static int hshell_process_input(hshell_context_t *ctx)
         }
     }
     break;
-    case 0x7f:
+    case 0x7f: //   删除字符
     {
         if(context->buffer_ptr>0)
         {
