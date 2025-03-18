@@ -56,6 +56,8 @@ void hshell_context_init(hshell_context_t *ctx)
     real_context->flags.echo=1;         //默认打开回显
     memset(real_context->buffer,0,sizeof(real_context->buffer));
     real_context->buffer_ptr=0;
+    real_context->command.array_base=NULL;
+    real_context->command.array_count=0;
 }
 
 static hshell_context_t *hshell_context_check_context(hshell_context_t *ctx)
@@ -111,6 +113,17 @@ bool hshell_echo_get(hshell_context_t *ctx)
 {
     hshell_context_t *context=hshell_context_check_context(ctx);
     return context->flags.echo!=0;
+}
+
+void hshell_command_array_set(hshell_context_t *ctx,hshell_command_t *array_base,size_t array_count)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    if(array_base==NULL)
+    {
+        array_count=0;
+    }
+    context->command.array_count=array_count;
+    context->command.array_base=array_base;
 }
 
 int hshell_getchar(hshell_context_t *ctx)
@@ -186,12 +199,124 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
         //处理内部命令
 
 
-        if(strcmp(argv[0],"exit")==0)
+        if(!command_processed && strcmp(argv[0],"exit")==0)
         {
             ret=-1;
             command_processed=true;
             //退出登录
             context->flags.login=0;
+        }
+
+        if(!command_processed && strcmp(argv[0],"help")==0)
+        {
+            ret=0;
+            command_processed=true;
+            if(argv[1]==NULL || strlen(argv[1])==0)
+            {
+                hshell_printf(context,"-------internal command----------\r\n");
+                hshell_printf(context,"exit      exit shell             \r\n");
+                hshell_printf(context,"help      show help              \r\n");
+                if(context->command.array_base!=NULL && context->command.array_count!=0)
+                {
+                    size_t max_name_len=12;
+                    size_t max_help_len=32;
+                    for(size_t i=0; i<context->command.array_count; i++)
+                    {
+                        if(context->command.array_base[i].entry!=NULL)
+                        {
+                            if(context->command.array_base[i].name!=NULL)
+                            {
+                                size_t name_len=strlen(context->command.array_base[i].name);
+                                if(name_len>max_name_len)
+                                {
+                                    max_name_len=name_len;
+                                }
+                            }
+
+                            if(context->command.array_base[i].help!=NULL)
+                            {
+                                size_t help_len=strlen(context->command.array_base[i].help);
+                                if(help_len>max_help_len)
+                                {
+                                    max_help_len=help_len;
+                                }
+                            }
+                        }
+                    }
+
+                    {
+                        //打印标题
+                        for(size_t i=0; i<max_name_len; i++)
+                        {
+                            hshell_printf(context,"-");
+                        }
+                        hshell_printf(context,"\t");
+                        for(size_t i=0; i<max_help_len; i++)
+                        {
+                            hshell_printf(context,"-");
+                        }
+                        hshell_printf(context,"\r\n");
+                    }
+
+                    for(size_t i=0; i<context->command.array_count; i++)
+                    {
+                        if(context->command.array_base[i].entry!=NULL)
+                        {
+                            if(context->command.array_base[i].name!=NULL)
+                            {
+                                hshell_printf(context,"%s",context->command.array_base[i].name);
+                                size_t name_len=strlen(context->command.array_base[i].name);
+                                for(size_t i=0; i<(max_name_len-name_len); i++)
+                                {
+                                    hshell_printf(context," ");
+                                }
+                                hshell_printf(context,"\t");
+                                hshell_printf(context,"%s",(context->command.array_base[i].help!=NULL)?(context->command.array_base[i].help):"");
+                                hshell_printf(context,"\r\n");
+                            }
+                        }
+                    }
+
+                }
+            }
+            else
+            {
+                bool help_shown=false;
+                if(context->command.array_base!=NULL && context->command.array_count!=0)
+                {
+                    for(size_t i=0; i<context->command.array_count; i++)
+                    {
+                        if(context->command.array_base[i].name!=NULL && strcmp(argv[1],context->command.array_base[i].name)==0)
+                        {
+                            hshell_printf(context,"%s:\t%s\r\n",context->command.array_base[i].name,context->command.array_base[i].help!=NULL?context->command.array_base[i].help:"");
+                            help_shown=true;
+                        }
+                    }
+                }
+                if(!help_shown)
+                {
+                    hshell_printf(context,"%s not found!\r\n",argv[1]);
+                }
+            }
+        }
+    }
+
+    if(!command_processed)
+    {
+        if(context->command.array_base!=NULL && context->command.array_count!=0)
+        {
+            for(size_t i=0; i<context->command.array_count; i++)
+            {
+                if(context->command.array_base[i].name!=NULL && strcmp(argv[0],context->command.array_base[i].name)==0)
+                {
+                    if(context->command.array_base[i].entry!=NULL)
+                    {
+                        ret=context->command.array_base[i].entry(argc,argv);
+                    }
+                    command_processed=true;
+                    break;
+                }
+            }
         }
     }
 
@@ -323,7 +448,18 @@ static int hshell_process_input(hshell_context_t *ctx)
     {
         if(context->buffer_ptr>0)
         {
-            strcpy((char *)&context->buffer[context->buffer_ptr-1],(char *)&context->buffer[context->buffer_ptr]);
+            for(size_t i=(context->buffer_ptr-1); i<(sizeof(context->buffer)-1); i++)
+            {
+                if(context->buffer[i+1]!='\0')
+                {
+                    context->buffer[i]=context->buffer[i+1];
+                }
+                else
+                {
+                    context->buffer[i]='\0';
+                    break;
+                }
+            }
             context->buffer_ptr--;
         }
     }
@@ -383,5 +519,22 @@ int hshell_loop(hshell_context_t *ctx)
         return ret;
     }
 
+    return ret;
+}
+
+hshell_context_t * hshell_context_get_from_main_argv(int argc,const char *argv[])
+{
+    hshell_context_t * ret=NULL;
+    if(argc < 0 || argv == NULL)
+    {
+        return ret;
+    }
+
+    const char ** base=((const char **)(uintptr_t)(((uintptr_t)argv)-2*sizeof(const char *)));
+    if(((uintptr_t)base[0])==0x6873686C)
+    {
+        //幻数检查成功
+        ret=(hshell_context_t *)base[1];
+    }
     return ret;
 }

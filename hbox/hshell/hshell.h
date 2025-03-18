@@ -55,6 +55,9 @@ const char * hshell_context_default_prompt_string(void);
 #endif
 #endif // HSHELL_CONTEXT_BUFFER_SIZE
 
+struct hshell_command;
+typedef struct hshell_command hshell_command_t;
+
 struct hshell_context;
 typedef struct hshell_context hshell_context_t;
 struct hshell_context
@@ -70,6 +73,11 @@ struct hshell_context
     } flags;                                    /**< 标志 */
     uint8_t buffer[HSHELL_CONTEXT_BUFFER_SIZE]; /**< 缓冲 */
     size_t  buffer_ptr;
+    struct
+    {
+        hshell_command_t *array_base;           /**< 命令数组首地址 */
+        size_t array_count;                     /**< 命令数组中命令的个数 */
+    } command;                                  /**< 命令 */
 };
 
 /** \brief hshell 获取获取默认上下文
@@ -141,6 +149,16 @@ bool hshell_echo_set(hshell_context_t *ctx,bool echo);
 bool hshell_echo_get(hshell_context_t *ctx);
 
 
+/** \brief hshell设置命令数组
+ *
+ * \param ctx hshell_context_t* hshell上下文,为NULL时使用默认上下文
+ * \param array_base hshell_command_t* 命令数组基地址
+ * \param array_count size_t 命令数组中命令个数
+ *
+ */
+void hshell_command_array_set(hshell_context_t *ctx,hshell_command_t *array_base,size_t array_count);
+
+
 /** \brief hshell读取字符
  *
  * \param ctx hshell_context_t* hshell上下文,为NULL时使用默认上下文
@@ -197,12 +215,21 @@ int hshell_loop(hshell_context_t *ctx);
  */
 typedef int (*hshell_command_entry_t)(int argc,const char *argv[]);
 
-typedef struct
+struct hshell_command
 {
     hshell_command_entry_t entry;
     const char *name;
     const char *help;
-} hshell_command_t;
+};
+
+/** \brief hshell 从argv参数中获取上下文指针
+ *
+ * \param argc int argc参数
+ * \param argv[] const char* argv参数
+ * \return hshell_context_t* hshell上下文
+ *
+ */
+hshell_context_t * hshell_context_get_from_main_argv(int argc,const char *argv[]);
 
 #ifdef __cplusplus
 }

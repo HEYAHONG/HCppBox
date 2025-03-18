@@ -1,4 +1,5 @@
 #include "hbox.h"
+#include "time.h"
 #include <thread>
 #ifdef __unix__
 #include <termios.h>
@@ -34,6 +35,22 @@ int set_disp_mode(int fd,int option)
 }
 #endif
 
+static int command_time_main(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    time_t time_now=time(NULL);
+    hshell_printf(hshell_ctx,"%s",asctime(localtime(&time_now)));
+    return 0;
+};
+static hshell_command_t commands[]=
+{
+    {
+        command_time_main,
+        "time",
+        "show time"
+    }
+};
+
 int main(int argc,const char *argv[])
 {
     //关闭输出缓冲
@@ -49,6 +66,7 @@ int main(int argc,const char *argv[])
     //关闭输入回显，使用hshell内部的回显
     set_disp_mode(STDIN_FILENO,0);
 #endif
+    hshell_command_array_set(NULL,commands,sizeof(commands)/sizeof(commands[0]));
     while(hshell_loop(NULL)==0)
     {
         std::this_thread::yield();
