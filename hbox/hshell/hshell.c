@@ -53,11 +53,13 @@ void hshell_context_init(hshell_context_t *ctx)
     real_context->flags.init=1;
     real_context->flags.login=0;
     real_context->flags.prompt=0;
+    real_context->flags.escape=0;
     real_context->flags.echo=1;         //默认打开回显
     memset(real_context->buffer,0,sizeof(real_context->buffer));
     real_context->buffer_ptr=0;
     real_context->command.array_base=NULL;
     real_context->command.array_count=0;
+    memset(real_context->escape_sequence,0,sizeof(real_context->escape_sequence));
 }
 
 static hshell_context_t *hshell_context_check_context(hshell_context_t *ctx)
@@ -416,10 +418,92 @@ static int hshell_process_execute(hshell_context_t *ctx)
     return ret;
 }
 
+static int hshell_process_control(hshell_context_t *ctx)
+{
+    int ret=0;
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    if(context->flags.escape!=0)
+    {
+        int ch=hshell_getchar(context);
+        if(ch==EOF)
+        {
+            ret=EOF;
+        }
+        else
+        {
+            uint8_t ch_val=ch&0xFF;
+            size_t seq_len=strlen((char *)context->escape_sequence);
+            if(seq_len>=(sizeof(context->escape_sequence)-1))
+            {
+                //超过能存储的序列长度
+                context->flags.escape=0;
+                memset(context->escape_sequence,0,sizeof(context->escape_sequence));
+            }
+            else
+            {
+                context->escape_sequence[seq_len]=ch_val;
+            }
+        }
+
+        {
+            //处理转义序列
+            bool escape_processed=false;
+
+            if(!escape_processed && strcmp((char *)context->escape_sequence,"[A")==0)
+            {
+                //上键
+                escape_processed=true;
+            }
+
+            if(!escape_processed && strcmp((char *)context->escape_sequence,"[B")==0)
+            {
+                //下键
+                escape_processed=true;
+            }
+
+            if(!escape_processed && strcmp((char *)context->escape_sequence,"[C")==0)
+            {
+                //右键
+                escape_processed=true;
+                if(context->buffer[context->buffer_ptr]!='\0')
+                {
+                    hshell_printf(context,"%c",(char)context->buffer[context->buffer_ptr]);
+                    context->buffer_ptr++;
+                }
+
+            }
+
+            if(!escape_processed && strcmp((char *)context->escape_sequence,"[D")==0)
+            {
+                //左键
+                escape_processed=true;
+                if(context->buffer_ptr>0)
+                {
+                    hshell_printf(context,"\b");
+                    context->buffer_ptr--;
+                }
+            }
+
+
+            if(escape_processed)
+            {
+                context->flags.escape=0;
+                memset(context->escape_sequence,0,sizeof(context->escape_sequence));
+            }
+        }
+    }
+    return ret;
+}
+
 static int hshell_process_input(hshell_context_t *ctx)
 {
     int ret=0;
     hshell_context_t *context=hshell_context_check_context(ctx);
+    if(context->flags.escape!=0)
+    {
+        //正在转义过程中，不接受数据
+        return ret;
+    }
     int ch=hshell_getchar(context);
     bool need_echo=true;
     switch(ch)
@@ -433,7 +517,16 @@ static int hshell_process_input(hshell_context_t *ctx)
     case '\n':
     {
         //处理字符串
+
+        context->buffer_ptr=strlen((char *)context->buffer);//将指针放在末尾
         ret=hshell_process_execute(context);
+    }
+    break;
+    case '\e':
+    {
+        //处理特殊转义序列
+        need_echo=false;
+        context->flags.escape=1;
     }
     break;
     case '\b':
@@ -448,11 +541,15 @@ static int hshell_process_input(hshell_context_t *ctx)
     {
         if(context->buffer_ptr>0)
         {
+            hshell_printf(context,"\b");
+            hshell_printf(context," ");
+            hshell_printf(context,"\b");
             for(size_t i=(context->buffer_ptr-1); i<(sizeof(context->buffer)-1); i++)
             {
                 if(context->buffer[i+1]!='\0')
                 {
                     context->buffer[i]=context->buffer[i+1];
+                    hshell_printf(context,"%c",(char)context->buffer[i]);
                 }
                 else
                 {
@@ -460,6 +557,7 @@ static int hshell_process_input(hshell_context_t *ctx)
                     break;
                 }
             }
+            need_echo=false;
             context->buffer_ptr--;
         }
     }
@@ -510,6 +608,11 @@ int hshell_loop(hshell_context_t *ctx)
     }
 
     if((ret=hshell_show_promtp_string(context))<0)
+    {
+        return ret;
+    }
+
+    if((ret=hshell_process_control(context))<0)
     {
         return ret;
     }

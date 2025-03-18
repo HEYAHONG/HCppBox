@@ -69,6 +69,7 @@ struct hshell_context
         uint32_t init:1;                        /**< 是否初始化，当未初始化时，调用上下文相关API时会执行初始化 */
         uint32_t login:1;                       /**< 是否已登录 */
         uint32_t prompt:1;                      /**< 当prompt为0时，将打印提示字符串并置为1 */
+        uint32_t escape:1;                      /**< 收到特殊转义序列，为1将进入转义序列处理过程 */
         uint32_t echo:1;                        /**< 是否回显 */
     } flags;                                    /**< 标志 */
     uint8_t buffer[HSHELL_CONTEXT_BUFFER_SIZE]; /**< 缓冲 */
@@ -78,6 +79,7 @@ struct hshell_context
         hshell_command_t *array_base;           /**< 命令数组首地址 */
         size_t array_count;                     /**< 命令数组中命令的个数 */
     } command;                                  /**< 命令 */
+    uint8_t  escape_sequence[8];                /**< 转义序列 */
 };
 
 /** \brief hshell 获取获取默认上下文
