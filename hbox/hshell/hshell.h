@@ -70,6 +70,7 @@ struct hshell_context
         uint32_t login:1;                       /**< 是否已登录 */
         uint32_t prompt:1;                      /**< 当prompt为0时，将打印提示字符串并置为1 */
         uint32_t escape:1;                      /**< 收到特殊转义序列，为1将进入转义序列处理过程 */
+        uint32_t return_newline_compatible:1;   /**< 兼容\r\n,由第一个\r触发执行,等于1时表示刚刚通过\r执行 */
         uint32_t echo:1;                        /**< 是否回显 */
     } flags;                                    /**< 标志 */
     uint8_t buffer[HSHELL_CONTEXT_BUFFER_SIZE]; /**< 缓冲 */

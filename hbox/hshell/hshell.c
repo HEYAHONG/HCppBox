@@ -54,6 +54,7 @@ void hshell_context_init(hshell_context_t *ctx)
     real_context->flags.login=0;
     real_context->flags.prompt=0;
     real_context->flags.escape=0;
+    real_context->flags.return_newline_compatible=0;
     real_context->flags.echo=1;         //默认打开回显
     memset(real_context->buffer,0,sizeof(real_context->buffer));
     real_context->buffer_ptr=0;
@@ -173,6 +174,7 @@ int hshell_printf(hshell_context_t *ctx,const char *fmt,...)
 static void hshell_show_banner(hshell_context_t *ctx)
 {
     hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_printf(context,"\r\n");
     hshell_printf(context," \\ | /\r\n");
     hshell_printf(context," | H |   build %04d/%02d/%02d %02d:%02d:%02d\r\n",hcompiler_get_date_year(),hcompiler_get_date_month(),hcompiler_get_date_day(),hcompiler_get_time_hour(),hcompiler_get_time_minute(),hcompiler_get_time_second());
     hshell_printf(context," / | \\\r\n");
@@ -514,12 +516,28 @@ static int hshell_process_input(hshell_context_t *ctx)
         need_echo=false;
     }
     break;
+    case '\r':
+    {
+        context->flags.return_newline_compatible=1;
+    }
     case '\n':
     {
         //处理字符串
 
         context->buffer_ptr=strlen((char *)context->buffer);//将指针放在末尾
-        ret=hshell_process_execute(context);
+        if( context->buffer_ptr>0)
+        {
+            context->flags.return_newline_compatible=0;
+            ret=hshell_process_execute(context);
+        }
+        else
+        {
+            if(context->flags.return_newline_compatible==0)
+            {
+                ret=hshell_process_execute(context);
+            }
+            context->flags.return_newline_compatible=0;
+        }
     }
     break;
     case '\e':
