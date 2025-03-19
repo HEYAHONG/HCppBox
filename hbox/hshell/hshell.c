@@ -417,6 +417,7 @@ static int hshell_process_execute(hshell_context_t *ctx)
             {
                 break;
             }
+            argv[2 + argc - 1]=NULL;
             argc--;
         }
     }
