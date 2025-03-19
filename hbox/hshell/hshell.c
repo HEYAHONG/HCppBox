@@ -56,6 +56,7 @@ void hshell_context_init(hshell_context_t *ctx)
     real_context->flags.escape=0;
     real_context->flags.return_newline_compatible=0;
     real_context->flags.echo=1;         //默认打开回显
+    real_context->flags.show_banner=1;  //默认显示banner
     memset(real_context->buffer,0,sizeof(real_context->buffer));
     real_context->buffer_ptr=0;
     real_context->command.array_base=NULL;
@@ -118,6 +119,20 @@ bool hshell_echo_get(hshell_context_t *ctx)
     return context->flags.echo!=0;
 }
 
+bool hshell_show_banner_set(hshell_context_t *ctx,bool show_banner)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    bool old_show_banner=(context->flags.show_banner!=0);
+    context->flags.show_banner=(show_banner?0x1:0x0);
+    return old_show_banner;
+}
+
+bool hshell_show_banner_get(hshell_context_t *ctx)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    return context->flags.show_banner!=0;
+}
+
 void hshell_command_array_set(hshell_context_t *ctx,hshell_command_t *array_base,size_t array_count)
 {
     hshell_context_t *context=hshell_context_check_context(ctx);
@@ -174,6 +189,10 @@ int hshell_printf(hshell_context_t *ctx,const char *fmt,...)
 static void hshell_show_banner(hshell_context_t *ctx)
 {
     hshell_context_t *context=hshell_context_check_context(ctx);
+    if(context->flags.show_banner==0)
+    {
+        return;
+    }
     hshell_printf(context,"\r\n");
     hshell_printf(context," \\ | /\r\n");
     hshell_printf(context," | H |   build %04d/%02d/%02d %02d:%02d:%02d\r\n",hcompiler_get_date_year(),hcompiler_get_date_month(),hcompiler_get_date_day(),hcompiler_get_time_hour(),hcompiler_get_time_minute(),hcompiler_get_time_second());

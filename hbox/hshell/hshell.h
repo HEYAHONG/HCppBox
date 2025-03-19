@@ -73,6 +73,7 @@ struct hshell_context
         uint32_t escape:1;                      /**< 收到特殊转义序列，为1将进入转义序列处理过程 */
         uint32_t return_newline_compatible:1;   /**< 兼容\r\n,由第一个\r触发执行,等于1时表示刚刚通过\r执行 */
         uint32_t echo:1;                        /**< 是否回显 */
+        uint32_t show_banner:1;                 /**< 是否显示banner */
     } flags;                                    /**< 标志 */
     uint8_t buffer[HSHELL_CONTEXT_BUFFER_SIZE]; /**< 缓冲 */
     size_t  buffer_ptr;
@@ -152,6 +153,24 @@ bool hshell_echo_set(hshell_context_t *ctx,bool echo);
  */
 bool hshell_echo_get(hshell_context_t *ctx);
 
+
+/** \brief hshell设置banner显示设置
+ *
+ * \param ctx hshell_context_t* hshell上下文,为NULL时使用默认上下文
+ * \param  show_banner bool banner显示设置
+ * \return bool banner显示设置
+ *
+ */
+bool hshell_show_banner_set(hshell_context_t *ctx,bool show_banner);
+
+
+/** \brief hshell获取banner显示设置
+ *
+ * \param ctx hshell_context_t* hshell上下文,为NULL时使用默认上下文
+ * \return bool banner显示设置
+ *
+ */
+bool hshell_show_banner_get(hshell_context_t *ctx);
 
 /** \brief hshell设置命令数组
  *
