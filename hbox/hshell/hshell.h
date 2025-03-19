@@ -246,11 +246,11 @@ hshell_context_t * hshell_context_get_from_main_argv(int argc,const char *argv[]
  */
 #define HSHELL_COMMAND_EXPORT(name,entry,help) \
     __SECTION("HShellCommand")\
-    static const hshell_command_t hshell_command_##name = \
+    static const hshell_command_t hshell_commands_##name = \
     {\
         (hshell_command_entry_t)entry,\
         #name ,\
-				#help \
+        #help \
 	  }
 
 /*
