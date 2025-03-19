@@ -234,6 +234,52 @@ struct hshell_command
  */
 hshell_context_t * hshell_context_get_from_main_argv(int argc,const char *argv[]);
 
+
+#if defined(HCOMPILER_ARMCC)
+/*
+ * armcc,使用名称为HShellCommand的section
+ */
+
+/*
+ * 导出命令
+ */
+#define HSHELL_COMMAND_EXPORT(name,entry,help) \
+    __SECTION("HShellCommand")\
+    static const hshell_command_t hshell_command_##name = \
+    {\
+        (hshell_command_entry_t)entry,\
+        #name ,\
+				#help \
+	  }
+
+/*
+ * 注册命令（注意:此宏定义会占用hsell上下文的命令数组）
+ */
+extern const  int HShellCommand$$Base;
+extern const  int HShellCommand$$Limit;
+#define HSHELL_COMMANDS_REGISTER(context) \
+hshell_command_array_set(context,(hshell_command_t *)&HShellCommand$$Base,(((uintptr_t)(hshell_command_t *)&HShellCommand$$Limit)-((uintptr_t)(hshell_command_t *)&HShellCommand$$Base))/sizeof(hshell_command_t))
+
+#else
+/*
+ * 不支持的编译器（使用相关宏定义将无任何效果，也不会报错）
+ */
+
+
+/*
+ * 导出命令
+ */
+#define HSHELL_COMMAND_EXPORT(name,entry,help)
+
+/*
+ * 注册命令（注意:此宏定义会占用hsell上下文的命令数组）
+ */
+#define HSHELL_COMMANDS_REGISTER(context)
+
+
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
