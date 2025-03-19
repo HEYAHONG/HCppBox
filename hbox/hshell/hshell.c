@@ -194,6 +194,12 @@ static int hshell_login(hshell_context_t *ctx)
     return 0;
 }
 
+static bool hshell_is_login(hshell_context_t *ctx)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    return context->flags.login!=0;
+}
+
 static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const char *argv[])
 {
     int ret=0;
@@ -218,9 +224,10 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
             command_processed=true;
             if(argv[1]==NULL || strlen(argv[1])==0)
             {
-                hshell_printf(context,"-------internal command----------\r\n");
-                hshell_printf(context,"exit      exit shell             \r\n");
-                hshell_printf(context,"help      show help              \r\n");
+                hshell_printf(context,"internal command:\r\n");
+                hshell_printf(context,"-------\t-------------\r\n");
+                hshell_printf(context,"\texit      exit shell             \r\n");
+                hshell_printf(context,"\thelp      show help              \r\n");
                 if(context->command.array_base!=NULL && context->command.array_count!=0)
                 {
                     size_t max_name_len=12;
@@ -251,6 +258,7 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
 
                     {
                         //打印标题
+                        hshell_printf(context,"\r\ncommands:\r\n");
                         for(size_t i=0; i<max_name_len; i++)
                         {
                             hshell_printf(context,"-");
@@ -523,6 +531,7 @@ static int hshell_process_input(hshell_context_t *ctx)
     bool need_echo=true;
     switch(ch)
     {
+    case 0x04: //EOT,终端中可通过Ctrl-D触发。
     case EOF:
     {
         ret=EOF;
@@ -605,7 +614,11 @@ static int hshell_process_input(hshell_context_t *ctx)
     {
         if(context->buffer_ptr < (sizeof(context->buffer)-1))
         {
-            context->buffer[context->buffer_ptr++]=(ch&0xFF);
+            uint8_t ch_val=(ch&0xFF);
+            if(ch_val>=0x20)
+            {
+                context->buffer[context->buffer_ptr++]=ch_val;
+            }
         }
         if(context->buffer_ptr == (sizeof(context->buffer)-1))
         {
@@ -642,6 +655,11 @@ int hshell_loop(hshell_context_t *ctx)
     int ret=0;
     hshell_context_t *context=hshell_context_check_context(ctx);
     if((ret=hshell_login(context))<0)
+    {
+        return ret;
+    }
+
+    if(!hshell_is_login(context))
     {
         return ret;
     }
