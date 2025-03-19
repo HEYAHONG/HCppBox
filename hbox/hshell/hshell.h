@@ -12,6 +12,7 @@
 #include "string.h"
 #include "stdbool.h"
 #include "stdint.h"
+#include "hcompiler.h"
 #include "hdefaults.h"
 
 #ifdef __cplusplus
