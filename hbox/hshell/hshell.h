@@ -254,7 +254,7 @@ hshell_context_t * hshell_context_get_from_main_argv(int argc,const char *argv[]
 	  }
 
 /*
- * 注册命令（注意:此宏定义会占用hsell上下文的命令数组）
+ * 注册命令（注意:此宏定义会占用hshell上下文的命令数组）
  */
 extern const  int HShellCommand$$Base;
 extern const  int HShellCommand$$Limit;
