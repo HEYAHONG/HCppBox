@@ -72,8 +72,9 @@ struct hshell_context
         uint32_t login:1;                       /**< 是否已登录 */
         uint32_t prompt:1;                      /**< 当prompt为0时，将打印提示字符串并置为1 */
         uint32_t escape:1;                      /**< 收到特殊转义序列，为1将进入转义序列处理过程 */
-        uint32_t return_newline_compatible:1;   /**< 兼容\r\n,由第一个\r触发执行,等于1时表示刚刚通过\r执行 */
+        uint32_t return_newline_compatible:1;   /**< 兼容\r\n,由第一个\r触发执行,为1时表示刚刚通过\r执行 */
         uint32_t input_complete:1;              /**< 当此值为1时，输入检查函数将返回true并将此值设置为0 */
+        uint32_t insert_mode:1;                 /**< 输入时是否采用插入模式，为1时为插入模式（即新字符插入当前字符串），默认为覆盖模式（即直接覆盖当前字符） */
         uint32_t echo:1;                        /**< 是否回显 */
         uint32_t show_banner:1;                 /**< 是否显示banner */
     } flags;                                    /**< 标志 */
@@ -84,7 +85,7 @@ struct hshell_context
         hshell_command_t *array_base;           /**< 命令数组首地址 */
         size_t array_count;                     /**< 命令数组中命令的个数 */
     } command;                                  /**< 命令 */
-    int command_exit_code;                      /**< 最近一次命令（非内部命令）的退出代码 */
+    int command_exit_code;                      /**< 最近一次命令的退出代码 */
     uint8_t  escape_sequence[8];                /**< 转义序列 */
 };
 

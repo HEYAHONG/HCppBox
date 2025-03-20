@@ -57,6 +57,7 @@ void hshell_context_init(hshell_context_t *ctx)
     real_context->flags.escape=0;
     real_context->flags.return_newline_compatible=0;
     real_context->flags.input_complete=0;
+    real_context->flags.insert_mode=1;
     real_context->flags.echo=1;         //默认打开回显
     real_context->flags.show_banner=1;  //默认显示banner
     memset(real_context->buffer,0,sizeof(real_context->buffer));
@@ -718,6 +719,20 @@ static int hshell_process_control(hshell_context_t *ctx)
                 }
             }
 
+            if(!escape_processed && strcmp((char *)context->escape_sequence,"[2~")==0)
+            {
+                //insert键
+                escape_processed=true;
+                if(context->flags.insert_mode!=0)
+                {
+                    context->flags.insert_mode=0;
+                }
+                else
+                {
+                    context->flags.insert_mode=1;
+                }
+            }
+
             if(!escape_processed && strcmp((char *)context->escape_sequence,"[3~")==0)
             {
                 //del键
@@ -776,9 +791,9 @@ static bool hshell_process_input_check_complete(hshell_context_t *ctx)
         context->flags.input_complete=0;
         return true;
     }
-    if(context->buffer_ptr == (sizeof(context->buffer)-1))
+    if((context->buffer_ptr == (sizeof(context->buffer)-1)) || (strlen((char *)context->buffer) >= (sizeof(context->buffer)-1)))
     {
-        //缓冲区溢出
+        //缓冲区即将溢出
         return true;
     }
     return false;
@@ -891,7 +906,35 @@ static int hshell_process_input(hshell_context_t *ctx)
             uint8_t ch_val=(ch&0xFF);
             if(ch_val>=0x20)
             {
-                context->buffer[context->buffer_ptr++]=ch_val;
+                if(context->flags.insert_mode==0)
+                {
+                    context->buffer[context->buffer_ptr++]=ch_val;
+                }
+                else
+                {
+                    need_echo=false;
+                    uint8_t old_ch_val=context->buffer[context->buffer_ptr];
+                    context->buffer[context->buffer_ptr++]=ch_val;
+                    hshell_printf(context,"%c",(char)ch_val);
+                    size_t char_count=0;
+                    for(size_t i=context->buffer_ptr; i<(sizeof(context->buffer)-1); i++)
+                    {
+                        if(old_ch_val=='\0')
+                        {
+                            context->buffer[i]='\0';
+                            break;
+                        }
+                        uint8_t temp=context->buffer[i];
+                        context->buffer[i]=old_ch_val;
+                        old_ch_val=temp;
+                        hshell_printf(context,"%c",(char)context->buffer[i]);
+                        char_count++;
+                    }
+                    for(size_t i=0; i<char_count; i++)
+                    {
+                        hshell_printf(context,"\b");
+                    }
+                }
             }
         }
     }
