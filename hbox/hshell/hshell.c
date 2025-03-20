@@ -626,6 +626,11 @@ static int hshell_process_input(hshell_context_t *ctx)
         need_echo=false;
     }
     break;
+    case 0x09:  //HT,水平制表符，可通过Tab触发
+    {
+        need_echo=false;
+    }
+    break;
     case '\r':
     {
         context->flags.return_newline_compatible=1;
