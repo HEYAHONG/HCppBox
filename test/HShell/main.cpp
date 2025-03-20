@@ -208,12 +208,14 @@ static int invoke_command(int argc, const char* argv[])
     }
     if (pid == 0)
     {
+        set_disp_mode(STDIN_FILENO,1);
         execv(find_program(argv[0]).c_str(), (char**)argv);
     }
     else
     {
         int ret = 0;
         waitpid(pid, &ret, 0);
+        set_disp_mode(STDIN_FILENO,0);
         return ret;
     }
 #elif defined(WIN32) || defined(_WIN32)  || defined(_WIN64)
