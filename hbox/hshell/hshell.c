@@ -344,6 +344,7 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
                 {
                     if(context->command.array_base[i].entry!=NULL)
                     {
+                        ret=0;
                         context->command_exit_code=context->command.array_base[i].entry(argc,argv);
                     }
                     command_processed=true;
@@ -368,7 +369,7 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
         hshell_printf(context,"%s not found!\r\n",argv[0]);
         for(int i=0; i<argc; i++)
         {
-            hshell_printf(context,"argv%d=%s\r\n",(int)i,argv[i]);
+            hshell_printf(context,"\targv%d=%s\r\n",(int)i,argv[i]);
         }
     }
 
