@@ -701,9 +701,9 @@ static int hshell_process_input(hshell_context_t *ctx)
             {
                 hshell_printf(context,"\b");
             }
-            need_echo=false;
             context->buffer_ptr--;
         }
+        need_echo=false;
     }
     break;
     default:
