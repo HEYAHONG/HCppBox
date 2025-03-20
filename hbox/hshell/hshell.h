@@ -26,8 +26,9 @@ extern "C"
 
 typedef struct
 {
-    int (*getchar)(void);       /**< 获取字符，返回8位字符，失败返回EOF */
-    int (*putchar)(int ch);     /**< 输出字符，参数为8位字符 */
+    int (*getchar)(void);                                   /**< 获取字符，返回8位字符，失败返回EOF */
+    int (*putchar)(int ch);                                 /**< 输出字符，参数为8位字符 */
+    int (*invoke_command)(int argc,const char *argv[]);     /**< 启动命令。注意：此api的优先级是最低的，仅当其它执行方式失败时才使用此api */
 } hshell_context_external_api_t;         /**< 外部API */
 
 /** \brief hshell 获取默认的外部API
@@ -82,6 +83,7 @@ struct hshell_context
         hshell_command_t *array_base;           /**< 命令数组首地址 */
         size_t array_count;                     /**< 命令数组中命令的个数 */
     } command;                                  /**< 命令 */
+    int command_exit_code;                      /**< 最近一次命令（非内部命令）的退出代码 */
     uint8_t  escape_sequence[8];                /**< 转义序列 */
 };
 

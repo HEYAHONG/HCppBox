@@ -19,6 +19,7 @@ hshell_context_external_api_t hshell_context_default_external_api(void)
     hshell_context_external_api_t api= {0};
     api.getchar=getchar;
     api.putchar=putchar;
+    api.invoke_command=NULL;
     return api;
 }
 
@@ -343,12 +344,22 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
                 {
                     if(context->command.array_base[i].entry!=NULL)
                     {
-                        ret=context->command.array_base[i].entry(argc,argv);
+                        context->command_exit_code=context->command.array_base[i].entry(argc,argv);
                     }
                     command_processed=true;
                     break;
                 }
             }
+        }
+    }
+
+    if(!command_processed)
+    {
+        if(context->api.invoke_command!=NULL)
+        {
+            ret=0;
+            context->command_exit_code=context->api.invoke_command(argc,argv);
+            command_processed=true;
         }
     }
 
