@@ -110,23 +110,132 @@ static std::string find_program(std::string name)
     }
     return ret;
 }
-#endif
-static int invoke_command(int argc,const char *argv[])
+#elif defined(WIN32) || defined(_WIN32)  || defined(_WIN64)
+#include "windows.h"
+#include "process.h"
+#include "stdio.h"
+#include "io.h"
+static std::vector<std::string> get_path()
 {
-#if defined(__unix__)
-    int pid=fork();
-    if(pid==0)
+    std::vector<std::string> ret;
     {
-        execv(find_program(argv[0]).c_str(),(char **)argv);
+        const char* path_str = getenv("PATH");
+        if (path_str != NULL)
+        {
+            std::string path(path_str);
+            while (!path.empty())
+            {
+                size_t pos = path.find(";");
+                if (pos == std::string::npos)
+                {
+                    ret.push_back(path);
+                    path.clear();
+                }
+                else
+                {
+                    ret.push_back(path.substr(0, pos));
+                    path = path.substr(pos + 1);
+                }
+            }
+        }
+    }
+    //增加一些默认路径
+    ret.push_back("");
+    ret.push_back(".");
+    return ret;
+}
+static std::string find_program(std::string name)
+{
+    std::string ret = name;
+    {
+        std::vector<std::string> paths = get_path();
+        for (size_t i = 0; i < paths.size(); i++)
+        {
+            if (_access((paths[i] + "\\" + name).c_str(), 04) == 0)
+            {
+                ret = paths[i] + "\\" + name;
+                break;
+            }
+            if (_access((paths[i] + "\\" + name + ".exe").c_str(), 04) == 0)
+            {
+                ret = paths[i] + "\\" + name + ".exe";
+                break;
+            }
+
+            if (_access((paths[i] + "\\" + name + ".bat").c_str(), 04) == 0)
+            {
+                ret = paths[i] + "\\" + name + ".bat";
+                break;
+            }
+
+            if (_access((paths[i] + "\\" + name + ".cmd").c_str(), 04) == 0)
+            {
+                ret = paths[i] + "\\" + name + ".cmd";
+                break;
+            }
+        }
+    }
+    return ret;
+}
+
+static std::string get_cmdline(int argc, const char* argv[])
+{
+    std::string ret;
+    for (size_t i = 0; i < argc; i++)
+    {
+        if (argv[i] != NULL)
+        {
+            std::string arg(argv[i]);
+            if (arg.find(" ") != std::string::npos)
+            {
+                arg = (std::string("\"") + arg + "\"");
+            }
+            ret += (arg + " ");
+        }
+    }
+    return ret;
+}
+
+#endif
+static int invoke_command(int argc, const char* argv[])
+{
+    int ret = 0;
+#if defined(__unix__)
+    int pid = fork();
+    if (pid < 0)
+    {
+        return -1;
+    }
+    if (pid == 0)
+    {
+        execv(find_program(argv[0]).c_str(), (char**)argv);
     }
     else
     {
-        int ret=0;
-        waitpid(pid,&ret,0);
+        int ret = 0;
+        waitpid(pid, &ret, 0);
         return ret;
     }
+#elif defined(WIN32) || defined(_WIN32)  || defined(_WIN64)
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+    if (CreateProcessA(find_program(argv[0]).c_str(), (char *)get_cmdline(argc,argv).c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+    {
+        //等待子进程退出
+        WaitForSingleObject(pi.hProcess, INFINITE);
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+    }
+    else
+    {
+        ret = -1;
+    }
+
 #endif
-    return 0;
+    return ret;
 }
 
 int main(int argc,const char *argv[])
