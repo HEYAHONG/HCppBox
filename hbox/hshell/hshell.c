@@ -246,7 +246,7 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
             if(argv[1]==NULL || strlen(argv[1])==0)
             {
                 hshell_printf(context,"internal command:\r\n");
-                hshell_printf(context,"-------\t-------------\r\n");
+                hshell_printf(context,"-----------------\r\n");
                 hshell_printf(context,"\texit      exit shell             \r\n");
                 hshell_printf(context,"\thelp      show help              \r\n");
                 if(context->command.array_base!=NULL && context->command.array_count!=0)
