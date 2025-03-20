@@ -210,6 +210,8 @@ static int invoke_command(int argc, const char* argv[])
     {
         set_disp_mode(STDIN_FILENO,1);
         execv(find_program(argv[0]).c_str(), (char**)argv);
+        set_disp_mode(STDIN_FILENO,0);
+        exit(0);
     }
     else
     {
