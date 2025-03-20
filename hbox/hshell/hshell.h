@@ -214,7 +214,14 @@ int hshell_putchar(hshell_context_t *ctx,int ch);
  */
 int hshell_printf(hshell_context_t *ctx,const char *fmt,...);
 
-
+/** \brief hshell执行命令,注意:执行hshell循环时，此函数不能在其它线程调用，否则将影响执行状态
+ *
+ * \param ctx hshell_context_t* hshell上下文,为NULL时使用默认上下文
+ * \param cmdline char* 命令字符串
+ * \return int  返回值,命令返回值
+ *
+ */
+int hshell_execute(hshell_context_t *ctx,char *cmdline);
 
 /** \brief hshell进入循环，通常情况下，用户需要不断进入shell循环。
  *
