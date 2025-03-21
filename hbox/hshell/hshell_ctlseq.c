@@ -17,7 +17,7 @@ hshell_ctlseq_control_set_t hshell_ctlseq_control_set_get_from_bytes(uint8_t *co
     }
 
     //ECMA-48 C0 0x00 - 0x1F
-    if(control_bytes[0] >= 0 && control_bytes[0] <= 0x1F)
+    if(control_bytes[0] <= 0x1F)
     {
         ret=(hshell_ctlseq_control_set_t)control_bytes[0];
     }
