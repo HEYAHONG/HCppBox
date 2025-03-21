@@ -1,4 +1,4 @@
-# 说明
+说明
 
 hbox意为HYH的工具箱。
 
@@ -434,3 +434,9 @@ nanopb_generator可通过以下方式获取：
 | `"[3~"`  | 删除键    | 将删除当前光标上的字符 |
 
 注意：在通用平台验证终端转义序列时，默认只支持在unix或者类unix（如Linux）上验证，Windows平台不予考虑。
+
+本组件支持的控制字符与终端转义序列为PC风格(即使用PC键盘)，参考链接如下：
+
+- [xterm-ctlseq](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+  )
+
