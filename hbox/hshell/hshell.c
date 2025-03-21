@@ -502,6 +502,79 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
     return ret;
 }
 
+static void hshell_process_execute_arg_parse_strip_quotation_remove_one_char(char *str,size_t i)
+{
+    if(str==NULL)
+    {
+        return ;
+    }
+    size_t str_len=strlen(str);
+    for(;i<str_len;i++)
+    {
+        str[i]=str[i+1];
+    }
+}
+
+static void hshell_process_execute_arg_parse_strip_quotation(char *str)
+{
+    if(str==NULL)
+    {
+        return ;
+    }
+    size_t str_len=strlen(str);
+    char quotation_char='\0';
+    for(size_t i=0;i<str_len;)
+    {
+        bool need_index_inc=true;
+        if(str[i]==(char)'\'' || str[i]==(char)'\"')
+        {
+            if(quotation_char=='\0')
+            {
+                bool enter_quotation=true;
+                if(i>0)
+                {
+                    if(str[i-1]=='\\')
+                    {
+                        enter_quotation=false;
+                    }
+                }
+                if(enter_quotation)
+                {
+                    quotation_char=str[i];
+                    hshell_process_execute_arg_parse_strip_quotation_remove_one_char(str,i);
+                    str_len=strlen(str);
+                    need_index_inc=false;
+                }
+            }
+            else
+            {
+                //引号结束
+                bool exit_quotation=true;
+                if(i>0)
+                {
+                    if(str[i-1]=='\\')
+                    {
+                        exit_quotation=false;
+                    }
+                }
+                if(exit_quotation)
+                {
+                    quotation_char='\0';
+                    hshell_process_execute_arg_parse_strip_quotation_remove_one_char(str,i);
+                    str_len=strlen(str);
+                    need_index_inc=false;
+                }
+            }
+        }
+
+        if(need_index_inc)
+        {
+            i++;
+        }
+    }
+}
+
+
 static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline)
 {
     int ret=0;
@@ -619,6 +692,14 @@ static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline)
             }
             argv[2 + argc - 1]=NULL;
             argc--;
+        }
+    }
+
+    {
+        //去除引号
+        for(size_t i=0;i<argc;i++)
+        {
+            hshell_process_execute_arg_parse_strip_quotation((char *)argv[2 + i]);
         }
     }
 
