@@ -14,6 +14,7 @@
 #include "stdint.h"
 #include "hcompiler.h"
 #include "hdefaults.h"
+#include "hshell_defaults.h"
 #include "hshell_ctlseq.h"
 
 #ifdef __cplusplus
@@ -21,9 +22,6 @@ extern "C"
 {
 #endif // __cplusplus
 
-#ifndef EOF
-#define EOF (-1)
-#endif // EOF
 
 typedef struct
 {
@@ -47,16 +45,7 @@ hshell_context_external_api_t hshell_context_default_external_api(void);
  */
 const char * hshell_context_default_prompt_string(void);
 
-/*
- * hshell缓冲大小，此大小限制了用户一个命令的最大长度
- */
-#ifndef HSHELL_CONTEXT_BUFFER_SIZE
-#if defined(HDEFAULTS_OS_UNIX) || defined(HDEFAULTS_OS_WINDOWS)
-#define HSHELL_CONTEXT_BUFFER_SIZE 4096
-#else
-#define HSHELL_CONTEXT_BUFFER_SIZE 64
-#endif
-#endif // HSHELL_CONTEXT_BUFFER_SIZE
+
 
 struct hshell_command;
 typedef struct hshell_command hshell_command_t;
@@ -232,18 +221,6 @@ int hshell_execute(hshell_context_t *ctx,char *cmdline);
  *
  */
 int hshell_loop(hshell_context_t *ctx);
-
-
-/*
- * 最大的argc大小
- */
-#ifndef HSHELL_MAX_ARGC
-#if defined(HDEFAULTS_OS_UNIX) || defined(HDEFAULTS_OS_WINDOWS)
-#define HSHELL_MAX_ARGC 256
-#else
-#define HSHELL_MAX_ARGC 8
-#endif
-#endif // HSHELL_MAX_ARGC
 
 
 /** \brief 命令入口

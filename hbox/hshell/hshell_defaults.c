@@ -1,14 +1,11 @@
 /***************************************************************
- * Name:      hshell.c
- * Purpose:   实现hshell接口
+ * Name:      hshell_defaults.c
+ * Purpose:   实现hshell_defaults接口
  * Author:    HYH (hyhsystem.cn)
- * Created:   2025-03-15
+ * Created:   2025-03-21
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
 
-#include "hshell.h"
+#include "hshell_defaults.h"
 
-#include "hshell/hshell.c"
-#include "hshell/hshell_ctlseq.c"
-#include "hshell/hshell_defaults.c"
