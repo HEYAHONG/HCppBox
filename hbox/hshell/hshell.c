@@ -680,88 +680,113 @@ static int hshell_process_control(hshell_context_t *ctx)
             }
         }
 
+        if(context->escape_sequence[0]!='\0')
         {
             //处理转义序列
             bool escape_processed=false;
 
-            if(!escape_processed && strcmp((char *)context->escape_sequence,"[A")==0)
+            hshell_ctlseq_control_set_t ctrl_char=HSHELL_CTLSEQ_CONTROL_SET_INVAILD;
             {
-                //上键
-                escape_processed=true;
-            }
-
-            if(!escape_processed && strcmp((char *)context->escape_sequence,"[B")==0)
-            {
-                //下键
-                escape_processed=true;
-            }
-
-            if(!escape_processed && strcmp((char *)context->escape_sequence,"[C")==0)
-            {
-                //右键
-                escape_processed=true;
-                if(context->buffer[context->buffer_ptr]!='\0')
+                uint8_t control_bytes[sizeof(context->escape_sequence)]= {0};
+                for(size_t i=0; i<(sizeof(control_bytes)-1); i++)
                 {
-                    hshell_printf(context,"%c",(char)context->buffer[context->buffer_ptr]);
-                    context->buffer_ptr++;
+                    control_bytes[i+1]=context->escape_sequence[i];
+                }
+                control_bytes[0]=((uint8_t)HSHELL_CTLSEQ_CONTROL_SET_C0_ESC);
+                ctrl_char=hshell_ctlseq_control_set_get_from_bytes(control_bytes,sizeof(control_bytes));
+            }
+
+            switch(ctrl_char)
+            {
+            case HSHELL_CTLSEQ_CONTROL_SET_C1_CSI:
+            {
+                if(!escape_processed && strcmp((char *)context->escape_sequence,"[A")==0)
+                {
+                    //上键
+                    escape_processed=true;
                 }
 
-            }
-
-            if(!escape_processed && strcmp((char *)context->escape_sequence,"[D")==0)
-            {
-                //左键
-                escape_processed=true;
-                if(context->buffer_ptr>0)
+                if(!escape_processed && strcmp((char *)context->escape_sequence,"[B")==0)
                 {
-                    hshell_printf(context,"\b");
-                    context->buffer_ptr--;
+                    //下键
+                    escape_processed=true;
                 }
-            }
 
-            if(!escape_processed && strcmp((char *)context->escape_sequence,"[2~")==0)
-            {
-                //insert键
-                escape_processed=true;
-                if(context->flags.insert_mode!=0)
+                if(!escape_processed && strcmp((char *)context->escape_sequence,"[C")==0)
                 {
-                    context->flags.insert_mode=0;
-                }
-                else
-                {
-                    context->flags.insert_mode=1;
-                }
-            }
-
-            if(!escape_processed && strcmp((char *)context->escape_sequence,"[3~")==0)
-            {
-                //del键
-                escape_processed=true;
-                {
-                    size_t char_count=0;
-                    for(size_t i=context->buffer_ptr; i<(sizeof(context->buffer)-1); i++)
+                    //右键
+                    escape_processed=true;
+                    if(context->buffer[context->buffer_ptr]!='\0')
                     {
-                        if(context->buffer[i+1]!='\0')
-                        {
-                            context->buffer[i]=context->buffer[i+1];
-                            hshell_printf(context,"%c",(char)context->buffer[i]);
-                            char_count++;
-                        }
-                        else
-                        {
-                            context->buffer[i]='\0';
-                            hshell_printf(context," ");
-                            char_count++;
-                            break;
-                        }
+                        hshell_printf(context,"%c",(char)context->buffer[context->buffer_ptr]);
+                        context->buffer_ptr++;
                     }
-                    for(size_t i=0; i<char_count; i++)
+
+                }
+
+                if(!escape_processed && strcmp((char *)context->escape_sequence,"[D")==0)
+                {
+                    //左键
+                    escape_processed=true;
+                    if(context->buffer_ptr>0)
                     {
                         hshell_printf(context,"\b");
+                        context->buffer_ptr--;
                     }
                 }
-            }
 
+                if(!escape_processed && strcmp((char *)context->escape_sequence,"[2~")==0)
+                {
+                    //insert键
+                    escape_processed=true;
+                    if(context->flags.insert_mode!=0)
+                    {
+                        context->flags.insert_mode=0;
+                    }
+                    else
+                    {
+                        context->flags.insert_mode=1;
+                    }
+                }
+
+                if(!escape_processed && strcmp((char *)context->escape_sequence,"[3~")==0)
+                {
+                    //del键
+                    escape_processed=true;
+                    {
+                        size_t char_count=0;
+                        for(size_t i=context->buffer_ptr; i<(sizeof(context->buffer)-1); i++)
+                        {
+                            if(context->buffer[i+1]!='\0')
+                            {
+                                context->buffer[i]=context->buffer[i+1];
+                                hshell_printf(context,"%c",(char)context->buffer[i]);
+                                char_count++;
+                            }
+                            else
+                            {
+                                context->buffer[i]='\0';
+                                hshell_printf(context," ");
+                                char_count++;
+                                break;
+                            }
+                        }
+                        for(size_t i=0; i<char_count; i++)
+                        {
+                            hshell_printf(context,"\b");
+                        }
+                    }
+                }
+
+            }
+            break;
+            default:
+            {
+                //不支持的控制字符，直接退出
+                escape_processed=true;
+            }
+            break;
+            }
 
             if(escape_processed)
             {
@@ -812,25 +837,25 @@ static int hshell_process_input(hshell_context_t *ctx)
     bool need_echo=true;
     switch(ch)
     {
-    case 0x04: //EOT,终端中可通过Ctrl-D触发。
+    case HSHELL_CTLSEQ_CONTROL_SET_C0_EOT: //EOT,终端中可通过Ctrl-D触发。
     case EOF:
     {
         ret=EOF;
         need_echo=false;
     }
     break;
-    case 0x09:  //HT,水平制表符，可通过Tab触发
+    case HSHELL_CTLSEQ_CONTROL_SET_C0_HT:  //HT,水平制表符，可通过Tab触发
     {
         need_echo=false;
     }
     break;
-    case '\r':
+    case HSHELL_CTLSEQ_CONTROL_SET_C0_CR:
     {
         context->flags.return_newline_compatible=1;
         context->flags.input_complete=1;
     }
     break;
-    case '\n':
+    case HSHELL_CTLSEQ_CONTROL_SET_C0_LF:
     {
         //处理字符串
         if( context->buffer_ptr>0)
@@ -847,18 +872,14 @@ static int hshell_process_input(hshell_context_t *ctx)
         context->flags.return_newline_compatible=0;
     }
     break;
-#if defined(HCOMPILER_MSVC)
-    case 0x1b:
-#else
-    case '\e':
-#endif
+    case HSHELL_CTLSEQ_CONTROL_SET_C0_ESC:
     {
         //处理特殊转义序列
         need_echo=false;
         context->flags.escape=1;
     }
     break;
-    case '\b':
+    case HSHELL_CTLSEQ_CONTROL_SET_C0_BS:
     {
         if(context->buffer_ptr>0)
         {
@@ -866,7 +887,7 @@ static int hshell_process_input(hshell_context_t *ctx)
         }
     }
     break;
-    case 0x7f: //   删除字符
+    case HSHELL_CTLSEQ_CONTROL_SET_DEL: //   删除字符
     {
         if(context->buffer_ptr>0)
         {

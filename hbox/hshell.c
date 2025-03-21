@@ -10,3 +10,4 @@
 #include "hshell.h"
 
 #include "hshell/hshell.c"
+#include "hshell/hshell_ctlseq.c"

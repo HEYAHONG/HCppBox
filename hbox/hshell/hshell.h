@@ -14,6 +14,7 @@
 #include "stdint.h"
 #include "hcompiler.h"
 #include "hdefaults.h"
+#include "hshell_ctlseq.h"
 
 #ifdef __cplusplus
 extern "C"
