@@ -908,6 +908,70 @@ static bool hshell_process_input_check_complete(hshell_context_t *ctx)
     return false;
 }
 
+static void hshell_process_input_strip_comments(char *line)
+{
+    if(line==NULL)
+    {
+        return;
+    }
+    size_t line_len=strlen(line);
+    char quotation_char='\0';
+    for(size_t i=0;i<line_len;i++)
+    {
+        if(line[i]==(char)'\'' || line[i]==(char)'\"')
+        {
+            if(quotation_char=='\0')
+            {
+                bool enter_quotation=true;
+                if(i>0)
+                {
+                    if(line[i-1]=='\\')
+                    {
+                        enter_quotation=false;
+                    }
+                }
+                if(enter_quotation)
+                {
+                    quotation_char=line[i];
+                }
+            }
+            else
+            {
+                //引号结束
+                bool exit_quotation=true;
+                if(i>0)
+                {
+                    if(line[i-1]=='\\')
+                    {
+                        exit_quotation=false;
+                    }
+                }
+                if(exit_quotation)
+                {
+                    quotation_char='\0';
+                }
+            }
+        }
+        if(line[i]=='#')
+        {
+            bool need_strip=true;
+            if(i>0 && line[i-1]=='\\')
+            {
+                need_strip=false;
+            }
+            if(need_strip && quotation_char!='\0')
+            {
+                need_strip=false;
+            }
+            if(need_strip)
+            {
+                line[i]='\0';
+                break;
+            }
+        }
+    }
+}
+
 static int hshell_process_input(hshell_context_t *ctx)
 {
     int ret=0;
@@ -937,14 +1001,16 @@ static int hshell_process_input(hshell_context_t *ctx)
     {
         context->flags.return_newline_compatible=1;
         context->flags.input_complete=1;
+        hshell_process_input_strip_comments((char *)context->buffer);
     }
     break;
     case HSHELL_CTLSEQ_CONTROL_SET_C0_LF:
     {
         //处理字符串
-        if( context->buffer_ptr>0)
+        if( strlen((const char *)context->buffer)>0)
         {
             context->flags.input_complete=1;
+            hshell_process_input_strip_comments((char *)context->buffer);
         }
         else
         {
@@ -1049,6 +1115,7 @@ static int hshell_process_input(hshell_context_t *ctx)
     //检查是否可执行
     if(hshell_process_input_check_complete(ctx))
     {
+        hshell_process_input_strip_comments((char *)context->buffer);
         ret=hshell_process_input_start_execute(ctx);
     }
 

@@ -442,3 +442,5 @@ nanopb_generator可通过以下方式获取：
 - [ECMA-48](https://ecma-international.org/wp-content/uploads/ECMA-48_5th_edition_june_1991.pdf)
 
 本组件支持引号，主要用作含有空格字符的参数字符串。无论是单引号还是双引号，均可用作引号。当一种引号开始后，另一种引号变为普通字符，直到该引号结束。
+
+本组件支持单行注释，除非#号在引号内或者#号前有\字符，每行#号字符及其后的字符将被忽略。
