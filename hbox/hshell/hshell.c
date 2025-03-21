@@ -565,6 +565,24 @@ static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline)
 
             current_ptr++;
 
+            if(quotation_char!='\0' && cmdline[current_ptr]==quotation_char)
+            {
+                //引号结束
+                bool exit_quotation=true;
+                if(current_ptr>0)
+                {
+                    if(cmdline[current_ptr-1]=='\\')
+                    {
+                        exit_quotation=false;
+                    }
+                }
+                if(exit_quotation)
+                {
+                    quotation_char='\0';
+                    current_ptr++;
+                }
+            }
+
             if(cmdline[current_ptr]==' ' && quotation_char=='\0')
             {
                 cmdline[current_ptr]='\0';
@@ -581,22 +599,6 @@ static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline)
                 }
             }
 
-            if(quotation_char!='\0' && cmdline[current_ptr]==quotation_char)
-            {
-                //引号结束
-                bool exit_quotation=true;
-                if(current_ptr>0)
-                {
-                    if(cmdline[current_ptr-1]=='\\')
-                    {
-                        exit_quotation=false;
-                    }
-                }
-                if(exit_quotation)
-                {
-                    quotation_char='\0';
-                }
-            }
 
             if(cmdline[current_ptr]=='\0')
             {
