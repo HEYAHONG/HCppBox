@@ -439,4 +439,5 @@ nanopb_generator可通过以下方式获取：
 
 - [xterm-ctlseq](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html
   )
+- [ECMA-48](https://ecma-international.org/wp-content/uploads/ECMA-48_5th_edition_june_1991.pdf)
 
