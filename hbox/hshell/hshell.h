@@ -86,7 +86,7 @@ struct hshell_context
         size_t array_count;                     /**< 命令数组中命令的个数 */
     } command;                                  /**< 命令 */
     int command_exit_code;                      /**< 最近一次命令的退出代码 */
-    uint8_t  escape_sequence[8];                /**< 转义序列 */
+    uint8_t  escape_sequence[12];               /**< 转义序列 */
 };
 
 /** \brief hshell 获取获取默认上下文
