@@ -716,7 +716,7 @@ static int hshell_process_control(hshell_context_t *ctx)
                 {
                     //右键
                     escape_processed=true;
-                    if(context->buffer[context->buffer_ptr]!='\0')
+                    if(context->buffer[context->buffer_ptr]!='\0' && context->flags.echo != 0)
                     {
                         hshell_printf(context,"%c",(char)context->buffer[context->buffer_ptr]);
                         context->buffer_ptr++;
@@ -728,7 +728,7 @@ static int hshell_process_control(hshell_context_t *ctx)
                 {
                     //左键
                     escape_processed=true;
-                    if(context->buffer_ptr>0)
+                    if(context->buffer_ptr>0 && context->flags.echo != 0)
                     {
                         hshell_printf(context,"\b");
                         context->buffer_ptr--;
@@ -753,6 +753,7 @@ static int hshell_process_control(hshell_context_t *ctx)
                 {
                     //del键
                     escape_processed=true;
+                    if(context->flags.echo != 0)
                     {
                         size_t char_count=0;
                         for(size_t i=context->buffer_ptr; i<(sizeof(context->buffer)-1); i++)
@@ -889,7 +890,7 @@ static int hshell_process_input(hshell_context_t *ctx)
     break;
     case HSHELL_CTLSEQ_CONTROL_SET_DEL: //   删除字符
     {
-        if(context->buffer_ptr>0)
+        if(context->buffer_ptr>0 &&context->flags.echo != 0)
         {
             hshell_printf(context,"\b");
             hshell_printf(context," ");
@@ -927,7 +928,7 @@ static int hshell_process_input(hshell_context_t *ctx)
             uint8_t ch_val=(ch&0xFF);
             if(ch_val>=0x20)
             {
-                if(context->flags.insert_mode==0)
+                if(context->flags.insert_mode==0 || context->flags.echo==0)
                 {
                     context->buffer[context->buffer_ptr++]=ch_val;
                 }
