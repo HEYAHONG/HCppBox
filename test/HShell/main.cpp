@@ -48,8 +48,8 @@ static hshell_command_t commands[]=
 {
     {
         command_time_main,
-        "time",
-        "show time"
+        "datetime",
+        "show date and time"
     }
 };
 
