@@ -1030,13 +1030,6 @@ static int hshell_process_input(hshell_context_t *ctx)
     }
     break;
     case HSHELL_CTLSEQ_CONTROL_SET_C0_BS:
-    {
-        if(context->buffer_ptr>0)
-        {
-            context->buffer_ptr--;
-        }
-    }
-    break;
     case HSHELL_CTLSEQ_CONTROL_SET_DEL: //   删除字符
     {
         if(context->buffer_ptr>0 &&context->flags.echo != 0)
