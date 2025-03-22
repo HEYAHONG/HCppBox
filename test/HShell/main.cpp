@@ -199,6 +199,7 @@ static std::string get_cmdline(int argc, const char* argv[])
 #endif
 static int invoke_command(int argc, const char* argv[])
 {
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
     int ret = 0;
 #if defined(__unix__)
     int pid = fork();
@@ -209,7 +210,12 @@ static int invoke_command(int argc, const char* argv[])
     if (pid == 0)
     {
         set_disp_mode(STDIN_FILENO,1);
-        execv(find_program(argv[0]).c_str(), (char**)argv);
+        if(execv(find_program(argv[0]).c_str(), (char**)argv) < 0);
+        {
+            hshell_printf(hshell_ctx,"%s not found!\n",argv[0]);
+            set_disp_mode(STDIN_FILENO,0);
+            exit(-1);
+        }
         set_disp_mode(STDIN_FILENO,0);
         exit(0);
     }
@@ -235,6 +241,7 @@ static int invoke_command(int argc, const char* argv[])
     }
     else
     {
+        hshell_printf(hshell_ctx,"%s not found!\n",argv[0]);
         ret = -1;
     }
 
