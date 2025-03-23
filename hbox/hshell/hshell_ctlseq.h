@@ -87,6 +87,9 @@ typedef enum
  */
 hshell_ctlseq_control_set_t hshell_ctlseq_control_set_get_from_bytes(uint8_t *control_bytes,size_t length);
 
+
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

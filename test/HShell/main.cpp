@@ -210,7 +210,7 @@ static int invoke_command(int argc, const char* argv[])
     if (pid == 0)
     {
         set_disp_mode(STDIN_FILENO,1);
-        if(execv(find_program(argv[0]).c_str(), (char**)argv) < 0);
+        if(execv(find_program(argv[0]).c_str(), (char**)argv) < 0)
         {
             hshell_printf(hshell_ctx,"%s not found!\n",argv[0]);
             set_disp_mode(STDIN_FILENO,0);
