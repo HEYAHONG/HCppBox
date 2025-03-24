@@ -509,7 +509,7 @@ static void hshell_process_execute_arg_parse_strip_quotation_remove_one_char(cha
         return ;
     }
     size_t str_len=strlen(str);
-    for(;i<str_len;i++)
+    for(; i<str_len; i++)
     {
         str[i]=str[i+1];
     }
@@ -523,7 +523,7 @@ static void hshell_process_execute_arg_parse_strip_quotation(char *str)
     }
     size_t str_len=strlen(str);
     char quotation_char='\0';
-    for(size_t i=0;i<str_len;)
+    for(size_t i=0; i<str_len;)
     {
         bool need_index_inc=true;
         if(str[i]==(char)'\'' || str[i]==(char)'\"')
@@ -658,17 +658,38 @@ static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline)
 
             if(cmdline[current_ptr]==' ' && quotation_char=='\0')
             {
-                cmdline[current_ptr]='\0';
-                current_ptr++;
-                argc++;
-                if(argc >= (HSHELL_MAX_ARGC))
+                bool end_argv=true;
+                if(current_ptr>0)
                 {
-                    //超过允许的参数
-                    break;
+                    if(cmdline[current_ptr-1]=='\\')
+                    {
+                        end_argv=false;
+                    }
                 }
-                if(cmdline[current_ptr]!=' ' && cmdline[current_ptr]!='\0')
+
+                if(!end_argv)
                 {
-                    argv[2+argc]=(const char *)&cmdline[current_ptr];
+                    current_ptr++;
+                    if(cmdline[current_ptr]==' ')
+                    {
+                        end_argv=true;
+                    }
+                }
+
+                if(end_argv)
+                {
+                    cmdline[current_ptr]='\0';
+                    current_ptr++;
+                    argc++;
+                    if(argc >= (HSHELL_MAX_ARGC))
+                    {
+                        //超过允许的参数
+                        break;
+                    }
+                    if(cmdline[current_ptr]!=' ' && cmdline[current_ptr]!='\0')
+                    {
+                        argv[2+argc]=(const char *)&cmdline[current_ptr];
+                    }
                 }
             }
 
@@ -697,7 +718,7 @@ static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline)
 
     {
         //去除引号
-        for(size_t i=0;i<argc;i++)
+        for(size_t i=0; i<argc; i++)
         {
             hshell_process_execute_arg_parse_strip_quotation((char *)argv[2 + i]);
         }
@@ -916,7 +937,7 @@ static void hshell_process_input_strip_comments(char *line)
     }
     size_t line_len=strlen(line);
     char quotation_char='\0';
-    for(size_t i=0;i<line_len;i++)
+    for(size_t i=0; i<line_len; i++)
     {
         if(line[i]==(char)'\'' || line[i]==(char)'\"')
         {
