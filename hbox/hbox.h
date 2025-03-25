@@ -41,5 +41,6 @@
 #include "hfifo.h"
 #include "hsoftdog.h"
 #include "hobj.h"
+#include "hsim.h"
 
 #endif // HBOX_H_INCLUDED

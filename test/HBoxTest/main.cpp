@@ -1554,8 +1554,8 @@ static int hsimulator_test(int argc,const char *argv[])
         static hs_mcs_51_serial_t   mcs_51_uart;
         static hs_mcs_51_rom_t      mcs_51_rom=HS_MCS_51_ROM_INITIALIZER;
         static hs_mcs_51_ram_model_huge_t mcs_51_ram;
-        static hs_mcs_51_pin    mcs_51_pin;
-        static hs_mcs_51_timer  mcs_51_timer;
+        static hs_mcs_51_pin_t    mcs_51_pin;
+        static hs_mcs_51_timer_t  mcs_51_timer;
         hs_mcs_51_serial_init(&mcs_51_uart,[](hs_mcs_51_serial_t *serial,hs_mcs_51_serial_io_t io_type,uint16_t *data) -> bool
         {
             if(io_type==HS_MCS_51_SERIAL_IO_TRANSMIT)

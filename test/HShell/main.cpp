@@ -44,12 +44,18 @@ static int command_time_main(int argc,const char *argv[])
     hshell_printf(hshell_ctx,"%s",asctime(localtime(&time_now)));
     return 0;
 };
+ extern "C" int command_simmcs51_main(int argc,const char *argv[]);
 static hshell_command_t commands[]=
 {
     {
         command_time_main,
         "datetime",
         "show date and time"
+    },
+    {
+        command_simmcs51_main,
+        "simmcs51",
+        "simulator for mcs51"
     }
 };
 
