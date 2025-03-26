@@ -32,6 +32,28 @@ protected:
 
 static mcs51 s_mcs51;
 static std::string uart_buffer;
+static hshell_context_t simmcs51_ctx;
+static int cmd_reset(int argc,const char *argv[]);
+static int cmd_tick(int argc,const char *argv[]);
+static int cmd_uart(int argc,const char *argv[]);
+static hshell_command_t commands[]=
+{
+    {
+        cmd_reset,
+        "reset",
+        "reset machine"
+    },
+    {
+        cmd_tick,
+        "tick",
+        "clock tick. tick [number]"
+    },
+    {
+        cmd_uart,
+        "uart",
+        "uart input. uart [string]"
+    }
+};
 extern "C" int command_simmcs51_main(int argc,const char *argv[]);
 int command_simmcs51_main(int argc,const char *argv[])
 {
@@ -55,62 +77,45 @@ int command_simmcs51_main(int argc,const char *argv[])
         }
         return true;
     });
-    switch(argc)
     {
-    case 1:
-    {
-        //一个参数，打印帮助
-        hshell_printf(hshell_ctx,"simmcs51:\r\n");
-        hshell_printf(hshell_ctx,"reset\r\n\t\treset system\r\n");
-        hshell_printf(hshell_ctx,"tick [number]\r\n\t\tclock tick\r\n");
-        hshell_printf(hshell_ctx,"uart [string]\r\n\t\tuart input\r\n");
-    }
-    break;
-    case 2:
-    {
-        if(strcmp(argv[1],"reset")==0)
-        {
-            s_mcs51.reset();
-        }
-
-        if(strcmp(argv[1],"tick")==0)
-        {
-            s_mcs51.tick();
-        }
-
-    }
-    break;
-    case 3:
-    {
-        if(strcmp(argv[1],"tick")==0)
-        {
-            try
-            {
-                size_t cycles=std::stoull(argv[2]);
-                s_mcs51.tick(cycles);
-            }
-            catch(...)
-            {
-
-            }
-        }
-
-        if(strcmp(argv[1],"uart")==0)
-        {
-            if(strlen(argv[2])>0)
-            {
-                uart_buffer+=std::string(argv[2]);
-            }
-        }
-    }
-    break;
-    default:
-    {
-
-    }
-    break;
+        //配置hshell,并进入子上下文
+        hshell_prompt_string_set(&simmcs51_ctx,"simmcs51>");
+        hshell_show_banner_set(&simmcs51_ctx,false);
+        hshell_command_array_set(&simmcs51_ctx,commands,sizeof(commands)/sizeof(commands[0]));
+        hshell_subcontext_enter(hshell_ctx,&simmcs51_ctx);
     }
     return ret;
 }
 
+static int cmd_reset(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    s_mcs51.reset();
+    return 0;
+}
+
+static int cmd_tick(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    if(argc==1)
+    {
+        s_mcs51.tick();
+    }
+    if(argc>=2)
+    {
+        size_t cycles=std::stoull(argv[1]);
+        s_mcs51.tick(cycles);
+    }
+    return 0;
+}
+
+static int cmd_uart(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    if(strlen(argv[1])>0)
+    {
+        uart_buffer+=std::string(argv[1]);
+    }
+    return 0;
+}
 

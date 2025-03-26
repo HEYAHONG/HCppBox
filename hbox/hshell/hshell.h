@@ -77,6 +77,11 @@ struct hshell_context
     } command;                                  /**< 命令 */
     int command_exit_code;                      /**< 最近一次命令的退出代码 */
     uint8_t  escape_sequence[12];               /**< 转义序列 */
+    struct
+    {
+        hshell_context_t *next;                 /**< 下一个上下文，当此指针不为空时，循环将直接进入此指针所指的上下文 */
+        hshell_context_t *prev;                 /**< 原上下文，当此指针不为空时，表示现在的上下文是作为子上下文存在的 */
+    } sub_context;                              /**< 子上下文，允许进入子上下文(此时原上下文处于不活跃状态)*/
 };
 
 /** \brief hshell 获取获取默认上下文
@@ -222,6 +227,28 @@ int hshell_execute(hshell_context_t *ctx,char *cmdline);
  */
 int hshell_loop(hshell_context_t *ctx);
 
+
+/** \brief hshell进入上下文
+ *
+ * \param ctx hshell_context_t* 当前上下文
+ * \param next_ctx hshell_context_t* 子上下文，不可为NULL，注意：子上下文一般不能在栈上分配。
+ *
+ */
+void hshell_subcontext_enter(hshell_context_t *ctx,hshell_context_t *next_ctx);
+
+/** \brief hshell退出子上下文（由原上下文调用）
+ *
+ * \param ctx hshell_context_t* 原上下文
+ *
+ */
+void hshell_subcontext_exit(hshell_context_t *ctx);
+
+/** \brief hshell退出子上下文（由子上下文调用）
+ *
+ * \param sub_ctx hshell_context_t* 子上下文，不可为NULL
+ *
+ */
+void hshell_subcontext_exit_from_sub(hshell_context_t *sub_ctx);
 
 /** \brief 命令入口
  */

@@ -65,6 +65,7 @@ void hshell_context_init(hshell_context_t *ctx)
     real_context->command.array_base=NULL;
     real_context->command.array_count=0;
     memset(real_context->escape_sequence,0,sizeof(real_context->escape_sequence));
+    memset(&real_context->sub_context,0,sizeof(real_context->sub_context));
 }
 
 static hshell_context_t *hshell_context_check_context(hshell_context_t *ctx)
@@ -237,6 +238,16 @@ static int hshell_internal_command_exit_entry(hshell_context_t *ctx,int *ret_cod
         //内部返回码为EOF
         (*ret_code)=EOF;
     }
+
+    {
+        //若在子上下文中执行，退出子上下文并返回正常
+        if(context->sub_context.prev!=NULL)
+        {
+            (*ret_code)=0;//返回0,而不退出
+            hshell_subcontext_exit_from_sub(context);
+        }
+    }
+
     //退出登录
     context->flags.login=0;
     return ret;
@@ -254,7 +265,7 @@ static struct
     {
         hshell_internal_command_exit_entry,
         "exit",
-        "exit shell"
+        "exit shell or exit subcontext"
     },
     {
         hshell_internal_command_help_entry,
@@ -1159,6 +1170,15 @@ int hshell_loop(hshell_context_t *ctx)
 {
     int ret=0;
     hshell_context_t *context=hshell_context_check_context(ctx);
+
+    if(context->sub_context.next!=NULL)
+    {
+        hshell_context_t *sub_context=hshell_context_check_context(context->sub_context.next);
+        sub_context->api=context->api;
+        sub_context->sub_context.prev=context;
+        return hshell_loop(context->sub_context.next);
+    }
+
     if((ret=hshell_login(context))<0)
     {
         return ret;
@@ -1185,6 +1205,36 @@ int hshell_loop(hshell_context_t *ctx)
     }
 
     return ret;
+}
+
+
+void hshell_subcontext_enter(hshell_context_t *ctx,hshell_context_t *next_ctx)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    if(next_ctx==NULL || next_ctx==context)
+    {
+        return;
+    }
+    context->sub_context.next=next_ctx;
+}
+
+void hshell_subcontext_exit(hshell_context_t *ctx)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    if(context->sub_context.next!=NULL)
+    {
+        context->sub_context.next=NULL;
+    }
+}
+
+void hshell_subcontext_exit_from_sub(hshell_context_t *sub_ctx)
+{
+    hshell_context_t *context=hshell_context_check_context(sub_ctx);
+    if(context->sub_context.prev!=NULL)
+    {
+        context->sub_context.prev->sub_context.next=NULL;
+        context->sub_context.prev=NULL;
+    }
 }
 
 hshell_context_t * hshell_context_get_from_main_argv(int argc,const char *argv[])
