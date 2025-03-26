@@ -40,6 +40,16 @@ struct hs_mcs_51_rom
  */
 #define HS_MCS_51_ROM_INITIALIZER {NULL,0,HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS}
 
+/** \brief MCS-51 ROM读取
+ *
+ * \param rom hs_mcs_51_rom_t       MCS-51 ROM
+ * \param addr uint32_t             地址
+ * \param data uint8_t*             数据指针
+ * \return bool 是否读取成功
+ *
+ */
+bool hs_mcs_51_rom_read(hs_mcs_51_rom_t rom,uint32_t addr,uint8_t *data);
+
 /** \brief  MCS-51 ROM总线IO操作(一般由总线上的主设备(如CPU)调用)，注意：此操作不能在RAM操作之前调用
  *
   * \param core hs_mcs_51_core_t*       MCS-51内核指针，见hs_mcs_51_io_t。

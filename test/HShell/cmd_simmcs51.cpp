@@ -1,6 +1,7 @@
 #include "hbox.h"
 #include <functional>
 #include <string>
+#include <fstream>
 
 class mcs51:public hsimmcs51huge
 {
@@ -36,6 +37,11 @@ static hshell_context_t simmcs51_ctx;
 static int cmd_reset(int argc,const char *argv[]);
 static int cmd_tick(int argc,const char *argv[]);
 static int cmd_uart(int argc,const char *argv[]);
+static int cmd_rom(int argc,const char *argv[]);
+static int cmd_dump_core(int argc,const char *argv[]);
+static int cmd_dump_ram(int argc,const char *argv[]);
+static int cmd_dump_xram(int argc,const char *argv[]);
+static int cmd_dump_rom(int argc,const char *argv[]);
 static hshell_command_t commands[]=
 {
     {
@@ -52,7 +58,32 @@ static hshell_command_t commands[]=
         cmd_uart,
         "uart",
         "uart input. uart [string]"
-    }
+    },
+    {
+        cmd_rom,
+        "rom",
+        "show rom list or set rom. rom [name]"
+    },
+    {
+        cmd_dump_core,
+        "dump_core",
+        "show PC and SFR"
+    },
+    {
+        cmd_dump_ram,
+        "dump_ram",
+        "show ram. dump_ram [address(hex)] [length]"
+    },
+    {
+        cmd_dump_xram,
+        "dump_xram",
+        "show xram. dump_xram [address(hex)] [length]"
+    },
+    {
+        cmd_dump_rom,
+        "dump_rom",
+        "show rom. dump_rom [address(hex)] [length]"
+    },
 };
 extern "C" int command_simmcs51_main(int argc,const char *argv[]);
 int command_simmcs51_main(int argc,const char *argv[])
@@ -119,3 +150,291 @@ static int cmd_uart(int argc,const char *argv[])
     return 0;
 }
 
+static struct
+{
+    const char *name;
+    const hs_mcs_51_rom_t *rom;
+} rom_list[]=
+{
+    {
+        "helloworld",
+        &hs_mcs_51_rom_helloworld
+    },
+    {
+        "helloworld_stdio",
+        &hs_mcs_51_rom_helloworld_stdio
+    }
+};
+static int cmd_rom(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    if(argc==1)
+    {
+        for(size_t i=0; i<sizeof(rom_list)/sizeof(rom_list[0]); i++)
+        {
+            if(rom_list[i].name!=NULL)
+            {
+                hshell_printf(hshell_ctx,"%d\t%s\r\n",(int)i,rom_list[i].name);
+            }
+        }
+    }
+    if(argc>=2)
+    {
+        bool is_rom_set=false;
+        if(!is_rom_set)
+        {
+            for(size_t i=0; i<sizeof(rom_list)/sizeof(rom_list[0]); i++)
+            {
+                if(strcmp(argv[1],rom_list[i].name)==0)
+                {
+                    s_mcs51.rom_set(*rom_list[i].rom);
+                    is_rom_set=true;
+                    hshell_printf(hshell_ctx,"%s loaded\r\n",rom_list[i].name!=NULL?rom_list[i].name:"");
+                    s_mcs51.reset();
+                    break;
+                }
+            }
+        }
+        if(!is_rom_set)
+        {
+            try
+            {
+                size_t pos=0;
+                size_t index=std::stoull(argv[1],&pos);
+                if(pos!=0 && index < (sizeof(rom_list)/sizeof(rom_list[0])))
+                {
+                    s_mcs51.rom_set(*rom_list[index].rom);
+                    is_rom_set=true;
+                    hshell_printf(hshell_ctx,"%s loaded\r\n",rom_list[index].name!=NULL?rom_list[index].name:"");
+                    s_mcs51.reset();
+                }
+            }
+            catch(...)
+            {
+
+            }
+        }
+        if(!is_rom_set)
+        {
+            std::string filename(argv[1]);
+            if(filename.find(".bin")==(filename.length()-strlen(".bin")))
+            {
+                std::ifstream file;
+                static std::string file_bin;
+                file.open(filename);
+                if(file.is_open())
+                {
+                    file_bin.clear();
+                    file >> file_bin;
+                    hs_mcs_51_rom_t rom= {0};
+                    rom.psbank_addr=HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS;
+                    rom.code=(uint8_t *)file_bin.c_str();
+                    rom.len=file_bin.length();
+                    s_mcs51.rom_set(rom);
+                    is_rom_set=true;
+                    hshell_printf(hshell_ctx,"%s loaded\r\n",argv[1]);
+                    s_mcs51.reset();
+                    file.close();
+                }
+            }
+        }
+        if(!is_rom_set)
+        {
+            hshell_printf(hshell_ctx,"%s not found\r\n",argv[1]);
+        }
+    }
+    return 0;
+}
+
+static int cmd_dump_core(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    {
+        hshell_printf(hshell_ctx,"PC=%04X\r\n",(int)hs_mcs_51_pc_get(s_mcs51.core_get()));
+        hshell_printf(hshell_ctx,"\r\nSFR:\r\n");
+        for(size_t i=0x80; i<0x100; i++)
+        {
+            if((i%16)==0)
+            {
+                hshell_printf(hshell_ctx,"%02X:\t",i);
+            }
+            uint8_t data=0;
+            hs_mcs_51_sfr_read(s_mcs51.core_get(),(hs_mcs_51_sfr_addr_t)i,&data);
+            hshell_printf(hshell_ctx,"%02X ",data);
+            if((i%16)==15)
+            {
+                hshell_printf(hshell_ctx,"\r\n");
+            }
+        }
+    }
+    return 0;
+}
+
+static int cmd_dump_ram(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    size_t start=0;
+    if(argc > 1)
+    {
+        try
+        {
+            start=std::stoull(argv[1],NULL,16);
+        }
+        catch(...)
+        {
+
+        }
+    }
+    size_t length=128;
+    if(argc > 2)
+    {
+        try
+        {
+            length=std::stoull(argv[2]);
+        }
+        catch(...)
+        {
+
+        }
+    }
+    if(start >= 0x100)
+    {
+        start=0xFF;
+    }
+    if(start+length > 0x100)
+    {
+        length=0x100-start;
+    }
+    if(length==0)
+    {
+        length=1;
+    }
+    {
+        hshell_printf(hshell_ctx,"\r\nRAM:\r\n");
+        for(size_t i=start; i<start+length; i++)
+        {
+            if((i%16)==0)
+            {
+                hshell_printf(hshell_ctx,"%02X:\t",i);
+            }
+            uint8_t data=0;
+            hs_mcs_51_ram_model_huge_ram_read(s_mcs51.ram_get(),i,&data);
+            hshell_printf(hshell_ctx,"%02X ",data);
+            if((i%16)==15)
+            {
+                hshell_printf(hshell_ctx,"\r\n");
+            }
+        }
+    }
+    return 0;
+}
+
+static int cmd_dump_xram(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    size_t start=0;
+    if(argc > 1)
+    {
+        try
+        {
+            start=std::stoull(argv[1],NULL,16);
+        }
+        catch(...)
+        {
+
+        }
+    }
+    size_t length=256;
+    if(argc > 2)
+    {
+        try
+        {
+            length=std::stoull(argv[2]);
+        }
+        catch(...)
+        {
+
+        }
+    }
+    if(start >= 0x10000)
+    {
+        start=0xFFFF;
+    }
+    if(start+length > 0x10000)
+    {
+        length=0x10000-start;
+    }
+    if(length==0)
+    {
+        length=1;
+    }
+    {
+        hshell_printf(hshell_ctx,"\r\nXRAM:\r\n");
+        for(size_t i=start; i<start+length; i++)
+        {
+            if((i%16)==0)
+            {
+                hshell_printf(hshell_ctx,"%04X:\t",i);
+            }
+            uint8_t data=0;
+            hs_mcs_51_ram_model_huge_xram_read(s_mcs51.ram_get(),i,&data);
+            hshell_printf(hshell_ctx,"%02X ",data);
+            if((i%16)==15)
+            {
+                hshell_printf(hshell_ctx,"\r\n");
+            }
+        }
+    }
+    return 0;
+}
+
+static int cmd_dump_rom(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    size_t start=0;
+    if(argc > 1)
+    {
+        try
+        {
+            start=std::stoull(argv[1],NULL,16);
+        }
+        catch(...)
+        {
+
+        }
+    }
+    size_t length=256;
+    if(argc > 2)
+    {
+        try
+        {
+            length=std::stoull(argv[2]);
+        }
+        catch(...)
+        {
+
+        }
+    }
+    if(length==0)
+    {
+        length=1;
+    }
+    {
+        hshell_printf(hshell_ctx,"\r\nROM:\r\n");
+        for(size_t i=start; i<start+length; i++)
+        {
+            if((i%16)==0)
+            {
+                hshell_printf(hshell_ctx,"%05X:\t",i);
+            }
+            uint8_t data=0;
+            hs_mcs_51_rom_read(s_mcs51.rom_get(),i,&data);
+            hshell_printf(hshell_ctx,"%02X ",data);
+            if((i%16)==15)
+            {
+                hshell_printf(hshell_ctx,"\r\n");
+            }
+        }
+    }
+    return 0;
+}

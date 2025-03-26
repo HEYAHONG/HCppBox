@@ -8,6 +8,22 @@
  **************************************************************/
 #include "mcs_51_rom.h"
 
+bool hs_mcs_51_rom_read(hs_mcs_51_rom_t rom,uint32_t addr,uint8_t *data)
+{
+    if(rom.code==NULL || data==NULL)
+    {
+        return false;
+    }
+
+    if(addr < rom.len)
+    {
+        (*data)=(uint8_t)rom.code[addr];
+        return true;
+    }
+
+    return false;
+}
+
 void hs_mcs_51_rom_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr,hs_mcs_51_rom_t *rom)
 {
     if(opt==HS_MCS_51_IO_RESET)

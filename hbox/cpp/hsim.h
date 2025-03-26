@@ -150,6 +150,11 @@ public:
         return rom;
     }
 
+    hs_mcs_51_ram_model_tiny_t *ram_get()
+    {
+        return &ram;
+    }
+
     hs_mcs_51_rom_t rom_set(const hs_mcs_51_rom_t &new_rom)
     {
         hs_mcs_51_rom_t old_rom=rom;
@@ -316,6 +321,11 @@ public:
     hs_mcs_51_rom_t rom_get()
     {
         return rom;
+    }
+
+    hs_mcs_51_ram_model_small_t *ram_get()
+    {
+        return &ram;
     }
 
     hs_mcs_51_rom_t rom_set(const hs_mcs_51_rom_t &new_rom)
@@ -485,6 +495,11 @@ public:
     hs_mcs_51_rom_t rom_get()
     {
         return rom;
+    }
+
+    hs_mcs_51_ram_model_medium_t *ram_get()
+    {
+        return &ram;
     }
 
     hs_mcs_51_rom_t rom_set(const hs_mcs_51_rom_t &new_rom)
@@ -657,6 +672,11 @@ public:
         return rom;
     }
 
+    hs_mcs_51_ram_model_large_t *ram_get()
+    {
+        return &ram;
+    }
+
     hs_mcs_51_rom_t rom_set(const hs_mcs_51_rom_t &new_rom)
     {
         hs_mcs_51_rom_t old_rom=rom;
@@ -823,6 +843,11 @@ public:
     hs_mcs_51_rom_t rom_get()
     {
         return rom;
+    }
+
+    hs_mcs_51_ram_model_huge_t *ram_get()
+    {
+        return &ram;
     }
 
     hs_mcs_51_rom_t rom_set(const hs_mcs_51_rom_t &new_rom)
