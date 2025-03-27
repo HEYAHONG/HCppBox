@@ -124,6 +124,7 @@ int command_simmcs51_main(int argc,const char *argv[])
         //配置hshell,并进入子上下文
         hshell_prompt_string_set(&simmcs51_ctx,"simmcs51>");
         hshell_show_banner_set(&simmcs51_ctx,false);
+        hshell_command_name_shortcut_set(&simmcs51_ctx,true);
         hshell_echo_set(&simmcs51_ctx, hshell_echo_get(hshell_ctx));
         hshell_command_array_set(&simmcs51_ctx,commands,sizeof(commands)/sizeof(commands[0]));
         hshell_subcontext_enter(hshell_ctx,&simmcs51_ctx);

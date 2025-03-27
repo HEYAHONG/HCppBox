@@ -60,6 +60,7 @@ void hshell_context_init(hshell_context_t *ctx)
     real_context->flags.insert_mode=1;
     real_context->flags.echo=1;         //默认打开回显
     real_context->flags.show_banner=1;  //默认显示banner
+    real_context->flags.command_name_shortcut=0;
     memset(real_context->buffer,0,sizeof(real_context->buffer));
     real_context->buffer_ptr=0;
     real_context->command.array_base=NULL;
@@ -121,6 +122,20 @@ bool hshell_echo_get(hshell_context_t *ctx)
 {
     hshell_context_t *context=hshell_context_check_context(ctx);
     return context->flags.echo!=0;
+}
+
+bool hshell_command_name_shortcut_set(hshell_context_t *ctx,bool command_name_shortcut)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    bool old_command_name_shortcut=(context->flags.command_name_shortcut!=0);
+    context->flags.command_name_shortcut=(command_name_shortcut?0x1:0x0);
+    return old_command_name_shortcut;
+}
+
+bool hshell_command_name_shortcut_get(hshell_context_t *ctx)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    return context->flags.command_name_shortcut!=0;
 }
 
 bool hshell_show_banner_set(hshell_context_t *ctx,bool show_banner)
@@ -444,6 +459,32 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
     return ret;
 }
 
+static int hshell_process_execute_command_shortcut_strcmp(const char *str_short,const char *str_long)
+{
+    int ret=-1;
+    size_t str_short_len=0;
+    if(str_short == NULL || (str_short_len=strlen(str_short))==0)
+    {
+        return ret;
+    }
+
+    size_t str_long_len=0;
+    if(str_long == NULL || (str_long_len=strlen(str_long)) < str_short_len)
+    {
+        return ret;
+    }
+
+    for(size_t i=0; i<str_short_len; i++)
+    {
+        ret=(str_short[i]-str_long[i]);
+        if(ret!=0)
+        {
+            break;
+        }
+    }
+
+    return ret;
+}
 
 static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const char *argv[])
 {
@@ -487,6 +528,42 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
                 }
                 command_processed=true;
                 break;
+            }
+        }
+    }
+
+    if(!command_processed)
+    {
+        if(context->flags.command_name_shortcut!=0)
+        {
+            int index_matched=-1; //匹配的引索。-1=初始化，-2=匹配的命令个数不唯一
+
+            if(context->command.array_base!=NULL && context->command.array_count!=0)
+            {
+                for(size_t i=0; i<context->command.array_count; i++)
+                {
+                    if(context->command.array_base[i].name!=NULL && hshell_process_execute_command_shortcut_strcmp(argv[0],context->command.array_base[i].name)==0)
+                    {
+                        if(context->command.array_base[i].entry!=NULL)
+                        {
+                            if(index_matched>=0)
+                            {
+                                index_matched=-2;
+                            }
+                            if(index_matched==-1)
+                            {
+                                index_matched=i;
+                            }
+                        }
+                    }
+                }
+
+
+                if(index_matched >= 0)
+                {
+                    context->command_exit_code=context->command.array_base[index_matched].entry(argc,argv);
+                    command_processed=true;
+                }
             }
         }
     }

@@ -67,6 +67,7 @@ struct hshell_context
         uint32_t insert_mode:1;                 /**< 输入时是否采用插入模式，为1时为插入模式（即新字符插入当前字符串），默认为覆盖模式（即直接覆盖当前字符） */
         uint32_t echo:1;                        /**< 是否回显 */
         uint32_t show_banner:1;                 /**< 是否显示banner */
+        uint32_t command_name_shortcut:1;       /**< 当此值为1时，当用户输入的命令名称匹配某个命令的前几个字母时视为匹配成功 */
     } flags;                                    /**< 标志 */
     uint8_t buffer[HSHELL_CONTEXT_BUFFER_SIZE]; /**< 缓冲 */
     size_t  buffer_ptr;
@@ -170,6 +171,24 @@ bool hshell_show_banner_set(hshell_context_t *ctx,bool show_banner);
  *
  */
 bool hshell_show_banner_get(hshell_context_t *ctx);
+
+/** \brief hshell命令名称shortcut设置
+ *
+ * \param ctx hshell_context_t* hshell上下文,为NULL时使用默认上下文
+ * \param  command_name_shortcut bool 命令名称shortcut设置
+ * \return bool 命令名称shortcut设置
+ *
+ */
+bool hshell_command_name_shortcut_set(hshell_context_t *ctx,bool command_name_shortcut);
+
+
+/** \brief hshell获取命令名称shortcut设置
+ *
+ * \param ctx hshell_context_t* hshell上下文,为NULL时使用默认上下文
+ * \return bool 命令名称shortcut设置
+ *
+ */
+bool hshell_command_name_shortcut_get(hshell_context_t *ctx);
 
 /** \brief hshell设置命令数组
  *
