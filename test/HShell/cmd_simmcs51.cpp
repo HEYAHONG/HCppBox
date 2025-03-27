@@ -472,6 +472,19 @@ static int cmd_disassembly(int argc,const char *argv[])
 {
     hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
     size_t start=0;
+    size_t length=256;
+    {
+        //默认地址由PC决定
+        start=hs_mcs_51_pc_get(s_mcs51.core_get());
+        if(start >= length/2)
+        {
+            start-=length/2;
+        }
+        else
+        {
+            start=0;
+        }
+    }
     if(argc > 1)
     {
         try
@@ -483,7 +496,6 @@ static int cmd_disassembly(int argc,const char *argv[])
 
         }
     }
-    size_t length=256;
     if(argc > 2)
     {
         try
