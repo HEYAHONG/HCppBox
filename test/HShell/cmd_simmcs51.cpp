@@ -511,19 +511,19 @@ static int cmd_disassembly(int argc,const char *argv[])
             {
                 std::string mnemonic;
                 uint8_t instruction_array[3];
-                for(size_t j=i;j<i+len;j++)
+                for(size_t j=i; j<i+len; j++)
                 {
                     hs_mcs_51_rom_read(s_mcs51.rom_get(),j,&instruction_array[j-i]);
                 }
                 hs_mcs_51_disassembly_print(instruction_array,len,[](const char ch,void *usr)
-                                            {
-                                                if(usr!=NULL)
-                                                {
-                                                    std::string &mnemonic=*(std::string *)usr;
-                                                    char buff[2]={ch,0};
-                                                    mnemonic+=buff;
-                                                }
-                                            },&mnemonic);
+                {
+                    if(usr!=NULL)
+                    {
+                        std::string &mnemonic=*(std::string *)usr;
+                        char buff[2]= {ch,0};
+                        mnemonic+=buff;
+                    }
+                },&mnemonic);
                 hshell_printf(hshell_ctx,"%-16s ",mnemonic.c_str());
             }
             for(size_t j=i; j<(i+len); j++)
