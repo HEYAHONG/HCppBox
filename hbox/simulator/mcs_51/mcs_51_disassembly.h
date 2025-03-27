@@ -71,6 +71,18 @@ size_t  hs_mcs_51_disassembly_code_instruction_count(const uint8_t *code,size_t 
  */
 size_t  hs_mcs_51_disassembly_code_instruction_type_count(const uint8_t *code,size_t length);
 
+
+
+/** \brief 打印指令信息
+ *
+ * \param instruction const uint8_t* 指令数据指针
+ * \param length size_t 指令数据长度
+ * \param char_output void (*)(const char ch,void *usr) 字符输出函数
+ * \param usr void*  用户参数，用于字符输出
+ *
+ */
+void hs_mcs_51_disassembly_print(const uint8_t *instruction,size_t length,void (*char_output)(const char ch,void *usr),void *usr);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

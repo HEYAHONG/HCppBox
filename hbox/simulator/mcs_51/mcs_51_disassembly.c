@@ -327,3 +327,184 @@ size_t  hs_mcs_51_disassembly_code_instruction_type_count(const uint8_t *code,si
     }
     return ret;
 }
+
+static void hs_mcs_51_disassembly_print_uint16(uint16_t data,void (*char_output)(const char ch,void *usr),void *usr)
+{
+    if(char_output==NULL)
+    {
+        return;
+    }
+    for(size_t i=0; i<sizeof(data)*2; i++)
+    {
+        int8_t val=((data&(0xF << ((sizeof(data)*2-i-1)*4)))>>((sizeof(data)*2-i-1)*4));
+        if(val <= 9)
+        {
+            char_output('0'+val,usr);
+        }
+        else
+        {
+            char_output('A'+val-10,usr);
+        }
+    }
+}
+
+static void hs_mcs_51_disassembly_print_uint8(uint8_t data,void (*char_output)(const char ch,void *usr),void *usr)
+{
+    if(char_output==NULL)
+    {
+        return;
+    }
+    for(size_t i=0; i<sizeof(data)*2; i++)
+    {
+        int8_t val=((data&(0xF << ((sizeof(data)*2-i-1)*4)))>>((sizeof(data)*2-i-1)*4));
+        if(val <= 9)
+        {
+            char_output('0'+val,usr);
+        }
+        else
+        {
+            char_output('A'+val-10,usr);
+        }
+    }
+}
+
+static void hs_mcs_51_disassembly_print_int8(int8_t data,void (*char_output)(const char ch,void *usr),void *usr)
+{
+    if(char_output==NULL)
+    {
+        return;
+    }
+    if(data<0)
+    {
+        char_output('-',usr);
+        data=-data;
+    }
+    for(size_t i=0; i<sizeof(data)*2; i++)
+    {
+        int8_t val=((data&(0xF << ((sizeof(data)*2-i-1)*4)))>>((sizeof(data)*2-i-1)*4));
+        if(val <= 9)
+        {
+            char_output('0'+val,usr);
+        }
+        else
+        {
+            char_output('A'+val-10,usr);
+        }
+    }
+}
+
+void hs_mcs_51_disassembly_print(const uint8_t *instruction,size_t length,void (*char_output)(const char ch,void *usr),void *usr)
+{
+    if(char_output==NULL)
+    {
+        return;
+    }
+    if(instruction == NULL || length < hs_mcs_51_disassembly_instruction_length(instruction))
+    {
+        //指令数据不对
+        return;
+    }
+    const hs_mcs_51_disassembly_instruction_t * disasm=hs_mcs_51_disassembly_instruction_table_get(instruction);
+    if(disasm==NULL || disasm->mnemonic == NULL)
+    {
+        //未找到反汇编
+        return;
+    }
+    const char *mnemoic=disasm->mnemonic;
+    while((*mnemoic)!='\0')
+    {
+        switch(*mnemoic)
+        {
+        case '%':
+        {
+            mnemoic++;
+            switch(*mnemoic)
+            {
+            case 'A':
+            {
+                uint16_t addr11=256*(instruction[0]>>5)+instruction[1];
+                hs_mcs_51_disassembly_print_uint16(addr11,char_output,usr);
+                mnemoic++;
+            }
+            break;
+            case 'l':
+            {
+                uint16_t addr=256*instruction[1]+instruction[2];
+                hs_mcs_51_disassembly_print_uint16(addr,char_output,usr);
+                mnemoic++;
+            }
+            break;
+            case 'a':
+            {
+                uint8_t addr=instruction[1];
+                hs_mcs_51_disassembly_print_uint8(addr,char_output,usr);
+                mnemoic++;
+            }
+            break;
+            case 'b':
+            {
+                uint8_t bit_address=instruction[1];
+                hs_mcs_51_disassembly_print_uint8(bit_address,char_output,usr);
+                mnemoic++;
+            }
+            break;
+            case 'R':
+            {
+                int8_t  rel_addr=instruction[2];
+                hs_mcs_51_disassembly_print_int8(rel_addr,char_output,usr);
+                mnemoic++;
+            }
+            break;
+            case 'd':
+            {
+                uint8_t data=instruction[1];
+                hs_mcs_51_disassembly_print_uint8(data,char_output,usr);
+                mnemoic++;
+            }
+            break;
+            case 'D':
+            {
+                uint8_t data=instruction[2];
+                hs_mcs_51_disassembly_print_uint8(data,char_output,usr);
+                mnemoic++;
+            }
+            break;
+            case 'r':
+            {
+                int8_t  rel_addr=instruction[1];
+                hs_mcs_51_disassembly_print_int8(rel_addr,char_output,usr);
+                mnemoic++;
+            }
+            break;
+            case '8':
+            {
+                uint8_t addr_dst=instruction[2];
+                hs_mcs_51_disassembly_print_uint8(addr_dst,char_output,usr);
+                mnemoic++;
+            }
+            break;
+            case '6':
+            {
+                uint8_t dph=instruction[1];
+                uint8_t dpl=instruction[2];
+                hs_mcs_51_disassembly_print_uint16(dph*256+dpl,char_output,usr);
+                mnemoic++;
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
+        }
+        break;
+        default:
+        {
+            char_output(*mnemoic,usr);
+            mnemoic++;
+        }
+        break;
+        }
+    }
+}
