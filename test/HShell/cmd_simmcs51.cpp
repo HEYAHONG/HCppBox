@@ -43,6 +43,7 @@ static int cmd_dump_ram(int argc,const char *argv[]);
 static int cmd_dump_xram(int argc,const char *argv[]);
 static int cmd_dump_rom(int argc,const char *argv[]);
 static int cmd_dump_pin(int argc,const char *argv[]);
+static int cmd_disassembly(int argc,const char *argv[]);
 static hshell_command_t commands[]=
 {
     {
@@ -84,6 +85,11 @@ static hshell_command_t commands[]=
         cmd_dump_rom,
         "dump_rom",
         "show rom. dump_rom [address(hex)] [length]"
+    },
+    {
+        cmd_disassembly,
+        "disassembly",
+        "show rom(disassembly). disassembly [address(hex)] [length]"
     },
     {
         cmd_dump_pin,
@@ -449,14 +455,71 @@ static int cmd_dump_rom(int argc,const char *argv[])
 static int cmd_dump_pin(int argc,const char *argv[])
 {
     hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
-    for(size_t i=(size_t)HS_MCS_51_PIN_PORT_0;i <= ((size_t)HS_MCS_51_PIN_PORT_3);i++)
+    for(size_t i=(size_t)HS_MCS_51_PIN_PORT_0; i <= ((size_t)HS_MCS_51_PIN_PORT_3); i++)
     {
         hshell_printf(hshell_ctx,"P%d=%02X\t",i,hs_mcs_51_pin_port_get(s_mcs51.core_get(),s_mcs51.pin_get(),(hs_mcs_51_pin_port_t)i));
-        for(size_t j=0;j<8;j++)
+        for(size_t j=0; j<8; j++)
         {
             hshell_printf(hshell_ctx,"%d ",hs_mcs_51_pin_port_pin_get(s_mcs51.core_get(),s_mcs51.pin_get(),(hs_mcs_51_pin_port_t)i,j)?0x01:0x00);
         }
         hshell_printf(hshell_ctx,"\r\n");
+    }
+    return 0;
+}
+
+static int cmd_disassembly(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    size_t start=0;
+    if(argc > 1)
+    {
+        try
+        {
+            start=std::stoull(argv[1],NULL,16);
+        }
+        catch(...)
+        {
+
+        }
+    }
+    size_t length=256;
+    if(argc > 2)
+    {
+        try
+        {
+            length=std::stoull(argv[2]);
+        }
+        catch(...)
+        {
+
+        }
+    }
+    if(length==0)
+    {
+        length=1;
+    }
+    {
+        for(size_t i=start; i<start+length;)
+        {
+            uint8_t instruction=0;
+            hshell_printf(hshell_ctx,"%05X:\t",i);
+            hs_mcs_51_rom_read(s_mcs51.rom_get(),i,&instruction);
+            size_t len=hs_mcs_51_disassembly_instruction_length(&instruction);
+            const hs_mcs_51_disassembly_instruction_t * disasm=hs_mcs_51_disassembly_instruction_table_get(&instruction);
+            if(disasm!=NULL && disasm->mnemonic!=NULL)
+            {
+                std::string mnemonic(disasm->mnemonic);
+                hshell_printf(hshell_ctx,"%-16s ",mnemonic.c_str());
+            }
+            for(size_t j=i; j<(i+len); j++)
+            {
+                uint8_t data=0;
+                hs_mcs_51_rom_read(s_mcs51.rom_get(),j,&data);
+                hshell_printf(hshell_ctx,"%02X ",data);
+            }
+            i+=len;
+            hshell_printf(hshell_ctx,"\r\n");
+        }
     }
     return 0;
 }
