@@ -106,7 +106,7 @@ int command_simmcs51_main(int argc,const char *argv[])
     {
         if(io_type==HS_MCS_51_SERIAL_IO_TRANSMIT)
         {
-            hshell_putchar(hshell_ctx,(uint8_t)(*data));
+            hshell_printf(hshell_ctx,"%c",(uint8_t)(*data));
         }
         if(io_type==HS_MCS_51_SERIAL_IO_TICK)
         {

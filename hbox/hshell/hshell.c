@@ -12,199 +12,8 @@
 #include "hcompiler.h"
 #include "stdarg.h"
 
-extern int getchar(void);
-extern int putchar(int ch);
-hshell_context_external_api_t hshell_context_default_external_api(void)
-{
-    hshell_context_external_api_t api= {0};
-    api.getchar=getchar;
-    api.putchar=putchar;
-    api.invoke_command=NULL;
-    return api;
-}
 
-const char * hshell_context_default_prompt_string(void)
-{
-    return "hshell>";
-}
-
-static hshell_context_t default_context= {0};
-static hshell_context_t *hshell_context_real_context_get(hshell_context_t *ctx)
-{
-    if(ctx==NULL)
-    {
-        return &default_context;
-    }
-    else
-    {
-        return ctx;
-    }
-}
-
-hshell_context_t *hshell_context_default_context(void)
-{
-    return hshell_context_real_context_get(NULL);
-}
-
-void hshell_context_init(hshell_context_t *ctx)
-{
-    hshell_context_t *real_context=hshell_context_real_context_get(ctx);
-    real_context->prompt=hshell_context_default_prompt_string();
-    real_context->api=hshell_context_default_external_api();
-    real_context->flags.init=1;
-    real_context->flags.login=0;
-    real_context->flags.prompt=0;
-    real_context->flags.escape=0;
-    real_context->flags.return_newline_compatible=0;
-    real_context->flags.input_complete=0;
-    real_context->flags.insert_mode=1;
-    real_context->flags.echo=1;         //默认打开回显
-    real_context->flags.show_banner=1;  //默认显示banner
-    real_context->flags.command_name_shortcut=0;
-    memset(real_context->buffer,0,sizeof(real_context->buffer));
-    real_context->buffer_ptr=0;
-    real_context->command.array_base=NULL;
-    real_context->command.array_count=0;
-    memset(real_context->escape_sequence,0,sizeof(real_context->escape_sequence));
-    memset(&real_context->sub_context,0,sizeof(real_context->sub_context));
-    memset(&real_context->history,0,sizeof(real_context->history));
-}
-
-static hshell_context_t *hshell_context_check_context(hshell_context_t *ctx)
-{
-    hshell_context_t *real_context=hshell_context_real_context_get(ctx);
-    if(real_context->flags.init!=1)
-    {
-        hshell_context_init(real_context);
-    }
-    return real_context;
-}
-
-const char *hshell_prompt_string_set(hshell_context_t *ctx,const char *prompt)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    const char *old_prompt_string=context->prompt;
-    if(prompt!=NULL)
-    {
-        context->prompt=prompt;
-    }
-    return old_prompt_string;
-}
-
-const char *hshell_prompt_string_get(hshell_context_t *ctx)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    return context->prompt;
-}
-
-hshell_context_external_api_t hshell_external_api_set(hshell_context_t *ctx,hshell_context_external_api_t api)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    hshell_context_external_api_t old_api=context->api;
-    context->api=api;
-    return old_api;
-}
-
-hshell_context_external_api_t hshell_external_api_get(hshell_context_t *ctx)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    return context->api;
-}
-
-bool hshell_echo_set(hshell_context_t *ctx,bool echo)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    bool old_echo=(context->flags.echo!=0);
-    context->flags.echo=(echo?0x1:0x0);
-    return old_echo;
-}
-
-bool hshell_echo_get(hshell_context_t *ctx)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    return context->flags.echo!=0;
-}
-
-bool hshell_command_name_shortcut_set(hshell_context_t *ctx,bool command_name_shortcut)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    bool old_command_name_shortcut=(context->flags.command_name_shortcut!=0);
-    context->flags.command_name_shortcut=(command_name_shortcut?0x1:0x0);
-    return old_command_name_shortcut;
-}
-
-bool hshell_command_name_shortcut_get(hshell_context_t *ctx)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    return context->flags.command_name_shortcut!=0;
-}
-
-bool hshell_show_banner_set(hshell_context_t *ctx,bool show_banner)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    bool old_show_banner=(context->flags.show_banner!=0);
-    context->flags.show_banner=(show_banner?0x1:0x0);
-    return old_show_banner;
-}
-
-bool hshell_show_banner_get(hshell_context_t *ctx)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    return context->flags.show_banner!=0;
-}
-
-void hshell_command_array_set(hshell_context_t *ctx,hshell_command_t *array_base,size_t array_count)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    if(array_base==NULL)
-    {
-        array_count=0;
-    }
-    context->command.array_count=array_count;
-    context->command.array_base=array_base;
-}
-
-int hshell_getchar(hshell_context_t *ctx)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    if(context->api.getchar!=NULL)
-    {
-        return context->api.getchar();
-    }
-    else
-    {
-        return hshell_context_default_external_api().getchar();
-    }
-}
-
-int hshell_putchar(hshell_context_t *ctx,int ch)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    if(context->api.putchar!=NULL)
-    {
-        return context->api.putchar(ch);
-    }
-    else
-    {
-        return hshell_context_default_external_api().putchar(ch);
-    }
-}
-
-static void hshell_printf_out(char character, void* arg)
-{
-    hshell_putchar((hshell_context_t *)arg,(uint8_t)character);
-}
-
-int hshell_printf(hshell_context_t *ctx,const char *fmt,...)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    int ret=0;
-    va_list va;
-    va_start(va, fmt);
-    ret=hvfctprintf(hshell_printf_out,context,fmt,va);
-    va_end(va);
-    return ret;
-}
+extern hshell_context_t *hshell_context_check_context(hshell_context_t *ctx);
 
 static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline);
 int hshell_execute(hshell_context_t *ctx,char *cmdline)
@@ -219,10 +28,10 @@ static void hshell_show_banner(hshell_context_t *ctx)
     {
         return;
     }
-    hshell_printf(context,"\r\n");
-    hshell_printf(context," \\ | /\r\n");
-    hshell_printf(context," | H |   build %04d/%02d/%02d %02d:%02d:%02d\r\n",hcompiler_get_date_year(),hcompiler_get_date_month(),hcompiler_get_date_day(),hcompiler_get_time_hour(),hcompiler_get_time_minute(),hcompiler_get_time_second());
-    hshell_printf(context," / | \\\r\n");
+    hshell_context_printf(context,"\r\n");
+    hshell_context_printf(context," \\ | /\r\n");
+    hshell_context_printf(context," | H |   build %04d/%02d/%02d %02d:%02d:%02d\r\n",hcompiler_get_date_year(),hcompiler_get_date_month(),hcompiler_get_date_day(),hcompiler_get_time_hour(),hcompiler_get_time_minute(),hcompiler_get_time_second());
+    hshell_context_printf(context," / | \\\r\n");
 }
 
 static int hshell_login(hshell_context_t *ctx)
@@ -326,17 +135,17 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
 
             {
                 //打印标题
-                hshell_printf(context,"\r\ninternal commands:\r\n");
+                hshell_context_printf(context,"\r\ninternal commands:\r\n");
                 for(size_t i=0; i<max_name_len; i++)
                 {
-                    hshell_printf(context,"-");
+                    hshell_context_printf(context,"-");
                 }
-                hshell_printf(context,"\t");
+                hshell_context_printf(context,"\t");
                 for(size_t i=0; i<max_help_len; i++)
                 {
-                    hshell_printf(context,"-");
+                    hshell_context_printf(context,"-");
                 }
-                hshell_printf(context,"\r\n");
+                hshell_context_printf(context,"\r\n");
             }
 
             for(size_t i=0; i<sizeof(hshell_internal_command)/sizeof(hshell_internal_command[0]); i++)
@@ -345,15 +154,15 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
                 {
                     if(hshell_internal_command[i].name!=NULL)
                     {
-                        hshell_printf(context,"%s",hshell_internal_command[i].name);
+                        hshell_context_printf(context,"%s",hshell_internal_command[i].name);
                         size_t name_len=strlen(hshell_internal_command[i].name);
                         for(size_t i=0; i<(max_name_len-name_len); i++)
                         {
-                            hshell_printf(context," ");
+                            hshell_context_printf(context," ");
                         }
-                        hshell_printf(context,"\t");
-                        hshell_printf(context,"%s",(hshell_internal_command[i].help!=NULL)?(hshell_internal_command[i].help):"");
-                        hshell_printf(context,"\r\n");
+                        hshell_context_printf(context,"\t");
+                        hshell_context_printf(context,"%s",(hshell_internal_command[i].help!=NULL)?(hshell_internal_command[i].help):"");
+                        hshell_context_printf(context,"\r\n");
                     }
                 }
             }
@@ -389,17 +198,17 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
 
             {
                 //打印标题
-                hshell_printf(context,"\r\ncommands:\r\n");
+                hshell_context_printf(context,"\r\ncommands:\r\n");
                 for(size_t i=0; i<max_name_len; i++)
                 {
-                    hshell_printf(context,"-");
+                    hshell_context_printf(context,"-");
                 }
-                hshell_printf(context,"\t");
+                hshell_context_printf(context,"\t");
                 for(size_t i=0; i<max_help_len; i++)
                 {
-                    hshell_printf(context,"-");
+                    hshell_context_printf(context,"-");
                 }
-                hshell_printf(context,"\r\n");
+                hshell_context_printf(context,"\r\n");
             }
 
             for(size_t i=0; i<context->command.array_count; i++)
@@ -408,15 +217,15 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
                 {
                     if(context->command.array_base[i].name!=NULL)
                     {
-                        hshell_printf(context,"%s",context->command.array_base[i].name);
+                        hshell_context_printf(context,"%s",context->command.array_base[i].name);
                         size_t name_len=strlen(context->command.array_base[i].name);
                         for(size_t i=0; i<(max_name_len-name_len); i++)
                         {
-                            hshell_printf(context," ");
+                            hshell_context_printf(context," ");
                         }
-                        hshell_printf(context,"\t");
-                        hshell_printf(context,"%s",(context->command.array_base[i].help!=NULL)?(context->command.array_base[i].help):"");
-                        hshell_printf(context,"\r\n");
+                        hshell_context_printf(context,"\t");
+                        hshell_context_printf(context,"%s",(context->command.array_base[i].help!=NULL)?(context->command.array_base[i].help):"");
+                        hshell_context_printf(context,"\r\n");
                     }
                 }
             }
@@ -432,7 +241,7 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
             {
                 if(context->command.array_base[i].name!=NULL && strcmp(argv[1],context->command.array_base[i].name)==0)
                 {
-                    hshell_printf(context,"%s:\t%s\r\n",context->command.array_base[i].name,context->command.array_base[i].help!=NULL?context->command.array_base[i].help:"");
+                    hshell_context_printf(context,"%s:\t%s\r\n",context->command.array_base[i].name,context->command.array_base[i].help!=NULL?context->command.array_base[i].help:"");
                     help_shown=true;
                 }
             }
@@ -444,7 +253,7 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
             {
                 if(hshell_internal_command[i].name!=NULL && strcmp(argv[1],hshell_internal_command[i].name)==0)
                 {
-                    hshell_printf(context,"%s:\t%s\r\n",hshell_internal_command[i].name,hshell_internal_command[i].help!=NULL?hshell_internal_command[i].help:"");
+                    hshell_context_printf(context,"%s:\t%s\r\n",hshell_internal_command[i].name,hshell_internal_command[i].help!=NULL?hshell_internal_command[i].help:"");
                     help_shown=true;
                 }
             }
@@ -454,7 +263,7 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
         {
             //未找到命令，返回-1
             ret=-1;
-            hshell_printf(context,"%s not found!\r\n",argv[1]);
+            hshell_context_printf(context,"%s not found!\r\n",argv[1]);
         }
     }
     return ret;
@@ -498,7 +307,7 @@ static void hshell_backspace(hshell_context_t *ctx,size_t count)
     hshell_context_t *context=hshell_context_check_context(ctx);
     for(size_t i=0; i<count; i++)
     {
-        hshell_printf(context,"\b");
+        hshell_context_printf(context,"\b");
     }
 }
 
@@ -506,7 +315,7 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
 {
     int ret=0;
     hshell_context_t *context=hshell_context_check_context(ctx);
-    hshell_printf(context,"\r\n");
+    hshell_context_printf(context,"\r\n");
     bool command_processed=false;
 
 
@@ -596,10 +405,10 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
 
     if(!command_processed)
     {
-        hshell_printf(context,"%s not found!\r\n",argv[0]);
+        hshell_context_printf(context,"%s not found!\r\n",argv[0]);
         for(int i=0; i<argc; i++)
         {
-            hshell_printf(context,"\targv%d=%s\r\n",(int)i,argv[i]);
+            hshell_context_printf(context,"\targv%d=%s\r\n",(int)i,argv[i]);
         }
     }
 
@@ -986,7 +795,7 @@ static void hshell_history_load_next(hshell_context_t *ctx)
             size_t len=strlen((char *)context->buffer);
             for(size_t i=0; i<len; i++)
             {
-                hshell_printf(context," ");
+                hshell_context_printf(context," ");
             }
             hshell_backspace(context,len);
         }
@@ -1006,7 +815,7 @@ static void hshell_history_load_next(hshell_context_t *ctx)
         size_t len=strlen((char *)context->buffer);
         for(size_t i=0; i<len; i++)
         {
-            hshell_printf(context,"%c",context->buffer[i]);
+            hshell_context_printf(context,"%c",context->buffer[i]);
             context->buffer_ptr++;
         }
     }
@@ -1029,7 +838,7 @@ static void hshell_history_load_prev(hshell_context_t *ctx)
             size_t len=strlen((char *)context->buffer);
             for(size_t i=0; i<len; i++)
             {
-                hshell_printf(context," ");
+                hshell_context_printf(context," ");
             }
             hshell_backspace(context,len);
         }
@@ -1058,7 +867,7 @@ static void hshell_history_load_prev(hshell_context_t *ctx)
         size_t len=strlen((char *)context->buffer);
         for(size_t i=0; i<len; i++)
         {
-            hshell_printf(context,"%c",context->buffer[i]);
+            hshell_context_printf(context,"%c",context->buffer[i]);
             context->buffer_ptr++;
         }
     }
@@ -1093,7 +902,7 @@ static int hshell_process_control(hshell_context_t *ctx)
     hshell_context_t *context=hshell_context_check_context(ctx);
     if(context->flags.escape!=0)
     {
-        int ch=hshell_getchar(context);
+        int ch=hshell_context_getchar(context);
         if(ch==EOF)
         {
             ret=EOF;
@@ -1154,7 +963,7 @@ static int hshell_process_control(hshell_context_t *ctx)
                     escape_processed=true;
                     if(context->buffer[context->buffer_ptr]!='\0' && context->flags.echo != 0)
                     {
-                        hshell_printf(context,"%c",(char)context->buffer[context->buffer_ptr]);
+                        hshell_context_printf(context,"%c",(char)context->buffer[context->buffer_ptr]);
                         context->buffer_ptr++;
                     }
 
@@ -1197,13 +1006,13 @@ static int hshell_process_control(hshell_context_t *ctx)
                             if(context->buffer[i+1]!='\0')
                             {
                                 context->buffer[i]=context->buffer[i+1];
-                                hshell_printf(context,"%c",(char)context->buffer[i]);
+                                hshell_context_printf(context,"%c",(char)context->buffer[i]);
                                 char_count++;
                             }
                             else
                             {
                                 context->buffer[i]='\0';
-                                hshell_printf(context," ");
+                                hshell_context_printf(context," ");
                                 char_count++;
                                 break;
                             }
@@ -1331,7 +1140,7 @@ static int hshell_process_input(hshell_context_t *ctx)
         //正在转义过程中，不接受数据
         return ret;
     }
-    int ch=hshell_getchar(context);
+    int ch=hshell_context_getchar(context);
     bool need_echo=true;
     switch(ch)
     {
@@ -1385,7 +1194,7 @@ static int hshell_process_input(hshell_context_t *ctx)
         if(context->buffer_ptr>0 &&context->flags.echo != 0)
         {
             hshell_backspace(context,1);
-            hshell_printf(context," ");
+            hshell_context_printf(context," ");
             hshell_backspace(context,1);
             size_t char_count=0;
             for(size_t i=(context->buffer_ptr-1); i<(sizeof(context->buffer)-1); i++)
@@ -1393,13 +1202,13 @@ static int hshell_process_input(hshell_context_t *ctx)
                 if(context->buffer[i+1]!='\0')
                 {
                     context->buffer[i]=context->buffer[i+1];
-                    hshell_printf(context,"%c",(char)context->buffer[i]);
+                    hshell_context_printf(context,"%c",(char)context->buffer[i]);
                     char_count++;
                 }
                 else
                 {
                     context->buffer[i]='\0';
-                    hshell_printf(context," ");
+                    hshell_context_printf(context," ");
                     char_count++;
                     break;
                 }
@@ -1426,7 +1235,7 @@ static int hshell_process_input(hshell_context_t *ctx)
                     need_echo=false;
                     uint8_t old_ch_val=context->buffer[context->buffer_ptr];
                     context->buffer[context->buffer_ptr++]=ch_val;
-                    hshell_printf(context,"%c",(char)ch_val);
+                    hshell_context_printf(context,"%c",(char)ch_val);
                     size_t char_count=0;
                     for(size_t i=context->buffer_ptr; i<(sizeof(context->buffer)-1); i++)
                     {
@@ -1438,7 +1247,7 @@ static int hshell_process_input(hshell_context_t *ctx)
                         uint8_t temp=context->buffer[i];
                         context->buffer[i]=old_ch_val;
                         old_ch_val=temp;
-                        hshell_printf(context,"%c",(char)context->buffer[i]);
+                        hshell_context_printf(context,"%c",(char)context->buffer[i]);
                         char_count++;
                     }
                     hshell_backspace(context,char_count);
@@ -1459,7 +1268,7 @@ static int hshell_process_input(hshell_context_t *ctx)
     //回显字符
     if(context->flags.echo!=0 && need_echo)
     {
-        hshell_putchar(context,ch);
+        hshell_context_putchar(context,ch);
     }
 
     return ret;
@@ -1473,7 +1282,7 @@ static int hshell_show_promtp_string(hshell_context_t *ctx)
     {
         context->flags.prompt=1;
         //打印提示符
-        hshell_printf(context,"%s",(context->prompt!=NULL)?context->prompt:"");
+        hshell_context_printf(context,"%s",(context->prompt!=NULL)?context->prompt:"");
     }
     return ret;
 }
@@ -1519,49 +1328,19 @@ int hshell_loop(hshell_context_t *ctx)
     return ret;
 }
 
+static void hshell_printf_out(char character, void* arg)
+{
+    hshell_context_putchar((hshell_context_t *)arg,(uint8_t)character);
+}
 
-void hshell_subcontext_enter(hshell_context_t *ctx,hshell_context_t *next_ctx)
+int hshell_printf(hshell_context_t *ctx,const char *fmt,...)
 {
     hshell_context_t *context=hshell_context_check_context(ctx);
-    if(next_ctx==NULL || next_ctx==context)
-    {
-        return;
-    }
-    context->sub_context.next=next_ctx;
-}
-
-void hshell_subcontext_exit(hshell_context_t *ctx)
-{
-    hshell_context_t *context=hshell_context_check_context(ctx);
-    if(context->sub_context.next!=NULL)
-    {
-        context->sub_context.next=NULL;
-    }
-}
-
-void hshell_subcontext_exit_from_sub(hshell_context_t *sub_ctx)
-{
-    hshell_context_t *context=hshell_context_check_context(sub_ctx);
-    if(context->sub_context.prev!=NULL)
-    {
-        context->sub_context.prev->sub_context.next=NULL;
-        context->sub_context.prev=NULL;
-    }
-}
-
-hshell_context_t * hshell_context_get_from_main_argv(int argc,const char *argv[])
-{
-    hshell_context_t * ret=NULL;
-    if(argc < 0 || argv == NULL)
-    {
-        return ret;
-    }
-
-    const char ** base=((const char **)(uintptr_t)(((uintptr_t)argv)-2*sizeof(const char *)));
-    if(((uintptr_t)base[0])==0x6873686C)
-    {
-        //幻数检查成功
-        ret=(hshell_context_t *)base[1];
-    }
+    int ret=0;
+    va_list va;
+    va_start(va, fmt);
+    ret=hvfctprintf(hshell_printf_out,context,fmt,va);
+    va_end(va);
     return ret;
 }
+
