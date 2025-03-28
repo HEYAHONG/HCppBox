@@ -70,7 +70,7 @@ struct hshell_context
     size_t  buffer_ptr;                         /**< 缓冲指针 */
     struct
     {
-        hshell_command_t *array_base;           /**< 命令数组首地址 */
+        const hshell_command_t *array_base;     /**< 命令数组首地址 */
         size_t array_count;                     /**< 命令数组中命令的个数 */
     } command;                                  /**< 命令 */
     int command_exit_code;                      /**< 最近一次命令的退出代码 */
@@ -198,11 +198,11 @@ bool hshell_command_name_shortcut_get(hshell_context_t *ctx);
 /** \brief hshell设置命令数组
  *
  * \param ctx hshell_context_t* hshell上下文,为NULL时使用默认上下文
- * \param array_base hshell_command_t* 命令数组基地址
+ * \param array_base const hshell_command_t* 命令数组基地址
  * \param array_count size_t 命令数组中命令个数
  *
  */
-void hshell_command_array_set(hshell_context_t *ctx,hshell_command_t *array_base,size_t array_count);
+void hshell_command_array_set(hshell_context_t *ctx,const hshell_command_t *array_base,size_t array_count);
 
 
 /** \brief hshell读取字符

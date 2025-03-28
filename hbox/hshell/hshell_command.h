@@ -35,6 +35,7 @@ struct hshell_command
  * 导出命令
  */
 #define HSHELL_COMMAND_EXPORT(name,entry,help) \
+    __USED\
     __SECTION("HShellCommand")\
     static const hshell_command_t hshell_commands_##name = \
     {\
@@ -50,6 +51,40 @@ extern const  int HShellCommand$$Base;
 extern const  int HShellCommand$$Limit;
 #define HSHELL_COMMANDS_REGISTER(context) \
 hshell_command_array_set(context,(hshell_command_t *)&HShellCommand$$Base,(((uintptr_t)(hshell_command_t *)&HShellCommand$$Limit)-((uintptr_t)(hshell_command_t *)&HShellCommand$$Base))/sizeof(hshell_command_t))
+
+#elif defined(HCOMPILER_GCC) || defined(HCOMPILER_CLANG)
+/*
+ * gcc/clang,使用名称为.HShellCommand的section
+ * gcc/clang必须在链接脚本中提供__hshell_command_start与__hshell_command_end,脚本示例如下:
+ *          PROVIDE ( __hshell_command_start = . );
+ *          KEEP (*(.HShellCommand))
+ *          PROVIDE ( __hshell_command_end = . );
+ *
+ */
+
+ /*
+ * 导出命令
+ */
+#define HSHELL_COMMAND_EXPORT(name,entry,help) \
+    __USED\
+    __SECTION(".HShellCommand")\
+    static const hshell_command_t hshell_commands_##name = \
+    {\
+        (hshell_command_entry_t)entry,\
+        #name ,\
+        #help \
+	  }
+
+/*
+ * 注册命令（注意:此宏定义会占用hshell上下文的命令数组）
+ */
+extern const  hshell_command_t __hshell_command_start[];
+extern const  hshell_command_t __hshell_command_end[];
+#define HSHELL_COMMANDS_REGISTER(context) \
+hshell_command_array_set(context,__hshell_command_start,(((uintptr_t)__hshell_command_end)-((uintptr_t)__hshell_command_start))/sizeof(hshell_command_t))
+
+
+
 
 #else
 /*

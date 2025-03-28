@@ -29,3 +29,13 @@ void hbox_free(void *ptr)
     free(ptr);
 }
 
+
+static int hbox_version_entry(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    hshell_printf(hshell_ctx,"0.0.0.1\r\n");
+    return 0;
+}
+HSHELL_COMMAND_EXPORT(hbox_version,hbox_version_entry,show hbox_version);
+
+

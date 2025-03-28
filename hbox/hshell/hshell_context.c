@@ -150,7 +150,7 @@ bool hshell_show_banner_get(hshell_context_t *ctx)
     return context->flags.show_banner!=0;
 }
 
-void hshell_command_array_set(hshell_context_t *ctx,hshell_command_t *array_base,size_t array_count)
+void hshell_command_array_set(hshell_context_t *ctx,const hshell_command_t *array_base,size_t array_count)
 {
     hshell_context_t *context=hshell_context_check_context(ctx);
     if(array_base==NULL)

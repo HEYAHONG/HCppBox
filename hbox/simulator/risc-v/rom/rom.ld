@@ -94,6 +94,11 @@ SECTIONS
 		PROVIDE (_etext = __text_end);
 		PROVIDE (etext = __text_end);
 
+		PROVIDE ( __hshell_command_start = . );
+		KEEP (*(.HShellCommand))
+		PROVIDE ( __hshell_command_end = . );
+
+
 		/* Need to pre-align so that the symbols come after padding */
 		. = ALIGN(8);
 
