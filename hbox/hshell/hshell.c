@@ -685,7 +685,7 @@ static void hshell_util_strip_c_escape_sequences_remove_chars(char *str_to_strip
         return;
     }
     size_t len=strlen(str_to_strip);
-    if(len >= (index+count))
+    if((len < (index+count)) && (index < len))
     {
         str_to_strip[index]='\0';
     }
