@@ -672,6 +672,106 @@ static void hshell_process_execute_arg_parse_strip_quotation(char *str)
     }
 }
 
+static void hshell_util_strip_c_escape_sequences_remove_chars(char *str_to_strip,size_t index,size_t count)
+{
+    if(str_to_strip==NULL)
+    {
+        return;
+    }
+    size_t len=strlen(str_to_strip);
+    if(len >= (index+count))
+    {
+        str_to_strip[index]='\0';
+    }
+    while(index + count <= len)
+    {
+        str_to_strip[index]=str_to_strip[index+count];
+        index++;
+    }
+}
+
+static void hshell_util_strip_c_escape_sequences(char *str_to_strip)
+{
+    size_t len=strlen(str_to_strip);
+    for(size_t i=0; i<len; i++)
+    {
+        if(str_to_strip[i]=='\\')
+        {
+            //默认为下一个字符
+            uint8_t new_char=str_to_strip[i+1];
+            int remove_chars_length=1;
+            switch(new_char)
+            {
+            case '\'':
+            {
+                new_char=0x27;
+            }
+            break;
+            case '\"':
+            {
+                new_char=0x22;
+            }
+            break;
+            case '\?':
+            {
+                new_char=0x3f;
+            }
+            break;
+            case '\\':
+            {
+                new_char=0x5c;
+            }
+            break;
+            case '\a':
+            {
+                new_char=0x07;
+            }
+            break;
+            case '\b':
+            {
+                new_char=0x08;
+            }
+            break;
+            case '\f':
+            {
+                new_char=0x0C;
+            }
+            break;
+            case '\n':
+            {
+                new_char=0x0A;
+            }
+            break;
+            case '\r':
+            {
+                new_char=0x0D;
+            }
+            break;
+            case '\t':
+            {
+                new_char=0x09;
+            }
+            break;
+            case '\v':
+            {
+                new_char=0x0B;
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
+            hshell_util_strip_c_escape_sequences_remove_chars(str_to_strip,i+1,remove_chars_length);
+            if(str_to_strip[i]!='\0')
+            {
+                str_to_strip[i]=new_char;
+            }
+            len=strlen(str_to_strip);
+        }
+    }
+}
 
 static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline)
 {
@@ -819,6 +919,14 @@ static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline)
         for(size_t i=0; i<argc; i++)
         {
             hshell_process_execute_arg_parse_strip_quotation((char *)argv[2 + i]);
+        }
+    }
+
+    {
+        //去除C语言转义序列
+        for(size_t i=0; i<argc; i++)
+        {
+            hshell_util_strip_c_escape_sequences((char *)argv[2 + i]);
         }
     }
 
