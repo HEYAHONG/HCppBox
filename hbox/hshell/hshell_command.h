@@ -26,9 +26,9 @@ struct hshell_command
 };
 
 
-#if defined(HCOMPILER_ARMCC)
+#if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
 /*
- * armcc,使用名称为HShellCommand的section
+ * armcc/armclang,使用名称为HShellCommand的section
  */
 
 /*
