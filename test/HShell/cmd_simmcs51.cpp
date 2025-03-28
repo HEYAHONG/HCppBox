@@ -515,6 +515,14 @@ static int cmd_disassembly(int argc,const char *argv[])
         for(size_t i=start; i<start+length;)
         {
             uint8_t instruction=0;
+            if(i==hs_mcs_51_pc_get(s_mcs51.core_get()))
+            {
+                hshell_printf(hshell_ctx,"> ");
+            }
+            else
+            {
+                hshell_printf(hshell_ctx,"  ");
+            }
             hshell_printf(hshell_ctx,"%05X:\t",i);
             hs_mcs_51_rom_read(s_mcs51.rom_get(),i,&instruction);
             size_t len=hs_mcs_51_disassembly_instruction_length(&instruction);

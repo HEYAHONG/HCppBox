@@ -346,6 +346,7 @@ static void hs_mcs_51_disassembly_print_uint16(uint16_t data,void (*char_output)
             char_output('A'+val-10,usr);
         }
     }
+    char_output('H',usr);
 }
 
 static void hs_mcs_51_disassembly_print_uint8(uint8_t data,void (*char_output)(const char ch,void *usr),void *usr)
@@ -366,6 +367,7 @@ static void hs_mcs_51_disassembly_print_uint8(uint8_t data,void (*char_output)(c
             char_output('A'+val-10,usr);
         }
     }
+    char_output('H',usr);
 }
 
 static void hs_mcs_51_disassembly_print_int8(int8_t data,void (*char_output)(const char ch,void *usr),void *usr)
@@ -391,6 +393,7 @@ static void hs_mcs_51_disassembly_print_int8(int8_t data,void (*char_output)(con
             char_output('A'+val-10,usr);
         }
     }
+    char_output('H',usr);
 }
 
 void hs_mcs_51_disassembly_print(const uint8_t *instruction,size_t length,void (*char_output)(const char ch,void *usr),void *usr)
