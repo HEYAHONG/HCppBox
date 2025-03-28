@@ -851,6 +851,7 @@ static void hshell_history_store(hshell_context_t *ctx)
 #if HSHELL_MAX_HISTORY_COUNT > 0
     size_t current_index=(context->history.store_ptr++)%(sizeof(context->history.history)/sizeof(context->history.history[0]));
     memcpy(&context->history.history[current_index],context->buffer,sizeof(context->history.history[0]));
+    context->history.load_ptr=current_index;
 #endif // HSHELL_MAX_HISTORY_COUNT
 }
 
