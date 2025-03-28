@@ -486,6 +486,15 @@ static int hshell_process_execute_command_shortcut_strcmp(const char *str_short,
     return ret;
 }
 
+static void hshell_backspace(hshell_context_t *ctx,size_t count)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    for(size_t i=0; i<count; i++)
+    {
+        hshell_printf(context,"\b");
+    }
+}
+
 static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const char *argv[])
 {
     int ret=0;
@@ -922,7 +931,7 @@ static int hshell_process_control(hshell_context_t *ctx)
                     escape_processed=true;
                     if(context->buffer_ptr>0 && context->flags.echo != 0)
                     {
-                        hshell_printf(context,"\b");
+                        hshell_backspace(context,1);
                         context->buffer_ptr--;
                     }
                 }
@@ -964,10 +973,7 @@ static int hshell_process_control(hshell_context_t *ctx)
                                 break;
                             }
                         }
-                        for(size_t i=0; i<char_count; i++)
-                        {
-                            hshell_printf(context,"\b");
-                        }
+                        hshell_backspace(context,char_count);
                     }
                 }
 
@@ -1143,9 +1149,9 @@ static int hshell_process_input(hshell_context_t *ctx)
     {
         if(context->buffer_ptr>0 &&context->flags.echo != 0)
         {
-            hshell_printf(context,"\b");
+            hshell_backspace(context,1);
             hshell_printf(context," ");
-            hshell_printf(context,"\b");
+            hshell_backspace(context,1);
             size_t char_count=0;
             for(size_t i=(context->buffer_ptr-1); i<(sizeof(context->buffer)-1); i++)
             {
@@ -1163,10 +1169,7 @@ static int hshell_process_input(hshell_context_t *ctx)
                     break;
                 }
             }
-            for(size_t i=0; i<char_count; i++)
-            {
-                hshell_printf(context,"\b");
-            }
+            hshell_backspace(context,char_count);
             context->buffer_ptr--;
         }
         need_echo=false;
@@ -1203,10 +1206,7 @@ static int hshell_process_input(hshell_context_t *ctx)
                         hshell_printf(context,"%c",(char)context->buffer[i]);
                         char_count++;
                     }
-                    for(size_t i=0; i<char_count; i++)
-                    {
-                        hshell_printf(context,"\b");
-                    }
+                    hshell_backspace(context,char_count);
                 }
             }
         }
