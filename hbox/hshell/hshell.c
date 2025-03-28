@@ -470,12 +470,12 @@ static int hshell_process_execute_command_shortcut_strcmp(const char *str_short,
     }
 
     size_t str_long_len=0;
-    if(str_long == NULL )
+    if(str_long == NULL || (str_long_len=strlen(str_long))==0 )
     {
         return ret;
     }
 
-    if((str_long_len=strlen(str_long)) < str_short_len)
+    if(str_long_len < str_short_len)
     {
         str_short_len=str_long_len;
     }
