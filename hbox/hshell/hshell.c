@@ -718,7 +718,7 @@ static void hshell_util_strip_c_escape_sequences(char *str_to_strip)
                 new_char=0x22;
             }
             break;
-            case '\?':
+            case '?':
             {
                 new_char=0x3f;
             }
@@ -728,37 +728,37 @@ static void hshell_util_strip_c_escape_sequences(char *str_to_strip)
                 new_char=0x5c;
             }
             break;
-            case '\a':
+            case 'a':
             {
                 new_char=0x07;
             }
             break;
-            case '\b':
+            case 'b':
             {
                 new_char=0x08;
             }
             break;
-            case '\f':
+            case 'f':
             {
                 new_char=0x0C;
             }
             break;
-            case '\n':
+            case 'n':
             {
                 new_char=0x0A;
             }
             break;
-            case '\r':
+            case 'r':
             {
                 new_char=0x0D;
             }
             break;
-            case '\t':
+            case 't':
             {
                 new_char=0x09;
             }
             break;
-            case '\v':
+            case 'v':
             {
                 new_char=0x0B;
             }
