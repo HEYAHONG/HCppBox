@@ -976,6 +976,10 @@ static void hshell_history_load_next(hshell_context_t *ctx)
     {
         return;
     }
+    if(context->history.store_ptr == 0)
+    {
+        return;
+    }
     {
         hshell_backspace(context,context->buffer_ptr);
         {
@@ -990,7 +994,7 @@ static void hshell_history_load_next(hshell_context_t *ctx)
     }
 #if HSHELL_MAX_HISTORY_COUNT > 0
     size_t current_index=(context->history.load_ptr);
-    if(current_index >= ((context->history.store_ptr)%(sizeof(context->history.history)/sizeof(context->history.history[0]))))
+    if(((current_index > (context->history.store_ptr-1)) && ((context->history.store_ptr-1) < sizeof(context->history.history)/sizeof(context->history.history[0]))) || (current_index >= (sizeof(context->history.history)/sizeof(context->history.history[0]))))
     {
         current_index=0;
         context->history.load_ptr=current_index;
@@ -1015,6 +1019,10 @@ static void hshell_history_load_prev(hshell_context_t *ctx)
     {
         return;
     }
+    if(context->history.store_ptr == 0)
+    {
+        return;
+    }
     {
         hshell_backspace(context,context->buffer_ptr);
         {
@@ -1030,9 +1038,16 @@ static void hshell_history_load_prev(hshell_context_t *ctx)
 #if HSHELL_MAX_HISTORY_COUNT > 0
     {
         size_t current_index=(context->history.load_ptr);
-        if(current_index >= ((context->history.store_ptr)%(sizeof(context->history.history)/sizeof(context->history.history[0]))))
+        if(((current_index > (context->history.store_ptr-1)) && ((context->history.store_ptr-1) < sizeof(context->history.history)/sizeof(context->history.history[0]))) || (current_index >= (sizeof(context->history.history)/sizeof(context->history.history[0]))))
         {
-            current_index=((context->history.store_ptr)%(sizeof(context->history.history)/sizeof(context->history.history[0])))-1;
+            if(((context->history.store_ptr-1) < sizeof(context->history.history)/sizeof(context->history.history[0])))
+            {
+                current_index=(((context->history.store_ptr-1))%(sizeof(context->history.history)/sizeof(context->history.history[0])));
+            }
+            else
+            {
+                current_index=((sizeof(context->history.history)/sizeof(context->history.history[0]))-1);
+            }
             context->history.load_ptr=current_index;
         }
         memcpy(context->buffer,&context->history.history[current_index],sizeof(context->history.history[0]));
