@@ -67,6 +67,7 @@ void hshell_context_init(hshell_context_t *ctx)
     real_context->command.array_count=0;
     memset(real_context->escape_sequence,0,sizeof(real_context->escape_sequence));
     memset(&real_context->sub_context,0,sizeof(real_context->sub_context));
+    memset(&real_context->history,0,sizeof(real_context->history));
 }
 
 static hshell_context_t *hshell_context_check_context(hshell_context_t *ctx)
@@ -830,6 +831,109 @@ static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline)
     return ret;
 }
 
+static void hshell_input_buffer_clear(hshell_context_t *ctx)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    {
+        //复位buffer
+        memset(context->buffer,0,sizeof(context->buffer));
+        context->buffer_ptr=0;
+    }
+}
+
+static void hshell_history_store(hshell_context_t *ctx)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    if(context->flags.echo==0)
+    {
+        return;
+    }
+#if HSHELL_MAX_HISTORY_COUNT > 0
+    size_t current_index=(context->history.store_ptr++)%(sizeof(context->history.history)/sizeof(context->history.history[0]));
+    memcpy(&context->history.history[current_index],context->buffer,sizeof(context->history.history[0]));
+#endif // HSHELL_MAX_HISTORY_COUNT
+}
+
+static void hshell_history_load_next(hshell_context_t *ctx)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    if(context->flags.echo==0)
+    {
+        return;
+    }
+    {
+        hshell_backspace(context,context->buffer_ptr);
+        {
+            size_t len=strlen((char *)context->buffer);
+            for(size_t i=0; i<len; i++)
+            {
+                hshell_printf(context," ");
+            }
+            hshell_backspace(context,len);
+        }
+        hshell_input_buffer_clear(context);
+    }
+#if HSHELL_MAX_HISTORY_COUNT > 0
+    size_t current_index=(context->history.load_ptr);
+    if(current_index >= ((context->history.store_ptr)%(sizeof(context->history.history)/sizeof(context->history.history[0]))))
+    {
+        current_index=0;
+        context->history.load_ptr=current_index;
+    }
+    memcpy(context->buffer,&context->history.history[current_index],sizeof(context->history.history[0]));
+    context->history.load_ptr++;
+#endif // HSHELL_MAX_HISTORY_COUNT
+    {
+        size_t len=strlen((char *)context->buffer);
+        for(size_t i=0; i<len; i++)
+        {
+            hshell_printf(context,"%c",context->buffer[i]);
+            context->buffer_ptr++;
+        }
+    }
+}
+
+static void hshell_history_load_prev(hshell_context_t *ctx)
+{
+    hshell_context_t *context=hshell_context_check_context(ctx);
+    if(context->flags.echo==0)
+    {
+        return;
+    }
+    {
+        hshell_backspace(context,context->buffer_ptr);
+        {
+            size_t len=strlen((char *)context->buffer);
+            for(size_t i=0; i<len; i++)
+            {
+                hshell_printf(context," ");
+            }
+            hshell_backspace(context,len);
+        }
+        hshell_input_buffer_clear(context);
+    }
+#if HSHELL_MAX_HISTORY_COUNT > 0
+    {
+        size_t current_index=(context->history.load_ptr);
+        if(current_index >= ((context->history.store_ptr)%(sizeof(context->history.history)/sizeof(context->history.history[0]))))
+        {
+            current_index=((context->history.store_ptr)%(sizeof(context->history.history)/sizeof(context->history.history[0])))-1;
+            context->history.load_ptr=current_index;
+        }
+        memcpy(context->buffer,&context->history.history[current_index],sizeof(context->history.history[0]));
+        context->history.load_ptr--;
+    }
+#endif // HSHELL_MAX_HISTORY_COUNT
+    {
+        size_t len=strlen((char *)context->buffer);
+        for(size_t i=0; i<len; i++)
+        {
+            hshell_printf(context,"%c",context->buffer[i]);
+            context->buffer_ptr++;
+        }
+    }
+}
+
 static int hshell_process_execute(hshell_context_t *ctx)
 {
     int ret=0;
@@ -837,6 +941,7 @@ static int hshell_process_execute(hshell_context_t *ctx)
 
     if(context->buffer[0]!='\0')
     {
+        hshell_history_store(ctx);
         ret=hshell_process_execute_arg_parse(context,(char *)context->buffer);
     }
 
@@ -846,11 +951,9 @@ static int hshell_process_execute(hshell_context_t *ctx)
         context->flags.prompt=0;
     }
 
-    {
-        //复位buffer
-        memset(context->buffer,0,sizeof(context->buffer));
-        context->buffer_ptr=0;
-    }
+    //清空输入
+    hshell_input_buffer_clear(context);
+
     return ret;
 }
 
@@ -903,14 +1006,16 @@ static int hshell_process_control(hshell_context_t *ctx)
             {
                 if(!escape_processed && strcmp((char *)context->escape_sequence,"[A")==0)
                 {
-                    //上键
+                    //上键(上一条历史记录)
                     escape_processed=true;
+                    hshell_history_load_next(context);
                 }
 
                 if(!escape_processed && strcmp((char *)context->escape_sequence,"[B")==0)
                 {
-                    //下键
+                    //下键（下一条历史记录）
                     escape_processed=true;
+                    hshell_history_load_prev(context);
                 }
 
                 if(!escape_processed && strcmp((char *)context->escape_sequence,"[C")==0)

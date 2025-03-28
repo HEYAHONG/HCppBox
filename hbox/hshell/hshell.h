@@ -70,7 +70,7 @@ struct hshell_context
         uint32_t command_name_shortcut:1;       /**< 当此值为1时，当用户输入的命令名称匹配某个命令的前几个字母时视为匹配成功 */
     } flags;                                    /**< 标志 */
     uint8_t buffer[HSHELL_CONTEXT_BUFFER_SIZE]; /**< 缓冲 */
-    size_t  buffer_ptr;
+    size_t  buffer_ptr;                         /**< 缓冲指针 */
     struct
     {
         hshell_command_t *array_base;           /**< 命令数组首地址 */
@@ -83,6 +83,14 @@ struct hshell_context
         hshell_context_t *next;                 /**< 下一个上下文，当此指针不为空时，循环将直接进入此指针所指的上下文 */
         hshell_context_t *prev;                 /**< 原上下文，当此指针不为空时，表示现在的上下文是作为子上下文存在的 */
     } sub_context;                              /**< 子上下文，允许进入子上下文(此时原上下文处于不活跃状态)*/
+#if HSHELL_MAX_HISTORY_COUNT > 0
+    struct
+    {
+        uint8_t history[HSHELL_MAX_HISTORY_COUNT][HSHELL_CONTEXT_BUFFER_SIZE];  /**< 历史记录 */
+        size_t store_ptr;                                                       /**< 当前保存的历史记录的指针 */
+        size_t load_ptr;                                                        /**< 当前加载的历史记录的指针 */
+    } history;
+#endif // HSHELL_MAX_HISTORY_COUNT
 };
 
 /** \brief hshell 获取获取默认上下文

@@ -47,6 +47,18 @@ extern "C"
 #endif
 #endif // HSHELL_MAX_ARGC
 
+
+/*
+ * 历史记录的大小
+ */
+#ifndef HSHELL_MAX_HISTORY_COUNT
+#if defined(HDEFAULTS_OS_UNIX) || defined(HDEFAULTS_OS_WINDOWS)
+#define HSHELL_MAX_HISTORY_COUNT 64
+#else
+#define HSHELL_MAX_HISTORY_COUNT 2
+#endif
+#endif // HSHELL_MAX_HISTORY_COUNT
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
