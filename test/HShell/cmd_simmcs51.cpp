@@ -472,7 +472,7 @@ static int cmd_disassembly(int argc,const char *argv[])
 {
     hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
     size_t start=0;
-    size_t length=256;
+    size_t length=25;
     {
         //默认地址由PC决定
         start=hs_mcs_51_pc_get(s_mcs51.core_get());
