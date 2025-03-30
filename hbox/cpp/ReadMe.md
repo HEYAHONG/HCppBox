@@ -94,3 +94,16 @@
 | `hstaticobject`    | 使静态数据可用hobject包装。       |                         |
 | `hdymaicobj`       | 使得堆上的数据可使用hobject包装。 | 需要`new`与`delete`可用 |
 
+## hsim
+
+此组件主要用于包装hsimulator组件
+
+### 类
+
+| 类                | 说明              | 备注 |
+| ----------------- | ----------------- | ---- |
+| `hsimmcs51tiny`   | MCS-51 tiny模型   |      |
+| `hsimmcs51small`  | MCS-51 small模型  |      |
+| `hsimmcs51medium` | MCS-51 medium模型 |      |
+| `hsimmcs51large`  | MCS-51 large模型  |      |
+| `hsimmcs51huge`   | MCS-51 huge模型   |      |
