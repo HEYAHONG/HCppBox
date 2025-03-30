@@ -95,7 +95,7 @@ static struct
     {
         hshell_internal_command_help_entry,
         "help",
-        "show help. help [command]"
+        "show help. \nhelp [command]"
     }
 };
 
@@ -124,7 +124,25 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
 
                     if(hshell_internal_command[i].help!=NULL)
                     {
-                        size_t help_len=strlen(hshell_internal_command[i].help);
+                        size_t help_len=0;
+                        {
+                            size_t len=strlen(hshell_internal_command[i].help);
+                            for(size_t index=0;index<len;index++)
+                            {
+                                if(hshell_internal_command[i].help[index]=='\0')
+                                {
+                                    break;
+                                }
+
+                                if(hshell_internal_command[i].help[index]=='\n')
+                                {
+                                    help_len=0;
+                                    continue;
+                                }
+
+                                help_len++;
+                            }
+                        }
                         if(help_len>max_help_len)
                         {
                             max_help_len=help_len;
@@ -161,7 +179,26 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
                             hshell_context_printf(context," ");
                         }
                         hshell_context_printf(context,"\t");
-                        hshell_context_printf(context,"%s",(hshell_internal_command[i].help!=NULL)?(hshell_internal_command[i].help):"");
+                        if(hshell_internal_command[i].help!=NULL)
+                        {
+                            size_t len=strlen(hshell_internal_command[i].help);
+                            for(size_t index=0;index<len;index++)
+                            {
+                                uint8_t ch=hshell_internal_command[i].help[index];
+                                if(ch=='\n')
+                                {
+                                    hshell_context_printf(context,"\n");
+                                    for(size_t j=0;j<max_name_len;j++)
+                                    {
+                                        hshell_context_printf(context," ");
+                                    }
+                                    hshell_context_printf(context,"\t");
+                                    continue;
+                                }
+                                hshell_context_printf(context,"%c",(char)ch);
+
+                            }
+                        }
                         hshell_context_printf(context,"\r\n");
                     }
                 }
@@ -187,7 +224,25 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
 
                     if(context->command.array_base[i].help!=NULL)
                     {
-                        size_t help_len=strlen(context->command.array_base[i].help);
+                        size_t help_len=0;
+                        {
+                            size_t len=strlen(context->command.array_base[i].help);
+                            for(size_t index=0;index<len;index++)
+                            {
+                                if(context->command.array_base[i].help[index]=='\0')
+                                {
+                                    break;
+                                }
+
+                                if(context->command.array_base[i].help[index]=='\n')
+                                {
+                                    help_len=0;
+                                    continue;
+                                }
+
+                                help_len++;
+                            }
+                        }
                         if(help_len>max_help_len)
                         {
                             max_help_len=help_len;
@@ -224,7 +279,26 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
                             hshell_context_printf(context," ");
                         }
                         hshell_context_printf(context,"\t");
-                        hshell_context_printf(context,"%s",(context->command.array_base[i].help!=NULL)?(context->command.array_base[i].help):"");
+                        if(context->command.array_base[i].help!=NULL)
+                        {
+                            size_t len=strlen(context->command.array_base[i].help);
+                            for(size_t index=0;index<len;index++)
+                            {
+                                uint8_t ch=context->command.array_base[i].help[index];
+                                if(ch=='\n')
+                                {
+                                    hshell_context_printf(context,"\n");
+                                    for(size_t j=0;j<max_name_len;j++)
+                                    {
+                                        hshell_context_printf(context," ");
+                                    }
+                                    hshell_context_printf(context,"\t");
+                                    continue;
+                                }
+                                hshell_context_printf(context,"%c",(char)ch);
+
+                            }
+                        }
                         hshell_context_printf(context,"\r\n");
                     }
                 }
@@ -241,7 +315,7 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
             {
                 if(context->command.array_base[i].name!=NULL && strcmp(argv[1],context->command.array_base[i].name)==0)
                 {
-                    hshell_context_printf(context,"%s:\t%s\r\n",context->command.array_base[i].name,context->command.array_base[i].help!=NULL?context->command.array_base[i].help:"");
+                    hshell_context_printf(context,"%s:\r\n%s\r\n",context->command.array_base[i].name,context->command.array_base[i].help!=NULL?context->command.array_base[i].help:"");
                     help_shown=true;
                 }
             }
@@ -253,7 +327,7 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
             {
                 if(hshell_internal_command[i].name!=NULL && strcmp(argv[1],hshell_internal_command[i].name)==0)
                 {
-                    hshell_context_printf(context,"%s:\t%s\r\n",hshell_internal_command[i].name,hshell_internal_command[i].help!=NULL?hshell_internal_command[i].help:"");
+                    hshell_context_printf(context,"%s:\r\n%s\r\n",hshell_internal_command[i].name,hshell_internal_command[i].help!=NULL?hshell_internal_command[i].help:"");
                     help_shown=true;
                 }
             }

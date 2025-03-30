@@ -54,17 +54,17 @@ static hshell_command_t commands[]=
     {
         cmd_tick,
         "tick",
-        "clock tick. tick [number]"
+        "clock tick. \ntick [number]"
     },
     {
         cmd_uart,
         "uart",
-        "uart input. uart [string]"
+        "uart input. \nuart [string]"
     },
     {
         cmd_rom,
         "rom",
-        "show rom list or set rom. rom [name]"
+        "show rom list or set rom.\nrom [name]"
     },
     {
         cmd_dump_core,
@@ -74,22 +74,22 @@ static hshell_command_t commands[]=
     {
         cmd_dump_ram,
         "dump_ram",
-        "show ram. dump_ram [address(hex)] [length]"
+        "show ram. \ndump_ram [address(hex)] [length]"
     },
     {
         cmd_dump_xram,
         "dump_xram",
-        "show xram. dump_xram [address(hex)] [length]"
+        "show xram. \ndump_xram [address(hex)] [length]"
     },
     {
         cmd_dump_rom,
         "dump_rom",
-        "show rom. dump_rom [address(hex)] [length]"
+        "show rom. \ndump_rom [address(hex)] [length]"
     },
     {
         cmd_disassembly,
         "disassembly",
-        "show rom(disassembly). disassembly [address(hex)] [length]"
+        "show rom(disassembly). \ndisassembly [address(hex)] [length]"
     },
     {
         cmd_dump_pin,
