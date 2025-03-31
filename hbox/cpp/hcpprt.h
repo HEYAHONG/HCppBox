@@ -10,6 +10,7 @@
 #define HCPPRT_H
 #include "hcompiler.h"
 #include "hdefaults.h"
+#include "stdbool.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -21,6 +22,13 @@ extern "C"
  *
  */
 void hcpprt_init(void);
+
+
+/** \brief hcpprt循环，用户需要较低优先级的任务或者空闲任务中周期性调用此函数以保证内部状态得到正确更新。
+ *
+ *
+ */
+void hcpprt_loop(void);
 
 #ifdef __cplusplus
 }

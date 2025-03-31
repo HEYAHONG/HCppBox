@@ -10,6 +10,7 @@
 #include "hcompiler.h"
 #include "hdefaults.h"
 #include "h3rdparty.h"
+#include "hstacklesscoroutine.h"
 
 
 
@@ -96,6 +97,13 @@ void hcpprt_init()
      * 执行构造函数
      */
     ctors_execute();
+}
+
+HSTACKLESSCOROUTINE_DECLARE_COROUTINE(hsoftdog);
+void hcpprt_loop(void)
+{
+    //hsoftdog组件
+    HSTACKLESSCOROUTINE_ENTRY(hsoftdog);
 }
 
 
