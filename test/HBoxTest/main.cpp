@@ -1796,4 +1796,8 @@ static int h3rdparty_test(int argc,const char *argv[])
     return 0;
 }
 
-
+static void hcpprt_init_entry()
+{
+    printf("hcpprt_init!\r\n");
+}
+HCPPRT_INIT_EXPORT(init,hcpprt_init_entry);

@@ -8,7 +8,8 @@
  **************************************************************/
 #ifndef __HSHELL_COMMAND_H__
 #define __HSHELL_COMMAND_H__
-
+#include "hcompiler.h"
+#include "hdefaults.h"
 #ifdef __cplusplus
 extern "C"
 {
