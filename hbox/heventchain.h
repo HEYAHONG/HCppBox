@@ -146,6 +146,43 @@ void heventchain_uninstall_hook(heventchain_t *chain,uint32_t id);
  */
 void heventchain_uninstall_all_hook(heventchain_t *chain);
 
+#ifndef HEVENTCHAIN_USER_CHAIN_COUNT
+#define HEVENTCHAIN_USER_CHAIN_COUNT 0
+#endif // HEVENTCHAIN_USER_CHAIN_COUNT
+
+enum
+{
+    HEVENTCHAIN_SYSTEM_CHAIN_0=0,                                   /**< 链0*/
+    HEVENTCHAIN_SYSTEM_CHAIN_1,                                     /**< 链1 */
+    HEVENTCHAIN_SYSTEM_CHAIN_2,                                     /**< 链2 */
+    HEVENTCHAIN_SYSTEM_CHAIN_3,                                     /**< 链3 */
+    HEVENTCHAIN_SYSTEM_CHAIN_4,                                     /**< 链4 */
+    HEVENTCHAIN_SYSTEM_CHAIN_5,                                     /**< 链5 */
+    HEVENTCHAIN_SYSTEM_CHAIN_6,                                     /**< 链6 */
+    HEVENTCHAIN_SYSTEM_CHAIN_7,                                     /**< 链7 */
+    HEVENTCHAIN_SYSTEM_CHAIN_8,                                     /**< 链8 */
+    HEVENTCHAIN_SYSTEM_CHAIN_9,                                     /**< 链9 */
+    HEVENTCHAIN_SYSTEM_CHAIN_COUNT,                                 /**< 系统事件链数量*/
+    HEVENTCHAIN_USER_CHAIN_START=HEVENTCHAIN_SYSTEM_CHAIN_COUNT     /**< 用户链起始 */
+};
+
+/** \brief 从表中获取事件链
+ *
+ * \param id int 标识，见HEVENTCHAIN_SYSTEM_CHAIN _*或者用户自定义（使用HEVENTCHAIN_USER_CHAIN_START+偏移）
+ * \return heventchain_t* heventchain_t指针,若未设置，将返回NULL
+ *
+ */
+heventchain_t *heventchain_get_chain_from_table(int id);
+
+
+/** \brief 将事件链设置到表中
+ *
+ * \param id int 标识，见HEVENTCHAIN_SYSTEM_CHAIN _*或者用户自定义（使用HEVENTCHAIN_USER_CHAIN_START+偏移）
+ * \param chain heventchain_t* heventchain_t指针，若为NULL，将使用heventchain_new创建新heventchain_t
+ *
+ */
+void heventchain_set_chain_to_table(int id,heventchain_t *chain);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

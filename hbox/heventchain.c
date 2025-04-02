@@ -394,3 +394,43 @@ void heventchain_uninstall_all_hook(heventchain_t *chain)
     }
 
 }
+
+static heventchain_t * heventchain_table[HEVENTCHAIN_SYSTEM_CHAIN_COUNT+(HEVENTCHAIN_USER_CHAIN_COUNT)]={0};
+heventchain_t *heventchain_get_chain_from_table(int id)
+{
+    if(id < 0 || id >= (sizeof(heventchain_table)/sizeof(heventchain_table[0])))
+    {
+        return NULL;
+    }
+    heventchain_t * ret=NULL;
+    hdefaults_get_api_table()->mutex_lock(NULL);
+    ret=heventchain_table[id];
+    hdefaults_get_api_table()->mutex_unlock(NULL);
+    return ret;
+}
+
+void heventchain_set_chain_to_table(int id,heventchain_t *chain)
+{
+    if(id < 0 || id >= (sizeof(heventchain_table)/sizeof(heventchain_table[0])))
+    {
+        return;
+    }
+    hdefaults_get_api_table()->mutex_lock(NULL);
+    if(heventchain_table[id]!=NULL)
+    {
+        if(heventchain_table[id]->has_internal_heap==0)
+        {
+            heventchain_free(heventchain_table[id]);
+        }
+        heventchain_table[id]=NULL;
+    }
+    if(chain!=NULL)
+    {
+        heventchain_table[id]=chain;
+    }
+    else
+    {
+         heventchain_table[id]=heventchain_new(NULL);
+    }
+    hdefaults_get_api_table()->mutex_unlock(NULL);
+}
