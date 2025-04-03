@@ -147,7 +147,7 @@ void heventslots_unregister_all_slot(heventslots_t *slots);
 
 enum
 {
-    HEVENTSLOTS_SYSTEM_SLOTS_0=0,                                   /**< 槽0*/
+    HEVENTSLOTS_SYSTEM_SLOTS_0=0,                                   /**< 槽0 */
     HEVENTSLOTS_SYSTEM_SLOTS_1,                                     /**< 槽1 */
     HEVENTSLOTS_SYSTEM_SLOTS_2,                                     /**< 槽2 */
     HEVENTSLOTS_SYSTEM_SLOTS_3,                                     /**< 槽3 */
@@ -163,7 +163,7 @@ enum
 
 /** \brief 从表中获取事件槽
  *
- * \param id int 标识，见HEVENTSLOTS_SYSTEM_SLOTS _*或者用户自定义（使用HEVENTSLOTS_USER_SLOTS_START+偏移）
+ * \param id int 标识，见HEVENTSLOTS_SYSTEM_SLOTS_*或者用户自定义（使用HEVENTSLOTS_USER_SLOTS_START+偏移）
  * \return heventslots_t* heventslots_t指针,若未设置，将返回NULL
  *
  */
@@ -172,7 +172,7 @@ heventslots_t *heventslots_get_slots_from_table(int id);
 
 /** \brief 将事件槽设置到表中
  *
- * \param id int 标识，见HEVENTSLOTS_SYSTEM_SLOTS _*或者用户自定义（使用HEVENTSLOTS_USER_SLOTS_START+偏移）
+ * \param id int 标识，见HEVENTSLOTS_SYSTEM_SLOTS_*或者用户自定义（使用HEVENTSLOTS_USER_SLOTS_START+偏移）
  * \param slots heventslots_t* heventslots_t指针，若为NULL，将使用heventslots_new创建新heventslots_t
  *
  */

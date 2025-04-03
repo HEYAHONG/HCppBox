@@ -174,7 +174,7 @@ void  heventloop_set_max_events_number(heventloop_t *loop,uint32_t max_event_num
 
 enum
 {
-    HEVENTLOOP_SYSTEM_LOOP_0=0,                                   /**< 循环0*/
+    HEVENTLOOP_SYSTEM_LOOP_0=0,                                   /**< 循环0 */
     HEVENTLOOP_SYSTEM_LOOP_1,                                     /**< 循环1 */
     HEVENTLOOP_SYSTEM_LOOP_2,                                     /**< 循环2 */
     HEVENTLOOP_SYSTEM_LOOP_3,                                     /**< 循环3 */
@@ -190,7 +190,7 @@ enum
 
 /** \brief 从表中获取事件循环
  *
- * \param id int 标识，见HEVENTLOOP_SYSTEM_LOOP _*或者用户自定义（使用HEVENTLOOP_USER_LOOP_START+偏移）
+ * \param id int 标识，见HEVENTLOOP_SYSTEM_LOOP_*或者用户自定义（使用HEVENTLOOP_USER_LOOP_START+偏移）
  * \return heventloop_t* heventloop_t指针,若未设置，将返回NULL
  *
  */
@@ -199,7 +199,7 @@ heventloop_t *heventloop_get_loop_from_table(int id);
 
 /** \brief 将事件循环设置到表中
  *
- * \param id int 标识，见HEVENTLOOP_SYSTEM_LOOP _*或者用户自定义（使用HEVENTLOOP_USER_LOOP_START+偏移）
+ * \param id int 标识，见HEVENTLOOP_SYSTEM_LOOP_*或者用户自定义（使用HEVENTLOOP_USER_LOOP_START+偏移）
  * \param loop heventloop_t* heventloop_t指针，若为NULL，将使用heventloop_new创建新heventloop_t
  *
  */
