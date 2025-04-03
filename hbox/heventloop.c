@@ -409,3 +409,44 @@ void  heventloop_set_max_events_number(heventloop_t *loop,uint32_t max_event_num
     }
     loop->max_event_number=max_event_number;
 }
+
+static heventloop_t * heventloop_table[HEVENTLOOP_SYSTEM_LOOP_COUNT+(HEVENTLOOP_USER_LOOP_COUNT)]= {0};
+heventloop_t *heventloop_get_loop_from_table(int id)
+{
+    if(id < 0 || id >= (sizeof(heventloop_table)/sizeof(heventloop_table[0])))
+    {
+        return NULL;
+    }
+    heventloop_t * ret=NULL;
+    hdefaults_get_api_table()->mutex_lock(NULL);
+    ret=heventloop_table[id];
+    hdefaults_get_api_table()->mutex_unlock(NULL);
+    return ret;
+}
+
+void heventloop_set_loop_to_table(int id,heventloop_t *loop)
+{
+    if(id < 0 || id >= (sizeof(heventloop_table)/sizeof(heventloop_table[0])))
+    {
+        return;
+    }
+    hdefaults_get_api_table()->mutex_lock(NULL);
+    if(heventloop_table[id]!=NULL)
+    {
+        if(heventloop_table[id]->has_internal_heap==0)
+        {
+            heventloop_free(heventloop_table[id]);
+        }
+        heventloop_table[id]=NULL;
+    }
+    if(loop!=NULL)
+    {
+        heventloop_table[id]=loop;
+    }
+    else
+    {
+        heventloop_table[id]=heventloop_new(NULL);
+    }
+    hdefaults_get_api_table()->mutex_unlock(NULL);
+}
+

@@ -363,3 +363,44 @@ void heventslots_unregister_all_slot(heventslots_t *slots)
         slots->api.mutex_unlock(slots->usr);
     }
 }
+
+static heventslots_t * heventslots_table[HEVENTSLOTS_SYSTEM_SLOTS_COUNT+(HEVENTSLOTS_USER_SLOTS_COUNT)]= {0};
+heventslots_t *heventslots_get_slots_from_table(int id)
+{
+    if(id < 0 || id >= (sizeof(heventslots_table)/sizeof(heventslots_table[0])))
+    {
+        return NULL;
+    }
+    heventslots_t * ret=NULL;
+    hdefaults_get_api_table()->mutex_lock(NULL);
+    ret=heventslots_table[id];
+    hdefaults_get_api_table()->mutex_unlock(NULL);
+    return ret;
+}
+
+void heventslots_set_slots_to_table(int id,heventslots_t *slots)
+{
+    if(id < 0 || id >= (sizeof(heventslots_table)/sizeof(heventslots_table[0])))
+    {
+        return;
+    }
+    hdefaults_get_api_table()->mutex_lock(NULL);
+    if(heventslots_table[id]!=NULL)
+    {
+        if(heventslots_table[id]->has_internal_heap==0)
+        {
+            heventslots_free(heventslots_table[id]);
+        }
+        heventslots_table[id]=NULL;
+    }
+    if(slots!=NULL)
+    {
+        heventslots_table[id]=slots;
+    }
+    else
+    {
+        heventslots_table[id]=heventslots_new(NULL);
+    }
+    hdefaults_get_api_table()->mutex_unlock(NULL);
+}
+

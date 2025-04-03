@@ -395,7 +395,7 @@ void heventchain_uninstall_all_hook(heventchain_t *chain)
 
 }
 
-static heventchain_t * heventchain_table[HEVENTCHAIN_SYSTEM_CHAIN_COUNT+(HEVENTCHAIN_USER_CHAIN_COUNT)]={0};
+static heventchain_t * heventchain_table[HEVENTCHAIN_SYSTEM_CHAIN_COUNT+(HEVENTCHAIN_USER_CHAIN_COUNT)]= {0};
 heventchain_t *heventchain_get_chain_from_table(int id)
 {
     if(id < 0 || id >= (sizeof(heventchain_table)/sizeof(heventchain_table[0])))
@@ -430,7 +430,7 @@ void heventchain_set_chain_to_table(int id,heventchain_t *chain)
     }
     else
     {
-         heventchain_table[id]=heventchain_new(NULL);
+        heventchain_table[id]=heventchain_new(NULL);
     }
     hdefaults_get_api_table()->mutex_unlock(NULL);
 }

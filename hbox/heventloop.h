@@ -168,7 +168,42 @@ uint32_t heventloop_get_max_events_number(heventloop_t *loop);
  */
 void  heventloop_set_max_events_number(heventloop_t *loop,uint32_t max_event_number);
 
+#ifndef HEVENTLOOP_USER_LOOP_COUNT
+#define HEVENTLOOP_USER_LOOP_COUNT 0
+#endif // HEVENTLOOP_USER_LOOP_COUNT
 
+enum
+{
+    HEVENTLOOP_SYSTEM_LOOP_0=0,                                   /**< 循环0*/
+    HEVENTLOOP_SYSTEM_LOOP_1,                                     /**< 循环1 */
+    HEVENTLOOP_SYSTEM_LOOP_2,                                     /**< 循环2 */
+    HEVENTLOOP_SYSTEM_LOOP_3,                                     /**< 循环3 */
+    HEVENTLOOP_SYSTEM_LOOP_4,                                     /**< 循环4 */
+    HEVENTLOOP_SYSTEM_LOOP_5,                                     /**< 循环5 */
+    HEVENTLOOP_SYSTEM_LOOP_6,                                     /**< 循环6 */
+    HEVENTLOOP_SYSTEM_LOOP_7,                                     /**< 循环7 */
+    HEVENTLOOP_SYSTEM_LOOP_8,                                     /**< 循环8 */
+    HEVENTLOOP_SYSTEM_LOOP_9,                                     /**< 循环9 */
+    HEVENTLOOP_SYSTEM_LOOP_COUNT,                                 /**< 系统事件循环数量*/
+    HEVENTLOOP_USER_LOOP_START=HEVENTLOOP_SYSTEM_LOOP_COUNT     /**< 用户循环起始 */
+};
+
+/** \brief 从表中获取事件循环
+ *
+ * \param id int 标识，见HEVENTLOOP_SYSTEM_LOOP _*或者用户自定义（使用HEVENTLOOP_USER_LOOP_START+偏移）
+ * \return heventloop_t* heventloop_t指针,若未设置，将返回NULL
+ *
+ */
+heventloop_t *heventloop_get_loop_from_table(int id);
+
+
+/** \brief 将事件循环设置到表中
+ *
+ * \param id int 标识，见HEVENTLOOP_SYSTEM_LOOP _*或者用户自定义（使用HEVENTLOOP_USER_LOOP_START+偏移）
+ * \param loop heventloop_t* heventloop_t指针，若为NULL，将使用heventloop_new创建新heventloop_t
+ *
+ */
+void heventloop_set_loop_to_table(int id,heventloop_t *loop);
 
 #ifdef __cplusplus
 }

@@ -140,6 +140,45 @@ void heventslots_unregister_slot(heventslots_t *slots,uint32_t id);
  *
  */
 void heventslots_unregister_all_slot(heventslots_t *slots);
+
+#ifndef HEVENTSLOTS_USER_SLOTS_COUNT
+#define HEVENTSLOTS_USER_SLOTS_COUNT 0
+#endif // HEVENTSLOTS_USER_SLOTS_COUNT
+
+enum
+{
+    HEVENTSLOTS_SYSTEM_SLOTS_0=0,                                   /**< 槽0*/
+    HEVENTSLOTS_SYSTEM_SLOTS_1,                                     /**< 槽1 */
+    HEVENTSLOTS_SYSTEM_SLOTS_2,                                     /**< 槽2 */
+    HEVENTSLOTS_SYSTEM_SLOTS_3,                                     /**< 槽3 */
+    HEVENTSLOTS_SYSTEM_SLOTS_4,                                     /**< 槽4 */
+    HEVENTSLOTS_SYSTEM_SLOTS_5,                                     /**< 槽5 */
+    HEVENTSLOTS_SYSTEM_SLOTS_6,                                     /**< 槽6 */
+    HEVENTSLOTS_SYSTEM_SLOTS_7,                                     /**< 槽7 */
+    HEVENTSLOTS_SYSTEM_SLOTS_8,                                     /**< 槽8 */
+    HEVENTSLOTS_SYSTEM_SLOTS_9,                                     /**< 槽9 */
+    HEVENTSLOTS_SYSTEM_SLOTS_COUNT,                                 /**< 系统事件槽数量*/
+    HEVENTSLOTS_USER_SLOTS_START=HEVENTSLOTS_SYSTEM_SLOTS_COUNT     /**< 用户槽起始 */
+};
+
+/** \brief 从表中获取事件槽
+ *
+ * \param id int 标识，见HEVENTSLOTS_SYSTEM_SLOTS _*或者用户自定义（使用HEVENTSLOTS_USER_SLOTS_START+偏移）
+ * \return heventslots_t* heventslots_t指针,若未设置，将返回NULL
+ *
+ */
+heventslots_t *heventslots_get_slots_from_table(int id);
+
+
+/** \brief 将事件槽设置到表中
+ *
+ * \param id int 标识，见HEVENTSLOTS_SYSTEM_SLOTS _*或者用户自定义（使用HEVENTSLOTS_USER_SLOTS_START+偏移）
+ * \param slots heventslots_t* heventslots_t指针，若为NULL，将使用heventslots_new创建新heventslots_t
+ *
+ */
+void heventslots_set_slots_to_table(int id,heventslots_t *slots);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
