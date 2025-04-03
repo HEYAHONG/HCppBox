@@ -53,3 +53,23 @@ HSTACKLESSCOROUTINE_BLOCK_END(协程名称)
 以上函数的区别仅仅是是否使用自定义的协程控制块（CCB）与事件（EVENT）,入口函数应该多次调用，直到协程完成。
 
 协程的全局协程控制块可使用`HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(NAME)`获取，可使用协程控制块获取协程是否完成。
+
+# 协程组
+
+对于可以处理同一类型的事件的协程，可以放入同一个协程组中。
+
+协程组的定义方式如下：
+
+```c
+HSTACKLESSCOROUTINE_GROUP_BLOCK_START(协程组名称)
+HSTACKLESSCOROUTINE_GROUP_BLOCK_ITEM(协程名称1)
+HSTACKLESSCOROUTINE_GROUP_BLOCK_ITEM(协程名称2)
+	.
+    .
+    .
+ HSTACKLESSCOROUTINE_GROUP_BLOCK_ITEM(协程名称N)
+HSTACKLESSCOROUTINE_GROUP_BLOCK_END(协程组名称)
+```
+
+调用协程组前，如不在同一文件中，则需要使用 `HSTACKLESSCOROUTINE_DECLARE_COROUTINE_GROUP(NAME)`申明协程组，然后在合适位置调用`HSTACKLESSCOROUTINE_GROUP_ENTRY(NAME,EVENT)`即可实现对协程组的处理。
+
