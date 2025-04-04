@@ -20,6 +20,7 @@ extern "C"
 #endif // __cplusplus
 
 #include "hstacklesscoroutine/switch_goto/hstacklesscoroutine_v1.h"
+#include "hstacklesscoroutine/setjmp_longjmp/hstacklesscoroutine_v2.h"
 
 #ifdef __cplusplus
 }
