@@ -79,6 +79,38 @@ hstacklesscoroutine2_task_t hstacklesscoroutine2_task_init(hstacklesscoroutine2_
  */
 bool hstacklesscoroutine2_ccb_set(hstacklesscoroutine2_ccb_t *ccb,hstacklesscoroutine2_task_t task);
 
+
+/** \brief 获取协程任务
+ *
+ * \param ccb hstacklesscoroutine2_ccb_t* 协程控制块指针
+ * \return hstacklesscoroutine2_task_t 协程任务
+ *
+ */
+hstacklesscoroutine2_task_t hstacklesscoroutine2_ccb_get(hstacklesscoroutine2_ccb_t *ccb);
+
+
+/** \brief 获取协程是否被暂停
+ *
+ * \param ccb hstacklesscoroutine2_ccb_t* 协程控制块指针
+ * \return bool 是否被暂停
+ *
+ */
+bool hstacklesscoroutine2_ccb_is_suspend(hstacklesscoroutine2_ccb_t *ccb);
+
+/** \brief 协程暂停
+ *
+ * \param ccb hstacklesscoroutine2_ccb_t* 协程控制块指针
+ *
+ */
+void hstacklesscoroutine2_ccb_suspend(hstacklesscoroutine2_ccb_t *ccb);
+
+/** \brief 协程从暂停中恢复
+ *
+ * \param ccb hstacklesscoroutine2_ccb_t* 协程控制块指针
+ *
+ */
+void hstacklesscoroutine2_ccb_resume(hstacklesscoroutine2_ccb_t *ccb);
+
 typedef enum
 {
     HSTACKLESSCOROUTINE2_RUNNING_STATE_CREATE=0,            /**< 创建状态 */

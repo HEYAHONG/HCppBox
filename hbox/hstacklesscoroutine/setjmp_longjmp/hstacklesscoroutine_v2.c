@@ -27,16 +27,18 @@ struct hstacklesscoroutine2_ccb
 {
     hstacklesscoroutine2_ccb_t *next;
     hstacklesscoroutine2_ccb_t *prev;
-    hstacklesscoroutine2_task_t task;
-    jmp_buf scheduler_point;
-    int scheduler_point_status;
+    hstacklesscoroutine2_task_t task;           /**< 任务信息 */
+    jmp_buf scheduler_point;                    /**< 调度器保存点 */
+    int scheduler_point_status;                 /**< setjmp返回值 */
 #ifdef HSTACKLESSCOROUTINE2_BARE_MACHINE
     jmp_buf coroutine_point;
     int coroutine_point_status;
 #endif
     struct
     {
-        uint32_t running_state:3;
+        uint32_t running_state:3;               /**< 运行状态，见hstacklesscoroutine2_running_state_t */
+        uint32_t suspend:1;                     /**< 是否被暂停，0=未被暂停，1=被暂停 */
+        uint32_t delay:1;                       /**< 正在被延时，0=未被延时，1=被延时 */
     } state;
     struct
     {
@@ -92,6 +94,42 @@ bool hstacklesscoroutine2_ccb_set(hstacklesscoroutine2_ccb_t *ccb,hstacklesscoro
     return false;
 }
 
+hstacklesscoroutine2_task_t hstacklesscoroutine2_ccb_get(hstacklesscoroutine2_ccb_t *ccb)
+{
+    hstacklesscoroutine2_task_t ret= {0};
+    if(ccb==NULL)
+    {
+        return ret;
+    }
+    return ccb->task;
+}
+
+bool hstacklesscoroutine2_ccb_is_suspend(hstacklesscoroutine2_ccb_t *ccb)
+{
+    bool ret=false;
+    if(ccb!=NULL)
+    {
+        ret=ccb->state.suspend!=0;
+    }
+    return ret;
+}
+
+void hstacklesscoroutine2_ccb_suspend(hstacklesscoroutine2_ccb_t *ccb)
+{
+    if(ccb!=NULL)
+    {
+        ccb->state.suspend=1;
+    }
+}
+
+void hstacklesscoroutine2_ccb_resume(hstacklesscoroutine2_ccb_t *ccb)
+{
+    if(ccb!=NULL)
+    {
+        ccb->state.suspend=0;
+    }
+}
+
 hstacklesscoroutine2_running_state_t hstacklesscoroutine2_ccb_running_state_get(hstacklesscoroutine2_ccb_t *ccb)
 {
     if(ccb==NULL)
@@ -136,6 +174,7 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
         {
             //处理阻塞
             bool be_ready=true;
+            if(current_ccb->state.delay!=0)
             {
                 hdefaults_tick_t current_tick=hdefaults_get_api_table()->tick_get();
                 if(current_ccb->block.next_tick > current_tick)
@@ -146,7 +185,18 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
                 {
                     be_ready=false;
                 }
+
+                if(be_ready)
+                {
+                    current_ccb->state.delay=0;
+                }
             }
+
+            if(current_ccb->state.suspend!=0)
+            {
+                be_ready=false;
+            }
+
 
             if(be_ready)
             {
@@ -219,7 +269,7 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
             current_ccb->scheduler_point_status=setjmp(current_ccb->scheduler_point);
             if(stack_top==0)
             {
-                if(current_ccb->task.entry!=NULL)
+                if(current_ccb->task.entry!=NULL && current_ccb->state.suspend == 0)
                 {
                     current_ccb->state.running_state=HSTACKLESSCOROUTINE2_RUNNING_STATE_RUNNING;
                     current_ccb->task.entry(sch,current_ccb,current_ccb->task.usr);
@@ -364,6 +414,7 @@ void hstacklesscoroutine2_delay_util(hstacklesscoroutine2_scheduler_t * sch,hsta
     }
     ccb->state.running_state=HSTACKLESSCOROUTINE2_RUNNING_STATE_BLOCK;
     ccb->block.next_tick=tick;
+    ccb->state.delay=1;
     hstacklesscoroutine2_yield(sch,ccb);
 }
 
