@@ -1251,6 +1251,25 @@ static void hstacklesscoroutine2_co1(hstacklesscoroutine2_scheduler_t *scheduler
 static void hstacklesscoroutine2_co2(hstacklesscoroutine2_scheduler_t *scheduler,hstacklesscoroutine2_ccb_t *ccb,void *usr)
 {
     static size_t i=0;
+    static bool is_await=false;
+    if(!is_await)
+    {
+        is_await=true;
+        hstacklesscoroutine2_await(scheduler,ccb,hstacklesscoroutine_awaiter2_init([](hstacklesscoroutine2_scheduler_t * sch,hstacklesscoroutine2_ccb_t *ccb,hstacklesscoroutine2_awaiter_t *awaiter) -> bool
+        {
+            if(awaiter==NULL)
+            {
+                return true;
+            }
+            uintptr_t & usr=*(uintptr_t *)&awaiter->usr;
+            if(usr > 1000)
+            {
+                return true;
+            }
+            usr++;
+            return false;
+        },(void *)(uintptr_t)0));
+    }
     while(i++<4)
     {
         printf("hstacklesscoroutine2 co2:%d!\r\n",(int)i);

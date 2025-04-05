@@ -23,6 +23,24 @@ extern "C"
 {
 #endif // __cplusplus
 
+/*
+ * longjmp可用于多层返回。
+ * 使用longjmp跳转至被调用的函数是未定义行为，一般只有裸机可支持（裸机一般是通过直接恢复寄存器(如PC与SP)的方式实现 longjmp）
+ * 注意:本组件使用了setjmp与longjmp ,可能与C++某些特性兼容性不好，使用局部变量与C++异常时尤其需要注意。
+ */
+#if defined(HDEFAULTS_OS_NONE) || defined(HDEFAULTS_LIBC_ARMCLIB)
+#define HSTACKLESSCOROUTINE2_BARE_MACHINE    1
+#endif
+
+/*
+ * 某些情况下，需要启用非裸机的写法，可使用HSTACKLESSCOROUTINE2_NO_BARE_MACHINE强行使用非裸机的写法
+ */
+#ifdef  HSTACKLESSCOROUTINE2_NO_BARE_MACHINE
+#ifdef  HSTACKLESSCOROUTINE2_BARE_MACHINE
+#undef  HSTACKLESSCOROUTINE2_BARE_MACHINE
+#endif
+#endif
+
 
 struct hstacklesscoroutine2_ccb;            /**< 协程控制块 */
 typedef struct hstacklesscoroutine2_ccb hstacklesscoroutine2_ccb_t;
@@ -179,6 +197,42 @@ void hstacklesscoroutine2_delay_util(hstacklesscoroutine2_scheduler_t * sch,hsta
  *
  */
 void hstacklesscoroutine2_delay(hstacklesscoroutine2_scheduler_t * sch,hstacklesscoroutine2_ccb_t *ccb,hdefaults_tick_t  tick);
+
+struct  hstacklesscoroutine2_awaiter;
+typedef struct  hstacklesscoroutine2_awaiter hstacklesscoroutine2_awaiter_t;
+/** \brief 协程挂起点资源检查函数
+ *
+ * \param sch hstacklesscoroutine2_scheduler_t* 协程调度器调度器指针
+ * \param ccb hstacklesscoroutine2_ccb_t* 协程控制块指针
+ * \param awaiter hstacklesscoroutine2_awaiter_t* 协程挂起点指针
+ * \return bool true表示资源已就绪
+ *
+ */
+typedef bool (*hstacklesscoroutine2_awaiter_wait_for_ready_t)(hstacklesscoroutine2_scheduler_t * sch,hstacklesscoroutine2_ccb_t *ccb,hstacklesscoroutine2_awaiter_t *awaiter);
+struct hstacklesscoroutine2_awaiter
+{
+    hstacklesscoroutine2_awaiter_wait_for_ready_t  wait_for_ready;       /**< 等待准备好,返回true退出等待*/
+    void *usr;                                                          /**< 用户参数 */
+};
+
+/** \brief 协程挂起点初始化
+ *
+ * \param wait_for_ready hstacklesscoroutine2_awaiter_wait_for_ready_t 资源检查函数
+ * \param usr void* 用户参数
+ * \return hstacklesscoroutine2_awaiter_t
+ *
+ */
+hstacklesscoroutine2_awaiter_t hstacklesscoroutine_awaiter2_init(hstacklesscoroutine2_awaiter_wait_for_ready_t wait_for_ready,void *usr);
+
+
+/** \brief 等待挂起点,注意：此函数只能在任务中调用
+ *
+ * \param sch hstacklesscoroutine2_scheduler_t* 协程调度器调度器指针
+ * \param ccb hstacklesscoroutine2_ccb_t* 协程控制块指针
+ * \param awaiter hstacklesscoroutine2_awaiter_t 协程挂起点
+ *
+ */
+void hstacklesscoroutine2_await(hstacklesscoroutine2_scheduler_t * sch,hstacklesscoroutine2_ccb_t *ccb,hstacklesscoroutine2_awaiter_t awaiter);
 
 
 #ifdef __cplusplus

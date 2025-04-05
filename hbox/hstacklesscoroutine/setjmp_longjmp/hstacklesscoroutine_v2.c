@@ -13,14 +13,7 @@
 #include "setjmp.h"
 #include "string.h"
 
-/*
- * longjmp可用于多层返回。
- * 使用longjmp跳转至被调用的函数是未定义行为，一般只有裸机可支持（裸机一般是通过直接恢复寄存器(如PC与SP)的方式实现 longjmp）
- * 注意:本组件使用了setjmp与longjmp可能与C++某些特性兼容性不好，使用局部变量与C++异常时尤其需要注意。
- */
-#if defined(HDEFAULTS_OS_NONE) || defined(HDEFAULTS_LIBC_ARMCLIB)
-#define HSTACKLESSCOROUTINE2_BARE_MACHINE    1
-#endif
+
 
 
 struct hstacklesscoroutine2_ccb
@@ -39,10 +32,12 @@ struct hstacklesscoroutine2_ccb
         uint32_t running_state:3;               /**< 运行状态，见hstacklesscoroutine2_running_state_t */
         uint32_t suspend:1;                     /**< 是否被暂停，0=未被暂停，1=被暂停 */
         uint32_t delay:1;                       /**< 正在被延时，0=未被延时，1=被延时 */
+        uint32_t await:1;                       /**< 正在等待，0=未等待，1=等待 */
     } state;
     struct
     {
         hdefaults_tick_t next_tick;             /**< 下次运行的节拍，当协程处于阻塞状态时，当前时钟节拍大于此值时才会唤醒 */
+        hstacklesscoroutine2_awaiter_t awaiter; /**< 挂起点 */
     } block;
     uintptr_t stack_top;                        /**< 栈顶，由调度器启动协程时设定 */
 #ifdef HSTACKLESSCOROUTINE2_BARE_MACHINE
@@ -181,7 +176,7 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
                 {
                     be_ready=false;
                 }
-                if((current_ccb->block.next_tick < current_tick) && ((current_tick - current_ccb->block.next_tick) > 0x80000000))
+                if((current_ccb->block.next_tick < current_tick) && ((current_tick - current_ccb->block.next_tick) > (1ULL << (sizeof(hdefaults_tick_t)*8-1)))) //默认超时不能大过hdefaults_tick_t大小的1/2
                 {
                     be_ready=false;
                 }
@@ -197,6 +192,18 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
                 be_ready=false;
             }
 
+            if(be_ready && current_ccb->state.await!=0)
+            {
+                if(current_ccb->block.awaiter.wait_for_ready!=NULL)
+                {
+                    be_ready=current_ccb->block.awaiter.wait_for_ready(sch,current_ccb,&current_ccb->block.awaiter);
+                }
+
+                if(be_ready)
+                {
+                    current_ccb->state.await=0;
+                }
+            }
 
             if(be_ready)
             {
@@ -421,4 +428,24 @@ void hstacklesscoroutine2_delay_util(hstacklesscoroutine2_scheduler_t * sch,hsta
 void hstacklesscoroutine2_delay(hstacklesscoroutine2_scheduler_t * sch,hstacklesscoroutine2_ccb_t *ccb,hdefaults_tick_t  tick)
 {
     hstacklesscoroutine2_delay_util(sch,ccb,tick+hdefaults_get_api_table()->tick_get());
+}
+
+hstacklesscoroutine2_awaiter_t hstacklesscoroutine_awaiter2_init(hstacklesscoroutine2_awaiter_wait_for_ready_t wait_for_ready,void *usr)
+{
+    hstacklesscoroutine2_awaiter_t awaiter= {0};
+    awaiter.wait_for_ready=wait_for_ready;
+    awaiter.usr=usr;
+    return awaiter;
+}
+
+void hstacklesscoroutine2_await(hstacklesscoroutine2_scheduler_t * sch,hstacklesscoroutine2_ccb_t *ccb,hstacklesscoroutine2_awaiter_t awaiter)
+{
+    if(sch == NULL || ccb==NULL || hstacklesscoroutine2_ccb_running_state_get(ccb)==HSTACKLESSCOROUTINE2_RUNNING_STATE_CREATE)
+    {
+        return;
+    }
+    ccb->state.running_state=HSTACKLESSCOROUTINE2_RUNNING_STATE_BLOCK;
+    ccb->state.await=1;
+    ccb->block.awaiter=awaiter;
+    hstacklesscoroutine2_yield(sch,ccb);
 }
