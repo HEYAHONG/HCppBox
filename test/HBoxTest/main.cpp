@@ -1285,6 +1285,35 @@ static void hstacklesscoroutine2_co3(hstacklesscoroutine2_scheduler_t *scheduler
         hstacklesscoroutine2_delay(scheduler,ccb,1);
     }
 }
+
+static void hstacklesscoroutine2_co4(hstacklesscoroutine2_scheduler_t *scheduler,hstacklesscoroutine2_ccb_t *ccb,void *usr)
+{
+    static size_t i=0;
+    HSTACKLESSCOROUTINE2_BLOCK_START(ccb)
+    printf("hstacklesscoroutine2 co4:step 1!\r\n");
+    HSTACKLESSCOROUTINE2_BLOCK_POINT(ccb)
+    printf("hstacklesscoroutine2 co4:step 2!\r\n");
+    HSTACKLESSCOROUTINE2_BLOCK_POINT(ccb)
+    printf("hstacklesscoroutine2 co4:step 3!\r\n");
+    if(i++ < 2)
+    {
+        hstacklesscoroutine2_delay(scheduler,ccb,1);
+    }
+    HSTACKLESSCOROUTINE2_BLOCK_END(ccb)
+
+    HSTACKLESSCOROUTINE2_BLOCK_START(ccb)
+    printf("hstacklesscoroutine2 co4:step 4!\r\n");
+    HSTACKLESSCOROUTINE2_BLOCK_POINT(ccb)
+    printf("hstacklesscoroutine2 co4:step 5!\r\n");
+    HSTACKLESSCOROUTINE2_BLOCK_POINT(ccb)
+    printf("hstacklesscoroutine2 co4:step 6!\r\n");
+    if(i++ < 4)
+    {
+        hstacklesscoroutine2_delay(scheduler,ccb,1);
+    }
+    HSTACKLESSCOROUTINE2_BLOCK_END(ccb)
+}
+
 static int hstacklesscoroutine_test(int argc,const char *argv[])
 {
     {
@@ -1344,6 +1373,13 @@ static int hstacklesscoroutine_test(int argc,const char *argv[])
         {
             hstacklesscoroutine2_ccb_t *ccb=hstacklesscoroutine2_ccb_init((void *)ccb_buffer3,sizeof(ccb_buffer3));
             hstacklesscoroutine2_ccb_set(ccb,hstacklesscoroutine2_task_init(hstacklesscoroutine2_co3,NULL));
+            hstacklesscoroutine2_scheduler_ccb_register(NULL,ccb);
+        }
+
+        uint32_t ccb_buffer4[1024]= {0};
+        {
+            hstacklesscoroutine2_ccb_t *ccb=hstacklesscoroutine2_ccb_init((void *)ccb_buffer4,sizeof(ccb_buffer4));
+            hstacklesscoroutine2_ccb_set(ccb,hstacklesscoroutine2_task_init(hstacklesscoroutine2_co4,NULL));
             hstacklesscoroutine2_scheduler_ccb_register(NULL,ccb);
         }
 

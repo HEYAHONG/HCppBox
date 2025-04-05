@@ -72,6 +72,9 @@ hstacklesscoroutine2_task_t hstacklesscoroutine2_task_init(hstacklesscoroutine2_
     hstacklesscoroutine2_task_t task= {0};
     task.entry=entry;
     task.usr=usr;
+#ifndef HSTACKLESSCOROUTINE2_BARE_MACHINE
+    task.core_value=0;
+#endif // HSTACKLESSCOROUTINE2_BARE_MACHINE
     return task;
 }
 
@@ -449,3 +452,23 @@ void hstacklesscoroutine2_await(hstacklesscoroutine2_scheduler_t * sch,hstackles
     ccb->block.awaiter=awaiter;
     hstacklesscoroutine2_yield(sch,ccb);
 }
+
+#ifndef HSTACKLESSCOROUTINE2_BARE_MACHINE
+
+int __hstacklesscoroutine2_core_value_get(hstacklesscoroutine2_ccb_t *ccb)
+{
+    if(ccb!=NULL)
+    {
+        return ccb->task.core_value;
+    }
+    return 0;
+}
+void __hstacklesscoroutine2_core_value_set(hstacklesscoroutine2_ccb_t *ccb,int core_value)
+{
+    if(ccb!=NULL)
+    {
+        ccb->task.core_value=core_value;
+    }
+}
+
+#endif // HSTACKLESSCOROUTINE2_BARE_MACHINE

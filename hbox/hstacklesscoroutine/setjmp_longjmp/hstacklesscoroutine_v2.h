@@ -77,6 +77,9 @@ typedef struct hstacklesscoroutine2_task
 {
     hstacklesscoroutine2_task_entry_t entry;        /**< 任务入口 */
     void *usr;                                      /**< 用户参数 */
+#ifndef HSTACKLESSCOROUTINE2_BARE_MACHINE
+    int core_value;                                 /**< 核心值，用于任务入口函数内部调度 */
+#endif // HSTACKLESSCOROUTINE2_BARE_MACHINE
 } hstacklesscoroutine2_task_t;                      /**< 协程任务 */
 
 /** \brief 协程任务初始化
@@ -233,6 +236,68 @@ hstacklesscoroutine2_awaiter_t hstacklesscoroutine_awaiter2_init(hstacklesscorou
  *
  */
 void hstacklesscoroutine2_await(hstacklesscoroutine2_scheduler_t * sch,hstacklesscoroutine2_ccb_t *ccb,hstacklesscoroutine2_awaiter_t awaiter);
+
+#ifdef HSTACKLESSCOROUTINE2_BARE_MACHINE
+/*
+ * 裸机模式下无需定义协程块，留空以兼容代码
+ */
+#define  HSTACKLESSCOROUTINE2_BLOCK_START(CCB_NAME)
+#define  HSTACKLESSCOROUTINE2_BLOCK_POINT(CCB_NAME)
+#define  HSTACKLESSCOROUTINE2_BLOCK_END(CCB_NAME)
+
+#else
+/*
+ * 非裸机模式下，协程下一次进入时在协程块中将保存的点执行
+ */
+
+
+int __hstacklesscoroutine2_core_value_get(hstacklesscoroutine2_ccb_t *ccb);
+void __hstacklesscoroutine2_core_value_set(hstacklesscoroutine2_ccb_t *ccb,int core_value);
+
+/** \brief 协程块起始，只能在协程任务入口函数中使用。参数为协程控制块指针。
+ *
+ *
+ */
+#define HSTACKLESSCOROUTINE2_BLOCK_START(CCB_NAME) \
+    if((CCB_NAME!=NULL))\
+    {\
+        if(__hstacklesscoroutine2_core_value_get(CCB_NAME)==0)\
+        {\
+            __hstacklesscoroutine2_core_value_set((CCB_NAME), __LINE__ );\
+        }\
+        switch(__hstacklesscoroutine2_core_value_get(CCB_NAME))\
+        {\
+        case __LINE__:
+
+/** \brief 协程块点（下一次进入协程将从此进入），只能在协程任务入口函数中使用。参数为协程控制块指针。
+ *
+ *
+ */
+
+#define HSTACKLESSCOROUTINE2_BLOCK_POINT(CCB_NAME) \
+        if((CCB_NAME)!=NULL)   \
+        {\
+            __hstacklesscoroutine2_core_value_set((CCB_NAME), __LINE__ );\
+        }\
+        case __LINE__ :
+
+/** \brief 协程块结束,与协程块起始配对，只能在协程任务入口函数中使用。参数为协程控制块指针。
+ *
+ *
+ */
+#define HSTACKLESSCOROUTINE2_BLOCK_END(CCB_NAME)\
+        default:\
+        {\
+            if(__hstacklesscoroutine2_core_value_get(CCB_NAME) < __LINE__ )\
+            {\
+                __hstacklesscoroutine2_core_value_set((CCB_NAME), 0 );\
+            }\
+        }\
+        break;\
+        }\
+    }
+
+#endif // HSTACKLESSCOROUTINE2_BARE_MACHINE
 
 
 #ifdef __cplusplus
