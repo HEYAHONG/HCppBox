@@ -1290,6 +1290,7 @@ static void hstacklesscoroutine2_co4(hstacklesscoroutine2_scheduler_t *scheduler
 {
     static size_t i=0;
     HSTACKLESSCOROUTINE2_BLOCK_START(ccb)
+    HSTACKLESSCOROUTINE2_BLOCK_LABEL(ccb,1)
     printf("hstacklesscoroutine2 co4:step 1!\r\n");
     HSTACKLESSCOROUTINE2_BLOCK_POINT(ccb)
     printf("hstacklesscoroutine2 co4:step 2!\r\n");
@@ -1310,6 +1311,10 @@ static void hstacklesscoroutine2_co4(hstacklesscoroutine2_scheduler_t *scheduler
     if(i++ < 4)
     {
         hstacklesscoroutine2_delay(scheduler,ccb,1);
+    }
+    if(i++ <= 5)
+    {
+        HSTACKLESSCOROUTINE2_BLOCK_GOTO(scheduler,ccb,1)
     }
     HSTACKLESSCOROUTINE2_BLOCK_END(ccb)
 }
