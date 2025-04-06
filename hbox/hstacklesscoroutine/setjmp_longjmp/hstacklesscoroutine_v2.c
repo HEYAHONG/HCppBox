@@ -155,10 +155,27 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
         return -1;
     }
     bool all_task_finished=false;
-    hstacklesscoroutine2_ccb_t *  current_ccb=sch->ccb_list_head;
-    size_t ccb_unfinished=0;
+    hstacklesscoroutine2_ccb_t *  current_ccb=NULL;
+    size_t ccb_unfinished=1;//默认至少有一个任务未完成
     while(!all_task_finished)
     {
+        //遍历下一个协程控制块
+        if(current_ccb!=NULL)
+        {
+            current_ccb=current_ccb->next;
+        }
+        if(current_ccb==NULL)
+        {
+            current_ccb=sch->ccb_list_head;
+            if(ccb_unfinished==0)
+            {
+                current_ccb=NULL;
+                all_task_finished=true;
+            }
+            ccb_unfinished=0;
+        }
+
+
         if(current_ccb==NULL)
         {
             break;
@@ -300,18 +317,6 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
         }
 
 
-        //遍历下一个协程控制块
-        current_ccb=current_ccb->next;
-        if(current_ccb==NULL)
-        {
-            current_ccb=sch->ccb_list_head;
-            if(ccb_unfinished==0)
-            {
-                current_ccb=NULL;
-                all_task_finished=true;
-            }
-            ccb_unfinished=0;
-        }
     }
     return 0;
 }
