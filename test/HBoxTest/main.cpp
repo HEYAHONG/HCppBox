@@ -1388,6 +1388,10 @@ static int hstacklesscoroutine_test(int argc,const char *argv[])
             hstacklesscoroutine2_scheduler_ccb_register(NULL,ccb);
         }
 
+#ifdef HSTACKLESSCOROUTINE2_BARE_MACHINE
+        printf("hstacklesscoroutine2:bare machine!\r\n");
+#endif // HSTACKLESSCOROUTINE2_BARE_MACHINE
+
         //启动调度器
         hstacklesscoroutine2_scheduler_start(NULL);
     }

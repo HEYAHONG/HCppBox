@@ -28,7 +28,7 @@ extern "C"
  * 使用longjmp跳转至被调用的函数是未定义行为，一般只有裸机可支持（裸机一般是通过直接恢复寄存器(如PC与SP)的方式实现 longjmp）
  * 注意:本组件使用了setjmp与longjmp ,可能与C++某些特性兼容性不好，使用局部变量与C++异常时尤其需要注意。
  */
-#if defined(HDEFAULTS_OS_NONE) || defined(HDEFAULTS_LIBC_ARMCLIB)
+#if defined(HDEFAULTS_OS_NONE) || defined(HDEFAULTS_OS_LINUX) || defined(HDEFAULTS_LIBC_ARMCLIB)
 #define HSTACKLESSCOROUTINE2_BARE_MACHINE    1
 #endif
 
@@ -244,7 +244,7 @@ void hstacklesscoroutine2_await(hstacklesscoroutine2_scheduler_t * sch,hstackles
 #define  HSTACKLESSCOROUTINE2_BLOCK_START(CCB_NAME)
 #define  HSTACKLESSCOROUTINE2_BLOCK_POINT(CCB_NAME)
 #define  HSTACKLESSCOROUTINE2_BLOCK_LABEL(CCB_NAME,N)
-#define  HSTACKLESSCOROUTINE2_BLOCK_GOTO(CCB_NAME,N)
+#define  HSTACKLESSCOROUTINE2_BLOCK_GOTO(SCH,CCB_NAME,N)
 #define  HSTACKLESSCOROUTINE2_BLOCK_END(CCB_NAME)
 
 #else
