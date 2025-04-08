@@ -237,6 +237,14 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
 
         if(hstacklesscoroutine2_ccb_running_state_get(current_ccb)==HSTACKLESSCOROUTINE2_RUNNING_STATE_READY)
         {
+            if(current_ccb->state.suspend!=0)
+            {
+                current_ccb->state.running_state=HSTACKLESSCOROUTINE2_RUNNING_STATE_BLOCK;
+            }
+        }
+
+        if(hstacklesscoroutine2_ccb_running_state_get(current_ccb)==HSTACKLESSCOROUTINE2_RUNNING_STATE_READY)
+        {
             /*
              * 为保持栈顶一致，stack_top变量后不应有任何局部变量
              */
