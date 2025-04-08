@@ -189,7 +189,7 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
             ccb_unfinished++;
         }
 
-        if(hstacklesscoroutine2_ccb_running_state_get(current_ccb)==HSTACKLESSCOROUTINE2_RUNNING_STATE_BLOCK)
+        if(hstacklesscoroutine2_ccb_running_state_get(current_ccb)==HSTACKLESSCOROUTINE2_RUNNING_STATE_BLOCKED)
         {
             //处理阻塞
             bool be_ready=true;
@@ -239,7 +239,7 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
         {
             if(current_ccb->state.suspend!=0)
             {
-                current_ccb->state.running_state=HSTACKLESSCOROUTINE2_RUNNING_STATE_BLOCK;
+                current_ccb->state.running_state=HSTACKLESSCOROUTINE2_RUNNING_STATE_BLOCKED;
             }
         }
 
@@ -441,7 +441,7 @@ void hstacklesscoroutine2_delay_util(hstacklesscoroutine2_scheduler_t * sch,hsta
     {
         return;
     }
-    ccb->state.running_state=HSTACKLESSCOROUTINE2_RUNNING_STATE_BLOCK;
+    ccb->state.running_state=HSTACKLESSCOROUTINE2_RUNNING_STATE_BLOCKED;
     ccb->block.next_tick=tick;
     ccb->state.delay=1;
     hstacklesscoroutine2_yield(sch,ccb);
@@ -466,7 +466,7 @@ void hstacklesscoroutine2_await(hstacklesscoroutine2_scheduler_t * sch,hstackles
     {
         return;
     }
-    ccb->state.running_state=HSTACKLESSCOROUTINE2_RUNNING_STATE_BLOCK;
+    ccb->state.running_state=HSTACKLESSCOROUTINE2_RUNNING_STATE_BLOCKED;
     ccb->state.await=1;
     ccb->block.awaiter=awaiter;
     hstacklesscoroutine2_yield(sch,ccb);
