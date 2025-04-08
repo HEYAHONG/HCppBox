@@ -157,6 +157,10 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
     bool all_task_finished=false;
     hstacklesscoroutine2_ccb_t *  current_ccb=NULL;
     size_t ccb_unfinished=1;//默认至少有一个任务未完成
+    /*
+     * 栈顶后的变量可能会被覆盖
+     */
+    int8_t stack_top=0;
     while(!all_task_finished)
     {
         //遍历下一个协程控制块
@@ -234,9 +238,9 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
         if(hstacklesscoroutine2_ccb_running_state_get(current_ccb)==HSTACKLESSCOROUTINE2_RUNNING_STATE_READY)
         {
             /*
-             * 为保持栈顶一致，stack_top变量前不应有任何局部变量
+             * 为保持栈顶一致，stack_top变量后不应有任何局部变量
              */
-            int8_t stack_top=0;//此变量置1表示从 协程中返回,-1表示出错
+            stack_top=0;//此变量置1表示从 协程中返回,-1表示出错
             current_ccb->stack_top=(uintptr_t)&stack_top;
             current_ccb->scheduler_point_status=setjmp(current_ccb->scheduler_point);
 #ifdef HSTACKLESSCOROUTINE2_BARE_MACHINE
@@ -289,9 +293,9 @@ int hstacklesscoroutine2_scheduler_start(hstacklesscoroutine2_scheduler_t * sche
         if(hstacklesscoroutine2_ccb_running_state_get(current_ccb)==HSTACKLESSCOROUTINE2_RUNNING_STATE_CREATE)
         {
             /*
-             * 为保持栈顶一致，stack_top变量前不应有任何局部变量
+             * 为保持栈顶一致，stack_top变量后不应有任何局部变量
              */
-            int8_t stack_top=0;//此变量置1表示从 协程中返回,-1表示出错
+            stack_top=0;//此变量置1表示从 协程中返回,-1表示出错
             current_ccb->stack_top=(uintptr_t)&stack_top;
             current_ccb->scheduler_point_status=setjmp(current_ccb->scheduler_point);
             if(stack_top==0)
