@@ -9,31 +9,26 @@
 #include "huuid.h"
 #include "string.h"
 
-HUUID_DEFINE(null_uuid,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-
-const huuid_t * huuid_null(void)
-{
-    return &null_uuid;
-}
+HUUID_DEFINE_GLOBAL(huuid_null_uuid,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 
 void huuid_clear(huuid_t uu)
 {
-    memcpy(uu,null_uuid,sizeof(null_uuid));
+    memcpy(uu,huuid_null_uuid,sizeof(huuid_null_uuid));
 }
 
 int huuid_compare(const huuid_t uu1, const huuid_t uu2)
 {
-    return memcmp(uu1,uu2,sizeof(null_uuid));
+    return memcmp(uu1,uu2,sizeof(huuid_null_uuid));
 }
 
 void huuid_copy(huuid_t dst, const huuid_t src)
 {
-    memcpy(dst,src,sizeof(null_uuid));
+    memcpy(dst,src,sizeof(huuid_null_uuid));
 }
 
 int huuid_is_null(const huuid_t uu)
 {
-    return huuid_compare(uu,null_uuid);
+    return huuid_compare(uu,huuid_null_uuid);
 }
 
 void huuid_pack(const huuid_base_version_t *uu, huuid_t ptr)

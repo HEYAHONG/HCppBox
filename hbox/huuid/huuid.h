@@ -23,17 +23,25 @@ extern "C"
 typedef uint8_t huuid_t[16];    /**< 128位uuid */
 
 /*
- * 定义UUID
+ * 定义UUID(局部)
  */
-#define HUUID_DEFINE(name,u0,u1,u2,u3,u4,u5,u6,u7,u8,u9,u10,u11,u12,u13,u14,u15) \
+#define HUUID_DEFINE_LOCAL(name,u0,u1,u2,u3,u4,u5,u6,u7,u8,u9,u10,u11,u12,u13,u14,u15) \
 	static const huuid_t name = {u0,u1,u2,u3,u4,u5,u6,u7,u8,u9,u10,u11,u12,u13,u14,u15}
 
-/** \brief 空uuid
- *
- * \return huuid_t* 获取空uuid
- *
+/*
+ * 定义UUID(全局)
  */
-const huuid_t * huuid_null(void);
+#define HUUID_DEFINE_GLOBAL(name,u0,u1,u2,u3,u4,u5,u6,u7,u8,u9,u10,u11,u12,u13,u14,u15) \
+	const huuid_t name = {u0,u1,u2,u3,u4,u5,u6,u7,u8,u9,u10,u11,u12,u13,u14,u15}
+
+/*
+ * 声明UUID(全局)
+ */
+#define HUUID_DECLARE_GLOBAL(name) \
+	extern const huuid_t name
+
+
+HUUID_DECLARE_GLOBAL(huuid_null_uuid);      /**< 声明空uuid */
 
 /** \brief uuid清零
  *
