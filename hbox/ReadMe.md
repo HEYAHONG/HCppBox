@@ -392,3 +392,6 @@ nanopb_generator可通过以下方式获取：
 
 使用本组件实现的shell推荐使用支持终端转义序列的软件（如[putty](https://www.chiark.greenend.org.uk/~sgtatham/putty/)、minicom）打开，不推荐直接使用串口调试工具打开。
 
+## huuid
+
+辅助处理UUID。
