@@ -99,7 +99,6 @@ void huuid_pack(const huuid_base_version_t *uu, huuid_t ptr);
  *
  * \param in const huuid_t uuid
  * \param uu huuid_base_version_t* uuid基础版本
- * \return void
  *
  */
 void huuid_unpack(const huuid_t in, huuid_base_version_t *uu);

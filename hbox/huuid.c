@@ -9,4 +9,5 @@
 #include "huuid.h"
 
 #include "huuid/huuid.c"
+#include "huuid/huuid_short.c"
 

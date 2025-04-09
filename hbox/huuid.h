@@ -15,6 +15,7 @@ extern "C"
 #endif // __cplusplus
 
 #include "huuid/huuid.h"
+#include "huuid/huuid_short.h"
 
 #ifdef __cplusplus
 }
