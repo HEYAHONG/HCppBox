@@ -108,3 +108,37 @@ void huuid_unpack(const huuid_t in, huuid_base_version_t *uu)
 
     memcpy(uu->node, ptr, sizeof(uu->node));
 }
+
+void huuid_random_uuid_format(huuid_t random_uuid)
+{
+    if(random_uuid==NULL)
+    {
+        return;
+    }
+    huuid_base_version_t uuid;
+    huuid_unpack(random_uuid,&uuid);
+    uuid.clock_seq = (uuid.clock_seq & 0x3FFF) | 0x8000;
+    uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0FFF) | 0x4000;
+    huuid_pack(&uuid,random_uuid);
+}
+
+void huuid_unparse(huuid_string_t out,const huuid_t uuid)
+{
+    huuid_unparse_upper(out,uuid);
+}
+
+#include "h3rdparty.h"
+
+void huuid_unparse_upper(huuid_string_t out,const huuid_t uuid)
+{
+    huuid_base_version_t l_uuid;
+    huuid_unpack(uuid,&l_uuid);
+    hsprintf(out,"%08X-%04X-%04X-%04X-%02X%02X%02X%02X%02X%02X",l_uuid.time_low,l_uuid.time_mid,l_uuid.time_hi_and_version,l_uuid.clock_seq,l_uuid.node[0],l_uuid.node[1],l_uuid.node[2],l_uuid.node[3],l_uuid.node[4],l_uuid.node[5]);
+}
+
+void huuid_unparse_lower(huuid_string_t out,const huuid_t uuid)
+{
+    huuid_base_version_t l_uuid;
+    huuid_unpack(uuid,&l_uuid);
+    hsprintf(out,"%08x-%04x-%04x-%04x-%02x%02x%02x%02x%02x%02x",l_uuid.time_low,l_uuid.time_mid,l_uuid.time_hi_and_version,l_uuid.clock_seq,l_uuid.node[0],l_uuid.node[1],l_uuid.node[2],l_uuid.node[3],l_uuid.node[4],l_uuid.node[5]);
+}

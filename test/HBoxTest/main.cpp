@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <thread>
 #include "hbox.h"
+#include "time.h"
 static int hcompiler_test(int argc,const char *argv[]);
 static int hdefaults_test(int argc,const char *argv[]);
 static int heventloop_test(int argc,const char *argv[]);
@@ -16,6 +17,7 @@ static int hstacklesscoroutine_test(int argc,const char *argv[]);
 static int hbase64_test(int argc,const char *argv[]);
 static int hsimulator_test(int argc,const char *argv[]);
 static int h3rdparty_test(int argc,const char *argv[]);
+static int huuid_test(int argc,const char *argv[]);
 
 static int (*test_cb[])(int,const char *[])=
 {
@@ -32,7 +34,8 @@ static int (*test_cb[])(int,const char *[])=
     hstacklesscoroutine_test,
     hbase64_test,
     hsimulator_test,
-    h3rdparty_test
+    h3rdparty_test,
+    huuid_test
 };
 
 int main(int argc,const char *argv[])
@@ -1915,8 +1918,40 @@ static int h3rdparty_test(int argc,const char *argv[])
     return 0;
 }
 
+static int huuid_test(int argc,const char *argv[])
+{
+    {
+        huuid_short16_t ble_uuid=0xFFF0;
+        huuid_t simple_uuid0= {0};
+        huuid_uuid_ble_set(simple_uuid0,ble_uuid);
+        huuid_string_t uuid0_string= {0},uuid0_string_upper= {0},uuid0_string_lower= {0};
+        huuid_unparse(uuid0_string,simple_uuid0);
+        huuid_unparse_upper(uuid0_string_upper,simple_uuid0);
+        huuid_unparse_lower(uuid0_string_lower,simple_uuid0);
+        printf("huuid ble uuid(%04X):%s\tupper %s\tlower %s\r\n",(int)huuid_uuid_ble_get(simple_uuid0),uuid0_string,uuid0_string_upper,uuid0_string_lower);
+    }
+    {
+        //测试uuid格式化
+        srand(time(NULL));
+        for(size_t i=0; i<10; i++)
+        {
+            huuid_t uuid= {0};
+            for(size_t j=0; j<sizeof(uuid); j++)
+            {
+                uuid[j]=rand()%0x100;
+            }
+            huuid_random_uuid_format(uuid);
+            huuid_string_t uuid_string= {0};
+            huuid_unparse(uuid_string,uuid);
+            printf("huuid uuid_ramdom:%s\r\n",uuid_string);
+        }
+    }
+    return 0;
+}
+
 static void hcpprt_init_entry()
 {
     printf("hcpprt_init!\r\n");
 }
 HCPPRT_INIT_EXPORT(init,hcpprt_init_entry);
+

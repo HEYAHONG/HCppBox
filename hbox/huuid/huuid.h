@@ -104,6 +104,40 @@ void huuid_pack(const huuid_base_version_t *uu, huuid_t ptr);
 void huuid_unpack(const huuid_t in, huuid_base_version_t *uu);
 
 
+/** \brief 随机数uuid格式化。当使用随机数填充uuid后，再使用此函数格式化则可得到符合标准的uuid
+ *
+ * \param random_uuid uint8_t 待格式化的随机数据uuid
+ *
+ */
+void huuid_random_uuid_format(huuid_t random_uuid);
+
+
+typedef char huuid_string_t[sizeof(huuid_t)*2+4+1]; /**< uuid字符串 */
+
+/** \brief uuid转换为uuid字符串(默认大写)
+ *
+ * \param out huuid_string_t uuid字符串
+ * \param uuid const huuid_t uuid
+ *
+ */
+void huuid_unparse(huuid_string_t out,const huuid_t uuid);
+
+/** \brief uuid转换为uuid字符串
+ *
+ * \param out huuid_string_t uuid字符串
+ * \param uuid const huuid_t uuid
+ *
+ */
+void huuid_unparse_upper(huuid_string_t out,const huuid_t uuid);
+
+/** \brief uuid转换为uuid字符串
+ *
+ * \param out huuid_string_t uuid字符串
+ * \param uuid const huuid_t uuid
+ *
+ */
+void huuid_unparse_lower(huuid_string_t out,const huuid_t uuid);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
