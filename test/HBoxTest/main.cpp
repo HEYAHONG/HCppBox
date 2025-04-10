@@ -1943,7 +1943,7 @@ static int huuid_test(int argc,const char *argv[])
             huuid_random_uuid_format(uuid);
             huuid_string_t uuid_string= {0};
             huuid_unparse(uuid_string,uuid);
-            printf("huuid uuid_ramdom:%s\r\n",uuid_string);
+            printf("huuid uuid_random:%s\r\n",uuid_string);
         }
     }
     return 0;
