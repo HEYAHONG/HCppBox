@@ -8,6 +8,8 @@
  **************************************************************/
 #include "huuid.h"
 #include "string.h"
+#include "ctype.h"
+#include "stdlib.h"
 
 HUUID_DEFINE_GLOBAL(huuid_null_uuid,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 
@@ -141,4 +143,47 @@ void huuid_unparse_lower(huuid_string_t out,const huuid_t uuid)
     huuid_base_version_t l_uuid;
     huuid_unpack(uuid,&l_uuid);
     hsprintf(out,"%08x-%04x-%04x-%04x-%02x%02x%02x%02x%02x%02x",(int32_t)l_uuid.time_low,(int)l_uuid.time_mid,(int)l_uuid.time_hi_and_version,(int)l_uuid.clock_seq,(int)l_uuid.node[0],(int)l_uuid.node[1],(int)l_uuid.node[2],(int)l_uuid.node[3],(int)l_uuid.node[4],(int)l_uuid.node[5]);
+}
+
+bool huuid_parse(huuid_t out,const char *uuid_string)
+{
+    if(out == NULL || uuid_string == NULL)
+    {
+        return false;
+    }
+    if(strlen(uuid_string) != (sizeof(huuid_t)*2+4))
+    {
+        return false;
+    }
+    for(size_t i=0; i<((sizeof(huuid_t)*2+4)); i++)
+    {
+        if((i==8)|| (i==13) || (i==18) || (i==23))
+        {
+            if(uuid_string[i]!='-')
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if(!isxdigit(uuid_string[i]))
+            {
+                return false;
+            }
+        }
+    }
+    huuid_base_version_t uuid;
+    uuid.time_low=strtoul(uuid_string,NULL,16);
+    uuid.time_mid=strtoull(&uuid_string[9],NULL,16);
+    uuid.time_hi_and_version=strtoul(&uuid_string[14],NULL,16);
+    uuid.clock_seq=strtoul(&uuid_string[19],NULL,16);
+    for(size_t i=0; i<sizeof(uuid.node); i++)
+    {
+        char buff[3]= {0};
+        buff[0]=uuid_string[24+i*2];
+        buff[1]=uuid_string[24+i*2+1];
+        uuid.node[i]=strtoul(buff,NULL,16);
+    }
+    huuid_pack(&uuid,out);
+    return true;
 }

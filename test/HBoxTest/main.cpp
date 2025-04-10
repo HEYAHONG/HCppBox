@@ -1944,6 +1944,14 @@ static int huuid_test(int argc,const char *argv[])
             huuid_string_t uuid_string= {0};
             huuid_unparse(uuid_string,uuid);
             printf("huuid uuid_random:%s\r\n",uuid_string);
+            {
+                //测试解析
+                huuid_t uuid1={0};
+                huuid_parse(uuid1,uuid_string);
+                huuid_string_t uuid1_string= {0};
+                huuid_unparse(uuid1_string,uuid1);
+                printf("huuid uuid parse:%s\r\n",uuid1_string);
+            }
         }
     }
     return 0;

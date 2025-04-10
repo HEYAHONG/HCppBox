@@ -138,6 +138,15 @@ void huuid_unparse_upper(huuid_string_t out,const huuid_t uuid);
  */
 void huuid_unparse_lower(huuid_string_t out,const huuid_t uuid);
 
+/** \brief 将uuid字符串转化为uuid
+ *
+ * \param out huuid_t uuid
+ * \param uuid_string const char* 输入（uuid字符串）
+ * \return bool 是否转换成功
+ *
+ */
+bool huuid_parse(huuid_t out,const char *uuid_string);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
