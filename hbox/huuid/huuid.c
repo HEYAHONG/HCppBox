@@ -133,12 +133,12 @@ void huuid_unparse_upper(huuid_string_t out,const huuid_t uuid)
 {
     huuid_base_version_t l_uuid;
     huuid_unpack(uuid,&l_uuid);
-    hsprintf(out,"%08X-%04X-%04X-%04X-%02X%02X%02X%02X%02X%02X",l_uuid.time_low,l_uuid.time_mid,l_uuid.time_hi_and_version,l_uuid.clock_seq,l_uuid.node[0],l_uuid.node[1],l_uuid.node[2],l_uuid.node[3],l_uuid.node[4],l_uuid.node[5]);
+    hsprintf(out,"%08X-%04X-%04X-%04X-%02X%02X%02X%02X%02X%02X",(int32_t)l_uuid.time_low,(int)l_uuid.time_mid,(int)l_uuid.time_hi_and_version,(int)l_uuid.clock_seq,(int)l_uuid.node[0],(int)l_uuid.node[1],(int)l_uuid.node[2],(int)l_uuid.node[3],(int)l_uuid.node[4],(int)l_uuid.node[5]);
 }
 
 void huuid_unparse_lower(huuid_string_t out,const huuid_t uuid)
 {
     huuid_base_version_t l_uuid;
     huuid_unpack(uuid,&l_uuid);
-    hsprintf(out,"%08x-%04x-%04x-%04x-%02x%02x%02x%02x%02x%02x",l_uuid.time_low,l_uuid.time_mid,l_uuid.time_hi_and_version,l_uuid.clock_seq,l_uuid.node[0],l_uuid.node[1],l_uuid.node[2],l_uuid.node[3],l_uuid.node[4],l_uuid.node[5]);
+    hsprintf(out,"%08x-%04x-%04x-%04x-%02x%02x%02x%02x%02x%02x",(int32_t)l_uuid.time_low,(int)l_uuid.time_mid,(int)l_uuid.time_hi_and_version,(int)l_uuid.clock_seq,(int)l_uuid.node[0],(int)l_uuid.node[1],(int)l_uuid.node[2],(int)l_uuid.node[3],(int)l_uuid.node[4],(int)l_uuid.node[5]);
 }
