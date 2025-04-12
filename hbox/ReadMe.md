@@ -395,3 +395,14 @@ nanopb_generator可通过以下方式获取：
 ## huuid
 
 辅助处理UUID。
+
+具体实现见[huuid](huuid)目录。
+
+## hcrypto
+
+加密组件。
+
+一般提供软件实现的加密算法及校验算法。
+
+具体实现见[hcrypto](hcrypto)目录。
+

@@ -31,6 +31,7 @@
 #include "hgui.h"
 #include "hshell.h"
 #include "huuid.h"
+#include "hcrypto.h"
 
 /*
 由C++编写的组件

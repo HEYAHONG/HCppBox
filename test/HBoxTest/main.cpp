@@ -18,6 +18,7 @@ static int hbase64_test(int argc,const char *argv[]);
 static int hsimulator_test(int argc,const char *argv[]);
 static int h3rdparty_test(int argc,const char *argv[]);
 static int huuid_test(int argc,const char *argv[]);
+static int hcrypto_test(int argc,const char *argv[]);
 
 static int (*test_cb[])(int,const char *[])=
 {
@@ -35,7 +36,8 @@ static int (*test_cb[])(int,const char *[])=
     hbase64_test,
     hsimulator_test,
     h3rdparty_test,
-    huuid_test
+    huuid_test,
+    hcrypto_test
 };
 
 int main(int argc,const char *argv[])
@@ -1954,6 +1956,174 @@ static int huuid_test(int argc,const char *argv[])
             }
         }
     }
+    return 0;
+}
+
+static int hcrypto_test(int argc,const char *argv[])
+{
+    {
+        uint8_t key[16];
+        {
+            printf("hcrypto aes key(aes%d):",(int)sizeof(key)*8);
+            for(size_t i=0; i<sizeof(key); i++)
+            {
+                key[i]=rand()%0x100;
+                printf("%02X",(int)key[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data[40];
+        {
+            printf("hcrypto aes data(aes%d):",(int)sizeof(key)*8);
+            for(size_t i=0; i<sizeof(data); i++)
+            {
+                data[i]=rand()%0x100;
+                printf("%02X",(int)data[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data_encrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        {
+            haes_key_t aes_key;
+            haes_set_encrypt_key(key,sizeof(key)*8,&aes_key);
+            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            haes_cbc_encrypt(data,data_encrypt,sizeof(data),&aes_key,inv,true);
+        }
+        {
+            printf("hcrypto aes data(encrypt):");
+            for(size_t i=0; i<sizeof(data_encrypt); i++)
+            {
+                printf("%02X",(int)data_encrypt[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data_decrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        {
+            haes_key_t aes_key;
+            haes_set_decrypt_key(key,sizeof(key)*8,&aes_key);
+            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            haes_cbc_encrypt(data_encrypt,data_decrypt,sizeof(data),&aes_key,inv,false);
+        }
+        {
+            printf("hcrypto aes data(decrypt):");
+            for(size_t i=0; i<sizeof(data_decrypt); i++)
+            {
+                printf("%02X",(int)data_decrypt[i]);
+            }
+            printf("\r\n");
+        }
+        printf("hcrypto aes%d %s\r\n",(int)sizeof(key)*8,(memcmp(data,data_decrypt,sizeof(data))==0)?"ok":"failed");
+    }
+
+
+    {
+        uint8_t key[24];
+        {
+            printf("hcrypto aes key(aes%d):",(int)sizeof(key)*8);
+            for(size_t i=0; i<sizeof(key); i++)
+            {
+                key[i]=rand()%0x100;
+                printf("%02X",(int)key[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data[40];
+        {
+            printf("hcrypto aes data(aes%d):",(int)sizeof(key)*8);
+            for(size_t i=0; i<sizeof(data); i++)
+            {
+                data[i]=rand()%0x100;
+                printf("%02X",(int)data[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data_encrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        {
+            haes_key_t aes_key;
+            haes_set_encrypt_key(key,sizeof(key)*8,&aes_key);
+            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            haes_cbc_encrypt(data,data_encrypt,sizeof(data),&aes_key,inv,true);
+        }
+        {
+            printf("hcrypto aes data(encrypt):");
+            for(size_t i=0; i<sizeof(data_encrypt); i++)
+            {
+                printf("%02X",(int)data_encrypt[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data_decrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        {
+            haes_key_t aes_key;
+            haes_set_decrypt_key(key,sizeof(key)*8,&aes_key);
+            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            haes_cbc_encrypt(data_encrypt,data_decrypt,sizeof(data),&aes_key,inv,false);
+        }
+        {
+            printf("hcrypto aes data(decrypt):");
+            for(size_t i=0; i<sizeof(data_decrypt); i++)
+            {
+                printf("%02X",(int)data_decrypt[i]);
+            }
+            printf("\r\n");
+        }
+        printf("hcrypto aes%d %s\r\n",(int)sizeof(key)*8,(memcmp(data,data_decrypt,sizeof(data))==0)?"ok":"failed");
+    }
+
+    {
+        uint8_t key[32];
+        {
+            printf("hcrypto aes key(aes%d):",(int)sizeof(key)*8);
+            for(size_t i=0; i<sizeof(key); i++)
+            {
+                key[i]=rand()%0x100;
+                printf("%02X",(int)key[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data[40];
+        {
+            printf("hcrypto aes data(aes%d):",(int)sizeof(key)*8);
+            for(size_t i=0; i<sizeof(data); i++)
+            {
+                data[i]=rand()%0x100;
+                printf("%02X",(int)data[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data_encrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        {
+            haes_key_t aes_key;
+            haes_set_encrypt_key(key,sizeof(key)*8,&aes_key);
+            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            haes_cbc_encrypt(data,data_encrypt,sizeof(data),&aes_key,inv,true);
+        }
+        {
+            printf("hcrypto aes data(encrypt):");
+            for(size_t i=0; i<sizeof(data_encrypt); i++)
+            {
+                printf("%02X",(int)data_encrypt[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data_decrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        {
+            haes_key_t aes_key;
+            haes_set_decrypt_key(key,sizeof(key)*8,&aes_key);
+            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            haes_cbc_encrypt(data_encrypt,data_decrypt,sizeof(data),&aes_key,inv,false);
+        }
+        {
+            printf("hcrypto aes data(decrypt):");
+            for(size_t i=0; i<sizeof(data_decrypt); i++)
+            {
+                printf("%02X",(int)data_decrypt[i]);
+            }
+            printf("\r\n");
+        }
+        printf("hcrypto aes%d %s\r\n",(int)sizeof(key)*8,(memcmp(data,data_decrypt,sizeof(data))==0)?"ok":"failed");
+    }
+
     return 0;
 }
 
