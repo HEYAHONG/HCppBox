@@ -17,6 +17,33 @@ const hcrc_crc8_t  hcrc_crc8_default=
     false
 };
 
+const hcrc_crc8_t  hcrc_crc8_itu=
+{
+    0,
+    0x07,
+    0x55,
+    false,
+    false
+};
+
+const hcrc_crc8_t  hcrc_crc8_rohc=
+{
+    0xFF,
+    0x07,
+    0x0,
+    true,
+    true
+};
+
+const hcrc_crc8_t  hcrc_crc8_maxim=
+{
+    0,
+    0x31,
+    0,
+    true,
+    true
+};
+
 /*
  *
  */

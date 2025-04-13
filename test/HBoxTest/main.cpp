@@ -2140,6 +2140,9 @@ static int hcrypto_test(int argc,const char *argv[])
         //CRC8校验测试(不含末尾\0字符)
         uint8_t data[]="1234567890ABC";
         printf("hcrypto crc8:data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_calculate(NULL,data,sizeof(data)-1),hcrc_crc8_check(NULL,data,sizeof(data)-1,0xA0)?"ok":"failed");
+        printf("hcrypto crc8/itu:data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_calculate(&hcrc_crc8_itu,data,sizeof(data)-1),hcrc_crc8_check(&hcrc_crc8_itu,data,sizeof(data)-1,0xF5)?"ok":"failed");
+        printf("hcrypto crc8/rohc:data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_calculate(&hcrc_crc8_rohc,data,sizeof(data)-1),hcrc_crc8_check(&hcrc_crc8_rohc,data,sizeof(data)-1,0x71)?"ok":"failed");
+        printf("hcrypto crc8/maxim:data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_calculate(&hcrc_crc8_maxim,data,sizeof(data)-1),hcrc_crc8_check(&hcrc_crc8_maxim,data,sizeof(data)-1,0x5A)?"ok":"failed");
     }
 
     return 0;

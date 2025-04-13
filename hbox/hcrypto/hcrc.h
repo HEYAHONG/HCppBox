@@ -29,7 +29,9 @@ struct hcrc_crc8
 };
 
 extern const hcrc_crc8_t  hcrc_crc8_default;    /**< 默认CRC8校验 */
-
+extern const hcrc_crc8_t  hcrc_crc8_itu;        /**< CRC8/ITU */
+extern const hcrc_crc8_t  hcrc_crc8_rohc;       /**< CRC8/ROHC */
+extern const hcrc_crc8_t  hcrc_crc8_maxim;      /**< CRC8/MAXIM */
 
 /** \brief crc8 计算
  *
@@ -51,6 +53,7 @@ uint8_t hcrc_crc8_calculate(const hcrc_crc8_t *config,const uint8_t *data,size_t
  *
  */
 bool hcrc_crc8_check(const hcrc_crc8_t *config,const uint8_t *data,size_t datalen,uint8_t check);
+
 
 #ifdef __cplusplus
 }
