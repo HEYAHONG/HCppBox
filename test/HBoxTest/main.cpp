@@ -2136,6 +2136,12 @@ static int hcrypto_test(int argc,const char *argv[])
         printf("hcrypto lrc:data=%s,lrc=%02X,check %s\r\n",(char *)data,hlrc_calculate(data,sizeof(data)),hlrc_check(data,sizeof(data),0x2D)?"ok":"failed");
     }
 
+    {
+        //CRC8校验测试(不含末尾\0字符)
+        uint8_t data[]="1234567890ABC";
+        printf("hcrypto crc8:data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_calculate(NULL,data,sizeof(data)-1),hcrc_crc8_check(NULL,data,sizeof(data)-1,0xA0)?"ok":"failed");
+    }
+
     return 0;
 }
 
