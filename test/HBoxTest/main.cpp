@@ -1948,7 +1948,7 @@ static int huuid_test(int argc,const char *argv[])
             printf("huuid uuid_random:%s\r\n",uuid_string);
             {
                 //测试解析
-                huuid_t uuid1={0};
+                huuid_t uuid1= {0};
                 huuid_parse(uuid1,uuid_string);
                 huuid_string_t uuid1_string= {0};
                 huuid_unparse(uuid1_string,uuid1);
@@ -1982,11 +1982,11 @@ static int hcrypto_test(int argc,const char *argv[])
             }
             printf("\r\n");
         }
-        uint8_t data_encrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        uint8_t data_encrypt[sizeof(data)+HAES_BLOCK_SIZE]= {0};
         {
             haes_key_t aes_key;
             haes_set_encrypt_key(key,sizeof(key)*8,&aes_key);
-            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            uint8_t inv[HAES_BLOCK_SIZE]= {0};
             haes_cbc_encrypt(data,data_encrypt,sizeof(data),&aes_key,inv,true);
         }
         {
@@ -1997,11 +1997,11 @@ static int hcrypto_test(int argc,const char *argv[])
             }
             printf("\r\n");
         }
-        uint8_t data_decrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        uint8_t data_decrypt[sizeof(data)+HAES_BLOCK_SIZE]= {0};
         {
             haes_key_t aes_key;
             haes_set_decrypt_key(key,sizeof(key)*8,&aes_key);
-            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            uint8_t inv[HAES_BLOCK_SIZE]= {0};
             haes_cbc_encrypt(data_encrypt,data_decrypt,sizeof(data),&aes_key,inv,false);
         }
         {
@@ -2037,11 +2037,11 @@ static int hcrypto_test(int argc,const char *argv[])
             }
             printf("\r\n");
         }
-        uint8_t data_encrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        uint8_t data_encrypt[sizeof(data)+HAES_BLOCK_SIZE]= {0};
         {
             haes_key_t aes_key;
             haes_set_encrypt_key(key,sizeof(key)*8,&aes_key);
-            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            uint8_t inv[HAES_BLOCK_SIZE]= {0};
             haes_cbc_encrypt(data,data_encrypt,sizeof(data),&aes_key,inv,true);
         }
         {
@@ -2052,11 +2052,11 @@ static int hcrypto_test(int argc,const char *argv[])
             }
             printf("\r\n");
         }
-        uint8_t data_decrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        uint8_t data_decrypt[sizeof(data)+HAES_BLOCK_SIZE]= {0};
         {
             haes_key_t aes_key;
             haes_set_decrypt_key(key,sizeof(key)*8,&aes_key);
-            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            uint8_t inv[HAES_BLOCK_SIZE]= {0};
             haes_cbc_encrypt(data_encrypt,data_decrypt,sizeof(data),&aes_key,inv,false);
         }
         {
@@ -2091,11 +2091,11 @@ static int hcrypto_test(int argc,const char *argv[])
             }
             printf("\r\n");
         }
-        uint8_t data_encrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        uint8_t data_encrypt[sizeof(data)+HAES_BLOCK_SIZE]= {0};
         {
             haes_key_t aes_key;
             haes_set_encrypt_key(key,sizeof(key)*8,&aes_key);
-            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            uint8_t inv[HAES_BLOCK_SIZE]= {0};
             haes_cbc_encrypt(data,data_encrypt,sizeof(data),&aes_key,inv,true);
         }
         {
@@ -2106,11 +2106,11 @@ static int hcrypto_test(int argc,const char *argv[])
             }
             printf("\r\n");
         }
-        uint8_t data_decrypt[sizeof(data)+HAES_BLOCK_SIZE]={0};
+        uint8_t data_decrypt[sizeof(data)+HAES_BLOCK_SIZE]= {0};
         {
             haes_key_t aes_key;
             haes_set_decrypt_key(key,sizeof(key)*8,&aes_key);
-            uint8_t inv[HAES_BLOCK_SIZE]={0};
+            uint8_t inv[HAES_BLOCK_SIZE]= {0};
             haes_cbc_encrypt(data_encrypt,data_decrypt,sizeof(data),&aes_key,inv,false);
         }
         {
@@ -2122,6 +2122,12 @@ static int hcrypto_test(int argc,const char *argv[])
             printf("\r\n");
         }
         printf("hcrypto aes%d %s\r\n",(int)sizeof(key)*8,(memcmp(data,data_decrypt,sizeof(data))==0)?"ok":"failed");
+    }
+
+    {
+        //BCC校验测试
+        uint8_t data[]="1234567890ABC";
+        printf("hcrypto bcc:data=%s,bcc=%02X,check %s\r\n",(char *)data,hbcc_calculate(data,sizeof(data)),hbcc_check(data,sizeof(data),0x41)?"ok":"failed");
     }
 
     return 0;

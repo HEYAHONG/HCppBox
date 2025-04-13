@@ -9,3 +9,4 @@
 #include "hcrypto.h"
 
 #include "hcrypto/haes.c"
+#include "hcrypto/hbcc.c"
