@@ -10,3 +10,4 @@
 
 #include "hcrypto/haes.c"
 #include "hcrypto/hbcc.c"
+#include "hcrypto/hlrc.c"

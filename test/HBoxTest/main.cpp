@@ -2130,6 +2130,12 @@ static int hcrypto_test(int argc,const char *argv[])
         printf("hcrypto bcc:data=%s,bcc=%02X,check %s\r\n",(char *)data,hbcc_calculate(data,sizeof(data)),hbcc_check(data,sizeof(data),0x41)?"ok":"failed");
     }
 
+    {
+        //LRC校验测试
+        uint8_t data[]="1234567890ABC";
+        printf("hcrypto lrc:data=%s,lrc=%02X,check %s\r\n",(char *)data,hlrc_calculate(data,sizeof(data)),hlrc_check(data,sizeof(data),0x2D)?"ok":"failed");
+    }
+
     return 0;
 }
 

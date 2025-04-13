@@ -16,6 +16,7 @@ extern "C"
 
 #include "hcrypto/haes.h"
 #include "hcrypto/hbcc.h"
+#include "hcrypto/hlrc.h"
 
 #ifdef __cplusplus
 }
