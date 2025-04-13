@@ -12,7 +12,7 @@
 #include "stdbool.h"
 #include "stdlib.h"
 /*
- * LRC校验,通常用于Modbus Ascii模式，其校验算法为将所有字节求和，在取其补码
+ * LRC校验,通常用于Modbus Ascii模式，其校验算法为将所有字节求和，再取其补码
  */
 
 #ifdef __cplusplus
