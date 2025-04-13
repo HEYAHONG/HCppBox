@@ -2137,12 +2137,24 @@ static int hcrypto_test(int argc,const char *argv[])
     }
 
     {
-        //CRC8校验测试(不含末尾\0字符)
+
         uint8_t data[]="1234567890ABC";
+        //CRC8校验测试(不含末尾\0字符)
         printf("hcrypto crc8:data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_calculate(NULL,data,sizeof(data)-1),hcrc_crc8_check(NULL,data,sizeof(data)-1,0xA0)?"ok":"failed");
         printf("hcrypto crc8/itu:data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_calculate(&hcrc_crc8_itu,data,sizeof(data)-1),hcrc_crc8_check(&hcrc_crc8_itu,data,sizeof(data)-1,0xF5)?"ok":"failed");
         printf("hcrypto crc8/rohc:data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_calculate(&hcrc_crc8_rohc,data,sizeof(data)-1),hcrc_crc8_check(&hcrc_crc8_rohc,data,sizeof(data)-1,0x71)?"ok":"failed");
         printf("hcrypto crc8/maxim:data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_calculate(&hcrc_crc8_maxim,data,sizeof(data)-1),hcrc_crc8_check(&hcrc_crc8_maxim,data,sizeof(data)-1,0x5A)?"ok":"failed");
+        //CRC16校验测试(不含末尾\0字符)
+        printf("hcrypto crc16/ibm:data=%s,crc=%04X,check %s\r\n",(char *)data,hcrc_crc16_calculate(&hcrc_crc16_ibm,data,sizeof(data)-1),hcrc_crc16_check(&hcrc_crc16_ibm,data,sizeof(data)-1,0xCC53)?"ok":"failed");
+        printf("hcrypto crc16/maxim:data=%s,crc=%04X,check %s\r\n",(char *)data,hcrc_crc16_calculate(&hcrc_crc16_maxim,data,sizeof(data)-1),hcrc_crc16_check(&hcrc_crc16_maxim,data,sizeof(data)-1,0x33AC)?"ok":"failed");
+        printf("hcrypto crc16/usb:data=%s,crc=%04X,check %s\r\n",(char *)data,hcrc_crc16_calculate(&hcrc_crc16_usb,data,sizeof(data)-1),hcrc_crc16_check(&hcrc_crc16_usb,data,sizeof(data)-1,0xD8AF)?"ok":"failed");
+        printf("hcrypto crc16/modbus:data=%s,crc=%04X,check %s\r\n",(char *)data,hcrc_crc16_calculate(&hcrc_crc16_modbus,data,sizeof(data)-1),hcrc_crc16_check(&hcrc_crc16_modbus,data,sizeof(data)-1,0x2750)?"ok":"failed");
+        printf("hcrypto crc16/ccitt:data=%s,crc=%04X,check %s\r\n",(char *)data,hcrc_crc16_calculate(&hcrc_crc16_ccitt,data,sizeof(data)-1),hcrc_crc16_check(&hcrc_crc16_ccitt,data,sizeof(data)-1,0x98FB)?"ok":"failed");
+        printf("hcrypto crc16/ccitt_flase:data=%s,crc=%04X,check %s\r\n",(char *)data,hcrc_crc16_calculate(&hcrc_crc16_ccitt_false,data,sizeof(data)-1),hcrc_crc16_check(&hcrc_crc16_ccitt_false,data,sizeof(data)-1,0x188B)?"ok":"failed");
+        printf("hcrypto crc16/x25:data=%s,crc=%04X,check %s\r\n",(char *)data,hcrc_crc16_calculate(&hcrc_crc16_x25,data,sizeof(data)-1),hcrc_crc16_check(&hcrc_crc16_x25,data,sizeof(data)-1,0x5710)?"ok":"failed");
+        printf("hcrypto crc16/xmodem:data=%s,crc=%04X,check %s\r\n",(char *)data,hcrc_crc16_calculate(&hcrc_crc16_xmodem,data,sizeof(data)-1),hcrc_crc16_check(&hcrc_crc16_xmodem,data,sizeof(data)-1,0x3087)?"ok":"failed");
+        printf("hcrypto crc16/dnp:data=%s,crc=%04X,check %s\r\n",(char *)data,hcrc_crc16_calculate(&hcrc_crc16_dnp,data,sizeof(data)-1),hcrc_crc16_check(&hcrc_crc16_dnp,data,sizeof(data)-1,0x9779)?"ok":"failed");
+
     }
 
     return 0;

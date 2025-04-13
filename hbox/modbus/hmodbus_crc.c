@@ -20,7 +20,7 @@ static uint16_t CRC16(const uint8_t *arr_buff,size_t len)
             if( ( crc&0x0001) >0)
             {
                 crc=crc>>1;
-                crc=crc^ 0xa001;
+                crc=crc^ 0xa001;        /**< modbus crc 表达式0x8005 按位反转 */
             }
             else
                 crc=crc>>1;
