@@ -275,3 +275,95 @@ bool hcrc_crc16_check(const hcrc_crc16_t *config,const uint8_t *data,size_t data
 {
     return check==hcrc_crc16_calculate(config,data,datalen);
 }
+
+const hcrc_crc32_t hcrc_crc32_default=
+{
+    0xFFFFFFFF,
+    0x04C11DB7,
+    0xFFFFFFFF,
+    true,
+    true
+};
+
+const hcrc_crc32_t hcrc_crc32_mpeg_2=
+{
+    0xFFFFFFFF,
+    0x04C11DB7,
+    0x00000000,
+    false,
+    false
+};
+
+uint32_t hcrc_crc32_calculate(const hcrc_crc32_t *config,const uint8_t *data,size_t datalen)
+{
+    if(config==NULL)
+    {
+        config=&hcrc_crc32_default;
+    }
+    uint32_t crc=config->init;
+    if(data!=NULL && datalen > 0)
+    {
+        for(size_t i=0; i<datalen; i++)
+        {
+            uint8_t current_data=data[i];
+            /*
+             * 输入数据反转
+             */
+            if(config->refin)
+            {
+                uint8_t temp=0;
+                for(size_t i=0; i < sizeof(current_data)*8 ; i++)
+                {
+                    if(current_data & (1U << (i)))
+                    {
+                        temp |= (1U << (sizeof(current_data)*8-1-i));
+                    }
+                }
+                current_data=temp;
+            }
+
+            crc ^= (((uint32_t)current_data) <<24);
+
+            for(size_t j=0; j<8; j++)
+            {
+                if((crc & 0x80000000) > 0)
+                {
+                    crc = ((crc << 1) ^ config->poly);
+                }
+                else
+                {
+                    crc = (crc << 1);
+                }
+            }
+        }
+    }
+
+    /*
+     * 输出结果反转
+     */
+    if(config->refout)
+    {
+        uint32_t temp=0;
+        for(size_t i=0; i < sizeof(crc)*8 ; i++)
+        {
+            if(crc & (1U << (i)))
+            {
+                temp |= (1U << (sizeof(crc)*8-1-i));
+            }
+        }
+        crc=temp;
+    }
+
+    /*
+     * 异或输出
+     */
+    crc ^= config->xorout;
+
+    return crc;
+
+}
+
+bool hcrc_crc32_check(const hcrc_crc32_t *config,const uint8_t *data,size_t datalen,uint32_t check)
+{
+    return check==hcrc_crc32_calculate(config,data,datalen);
+}
