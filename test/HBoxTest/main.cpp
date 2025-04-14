@@ -2161,7 +2161,8 @@ static int hcrypto_test(int argc,const char *argv[])
         printf("hcrypto crc8（fast）:data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_fast_calculate(data,sizeof(data)-1),hcrc_crc8_fast_check(data,sizeof(data)-1,0xA0)?"ok":"failed");
         //CRC16 Modbus 查表法
         printf("hcrypto crc16/modbus(fast):data=%s,crc=%04X,check %s\r\n",(char *)data,hcrc_crc16_modbus_calculate(data,sizeof(data)-1),hcrc_crc16_modbus_check(data,sizeof(data)-1,0x2750)?"ok":"failed");
-
+        //CRC32 查表法
+        printf("hcrypto crc32(fast):data=%s,crc=%08X,check %s\r\n",(char *)data,hcrc_crc32_fast_calculate(data,sizeof(data)-1),hcrc_crc32_fast_check(data,sizeof(data)-1,0x5F28EC9B)?"ok":"failed");
     }
 
     return 0;

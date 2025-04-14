@@ -168,6 +168,25 @@ uint32_t hcrc_crc32_calculate(const hcrc_crc32_t *config,const uint8_t *data,siz
  */
 bool hcrc_crc32_check(const hcrc_crc32_t *config,const uint8_t *data,size_t datalen,uint32_t check);
 
+/** \brief crc32 计算(查表法)
+ *
+ * \param data const uint8_t* 数据指针
+ * \param datalen size_t 数据长度
+ * \return uint32_t 校验结果
+ *
+ */
+uint32_t hcrc_crc32_fast_calculate(const uint8_t *data,size_t datalen);
+
+/** \brief crc32 校验(查表法)
+ *
+ * \param data const uint8_t* 数据指针
+ * \param datalen size_t 数据长度
+ * \param check uint32_t 校验值
+ * \return bool 是否校验成功
+ *
+ */
+bool hcrc_crc32_fast_check(const uint8_t *data,size_t datalen,uint32_t check);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
