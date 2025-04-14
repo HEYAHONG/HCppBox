@@ -45,7 +45,74 @@ const hcrc_crc8_t  hcrc_crc8_maxim=
 };
 
 /*
- *
+ * 此函数可优化
+ */
+static uint8_t hcrc_crc8_table_reversal(const hcrc_crc8_t *config,uint8_t index,uint8_t poly_reversal)
+{
+    if(config==NULL)
+    {
+        config=&hcrc_crc8_default;
+    }
+    uint8_t crc=index;
+    for(size_t i=0; i<8; i++)
+    {
+        if((crc&0x1)>0)
+        {
+            crc = ((crc >> 1)^poly_reversal);
+        }
+        else
+        {
+            crc = (crc >> 1);
+        }
+    }
+    return crc;
+}
+
+/*
+ * 当输入与输出均反转时，采用反转表达式的做法
+ */
+static uint8_t hcrc_crc8_calculate_reversal(const hcrc_crc8_t *config,const uint8_t *data,size_t datalen)
+{
+    if(config==NULL)
+    {
+        return 0;
+    }
+    uint8_t crc=config->init;
+    uint8_t poly=config->poly;
+    {
+        uint8_t temp=0;
+        for(size_t i=0; i < sizeof(poly)*8 ; i++)
+        {
+            if(poly & (1U << (i)))
+            {
+                temp |= (1U << (sizeof(poly)*8-1-i));
+            }
+        }
+        poly=temp;
+    }
+    if(data!=NULL && datalen > 0)
+    {
+        for(size_t i=0; i<datalen; i++)
+        {
+            uint8_t current_data=data[i];
+
+            crc = hcrc_crc8_table_reversal(config,current_data^crc,poly);
+        }
+    }
+
+
+
+    /*
+     * 异或输出
+     */
+    crc ^= config->xorout;
+
+    return crc;
+
+}
+
+/*
+ * 此函数可优化
  */
 static uint8_t hcrc_crc8_table(const hcrc_crc8_t *config,uint8_t index)
 {
@@ -73,6 +140,13 @@ uint8_t hcrc_crc8_calculate(const hcrc_crc8_t *config,const uint8_t *data,size_t
     if(config==NULL)
     {
         config=&hcrc_crc8_default;
+    }
+    if(config->refin && config->refout)
+    {
+        /*
+         * 使用替换的算法
+         */
+        return hcrc_crc8_calculate_reversal(config,data,datalen);
     }
     uint8_t crc=config->init;
     if(data!=NULL && datalen > 0)
@@ -202,6 +276,9 @@ const hcrc_crc16_t  hcrc_crc16_dnp=
     true
 };
 
+/*
+ * 当输入与输出均反转时，采用反转表达式的做法
+ */
 static uint16_t hcrc_crc16_calculate_reversal(const hcrc_crc16_t *config,const uint8_t *data,size_t datalen)
 {
     if(config==NULL)
