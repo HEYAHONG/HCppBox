@@ -95,6 +95,26 @@ uint16_t hcrc_crc16_calculate(const hcrc_crc16_t *config,const uint8_t *data,siz
  */
 bool hcrc_crc16_check(const hcrc_crc16_t *config,const uint8_t *data,size_t datalen,uint16_t check);
 
+
+/** \brief crc16/modbus 计算(查表法)
+ *
+ * \param data const uint8_t* 数据指针
+ * \param datalen size_t 数据长度
+ * \return uint16_t 校验结果
+ *
+ */
+uint16_t hcrc_crc16_modbus_calculate(const uint8_t *data,size_t datalen);
+
+/** \brief crc16/modbus  校验(查表法)
+ *
+ * \param data const uint8_t* 数据指针
+ * \param datalen size_t 数据长度
+ * \param check uint16_t 校验值
+ * \return bool 是否校验成功
+ *
+ */
+bool hcrc_crc16_modbus_check(const uint8_t *data,size_t datalen,uint16_t check);
+
 typedef struct hcrc_crc32 hcrc_crc32_t;
 struct hcrc_crc32
 {
