@@ -202,11 +202,71 @@ const hcrc_crc16_t  hcrc_crc16_dnp=
     true
 };
 
+static uint16_t hcrc_crc16_calculate_reversal(const hcrc_crc16_t *config,const uint8_t *data,size_t datalen)
+{
+    if(config==NULL)
+    {
+        return 0;
+    }
+    uint16_t crc=config->init;
+    /*
+     * 反转表达式
+     */
+    uint16_t poly=config->poly;
+    {
+        uint16_t temp=0;
+        for(size_t i=0; i < sizeof(poly)*8 ; i++)
+        {
+            if(poly & (1U << (i)))
+            {
+                temp |= (1U << (sizeof(poly)*8-1-i));
+            }
+        }
+        poly=temp;
+    }
+    if(data!=NULL && datalen > 0)
+    {
+        for(size_t i=0; i<datalen; i++)
+        {
+            uint8_t current_data=data[i];
+            crc ^= (((uint16_t)current_data));
+
+            for(size_t j=0; j<8; j++)
+            {
+                if((crc & 1) > 0)
+                {
+                    crc = ((crc >> 1) ^ poly);
+                }
+                else
+                {
+                    crc = (crc >> 1);
+                }
+            }
+        }
+    }
+
+
+    /*
+     * 异或输出
+     */
+    crc ^= config->xorout;
+
+    return crc;
+
+}
+
 uint16_t hcrc_crc16_calculate(const hcrc_crc16_t *config,const uint8_t *data,size_t datalen)
 {
     if(config==NULL)
     {
         config=&hcrc_crc16_modbus;
+    }
+    if(config->refin && config->refout)
+    {
+        /*
+         * 使用替换的算法
+         */
+        return  hcrc_crc16_calculate_reversal(config,data,datalen);
     }
     uint16_t crc=config->init;
     if(data!=NULL && datalen > 0)
@@ -294,12 +354,80 @@ const hcrc_crc32_t hcrc_crc32_mpeg_2=
     false
 };
 
+/*
+ * 当输入与输出均反转时，采用反转表达式的做法
+ */
+static uint32_t hcrc_crc32_calculate_reversal(const hcrc_crc32_t *config,const uint8_t *data,size_t datalen)
+{
+    if(config == NULL)
+    {
+        return 0;
+    }
+    uint32_t crc=config->init;
+    uint32_t poly=config->poly;
+    /*
+     * 反转表达式
+     */
+    {
+        uint32_t temp=0;
+        for(size_t i=0; i < sizeof(poly)*8 ; i++)
+        {
+            if(poly & (1U << (i)))
+            {
+                temp |= (1U << (sizeof(poly)*8-1-i));
+            }
+        }
+        poly=temp;
+    }
+
+    if(data!=NULL && datalen > 0)
+    {
+        for(size_t i=0; i<datalen; i++)
+        {
+            uint8_t current_data=data[i];
+
+            crc ^= ((uint32_t)current_data);
+
+            for(size_t j=0; j<8; j++)
+            {
+                if((crc & 1) > 0)
+                {
+                    crc = ((crc >> 1) ^ poly);
+                }
+                else
+                {
+                    crc = (crc >> 1);
+                }
+            }
+        }
+    }
+
+
+
+    /*
+     * 异或输出
+     */
+    crc ^= config->xorout;
+
+    return crc;
+
+}
+
 uint32_t hcrc_crc32_calculate(const hcrc_crc32_t *config,const uint8_t *data,size_t datalen)
 {
     if(config==NULL)
     {
         config=&hcrc_crc32_default;
     }
+
+    if(config->refin && config ->refout)
+    {
+        /*
+         * 使用替换的算法
+         */
+        return hcrc_crc32_calculate_reversal(config,data,datalen);
+    }
+
     uint32_t crc=config->init;
     if(data!=NULL && datalen > 0)
     {
