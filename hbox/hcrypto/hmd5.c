@@ -25,13 +25,13 @@ int hmd5_starts(hmd5_context_t *ctx)
 
 typedef struct hmd5_internal_state
 {
-        uint32_t X[16];
-        uint32_t A;
-        uint32_t B;
-        uint32_t C;
-        uint32_t D;
+    uint32_t X[16];
+    uint32_t A;
+    uint32_t B;
+    uint32_t C;
+    uint32_t D;
 } hmd5_internal_state_t;
-#ifndef P
+#ifdef P
 #undef P
 #endif // P
 #ifdef S
@@ -46,8 +46,8 @@ static int hmd5_internal_process(hmd5_context_t *ctx,const hmd5_message_block_t 
     {
         return -1;
     }
-    hmd5_internal_state_t local={0};
-    for(size_t i=0;i<sizeof(local.X)/sizeof(local.X[0]);i++)
+    hmd5_internal_state_t local= {0};
+    for(size_t i=0; i<sizeof(local.X)/sizeof(local.X[0]); i++)
     {
         local.X[i]=data[4*i+3];
         local.X[i] <<= 8;
@@ -156,6 +156,8 @@ static int hmd5_internal_process(hmd5_context_t *ctx,const hmd5_message_block_t 
     P(local.B, local.C, local.D, local.A,  9, 21, 0xEB86D391);
 
 #undef F
+#undef P
+#undef S
 
     ctx->A += local.A;
     ctx->B += local.B;

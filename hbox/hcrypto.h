@@ -19,6 +19,7 @@ extern "C"
 #include "hcrypto/hlrc.h"
 #include "hcrypto/hcrc.h"
 #include "hcrypto/hmd5.h"
+#include "hcrypto/hsha.h"
 
 #ifdef __cplusplus
 }

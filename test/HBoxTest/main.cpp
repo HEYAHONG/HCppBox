@@ -2205,6 +2205,71 @@ static int hcrypto_test(int argc,const char *argv[])
         }
     }
 
+    {
+        uint8_t sha1_test_buf[3][1024] =
+        {
+            { "abc" },
+            { "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq" },
+            { "" } //不在此存储，单独写1000个a
+        };
+        static const size_t sha1_test_buflen[sizeof(sha1_test_buf)/sizeof(sha1_test_buf[0])] =
+        {
+            3, 56, 1000
+        };
+        {
+            for(size_t i=0;i<sha1_test_buflen[2];i++)
+            {
+                sha1_test_buf[2][i]='a';
+            }
+        }
+        const uint8_t sha1_test_sum[sizeof(sha1_test_buf)/sizeof(sha1_test_buf[0])][20] =
+        {
+            {
+                0xA9, 0x99, 0x3E, 0x36, 0x47, 0x06, 0x81, 0x6A, 0xBA, 0x3E,0x25, 0x71, 0x78, 0x50, 0xC2, 0x6C, 0x9C, 0xD0, 0xD8, 0x9D
+            },
+            {
+                0x84, 0x98, 0x3E, 0x44, 0x1C, 0x3B, 0xD2, 0x6E, 0xBA, 0xAE,0x4A, 0xA1, 0xF9, 0x51, 0x29, 0xE5, 0xE5, 0x46, 0x70, 0xF1
+            },
+            {
+                0x34, 0xAA, 0x97, 0x3C, 0xD4, 0xC4, 0xDA, 0xA4, 0xF6, 0x1E,0xEB, 0x2B, 0xDB, 0xAD, 0x27, 0x31, 0x65, 0x34, 0x01, 0x6F
+            }
+        };
+
+        for(size_t i=0; i<(sizeof(sha1_test_buf)/sizeof(sha1_test_buf[0])); i++)
+        {
+            if(i<2)
+            {
+                hsha1_sha_t sha1= {0};
+                hsha1_sha(sha1_test_buf[i],sha1_test_buflen[i],sha1);
+                printf("hcrypto sha1:data=%s\r\n",(char *)sha1_test_buf[i]);
+                printf("hcrypto sha1:");
+                for(size_t i=0; i<sizeof(sha1); i++)
+                {
+                    printf("%02X",sha1[i]);
+                }
+                printf("\t%s\r\n",(memcmp(sha1,sha1_test_sum[i],sizeof(sha1))==0)?"ok":"failed");
+            }
+            else
+            {
+                hsha1_context_t ctx={0};
+                hsha1_sha_t sha1= {0};
+                hsha1_starts(&ctx);
+                for(size_t i=0;i<1000;i++)
+                {
+                    hsha1_update(&ctx,sha1_test_buf[2],sha1_test_buflen[2]);
+                }
+                hsha1_finish(&ctx,sha1);
+                printf("hcrypto sha1:data (1000000 * 'a')\r\n");
+                printf("hcrypto sha1:");
+                for(size_t i=0; i<sizeof(sha1); i++)
+                {
+                    printf("%02X",sha1[i]);
+                }
+                printf("\t%s\r\n",(memcmp(sha1,sha1_test_sum[i],sizeof(sha1))==0)?"ok":"failed");
+            }
+        }
+    }
+
     return 0;
 }
 
