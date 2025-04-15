@@ -12,3 +12,5 @@
 #include "hcrypto/hbcc.c"
 #include "hcrypto/hlrc.c"
 #include "hcrypto/hcrc.c"
+#include "hcrypto/hmd5.c"
+
