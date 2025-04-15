@@ -62,7 +62,7 @@ int hsha1_update(hsha1_context_t *ctx,const uint8_t *input,size_t ilen);
 /** \brief sha1 完成
  *
  * \param ctx hsha1_context_t* sha1上下文指针
- * \param output hsha1_sha1_t 输出MD5
+ * \param output hsha1_sha1_t 输出SHA1
  * \return int 0=未出错
  *
  */
@@ -72,7 +72,7 @@ int hsha1_finish(hsha1_context_t *ctx,hsha1_sha_t output);
  *
  * \param input uint8_t* 输入数据
  * \param ilen size_t    输入数据长度
- * \param output hsha1_sha1_t 输出MD5
+ * \param output hsha1_sha1_t 输出SHA1
  * \return int 0=未出错
  *
  */
