@@ -366,7 +366,7 @@ int hsha1_finish(hsha1_context_t *ctx,hsha1_sha_t output)
     return ret;
 }
 
-int hsha1_sha(uint8_t *input,size_t ilen,hsha1_sha_t output)
+int hsha1_sha(const uint8_t *input,size_t ilen,hsha1_sha_t output)
 {
     int ret = -1;
     if(input==NULL || output == NULL)

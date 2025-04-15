@@ -70,13 +70,13 @@ int hsha1_finish(hsha1_context_t *ctx,hsha1_sha_t output);
 
 /** \brief sha1计算
  *
- * \param input uint8_t* 输入数据
+ * \param input const uint8_t* 输入数据
  * \param ilen size_t    输入数据长度
  * \param output hsha1_sha1_t 输出SHA1
  * \return int 0=未出错
  *
  */
-int hsha1_sha(uint8_t *input,size_t ilen,hsha1_sha_t output);
+int hsha1_sha(const uint8_t *input,size_t ilen,hsha1_sha_t output);
 
 
 #ifdef __cplusplus

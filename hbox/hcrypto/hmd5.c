@@ -316,7 +316,7 @@ int hmd5_finish(hmd5_context_t *ctx,hmd5_md5_t output)
     return ret;
 }
 
-int hmd5_md5(uint8_t *input,size_t ilen,hmd5_md5_t output)
+int hmd5_md5(const uint8_t *input,size_t ilen,hmd5_md5_t output)
 {
     int ret = -1;
     if(input==NULL || output == NULL)

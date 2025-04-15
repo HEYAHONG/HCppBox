@@ -71,13 +71,13 @@ int hmd5_finish(hmd5_context_t *ctx,hmd5_md5_t output);
 
 /** \brief md5计算
  *
- * \param input uint8_t* 输入数据
+ * \param input const uint8_t* 输入数据
  * \param ilen size_t    输入数据长度
  * \param output hmd5_md5_t 输出MD5
  * \return int 0=未出错
  *
  */
-int hmd5_md5(uint8_t *input,size_t ilen,hmd5_md5_t output);
+int hmd5_md5(const uint8_t *input,size_t ilen,hmd5_md5_t output);
 
 #ifdef __cplusplus
 }
