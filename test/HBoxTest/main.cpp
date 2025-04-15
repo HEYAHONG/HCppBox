@@ -2195,7 +2195,7 @@ static int hcrypto_test(int argc,const char *argv[])
         {
             hmd5_md5_t md5= {0};
             hmd5_md5(md5_test_buf[i],md5_test_buflen[i],md5);
-            printf("hcrypto md5:data1=%s\r\n",(char *)md5_test_buf[i]);
+            printf("hcrypto md5:data=%s\r\n",(char *)md5_test_buf[i]);
             printf("hcrypto md5:");
             for(size_t i=0; i<sizeof(md5); i++)
             {
