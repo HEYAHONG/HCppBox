@@ -2268,6 +2268,52 @@ static int hcrypto_test(int argc,const char *argv[])
                 printf("\t%s\r\n",(memcmp(sha1,sha1_test_sum[i],sizeof(sha1))==0)?"ok":"failed");
             }
         }
+
+        static hsha2_sha224_t sha224_test_sum[] =
+        {
+            {
+                0x23, 0x09, 0x7D, 0x22, 0x34, 0x05, 0xD8, 0x22,0x86, 0x42, 0xA4, 0x77, 0xBD, 0xA2, 0x55, 0xB3, 0x2A, 0xAD, 0xBC, 0xE4, 0xBD, 0xA0, 0xB3, 0xF7, 0xE3, 0x6C, 0x9D, 0xA7
+            },
+            {
+                0x75, 0x38, 0x8B, 0x16, 0x51, 0x27, 0x76, 0xCC,0x5D, 0xBA, 0x5D, 0xA1, 0xFD, 0x89, 0x01, 0x50, 0xB0, 0xC6, 0x45, 0x5C, 0xB4, 0xF5, 0x8B, 0x19,0x52, 0x52, 0x25, 0x25
+            },
+            {
+                0x20, 0x79, 0x46, 0x55, 0x98, 0x0C, 0x91, 0xD8,0xBB, 0xB4, 0xC1, 0xEA, 0x97, 0x61, 0x8A, 0x4B, 0xF0, 0x3F, 0x42, 0x58, 0x19, 0x48, 0xB2, 0xEE, 0x4E, 0xE7, 0xAD, 0x67
+            }
+        };
+        for(size_t i=0; i<(sizeof(sha1_test_buf)/sizeof(sha1_test_buf[0])); i++)
+        {
+            if(i<2)
+            {
+                hsha2_sha224_t sha2= {0};
+                hsha2_sha224(sha1_test_buf[i],sha1_test_buflen[i],sha2);
+                printf("hcrypto sha2 sha224:data=%s\r\n",(char *)sha1_test_buf[i]);
+                printf("hcrypto sha2 sha224:");
+                for(size_t i=0; i<sizeof(sha2); i++)
+                {
+                    printf("%02X",sha2[i]);
+                }
+                printf("\t%s\r\n",(memcmp(sha2,sha224_test_sum[i],sizeof(sha2))==0)?"ok":"failed");
+            }
+            else
+            {
+                hsha2_sha224_context_t ctx= {0};
+                hsha2_sha224_t sha2= {0};
+                hsha2_sha224_starts(&ctx);
+                for(size_t i=0; i<1000; i++)
+                {
+                    hsha2_sha224_update(&ctx,sha1_test_buf[2],sha1_test_buflen[2]);
+                }
+                hsha2_sha224_finish(&ctx,sha2);
+                printf("hcrypto sha2 sha224:data (1000000 * 'a')\r\n");
+                printf("hcrypto sha2 sha224:");
+                for(size_t i=0; i<sizeof(sha2); i++)
+                {
+                    printf("%02X",sha2[i]);
+                }
+                printf("\t%s\r\n",(memcmp(sha2,sha224_test_sum[i],sizeof(sha2))==0)?"ok":"failed");
+            }
+        }
     }
 
     {
