@@ -41,7 +41,7 @@ struct hsha1_context
     hsha1_message_block_t buffer;
 };
 
-/* \brief sha1 开始
+/** \brief sha1 开始
  *
  * \param ctx hsha1_context_t* sha1上下文指针
  * \return int 0=未出错
@@ -107,7 +107,7 @@ struct hsha2_sha224_context
     hsha2_message_block_t buffer;
 };
 
-/* \brief sha2_sha224 开始
+/** \brief sha2_sha224 开始
  *
  * \param ctx hsha2_sha224_context_t* sha2_sha224上下文指针
  * \return int 0=未出错
@@ -143,6 +143,55 @@ int hsha2_sha224_finish(hsha2_sha224_context_t *ctx,hsha2_sha224_t output);
  *
  */
 int hsha2_sha224(const uint8_t *input,size_t ilen,hsha2_sha224_t output);
+
+
+/*
+ * SHA2 256
+ */
+typedef uint8_t hsha2_sha256_t[32];
+
+/*
+ * SHA2 256上下文（同SHA2 224）
+ */
+typedef hsha2_sha224_context_t hsha2_sha256_context_t;
+
+
+/** \brief sha2_sha256 开始
+ *
+ * \param ctx hsha2_sha256_context_t* sha2_sha256上下文指针
+ * \return int 0=未出错
+ *
+ */
+int hsha2_sha256_starts(hsha2_sha256_context_t *ctx);
+
+/** \brief sha2_sha256 更新
+ *
+ * \param ctx hsha2_sha256_context_t* sha2_sha256上下文指针
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t 输入数据长度
+ * \return int 0=未出错
+ *
+ */
+int hsha2_sha256_update(hsha2_sha256_context_t *ctx,const uint8_t *input,size_t ilen);
+
+/** \brief sha2_sha256 完成
+ *
+ * \param ctx hsha2_sha256_context_t* sha2_sha256上下文指针
+ * \param output hsha2_sha256_t 输出SHA2 SHA256
+ * \return int 0=未出错
+ *
+ */
+int hsha2_sha256_finish(hsha2_sha256_context_t *ctx,hsha2_sha256_t output);
+
+/** \brief sha2_sha256计算
+ *
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t    输入数据长度
+ * \param output hsha2_sha256_t 输出SHA2 SHA256
+ * \return int 0=未出错
+ *
+ */
+int hsha2_sha256(const uint8_t *input,size_t ilen,hsha2_sha256_t output);
 
 
 #ifdef __cplusplus
