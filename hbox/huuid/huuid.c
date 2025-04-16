@@ -179,7 +179,7 @@ bool huuid_parse(huuid_t out,const char *uuid_string)
         }
         else
         {
-            if(!isxdigit(uuid_string[i]))
+            if(!isxdigit((int)uuid_string[i]))
             {
                 return false;
             }
