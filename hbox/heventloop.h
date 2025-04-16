@@ -175,6 +175,7 @@ void  heventloop_set_max_events_number(heventloop_t *loop,uint32_t max_event_num
 enum
 {
     HEVENTLOOP_SYSTEM_LOOP_0=0,                                     /**< 循环0 */
+#ifdef HEVENTLOOP_NO_SLIM
     HEVENTLOOP_SYSTEM_LOOP_1,                                       /**< 循环1 */
     HEVENTLOOP_SYSTEM_LOOP_2,                                       /**< 循环2 */
     HEVENTLOOP_SYSTEM_LOOP_3,                                       /**< 循环3 */
@@ -184,6 +185,7 @@ enum
     HEVENTLOOP_SYSTEM_LOOP_7,                                       /**< 循环7 */
     HEVENTLOOP_SYSTEM_LOOP_8,                                       /**< 循环8 */
     HEVENTLOOP_SYSTEM_LOOP_9,                                       /**< 循环9 */
+#endif
     HEVENTLOOP_SYSTEM_LOOP_COUNT,                                   /**< 系统事件循环数量*/
     HEVENTLOOP_USER_LOOP_START=HEVENTLOOP_SYSTEM_LOOP_COUNT,        /**< 用户循环起始 */
     HEVENTLOOP_SYSTEM_LOOP_WORKQUEUE=HEVENTLOOP_SYSTEM_LOOP_0,      /**< 工作队列，默认使用循环0，默认在hcpprt组件中使用 */

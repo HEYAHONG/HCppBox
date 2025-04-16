@@ -149,6 +149,7 @@ enum
 {
     HEVENTSLOTS_SYSTEM_SLOTS_0=0,                                       /**< 槽0 */
     HEVENTSLOTS_SYSTEM_SLOTS_1,                                         /**< 槽1 */
+#ifdef HEVENTSLOTS_NO_SLIM
     HEVENTSLOTS_SYSTEM_SLOTS_2,                                         /**< 槽2 */
     HEVENTSLOTS_SYSTEM_SLOTS_3,                                         /**< 槽3 */
     HEVENTSLOTS_SYSTEM_SLOTS_4,                                         /**< 槽4 */
@@ -157,6 +158,7 @@ enum
     HEVENTSLOTS_SYSTEM_SLOTS_7,                                         /**< 槽7 */
     HEVENTSLOTS_SYSTEM_SLOTS_8,                                         /**< 槽8 */
     HEVENTSLOTS_SYSTEM_SLOTS_9,                                         /**< 槽9 */
+#endif
     HEVENTSLOTS_SYSTEM_SLOTS_COUNT,                                     /**< 系统事件槽数量*/
     HEVENTSLOTS_USER_SLOTS_START=HEVENTSLOTS_SYSTEM_SLOTS_COUNT,        /**< 用户槽起始 */
     HEVENTSLOTS_SYSTEM_SLOTS_INIT=HEVENTSLOTS_SYSTEM_SLOTS_0,           /**< 系统初始化，默认使用槽0，默认在hcpprt组件中使用 */

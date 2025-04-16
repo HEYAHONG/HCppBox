@@ -153,6 +153,7 @@ void heventchain_uninstall_all_hook(heventchain_t *chain);
 enum
 {
     HEVENTCHAIN_SYSTEM_CHAIN_0=0,                                   /**< 链0 */
+#ifdef  HEVENTCHAIN_NO_SLIM
     HEVENTCHAIN_SYSTEM_CHAIN_1,                                     /**< 链1 */
     HEVENTCHAIN_SYSTEM_CHAIN_2,                                     /**< 链2 */
     HEVENTCHAIN_SYSTEM_CHAIN_3,                                     /**< 链3 */
@@ -162,6 +163,7 @@ enum
     HEVENTCHAIN_SYSTEM_CHAIN_7,                                     /**< 链7 */
     HEVENTCHAIN_SYSTEM_CHAIN_8,                                     /**< 链8 */
     HEVENTCHAIN_SYSTEM_CHAIN_9,                                     /**< 链9 */
+#endif
     HEVENTCHAIN_SYSTEM_CHAIN_COUNT,                                 /**< 系统事件链数量*/
     HEVENTCHAIN_USER_CHAIN_START=HEVENTCHAIN_SYSTEM_CHAIN_COUNT     /**< 用户链起始 */
 };
