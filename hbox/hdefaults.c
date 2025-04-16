@@ -47,7 +47,7 @@ void check_mutex_lock()
 #ifdef HDEFAULTS_TICK_GET
 extern hdefaults_tick_t HDEFAULTS_TICK_GET(void);
 #endif // HDEFAULTS_TICK_GET
-hdefaults_tick_t hdefaults_tick_get(void)
+static hdefaults_tick_t do_hdefaults_tick_get(void)
 {
 #ifdef HDEFAULTS_TICK_GET
     return HDEFAULTS_TICK_GET();
@@ -76,7 +76,7 @@ extern void* hmemoryheap_malloc(size_t nBytes);
 #ifdef HDEFAULTS_MALLOC
 extern void * HDEFAULTS_MALLOC(size_t bytes);
 #endif // HDEFAULTS_MALLOC
-void * hdefaults_malloc(size_t nBytes,void *usr)
+static void * do_hdefaults_malloc(size_t nBytes,void *usr)
 {
     UNUSED(usr);
 #ifdef HDEFAULTS_MALLOC
@@ -96,7 +96,7 @@ extern void hmemoryheap_free(void*);
 #ifdef HDEFAULTS_FREE
 extern void  HDEFAULTS_FREE(void *ptr);
 #endif // HDEFAULTS_FREE
-void hdefaults_free(void *ptr,void *usr)
+static void do_hdefaults_free(void *ptr,void *usr)
 {
     UNUSED(usr);
 #ifdef HDEFAULTS_FREE
@@ -116,7 +116,7 @@ void hdefaults_free(void *ptr,void *usr)
 extern void HDEFAULTS_MUTEX_LOCK(void);
 #endif // HDEFAULTS_MUTEX_LOCK
 
-void  hdefaults_mutex_lock(void *usr)
+static void  do_hdefaults_mutex_lock(void *usr)
 {
     UNUSED(usr);
 #ifdef HDEFAULTS_MUTEX_LOCK
@@ -138,7 +138,7 @@ void  hdefaults_mutex_lock(void *usr)
 extern void HDEFAULTS_MUTEX_UNLOCK(void);
 #endif // HDEFAULTS_MUTEX_UNLOCK
 
-void  hdefaults_mutex_unlock(void *usr)
+static void  do_hdefaults_mutex_unlock(void *usr)
 {
     UNUSED(usr);
 #ifdef  HDEFAULTS_MUTEX_UNLOCK
@@ -158,13 +158,80 @@ void  hdefaults_mutex_unlock(void *usr)
 
 const hdefaults_api_table_t defalut_table=
 {
-    hdefaults_tick_get,
-    hdefaults_malloc,
-    hdefaults_free,
-    hdefaults_mutex_lock,
-    hdefaults_mutex_unlock,
+    do_hdefaults_tick_get,
+    do_hdefaults_malloc,
+    do_hdefaults_free,
+    do_hdefaults_mutex_lock,
+    do_hdefaults_mutex_unlock,
 };
 const hdefaults_api_table_t * hdefaults_get_api_table(void)
 {
     return &defalut_table;
 }
+
+
+hdefaults_tick_t hdefaults_tick_get(void)
+{
+    const hdefaults_api_table_t *api_table=hdefaults_get_api_table();
+    if(api_table!=NULL && api_table->tick_get!=NULL)
+    {
+        return api_table->tick_get();
+    }
+    else
+    {
+        return do_hdefaults_tick_get();
+    }
+}
+
+void * hdefaults_malloc(size_t nBytes,void *usr)
+{
+    const hdefaults_api_table_t *api_table=hdefaults_get_api_table();
+    if(api_table!=NULL && api_table->mem_alloc!=NULL)
+    {
+        return api_table->mem_alloc(nBytes,usr);
+    }
+    else
+    {
+        return do_hdefaults_malloc(nBytes,usr);
+    }
+}
+
+void hdefaults_free(void *ptr,void *usr)
+{
+    const hdefaults_api_table_t *api_table=hdefaults_get_api_table();
+    if(api_table!=NULL && api_table->mem_free!=NULL)
+    {
+        api_table->mem_free(ptr,usr);
+    }
+    else
+    {
+        do_hdefaults_free(ptr,usr);
+    }
+}
+
+void  hdefaults_mutex_lock(void *usr)
+{
+    const hdefaults_api_table_t *api_table=hdefaults_get_api_table();
+    if(api_table!=NULL && api_table->mutex_lock!=NULL)
+    {
+        api_table->mutex_lock(usr);
+    }
+    else
+    {
+        do_hdefaults_mutex_lock(usr);
+    }
+}
+
+void  hdefaults_mutex_unlock(void *usr)
+{
+    const hdefaults_api_table_t *api_table=hdefaults_get_api_table();
+    if(api_table!=NULL && api_table->mutex_unlock!=NULL)
+    {
+        api_table->mutex_unlock(usr);
+    }
+    else
+    {
+        do_hdefaults_mutex_unlock(usr);
+    }
+}
+
