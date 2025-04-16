@@ -124,6 +124,19 @@ void huuid_random_uuid_format(huuid_t random_uuid)
     huuid_pack(&uuid,random_uuid);
 }
 
+void huuid_custom_uuid_format(huuid_t custom_uuid)
+{
+    if(custom_uuid==NULL)
+    {
+        return;
+    }
+    huuid_base_version_t uuid;
+    huuid_unpack(custom_uuid,&uuid);
+    uuid.clock_seq = (uuid.clock_seq & 0x3FFF) | 0x8000;
+    uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0FFF) | 0x8000;
+    huuid_pack(&uuid,custom_uuid);
+}
+
 void huuid_unparse(huuid_string_t out,const huuid_t uuid)
 {
     huuid_unparse_upper(out,uuid);

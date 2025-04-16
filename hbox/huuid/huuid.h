@@ -104,13 +104,20 @@ void huuid_pack(const huuid_base_version_t *uu, huuid_t ptr);
 void huuid_unpack(const huuid_t in, huuid_base_version_t *uu);
 
 
-/** \brief 随机数uuid格式化。当使用随机数填充uuid后，再使用此函数格式化则可得到符合标准的uuid
+/** \brief 随机数uuid(V4)格式化。当使用随机数填充uuid后，再使用此函数格式化则可得到符合标准的uuid
  *
  * \param random_uuid uint8_t 待格式化的随机数据uuid
  *
  */
 void huuid_random_uuid_format(huuid_t random_uuid);
 
+
+/** \brief 自定义uuid(V8)格式化。当用户自行设计uuid值时,使用此函数格式化后可得到符合标准的uuid
+ *
+ * \param custom_uuid huuid_t 待格式化的自定义uuid
+ *
+ */
+void huuid_custom_uuid_format(huuid_t custom_uuid);
 
 typedef char huuid_string_t[sizeof(huuid_t)*2+4+1]; /**< uuid字符串 */
 
