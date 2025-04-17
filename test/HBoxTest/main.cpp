@@ -120,6 +120,29 @@ static int hdefaults_test(int argc,const char *argv[])
     }
     printf("hdefaults_test:2nd pointer addr=0x%" PRIX64 "\r\n",(uint64_t)(intptr_t)ptr);
     hdefaults_free(ptr,NULL);
+
+    {
+        //usercall测试
+        {
+            hdefaults_tick_t tick=0;
+            hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_TICK,&tick);
+            printf("hdefaults usercall tick:number=%d,tick=%d\r\n",(int)HDEFAULTS_USERCALL_NUMBER_TICK,(int)tick);
+        }
+        {
+            void *mem=NULL;
+            hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_MALLOC,&mem,1024,NULL);
+            printf("hdefaults usercall malloc:addr=0x%" PRIX64 "\r\n",(uint64_t)(intptr_t)ptr);
+            int ret=0;
+            hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_FREE,&ret,mem,NULL);
+        }
+
+        {
+            int ret=0;
+            hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_GLOCK,&ret,NULL);
+            hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_GUNLOCK,&ret,NULL);
+        }
+    }
+
     return 0;
 }
 static int heventloop_test(int argc,const char *argv[])
