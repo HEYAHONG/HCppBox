@@ -240,7 +240,7 @@ HDEFAULTS_USERCALL_DEFINE1(gunlock,HDEFAULTS_USERCALL_NUMBER_GUNLOCK,int,void *,
     return 0;
 }
 
-const hdefaults_api_table_t defalut_table=
+static const hdefaults_api_table_t default_api_table=
 {
     do_hdefaults_tick_get,
     do_hdefaults_malloc,
@@ -249,11 +249,18 @@ const hdefaults_api_table_t defalut_table=
     do_hdefaults_mutex_unlock,
     do_hdefaults_usercall,
 };
+static const hdefaults_api_table_t * api_table=&default_api_table;
 const hdefaults_api_table_t * hdefaults_get_api_table(void)
 {
-    return &defalut_table;
+    return api_table;
 }
 
+const hdefaults_api_table_t * hdefaults_set_api_table(const hdefaults_api_table_t* new_api_table)
+{
+    const hdefaults_api_table_t* old_api_table=api_table;
+    api_table=new_api_table;
+    return old_api_table;
+}
 
 hdefaults_tick_t hdefaults_tick_get(void)
 {

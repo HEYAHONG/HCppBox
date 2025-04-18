@@ -485,12 +485,21 @@ typedef struct hdefaults_api_table
     intptr_t            (*usercall)(uintptr_t,...);
 } hdefaults_api_table_t;
 
-/** \brief 默认API表
+/** \brief 获取API表
  *
- * \return const hdefaults_api_table_t*
+ * \return const hdefaults_api_table_t* 当前API表地址
  *
  */
 const hdefaults_api_table_t * hdefaults_get_api_table(void);
+
+/** \brief 设置API表
+ *  注意：在运行过程中改变API表是危险操作
+ *
+ * \param new_api_table const hdefaults_api_table_t* 新API表地址
+ * \return const hdefaults_api_table_t* 原API表地址
+ *
+ */
+const hdefaults_api_table_t * hdefaults_set_api_table(const hdefaults_api_table_t* new_api_table);
 
 #ifdef __cplusplus
 }
