@@ -16,7 +16,7 @@ extern "C"
 
 
 /** \brief hruntime初始化(底层)。
- * 一般由hcpprt组件使用，当不能使用C++时，需要在hruntime_init调用
+ * 一般由hcpprt组件使用，当不能使用C++时，需要在hruntime_init前调用，此函数可不在任务中调用。
  *
  *
  */
@@ -24,13 +24,13 @@ void hruntime_init_lowlevel(void);
 
 
 /** \brief hruntime初始化
- * 一般由hcpprt组件使用，当不能使用C++时，需要在空闲任务或者优先级较低的任务中调用
+ * 一般由hcpprt组件使用，当不能使用C++时，需要在空闲任务或者优先级较低的任务中调用。
  *
  */
 void hruntime_init(void);
 
 /** \brief hruntime循环
- * 一般由hcpprt组件使用，当不能使用C++时，需要在空闲任务或者优先级较低的任务中周期性调用
+ * 一般由hcpprt组件使用，当不能使用C++时，需要在空闲任务或者优先级较低的任务中周期性调用。
  *
  */
 void hruntime_loop(void);
