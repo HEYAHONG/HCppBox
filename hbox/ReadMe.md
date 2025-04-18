@@ -411,3 +411,6 @@ nanopb_generator可通过以下方式获取：
 
 具体实现见[hcrypto](hcrypto)目录。
 
+## hruntime
+
+处理各个C语言组件的初始化及任务循环。
