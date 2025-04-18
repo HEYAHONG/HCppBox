@@ -285,8 +285,8 @@ int hripemd160_update(hripemd160_context_t *ctx,const uint8_t *input,size_t ilen
         return 0;
     }
 
-    left = ctx->total[0] & 0x3F;
-    fill = 64 - left;
+    left = ctx->total[0] & (sizeof(ctx->buffer)-1);
+    fill = (sizeof(ctx->buffer)) - left;
 
     ctx->total[0] += (uint32_t) ilen;
     ctx->total[0] &= 0xFFFFFFFF;
@@ -309,15 +309,15 @@ int hripemd160_update(hripemd160_context_t *ctx,const uint8_t *input,size_t ilen
         left = 0;
     }
 
-    while (ilen >= 64)
+    while (ilen >= ((sizeof(ctx->buffer))))
     {
         if ((ret = hripemd160_internal_process(ctx, input)) != 0)
         {
             return ret;
         }
 
-        input += 64;
-        ilen  -= 64;
+        input += ((sizeof(ctx->buffer)));
+        ilen  -= ((sizeof(ctx->buffer)));
     }
 
     if (ilen > 0)
@@ -360,8 +360,8 @@ int hripemd160_finish(hripemd160_context_t *ctx,hripemd160_ripemd160_t output)
         msglen[4+2]=((high>>16)&0xFF);
         msglen[4+3]=((high>>24)&0xFF);
     }
-    uint32_t last = ctx->total[0] & 0x3F;
-    uint32_t padn = (last < 56) ? (56 - last) : (120 - last);
+    uint32_t last = ctx->total[0] & (sizeof(ctx->buffer)-1);
+    uint32_t padn = (last < (sizeof(ctx->buffer)-sizeof(ctx->total))) ? ((sizeof(ctx->buffer)-sizeof(ctx->total)) - last) : ((sizeof(ctx->buffer)*2-sizeof(ctx->total)) - last);
 
     ret = hripemd160_update(ctx, ripemd160_padding, padn);
     if (ret != 0)
