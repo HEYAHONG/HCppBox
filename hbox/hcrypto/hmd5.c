@@ -182,8 +182,8 @@ int hmd5_update(hmd5_context_t *ctx,const uint8_t *input,size_t ilen)
         return 0;
     }
 
-    left = ctx->total[0] & 0x3F;
-    fill = 64 - left;
+    left = ctx->total[0] & (sizeof(ctx->buffer)-1);
+    fill = (sizeof(ctx->buffer)) - left;
 
     ctx->total[0] += (uint32_t) ilen;
     ctx->total[0] &= 0xFFFFFFFF;
@@ -206,15 +206,15 @@ int hmd5_update(hmd5_context_t *ctx,const uint8_t *input,size_t ilen)
         left = 0;
     }
 
-    while (ilen >= 64)
+    while (ilen >= (sizeof(ctx->buffer)))
     {
         if ((ret = hmd5_internal_process(ctx, input)) != 0)
         {
             return ret;
         }
 
-        input += 64;
-        ilen  -= 64;
+        input += (sizeof(ctx->buffer));
+        ilen  -= (sizeof(ctx->buffer));
     }
 
     if (ilen > 0)
@@ -238,26 +238,26 @@ int hmd5_finish(hmd5_context_t *ctx,hmd5_md5_t output)
     /*
      * 添加填充
      */
-    used = ctx->total[0] & 0x3F;
+    used = ctx->total[0] & (sizeof(ctx->buffer)-1);
 
     ctx->buffer[used++] = 0x80;
 
-    if (used <= 56)
+    if (used <= (sizeof(ctx->buffer)-sizeof(ctx->total)))
     {
         /* 末尾足够放长度 */
-        memset(ctx->buffer + used, 0, 56 - used);
+        memset(ctx->buffer + used, 0, (sizeof(ctx->buffer)-sizeof(ctx->total)) - used);
     }
     else
     {
         /* 需要一个额外的块 */
-        memset(ctx->buffer + used, 0, 64 - used);
+        memset(ctx->buffer + used, 0, (sizeof(ctx->buffer)) - used);
 
         if ((ret = hmd5_internal_process(ctx, ctx->buffer)) != 0)
         {
             return ret;
         }
 
-        memset(ctx->buffer, 0, 56);
+        memset(ctx->buffer, 0, (sizeof(ctx->buffer)-sizeof(ctx->total)));
     }
 
     /*
