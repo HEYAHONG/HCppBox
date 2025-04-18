@@ -259,6 +259,53 @@ int hsha2_sha384_finish(hsha2_sha384_context_t *ctx,hsha2_sha384_t output);
  */
 int hsha2_sha384(const uint8_t *input,size_t ilen,hsha2_sha384_t output);
 
+/*
+ * SHA2 512
+ */
+typedef uint8_t hsha2_sha512_t[64];
+
+/*
+ * SHA2 512上下文（同SHA2 384）
+ */
+typedef hsha2_sha384_context_t hsha2_sha512_context_t;
+
+
+/** \brief sha2_sha512 开始
+ *
+ * \param ctx hsha2_sha512_context_t* sha2_sha512上下文指针
+ * \return int 0=未出错
+ *
+ */
+int hsha2_sha512_starts(hsha2_sha512_context_t *ctx);
+
+/** \brief sha2_sha512 更新
+ *
+ * \param ctx hsha2_sha512_context_t* sha2_sha512上下文指针
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t 输入数据长度
+ * \return int 0=未出错
+ *
+ */
+int hsha2_sha512_update(hsha2_sha512_context_t *ctx,const uint8_t *input,size_t ilen);
+
+/** \brief sha2_sha512 完成
+ *
+ * \param ctx hsha2_sha512_context_t* sha2_sha512上下文指针
+ * \param output hsha2_sha512_t 输出SHA2 SHA512
+ * \return int 0=未出错
+ *
+ */
+int hsha2_sha512_finish(hsha2_sha512_context_t *ctx,hsha2_sha512_t output);
+
+/** \brief sha2_sha512计算
+ *
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t    输入数据长度
+ * \param output hsha2_sha512_t 输出SHA2 SHA512
+ * \return int 0=未出错
+ *
+ */
+int hsha2_sha512(const uint8_t *input,size_t ilen,hsha2_sha512_t output);
 
 
 #ifdef __cplusplus

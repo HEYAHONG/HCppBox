@@ -1418,3 +1418,265 @@ exit:
 }
 
 
+int hsha2_sha512_starts(hsha2_sha512_context_t *ctx)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    memset(ctx,0,sizeof(hsha2_sha512_context_t));
+    ctx->A = (uint64_t)(0x6A09E667F3BCC908);
+    ctx->B = (uint64_t)(0xBB67AE8584CAA73B);
+    ctx->C = (uint64_t)(0x3C6EF372FE94F82B);
+    ctx->D = (uint64_t)(0xA54FF53A5F1D36F1);
+    ctx->E = (uint64_t)(0x510E527FADE682D1);
+    ctx->F = (uint64_t)(0x9B05688C2B3E6C1F);
+    ctx->G = (uint64_t)(0x1F83D9ABFB41BD6B);
+    ctx->H = (uint64_t)(0x5BE0CD19137E2179);
+    return 0;
+}
+
+int hsha2_sha512_update(hsha2_sha512_context_t *ctx,const uint8_t *input,size_t ilen)
+{
+    int ret = -1;
+    if(ctx == NULL )
+    {
+        return ret;
+    }
+    size_t fill=0;
+    uint32_t left=0;
+
+    if (input ==NULL || ilen == 0)
+    {
+        return 0;
+    }
+
+    left = ctx->total[0] & (sizeof(ctx->buffer)-1);
+    fill = (sizeof(ctx->buffer)) - left;
+
+    ctx->total[0] += (uint32_t) ilen;
+
+    if (ctx->total[0] < (uint32_t) ilen)
+    {
+        ctx->total[1]++;
+    }
+
+    if (left && ilen >= fill)
+    {
+        memcpy((void *) (ctx->buffer + left), input, fill);
+        if ((ret = hsha2_sha384_internal_process(ctx, ctx->buffer)) != 0)
+        {
+            return ret;
+        }
+
+        input += fill;
+        ilen  -= fill;
+        left = 0;
+    }
+
+    while (ilen >= (sizeof(ctx->buffer)))
+    {
+        if ((ret = hsha2_sha384_internal_process(ctx, input)) != 0)
+        {
+            return ret;
+        }
+
+        input += (sizeof(ctx->buffer));
+        ilen  -= (sizeof(ctx->buffer));
+    }
+
+    if (ilen > 0)
+    {
+        memcpy((void *) (ctx->buffer + left), input, ilen);
+    }
+
+    return 0;
+}
+
+int hsha2_sha512_finish(hsha2_sha512_context_t *ctx,hsha2_sha512_t output)
+{
+    int ret = -1;
+    if(ctx==NULL || output == NULL)
+    {
+        return ret;
+    }
+    uint32_t used=0;
+    uint64_t high=0, low=0;
+
+    /*
+     * 添加填充
+     */
+    used = ctx->total[0] & (sizeof(ctx->buffer)-1);
+
+    ctx->buffer[used++] = 0x80;
+
+    if (used <= (sizeof(ctx->buffer)-sizeof(ctx->total)))
+    {
+        /* 末尾足够放长度 */
+        memset(ctx->buffer + used, 0, (sizeof(ctx->buffer)-sizeof(ctx->total)) - used);
+    }
+    else
+    {
+        /* 需要一个额外的块 */
+        memset(ctx->buffer + used, 0, (sizeof(ctx->buffer)) - used);
+
+        if ((ret = hsha2_sha384_internal_process(ctx, ctx->buffer)) != 0)
+        {
+            return ret;
+        }
+
+        memset(ctx->buffer, 0, (sizeof(ctx->buffer)-sizeof(ctx->total)));
+    }
+
+    /*
+     * 添加消息长度
+     */
+    high = (ctx->total[0] >> 61)| (ctx->total[1] <<  3);
+    low  = (ctx->total[0] <<  3);
+
+    {
+        ctx->buffer[112+7]=((high)&0xFF);
+        ctx->buffer[112+6]=((high>>8)&0xFF);
+        ctx->buffer[112+5]=((high>>16)&0xFF);
+        ctx->buffer[112+4]=((high>>24)&0xFF);
+        ctx->buffer[112+3]=((high>>32)&0xFF);
+        ctx->buffer[112+2]=((high>>40)&0xFF);
+        ctx->buffer[112+1]=((high>>48)&0xFF);
+        ctx->buffer[112+0]=((high>>56)&0xFF);
+    }
+    {
+        ctx->buffer[120+7]=((low)&0xFF);
+        ctx->buffer[120+6]=((low>>8)&0xFF);
+        ctx->buffer[120+5]=((low>>16)&0xFF);
+        ctx->buffer[120+4]=((low>>24)&0xFF);
+        ctx->buffer[120+3]=((low>>32)&0xFF);
+        ctx->buffer[120+2]=((low>>40)&0xFF);
+        ctx->buffer[120+1]=((low>>48)&0xFF);
+        ctx->buffer[120+0]=((low>>56)&0xFF);
+    }
+
+    if ((ret = hsha2_sha384_internal_process(ctx, ctx->buffer)) != 0)
+    {
+        return ret;
+    }
+
+    /*
+     * 输出
+     */
+    {
+        output[0+7]=((ctx->A)&0xFF);
+        output[0+6]=((ctx->A>>8)&0xFF);
+        output[0+5]=((ctx->A>>16)&0xFF);
+        output[0+4]=((ctx->A>>24)&0xFF);
+        output[0+3]=((ctx->A>>32)&0xFF);
+        output[0+2]=((ctx->A>>40)&0xFF);
+        output[0+1]=((ctx->A>>48)&0xFF);
+        output[0+0]=((ctx->A>>56)&0xFF);
+    }
+    {
+        output[8+7]=((ctx->B)&0xFF);
+        output[8+6]=((ctx->B>>8)&0xFF);
+        output[8+5]=((ctx->B>>16)&0xFF);
+        output[8+4]=((ctx->B>>24)&0xFF);
+        output[8+3]=((ctx->B>>32)&0xFF);
+        output[8+2]=((ctx->B>>40)&0xFF);
+        output[8+1]=((ctx->B>>48)&0xFF);
+        output[8+0]=((ctx->B>>56)&0xFF);
+    }
+    {
+        output[16+7]=((ctx->C)&0xFF);
+        output[16+6]=((ctx->C>>8)&0xFF);
+        output[16+5]=((ctx->C>>16)&0xFF);
+        output[16+4]=((ctx->C>>24)&0xFF);
+        output[16+3]=((ctx->C>>32)&0xFF);
+        output[16+2]=((ctx->C>>40)&0xFF);
+        output[16+1]=((ctx->C>>48)&0xFF);
+        output[16+0]=((ctx->C>>56)&0xFF);
+    }
+    {
+        output[24+7]=((ctx->D)&0xFF);
+        output[24+6]=((ctx->D>>8)&0xFF);
+        output[24+5]=((ctx->D>>16)&0xFF);
+        output[24+4]=((ctx->D>>24)&0xFF);
+        output[24+3]=((ctx->D>>32)&0xFF);
+        output[24+2]=((ctx->D>>40)&0xFF);
+        output[24+1]=((ctx->D>>48)&0xFF);
+        output[24+0]=((ctx->D>>56)&0xFF);
+    }
+    {
+        output[32+7]=((ctx->E)&0xFF);
+        output[32+6]=((ctx->E>>8)&0xFF);
+        output[32+5]=((ctx->E>>16)&0xFF);
+        output[32+4]=((ctx->E>>24)&0xFF);
+        output[32+3]=((ctx->E>>32)&0xFF);
+        output[32+2]=((ctx->E>>40)&0xFF);
+        output[32+1]=((ctx->E>>48)&0xFF);
+        output[32+0]=((ctx->E>>56)&0xFF);
+    }
+    {
+        output[40+7]=((ctx->F)&0xFF);
+        output[40+6]=((ctx->F>>8)&0xFF);
+        output[40+5]=((ctx->F>>16)&0xFF);
+        output[40+4]=((ctx->F>>24)&0xFF);
+        output[40+3]=((ctx->F>>32)&0xFF);
+        output[40+2]=((ctx->F>>40)&0xFF);
+        output[40+1]=((ctx->F>>48)&0xFF);
+        output[40+0]=((ctx->F>>56)&0xFF);
+    }
+    {
+        output[48+7]=((ctx->G)&0xFF);
+        output[48+6]=((ctx->G>>8)&0xFF);
+        output[48+5]=((ctx->G>>16)&0xFF);
+        output[48+4]=((ctx->G>>24)&0xFF);
+        output[48+3]=((ctx->G>>32)&0xFF);
+        output[48+2]=((ctx->G>>40)&0xFF);
+        output[48+1]=((ctx->G>>48)&0xFF);
+        output[48+0]=((ctx->G>>56)&0xFF);
+    }
+    {
+        output[56+7]=((ctx->H)&0xFF);
+        output[56+6]=((ctx->H>>8)&0xFF);
+        output[56+5]=((ctx->H>>16)&0xFF);
+        output[56+4]=((ctx->H>>24)&0xFF);
+        output[56+3]=((ctx->H>>32)&0xFF);
+        output[56+2]=((ctx->H>>40)&0xFF);
+        output[56+1]=((ctx->H>>48)&0xFF);
+        output[56+0]=((ctx->H>>56)&0xFF);
+    }
+
+    ret = 0;
+    return ret;
+
+}
+
+int hsha2_sha512(const uint8_t *input,size_t ilen,hsha2_sha512_t output)
+{
+    int ret = -1;
+    if(input==NULL || output == NULL)
+    {
+        return ret;
+    }
+    hsha2_sha512_context_t ctx;
+
+    if ((ret = hsha2_sha512_starts(&ctx)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha2_sha512_update(&ctx, input, ilen)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha2_sha512_finish(&ctx, output)) != 0)
+    {
+        goto exit;
+    }
+
+exit:
+    return ret;
+
+}
+
+
+
