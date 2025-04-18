@@ -476,7 +476,7 @@ static int hsha2_sha224_internal_process(hsha2_sha224_context_t *ctx,const hsha2
         return -1;
     }
     hsha2_sha224_internal_state_t local= {0};
-    for(size_t i=0; i<sizeof(hsha1_message_block_t)/sizeof(local.W[0]); i++)
+    for(size_t i=0; i<sizeof(hsha2_message_block_t)/sizeof(local.W[0]); i++)
     {
         local.W[i]=data[4*i+0];
         local.W[i] <<= 8;
@@ -988,3 +988,433 @@ exit:
     return ret;
 
 }
+
+int hsha2_sha384_starts(hsha2_sha384_context_t *ctx)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    memset(ctx,0,sizeof(hsha2_sha384_context_t));
+    ctx->A = (uint64_t)(0xCBBB9D5DC1059ED8);
+    ctx->B = (uint64_t)(0x629A292A367CD507);
+    ctx->C = (uint64_t)(0x9159015A3070DD17);
+    ctx->D = (uint64_t)(0x152FECD8F70E5939);
+    ctx->E = (uint64_t)(0x67332667FFC00B31);
+    ctx->F = (uint64_t)(0x8EB44A8768581511);
+    ctx->G = (uint64_t)(0xDB0C2E0D64F98FA7);
+    ctx->H = (uint64_t)(0x47B5481DBEFA4FA4);
+    return 0;
+}
+
+
+
+static const uint64_t hsha2_sha384_K[] =
+{
+    (uint64_t)(0x428A2F98D728AE22),  (uint64_t)(0x7137449123EF65CD),
+    (uint64_t)(0xB5C0FBCFEC4D3B2F),  (uint64_t)(0xE9B5DBA58189DBBC),
+    (uint64_t)(0x3956C25BF348B538),  (uint64_t)(0x59F111F1B605D019),
+    (uint64_t)(0x923F82A4AF194F9B),  (uint64_t)(0xAB1C5ED5DA6D8118),
+    (uint64_t)(0xD807AA98A3030242),  (uint64_t)(0x12835B0145706FBE),
+    (uint64_t)(0x243185BE4EE4B28C),  (uint64_t)(0x550C7DC3D5FFB4E2),
+    (uint64_t)(0x72BE5D74F27B896F),  (uint64_t)(0x80DEB1FE3B1696B1),
+    (uint64_t)(0x9BDC06A725C71235),  (uint64_t)(0xC19BF174CF692694),
+    (uint64_t)(0xE49B69C19EF14AD2),  (uint64_t)(0xEFBE4786384F25E3),
+    (uint64_t)(0x0FC19DC68B8CD5B5),  (uint64_t)(0x240CA1CC77AC9C65),
+    (uint64_t)(0x2DE92C6F592B0275),  (uint64_t)(0x4A7484AA6EA6E483),
+    (uint64_t)(0x5CB0A9DCBD41FBD4),  (uint64_t)(0x76F988DA831153B5),
+    (uint64_t)(0x983E5152EE66DFAB),  (uint64_t)(0xA831C66D2DB43210),
+    (uint64_t)(0xB00327C898FB213F),  (uint64_t)(0xBF597FC7BEEF0EE4),
+    (uint64_t)(0xC6E00BF33DA88FC2),  (uint64_t)(0xD5A79147930AA725),
+    (uint64_t)(0x06CA6351E003826F),  (uint64_t)(0x142929670A0E6E70),
+    (uint64_t)(0x27B70A8546D22FFC),  (uint64_t)(0x2E1B21385C26C926),
+    (uint64_t)(0x4D2C6DFC5AC42AED),  (uint64_t)(0x53380D139D95B3DF),
+    (uint64_t)(0x650A73548BAF63DE),  (uint64_t)(0x766A0ABB3C77B2A8),
+    (uint64_t)(0x81C2C92E47EDAEE6),  (uint64_t)(0x92722C851482353B),
+    (uint64_t)(0xA2BFE8A14CF10364),  (uint64_t)(0xA81A664BBC423001),
+    (uint64_t)(0xC24B8B70D0F89791),  (uint64_t)(0xC76C51A30654BE30),
+    (uint64_t)(0xD192E819D6EF5218),  (uint64_t)(0xD69906245565A910),
+    (uint64_t)(0xF40E35855771202A),  (uint64_t)(0x106AA07032BBD1B8),
+    (uint64_t)(0x19A4C116B8D2D0C8),  (uint64_t)(0x1E376C085141AB53),
+    (uint64_t)(0x2748774CDF8EEB99),  (uint64_t)(0x34B0BCB5E19B48A8),
+    (uint64_t)(0x391C0CB3C5C95A63),  (uint64_t)(0x4ED8AA4AE3418ACB),
+    (uint64_t)(0x5B9CCA4F7763E373),  (uint64_t)(0x682E6FF3D6B2B8A3),
+    (uint64_t)(0x748F82EE5DEFB2FC),  (uint64_t)(0x78A5636F43172F60),
+    (uint64_t)(0x84C87814A1F0AB72),  (uint64_t)(0x8CC702081A6439EC),
+    (uint64_t)(0x90BEFFFA23631E28),  (uint64_t)(0xA4506CEBDE82BDE9),
+    (uint64_t)(0xBEF9A3F7B2C67915),  (uint64_t)(0xC67178F2E372532B),
+    (uint64_t)(0xCA273ECEEA26619C),  (uint64_t)(0xD186B8C721C0C207),
+    (uint64_t)(0xEADA7DD6CDE0EB1E),  (uint64_t)(0xF57D4F7FEE6ED178),
+    (uint64_t)(0x06F067AA72176FBA),  (uint64_t)(0x0A637DC5A2C898A6),
+    (uint64_t)(0x113F9804BEF90DAE),  (uint64_t)(0x1B710B35131C471B),
+    (uint64_t)(0x28DB77F523047D84),  (uint64_t)(0x32CAAB7B40C72493),
+    (uint64_t)(0x3C9EBE0A15C9BEBC),  (uint64_t)(0x431D67C49C100D4C),
+    (uint64_t)(0x4CC5D4BECB3E42B6),  (uint64_t)(0x597F299CFC657E2A),
+    (uint64_t)(0x5FCB6FAB3AD6FAEC),  (uint64_t)(0x6C44198C4A475817)
+};
+
+typedef struct hsha2_sha384_internal_state
+{
+    uint64_t W[80];
+    uint64_t A[8];
+    uint64_t temp1;
+    uint64_t temp2;
+} hsha2_sha384_internal_state_t;
+#ifdef P
+#undef P
+#endif
+#ifdef R
+#undef R
+#endif
+#ifdef F1
+#undef F1
+#endif
+#ifdef F0
+#undef F0
+#endif
+#ifdef S3
+#undef S3
+#endif
+#ifdef S2
+#undef S2
+#endif
+#ifdef S1
+#undef S1
+#endif
+#ifdef S0
+#undef S0
+#endif
+#ifdef ROTR
+#undef ROTR
+#endif
+#ifdef SHR
+#undef SHR
+#endif
+static int hsha2_sha384_internal_process(hsha2_sha384_context_t *ctx,const hsha2_message_block_t data)
+{
+    if(ctx==NULL || data ==NULL)
+    {
+        return -1;
+    }
+    hsha2_sha384_internal_state_t local= {0};
+    for(size_t i=0; i<sizeof(hsha2_message2_block_t)/sizeof(local.W[0]); i++)
+    {
+        local.W[i]=data[8*i+0];
+        local.W[i] <<= 8;
+        local.W[i]+=data[8*i+1];
+        local.W[i] <<= 8;
+        local.W[i]+=data[8*i+2];
+        local.W[i] <<= 8;
+        local.W[i]+=data[8*i+3];
+        local.W[i] <<= 8;
+        local.W[i]+=data[8*i+4];
+        local.W[i] <<= 8;
+        local.W[i]+=data[8*i+5];
+        local.W[i] <<= 8;
+        local.W[i]+=data[8*i+6];
+        local.W[i] <<= 8;
+        local.W[i]+=data[8*i+7];
+    }
+
+    local.A[0]=ctx->A;
+    local.A[1]=ctx->B;
+    local.A[2]=ctx->C;
+    local.A[3]=ctx->D;
+    local.A[4]=ctx->E;
+    local.A[5]=ctx->F;
+    local.A[6]=ctx->G;
+    local.A[7]=ctx->H;
+
+
+#define  SHR(x, n) ((x) >> (n))
+#define ROTR(x, n) (SHR((x), (n)) | ((x) << (64 - (n))))
+
+#define S0(x) (ROTR(x, 1) ^ ROTR(x, 8) ^  SHR(x, 7))
+#define S1(x) (ROTR(x, 19) ^ ROTR(x, 61) ^  SHR(x, 6))
+
+#define S2(x) (ROTR(x, 28) ^ ROTR(x, 34) ^ ROTR(x, 39))
+#define S3(x) (ROTR(x, 14) ^ ROTR(x, 18) ^ ROTR(x, 41))
+
+#define F0(x, y, z) (((x) & (y)) | ((z) & ((x) | (y))))
+#define F1(x, y, z) ((z) ^ ((x) & ((y) ^ (z))))
+
+#define P(a, b, c, d, e, f, g, h, x, K)                                     \
+    do                                                                      \
+    {                                                                       \
+        local.temp1 = (h) + S3(e) + F1((e), (f), (g)) + (K) + (x);          \
+        local.temp2 = S2(a) + F0((a), (b), (c));                            \
+        (d) += local.temp1; (h) = local.temp1 + local.temp2;                \
+    } while (0)
+
+    for (size_t i=sizeof(hsha2_message2_block_t)/sizeof(local.W[0]); i < 80; i++)
+    {
+        local.W[i] = S1(local.W[i -  2]) + local.W[i -  7] + S0(local.W[i - 15]) + local.W[i - 16];
+    }
+
+    for(size_t i=0; i<80;)
+    {
+        P(local.A[0], local.A[1], local.A[2], local.A[3], local.A[4], local.A[5], local.A[6], local.A[7], local.W[i], hsha2_sha384_K[i]);
+        i++;
+        P(local.A[7], local.A[0], local.A[1], local.A[2], local.A[3], local.A[4], local.A[5], local.A[6], local.W[i], hsha2_sha384_K[i]);
+        i++;
+        P(local.A[6], local.A[7], local.A[0], local.A[1], local.A[2], local.A[3], local.A[4], local.A[5], local.W[i], hsha2_sha384_K[i]);
+        i++;
+        P(local.A[5], local.A[6], local.A[7], local.A[0], local.A[1], local.A[2], local.A[3], local.A[4], local.W[i], hsha2_sha384_K[i]);
+        i++;
+        P(local.A[4], local.A[5], local.A[6], local.A[7], local.A[0], local.A[1], local.A[2], local.A[3], local.W[i], hsha2_sha384_K[i]);
+        i++;
+        P(local.A[3], local.A[4], local.A[5], local.A[6], local.A[7], local.A[0], local.A[1], local.A[2], local.W[i], hsha2_sha384_K[i]);
+        i++;
+        P(local.A[2], local.A[3], local.A[4], local.A[5], local.A[6], local.A[7], local.A[0], local.A[1], local.W[i], hsha2_sha384_K[i]);
+        i++;
+        P(local.A[1], local.A[2], local.A[3], local.A[4], local.A[5], local.A[6], local.A[7], local.A[0], local.W[i], hsha2_sha384_K[i]);
+        i++;
+    }
+
+#undef P
+#undef R
+#undef F1
+#undef F0
+#undef S3
+#undef S2
+#undef S1
+#undef S0
+#undef ROTR
+#undef SHR
+
+    ctx->A+=local.A[0];
+    ctx->B+=local.A[1];
+    ctx->C+=local.A[2];
+    ctx->D+=local.A[3];
+    ctx->E+=local.A[4];
+    ctx->F+=local.A[5];
+    ctx->G+=local.A[6];
+    ctx->H+=local.A[7];
+
+
+    return 0;
+}
+
+int hsha2_sha384_update(hsha2_sha384_context_t *ctx,const uint8_t *input,size_t ilen)
+{
+    int ret = -1;
+    if(ctx == NULL )
+    {
+        return ret;
+    }
+    size_t fill=0;
+    uint32_t left=0;
+
+    if (input ==NULL || ilen == 0)
+    {
+        return 0;
+    }
+
+    left = ctx->total[0] & (sizeof(ctx->buffer)-1);
+    fill = (sizeof(ctx->buffer)) - left;
+
+    ctx->total[0] += (uint32_t) ilen;
+
+    if (ctx->total[0] < (uint32_t) ilen)
+    {
+        ctx->total[1]++;
+    }
+
+    if (left && ilen >= fill)
+    {
+        memcpy((void *) (ctx->buffer + left), input, fill);
+        if ((ret = hsha2_sha384_internal_process(ctx, ctx->buffer)) != 0)
+        {
+            return ret;
+        }
+
+        input += fill;
+        ilen  -= fill;
+        left = 0;
+    }
+
+    while (ilen >= (sizeof(ctx->buffer)))
+    {
+        if ((ret = hsha2_sha384_internal_process(ctx, input)) != 0)
+        {
+            return ret;
+        }
+
+        input += (sizeof(ctx->buffer));
+        ilen  -= (sizeof(ctx->buffer));
+    }
+
+    if (ilen > 0)
+    {
+        memcpy((void *) (ctx->buffer + left), input, ilen);
+    }
+
+    return 0;
+}
+
+int hsha2_sha384_finish(hsha2_sha384_context_t *ctx,hsha2_sha384_t output)
+{
+    int ret = -1;
+    if(ctx==NULL || output == NULL)
+    {
+        return ret;
+    }
+    uint32_t used=0;
+    uint64_t high=0, low=0;
+
+    /*
+     * 添加填充
+     */
+    used = ctx->total[0] & (sizeof(ctx->buffer)-1);
+
+    ctx->buffer[used++] = 0x80;
+
+    if (used <= (sizeof(ctx->buffer)-sizeof(ctx->total)))
+    {
+        /* 末尾足够放长度 */
+        memset(ctx->buffer + used, 0, (sizeof(ctx->buffer)-sizeof(ctx->total)) - used);
+    }
+    else
+    {
+        /* 需要一个额外的块 */
+        memset(ctx->buffer + used, 0, (sizeof(ctx->buffer)) - used);
+
+        if ((ret = hsha2_sha384_internal_process(ctx, ctx->buffer)) != 0)
+        {
+            return ret;
+        }
+
+        memset(ctx->buffer, 0, (sizeof(ctx->buffer)-sizeof(ctx->total)));
+    }
+
+    /*
+     * 添加消息长度
+     */
+    high = (ctx->total[0] >> 61)| (ctx->total[1] <<  3);
+    low  = (ctx->total[0] <<  3);
+
+    {
+        ctx->buffer[112+7]=((high)&0xFF);
+        ctx->buffer[112+6]=((high>>8)&0xFF);
+        ctx->buffer[112+5]=((high>>16)&0xFF);
+        ctx->buffer[112+4]=((high>>24)&0xFF);
+        ctx->buffer[112+3]=((high>>32)&0xFF);
+        ctx->buffer[112+2]=((high>>40)&0xFF);
+        ctx->buffer[112+1]=((high>>48)&0xFF);
+        ctx->buffer[112+0]=((high>>56)&0xFF);
+    }
+    {
+        ctx->buffer[120+7]=((low)&0xFF);
+        ctx->buffer[120+6]=((low>>8)&0xFF);
+        ctx->buffer[120+5]=((low>>16)&0xFF);
+        ctx->buffer[120+4]=((low>>24)&0xFF);
+        ctx->buffer[120+3]=((low>>32)&0xFF);
+        ctx->buffer[120+2]=((low>>40)&0xFF);
+        ctx->buffer[120+1]=((low>>48)&0xFF);
+        ctx->buffer[120+0]=((low>>56)&0xFF);
+    }
+
+    if ((ret = hsha2_sha384_internal_process(ctx, ctx->buffer)) != 0)
+    {
+        return ret;
+    }
+
+    /*
+     * 输出
+     */
+    {
+        output[0+7]=((ctx->A)&0xFF);
+        output[0+6]=((ctx->A>>8)&0xFF);
+        output[0+5]=((ctx->A>>16)&0xFF);
+        output[0+4]=((ctx->A>>24)&0xFF);
+        output[0+3]=((ctx->A>>32)&0xFF);
+        output[0+2]=((ctx->A>>40)&0xFF);
+        output[0+1]=((ctx->A>>48)&0xFF);
+        output[0+0]=((ctx->A>>56)&0xFF);
+    }
+    {
+        output[8+7]=((ctx->B)&0xFF);
+        output[8+6]=((ctx->B>>8)&0xFF);
+        output[8+5]=((ctx->B>>16)&0xFF);
+        output[8+4]=((ctx->B>>24)&0xFF);
+        output[8+3]=((ctx->B>>32)&0xFF);
+        output[8+2]=((ctx->B>>40)&0xFF);
+        output[8+1]=((ctx->B>>48)&0xFF);
+        output[8+0]=((ctx->B>>56)&0xFF);
+    }
+    {
+        output[16+7]=((ctx->C)&0xFF);
+        output[16+6]=((ctx->C>>8)&0xFF);
+        output[16+5]=((ctx->C>>16)&0xFF);
+        output[16+4]=((ctx->C>>24)&0xFF);
+        output[16+3]=((ctx->C>>32)&0xFF);
+        output[16+2]=((ctx->C>>40)&0xFF);
+        output[16+1]=((ctx->C>>48)&0xFF);
+        output[16+0]=((ctx->C>>56)&0xFF);
+    }
+    {
+        output[24+7]=((ctx->D)&0xFF);
+        output[24+6]=((ctx->D>>8)&0xFF);
+        output[24+5]=((ctx->D>>16)&0xFF);
+        output[24+4]=((ctx->D>>24)&0xFF);
+        output[24+3]=((ctx->D>>32)&0xFF);
+        output[24+2]=((ctx->D>>40)&0xFF);
+        output[24+1]=((ctx->D>>48)&0xFF);
+        output[24+0]=((ctx->D>>56)&0xFF);
+    }
+    {
+        output[32+7]=((ctx->E)&0xFF);
+        output[32+6]=((ctx->E>>8)&0xFF);
+        output[32+5]=((ctx->E>>16)&0xFF);
+        output[32+4]=((ctx->E>>24)&0xFF);
+        output[32+3]=((ctx->E>>32)&0xFF);
+        output[32+2]=((ctx->E>>40)&0xFF);
+        output[32+1]=((ctx->E>>48)&0xFF);
+        output[32+0]=((ctx->E>>56)&0xFF);
+    }
+    {
+        output[40+7]=((ctx->F)&0xFF);
+        output[40+6]=((ctx->F>>8)&0xFF);
+        output[40+5]=((ctx->F>>16)&0xFF);
+        output[40+4]=((ctx->F>>24)&0xFF);
+        output[40+3]=((ctx->F>>32)&0xFF);
+        output[40+2]=((ctx->F>>40)&0xFF);
+        output[40+1]=((ctx->F>>48)&0xFF);
+        output[40+0]=((ctx->F>>56)&0xFF);
+    }
+
+    ret = 0;
+    return ret;
+
+}
+
+int hsha2_sha384(const uint8_t *input,size_t ilen,hsha2_sha384_t output)
+{
+    int ret = -1;
+    if(input==NULL || output == NULL)
+    {
+        return ret;
+    }
+    hsha2_sha384_context_t ctx;
+
+    if ((ret = hsha2_sha384_starts(&ctx)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha2_sha384_update(&ctx, input, ilen)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha2_sha384_finish(&ctx, output)) != 0)
+    {
+        goto exit;
+    }
+
+exit:
+    return ret;
+
+}
+
+
