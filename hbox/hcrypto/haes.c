@@ -8,24 +8,24 @@
  **************************************************************/
 #include "haes.h"
 
-# define GETU32(pt) (((uint32_t)(pt)[0] << 24) ^ ((uint32_t)(pt)[1] << 16) ^ ((uint32_t)(pt)[2] <<  8) ^ ((uint32_t)(pt)[3]))
-# define PUTU32(ct, st) { (ct)[0] = (uint8_t)((st) >> 24); (ct)[1] = (uint8_t)((st) >> 16); (ct)[2] = (uint8_t)((st) >>  8); (ct)[3] = (uint8_t)(st); }
+# define HAES_GETU32(pt) (((uint32_t)(pt)[0] << 24) ^ ((uint32_t)(pt)[1] << 16) ^ ((uint32_t)(pt)[2] <<  8) ^ ((uint32_t)(pt)[3]))
+# define HAES_PUTU32(ct, st) { (ct)[0] = (uint8_t)((st) >> 24); (ct)[1] = (uint8_t)((st) >> 16); (ct)[2] = (uint8_t)((st) >>  8); (ct)[3] = (uint8_t)(st); }
 
 /*
-Te0[x] = S [x].[02, 01, 01, 03];
-Te1[x] = S [x].[03, 02, 01, 01];
-Te2[x] = S [x].[01, 03, 02, 01];
-Te3[x] = S [x].[01, 01, 03, 02];
-Te4[x] = S [x].[01, 01, 01, 01];
+haes_Te0[x] = S [x].[02, 01, 01, 03];
+haes_Te1[x] = S [x].[03, 02, 01, 01];
+haes_Te2[x] = S [x].[01, 03, 02, 01];
+haes_Te3[x] = S [x].[01, 01, 03, 02];
+haes_Te4[x] = S [x].[01, 01, 01, 01];
 
-Td0[x] = Si[x].[0e, 09, 0d, 0b];
-Td1[x] = Si[x].[0b, 0e, 09, 0d];
-Td2[x] = Si[x].[0d, 0b, 0e, 09];
-Td3[x] = Si[x].[09, 0d, 0b, 0e];
-Td4[x] = Si[x].[01, 01, 01, 01];
+haes_Td0[x] = Si[x].[0e, 09, 0d, 0b];
+haes_Td1[x] = Si[x].[0b, 0e, 09, 0d];
+haes_Td2[x] = Si[x].[0d, 0b, 0e, 09];
+haes_Td3[x] = Si[x].[09, 0d, 0b, 0e];
+haes_Td4[x] = Si[x].[01, 01, 01, 01];
 */
 
-static const uint32_t Te0[256] = {
+static const uint32_t haes_Te0[256] = {
     0xc66363a5U, 0xf87c7c84U, 0xee777799U, 0xf67b7b8dU,
     0xfff2f20dU, 0xd66b6bbdU, 0xde6f6fb1U, 0x91c5c554U,
     0x60303050U, 0x02010103U, 0xce6767a9U, 0x562b2b7dU,
@@ -91,7 +91,7 @@ static const uint32_t Te0[256] = {
     0x824141c3U, 0x299999b0U, 0x5a2d2d77U, 0x1e0f0f11U,
     0x7bb0b0cbU, 0xa85454fcU, 0x6dbbbbd6U, 0x2c16163aU,
 };
-static const uint32_t Te1[256] = {
+static const uint32_t haes_Te1[256] = {
     0xa5c66363U, 0x84f87c7cU, 0x99ee7777U, 0x8df67b7bU,
     0x0dfff2f2U, 0xbdd66b6bU, 0xb1de6f6fU, 0x5491c5c5U,
     0x50603030U, 0x03020101U, 0xa9ce6767U, 0x7d562b2bU,
@@ -157,7 +157,7 @@ static const uint32_t Te1[256] = {
     0xc3824141U, 0xb0299999U, 0x775a2d2dU, 0x111e0f0fU,
     0xcb7bb0b0U, 0xfca85454U, 0xd66dbbbbU, 0x3a2c1616U,
 };
-static const uint32_t Te2[256] = {
+static const uint32_t haes_Te2[256] = {
     0x63a5c663U, 0x7c84f87cU, 0x7799ee77U, 0x7b8df67bU,
     0xf20dfff2U, 0x6bbdd66bU, 0x6fb1de6fU, 0xc55491c5U,
     0x30506030U, 0x01030201U, 0x67a9ce67U, 0x2b7d562bU,
@@ -223,7 +223,7 @@ static const uint32_t Te2[256] = {
     0x41c38241U, 0x99b02999U, 0x2d775a2dU, 0x0f111e0fU,
     0xb0cb7bb0U, 0x54fca854U, 0xbbd66dbbU, 0x163a2c16U,
 };
-static const uint32_t Te3[256] = {
+static const uint32_t haes_Te3[256] = {
 
     0x6363a5c6U, 0x7c7c84f8U, 0x777799eeU, 0x7b7b8df6U,
     0xf2f20dffU, 0x6b6bbdd6U, 0x6f6fb1deU, 0xc5c55491U,
@@ -290,7 +290,7 @@ static const uint32_t Te3[256] = {
     0x4141c382U, 0x9999b029U, 0x2d2d775aU, 0x0f0f111eU,
     0xb0b0cb7bU, 0x5454fca8U, 0xbbbbd66dU, 0x16163a2cU,
 };
-static const uint32_t Te4[256] = {
+static const uint32_t haes_Te4[256] = {
     0x63636363U, 0x7c7c7c7cU, 0x77777777U, 0x7b7b7b7bU,
     0xf2f2f2f2U, 0x6b6b6b6bU, 0x6f6f6f6fU, 0xc5c5c5c5U,
     0x30303030U, 0x01010101U, 0x67676767U, 0x2b2b2b2bU,
@@ -356,7 +356,7 @@ static const uint32_t Te4[256] = {
     0x41414141U, 0x99999999U, 0x2d2d2d2dU, 0x0f0f0f0fU,
     0xb0b0b0b0U, 0x54545454U, 0xbbbbbbbbU, 0x16161616U,
 };
-static const uint32_t Td0[256] = {
+static const uint32_t haes_Td0[256] = {
     0x51f4a750U, 0x7e416553U, 0x1a17a4c3U, 0x3a275e96U,
     0x3bab6bcbU, 0x1f9d45f1U, 0xacfa58abU, 0x4be30393U,
     0x2030fa55U, 0xad766df6U, 0x88cc7691U, 0xf5024c25U,
@@ -422,7 +422,7 @@ static const uint32_t Td0[256] = {
     0x39a80171U, 0x080cb3deU, 0xd8b4e49cU, 0x6456c190U,
     0x7bcb8461U, 0xd532b670U, 0x486c5c74U, 0xd0b85742U,
 };
-static const uint32_t Td1[256] = {
+static const uint32_t haes_Td1[256] = {
     0x5051f4a7U, 0x537e4165U, 0xc31a17a4U, 0x963a275eU,
     0xcb3bab6bU, 0xf11f9d45U, 0xabacfa58U, 0x934be303U,
     0x552030faU, 0xf6ad766dU, 0x9188cc76U, 0x25f5024cU,
@@ -488,7 +488,7 @@ static const uint32_t Td1[256] = {
     0x7139a801U, 0xde080cb3U, 0x9cd8b4e4U, 0x906456c1U,
     0x617bcb84U, 0x70d532b6U, 0x74486c5cU, 0x42d0b857U,
 };
-static const uint32_t Td2[256] = {
+static const uint32_t haes_Td2[256] = {
     0xa75051f4U, 0x65537e41U, 0xa4c31a17U, 0x5e963a27U,
     0x6bcb3babU, 0x45f11f9dU, 0x58abacfaU, 0x03934be3U,
     0xfa552030U, 0x6df6ad76U, 0x769188ccU, 0x4c25f502U,
@@ -555,7 +555,7 @@ static const uint32_t Td2[256] = {
     0x017139a8U, 0xb3de080cU, 0xe49cd8b4U, 0xc1906456U,
     0x84617bcbU, 0xb670d532U, 0x5c74486cU, 0x5742d0b8U,
 };
-static const uint32_t Td3[256] = {
+static const uint32_t haes_Td3[256] = {
     0xf4a75051U, 0x4165537eU, 0x17a4c31aU, 0x275e963aU,
     0xab6bcb3bU, 0x9d45f11fU, 0xfa58abacU, 0xe303934bU,
     0x30fa5520U, 0x766df6adU, 0xcc769188U, 0x024c25f5U,
@@ -621,7 +621,7 @@ static const uint32_t Td3[256] = {
     0xa8017139U, 0x0cb3de08U, 0xb4e49cd8U, 0x56c19064U,
     0xcb84617bU, 0x32b670d5U, 0x6c5c7448U, 0xb85742d0U,
 };
-static const uint32_t Td4[256] = {
+static const uint32_t haes_Td4[256] = {
     0x52525252U, 0x09090909U, 0x6a6a6a6aU, 0xd5d5d5d5U,
     0x30303030U, 0x36363636U, 0xa5a5a5a5U, 0x38383838U,
     0xbfbfbfbfU, 0x40404040U, 0xa3a3a3a3U, 0x9e9e9e9eU,
@@ -687,7 +687,7 @@ static const uint32_t Td4[256] = {
     0xe1e1e1e1U, 0x69696969U, 0x14141414U, 0x63636363U,
     0x55555555U, 0x21212121U, 0x0c0c0c0cU, 0x7d7d7d7dU,
 };
-static const uint32_t rcon[] = {
+static const uint32_t haes_rcon[] = {
     0x01000000, 0x02000000, 0x04000000, 0x08000000,
     0x10000000, 0x20000000, 0x40000000, 0x80000000,
     0x1B000000, 0x36000000, /* for 128-bit blocks, Rijndael never uses more than 10 rcon values */
@@ -714,21 +714,21 @@ int haes_set_encrypt_key(const uint8_t *userKey, const int bits,haes_key_t *key)
     else
         key->rounds = 14;
 
-    rk[0] = GETU32(userKey     );
-    rk[1] = GETU32(userKey +  4);
-    rk[2] = GETU32(userKey +  8);
-    rk[3] = GETU32(userKey + 12);
+    rk[0] = HAES_GETU32(userKey     );
+    rk[1] = HAES_GETU32(userKey +  4);
+    rk[2] = HAES_GETU32(userKey +  8);
+    rk[3] = HAES_GETU32(userKey + 12);
     if (bits == 128)
     {
         while (1)
         {
             temp  = rk[3];
             rk[4] = rk[0] ^
-                    (Te4[(temp >> 16) & 0xff] & 0xff000000) ^
-                    (Te4[(temp >>  8) & 0xff] & 0x00ff0000) ^
-                    (Te4[(temp      ) & 0xff] & 0x0000ff00) ^
-                    (Te4[(temp >> 24)       ] & 0x000000ff) ^
-                    rcon[i];
+                    (haes_Te4[(temp >> 16) & 0xff] & 0xff000000) ^
+                    (haes_Te4[(temp >>  8) & 0xff] & 0x00ff0000) ^
+                    (haes_Te4[(temp      ) & 0xff] & 0x0000ff00) ^
+                    (haes_Te4[(temp >> 24)       ] & 0x000000ff) ^
+                    haes_rcon[i];
             rk[5] = rk[1] ^ rk[4];
             rk[6] = rk[2] ^ rk[5];
             rk[7] = rk[3] ^ rk[6];
@@ -739,19 +739,19 @@ int haes_set_encrypt_key(const uint8_t *userKey, const int bits,haes_key_t *key)
             rk += 4;
         }
     }
-    rk[4] = GETU32(userKey + 16);
-    rk[5] = GETU32(userKey + 20);
+    rk[4] = HAES_GETU32(userKey + 16);
+    rk[5] = HAES_GETU32(userKey + 20);
     if (bits == 192)
     {
         while (1)
         {
             temp = rk[ 5];
             rk[ 6] = rk[ 0] ^
-                     (Te4[(temp >> 16) & 0xff] & 0xff000000) ^
-                     (Te4[(temp >>  8) & 0xff] & 0x00ff0000) ^
-                     (Te4[(temp      ) & 0xff] & 0x0000ff00) ^
-                     (Te4[(temp >> 24)       ] & 0x000000ff) ^
-                     rcon[i];
+                     (haes_Te4[(temp >> 16) & 0xff] & 0xff000000) ^
+                     (haes_Te4[(temp >>  8) & 0xff] & 0x00ff0000) ^
+                     (haes_Te4[(temp      ) & 0xff] & 0x0000ff00) ^
+                     (haes_Te4[(temp >> 24)       ] & 0x000000ff) ^
+                     haes_rcon[i];
             rk[ 7] = rk[ 1] ^ rk[ 6];
             rk[ 8] = rk[ 2] ^ rk[ 7];
             rk[ 9] = rk[ 3] ^ rk[ 8];
@@ -764,19 +764,19 @@ int haes_set_encrypt_key(const uint8_t *userKey, const int bits,haes_key_t *key)
             rk += 6;
         }
     }
-    rk[6] = GETU32(userKey + 24);
-    rk[7] = GETU32(userKey + 28);
+    rk[6] = HAES_GETU32(userKey + 24);
+    rk[7] = HAES_GETU32(userKey + 28);
     if (bits == 256)
     {
         while (1)
         {
             temp = rk[ 7];
             rk[ 8] = rk[ 0] ^
-                     (Te4[(temp >> 16) & 0xff] & 0xff000000) ^
-                     (Te4[(temp >>  8) & 0xff] & 0x00ff0000) ^
-                     (Te4[(temp      ) & 0xff] & 0x0000ff00) ^
-                     (Te4[(temp >> 24)       ] & 0x000000ff) ^
-                     rcon[i];
+                     (haes_Te4[(temp >> 16) & 0xff] & 0xff000000) ^
+                     (haes_Te4[(temp >>  8) & 0xff] & 0x00ff0000) ^
+                     (haes_Te4[(temp      ) & 0xff] & 0x0000ff00) ^
+                     (haes_Te4[(temp >> 24)       ] & 0x000000ff) ^
+                     haes_rcon[i];
             rk[ 9] = rk[ 1] ^ rk[ 8];
             rk[10] = rk[ 2] ^ rk[ 9];
             rk[11] = rk[ 3] ^ rk[10];
@@ -786,10 +786,10 @@ int haes_set_encrypt_key(const uint8_t *userKey, const int bits,haes_key_t *key)
             }
             temp = rk[11];
             rk[12] = rk[ 4] ^
-                     (Te4[(temp >> 24)       ] & 0xff000000) ^
-                     (Te4[(temp >> 16) & 0xff] & 0x00ff0000) ^
-                     (Te4[(temp >>  8) & 0xff] & 0x0000ff00) ^
-                     (Te4[(temp      ) & 0xff] & 0x000000ff);
+                     (haes_Te4[(temp >> 24)       ] & 0xff000000) ^
+                     (haes_Te4[(temp >> 16) & 0xff] & 0x00ff0000) ^
+                     (haes_Te4[(temp >>  8) & 0xff] & 0x0000ff00) ^
+                     (haes_Te4[(temp      ) & 0xff] & 0x000000ff);
             rk[13] = rk[ 5] ^ rk[12];
             rk[14] = rk[ 6] ^ rk[13];
             rk[15] = rk[ 7] ^ rk[14];
@@ -833,25 +833,25 @@ int haes_set_decrypt_key(const uint8_t *userKey, const int bits,haes_key_t *key)
     {
         rk += 4;
         rk[0] =
-            Td0[Te4[(rk[0] >> 24)       ] & 0xff] ^
-            Td1[Te4[(rk[0] >> 16) & 0xff] & 0xff] ^
-            Td2[Te4[(rk[0] >>  8) & 0xff] & 0xff] ^
-            Td3[Te4[(rk[0]      ) & 0xff] & 0xff];
+            haes_Td0[haes_Te4[(rk[0] >> 24)       ] & 0xff] ^
+            haes_Td1[haes_Te4[(rk[0] >> 16) & 0xff] & 0xff] ^
+            haes_Td2[haes_Te4[(rk[0] >>  8) & 0xff] & 0xff] ^
+            haes_Td3[haes_Te4[(rk[0]      ) & 0xff] & 0xff];
         rk[1] =
-            Td0[Te4[(rk[1] >> 24)       ] & 0xff] ^
-            Td1[Te4[(rk[1] >> 16) & 0xff] & 0xff] ^
-            Td2[Te4[(rk[1] >>  8) & 0xff] & 0xff] ^
-            Td3[Te4[(rk[1]      ) & 0xff] & 0xff];
+            haes_Td0[haes_Te4[(rk[1] >> 24)       ] & 0xff] ^
+            haes_Td1[haes_Te4[(rk[1] >> 16) & 0xff] & 0xff] ^
+            haes_Td2[haes_Te4[(rk[1] >>  8) & 0xff] & 0xff] ^
+            haes_Td3[haes_Te4[(rk[1]      ) & 0xff] & 0xff];
         rk[2] =
-            Td0[Te4[(rk[2] >> 24)       ] & 0xff] ^
-            Td1[Te4[(rk[2] >> 16) & 0xff] & 0xff] ^
-            Td2[Te4[(rk[2] >>  8) & 0xff] & 0xff] ^
-            Td3[Te4[(rk[2]      ) & 0xff] & 0xff];
+            haes_Td0[haes_Te4[(rk[2] >> 24)       ] & 0xff] ^
+            haes_Td1[haes_Te4[(rk[2] >> 16) & 0xff] & 0xff] ^
+            haes_Td2[haes_Te4[(rk[2] >>  8) & 0xff] & 0xff] ^
+            haes_Td3[haes_Te4[(rk[2]      ) & 0xff] & 0xff];
         rk[3] =
-            Td0[Te4[(rk[3] >> 24)       ] & 0xff] ^
-            Td1[Te4[(rk[3] >> 16) & 0xff] & 0xff] ^
-            Td2[Te4[(rk[3] >>  8) & 0xff] & 0xff] ^
-            Td3[Te4[(rk[3]      ) & 0xff] & 0xff];
+            haes_Td0[haes_Te4[(rk[3] >> 24)       ] & 0xff] ^
+            haes_Td1[haes_Te4[(rk[3] >> 16) & 0xff] & 0xff] ^
+            haes_Td2[haes_Te4[(rk[3] >>  8) & 0xff] & 0xff] ^
+            haes_Td3[haes_Te4[(rk[3]      ) & 0xff] & 0xff];
     }
     return 0;
 }
@@ -868,37 +868,37 @@ void haes_encrypt(const uint8_t *in, uint8_t *out,const haes_key_t *key)
 
     rk = key->rd_key;
 
-    s0 = GETU32(in     ) ^ rk[0];
-    s1 = GETU32(in +  4) ^ rk[1];
-    s2 = GETU32(in +  8) ^ rk[2];
-    s3 = GETU32(in + 12) ^ rk[3];
+    s0 = HAES_GETU32(in     ) ^ rk[0];
+    s1 = HAES_GETU32(in +  4) ^ rk[1];
+    s2 = HAES_GETU32(in +  8) ^ rk[2];
+    s3 = HAES_GETU32(in + 12) ^ rk[3];
 
     r = key->rounds >> 1;
     for (;;)
     {
         t0 =
-            Te0[(s0 >> 24)       ] ^
-            Te1[(s1 >> 16) & 0xff] ^
-            Te2[(s2 >>  8) & 0xff] ^
-            Te3[(s3      ) & 0xff] ^
+            haes_Te0[(s0 >> 24)       ] ^
+            haes_Te1[(s1 >> 16) & 0xff] ^
+            haes_Te2[(s2 >>  8) & 0xff] ^
+            haes_Te3[(s3      ) & 0xff] ^
             rk[4];
         t1 =
-            Te0[(s1 >> 24)       ] ^
-            Te1[(s2 >> 16) & 0xff] ^
-            Te2[(s3 >>  8) & 0xff] ^
-            Te3[(s0      ) & 0xff] ^
+            haes_Te0[(s1 >> 24)       ] ^
+            haes_Te1[(s2 >> 16) & 0xff] ^
+            haes_Te2[(s3 >>  8) & 0xff] ^
+            haes_Te3[(s0      ) & 0xff] ^
             rk[5];
         t2 =
-            Te0[(s2 >> 24)       ] ^
-            Te1[(s3 >> 16) & 0xff] ^
-            Te2[(s0 >>  8) & 0xff] ^
-            Te3[(s1      ) & 0xff] ^
+            haes_Te0[(s2 >> 24)       ] ^
+            haes_Te1[(s3 >> 16) & 0xff] ^
+            haes_Te2[(s0 >>  8) & 0xff] ^
+            haes_Te3[(s1      ) & 0xff] ^
             rk[6];
         t3 =
-            Te0[(s3 >> 24)       ] ^
-            Te1[(s0 >> 16) & 0xff] ^
-            Te2[(s1 >>  8) & 0xff] ^
-            Te3[(s2      ) & 0xff] ^
+            haes_Te0[(s3 >> 24)       ] ^
+            haes_Te1[(s0 >> 16) & 0xff] ^
+            haes_Te2[(s1 >>  8) & 0xff] ^
+            haes_Te3[(s2      ) & 0xff] ^
             rk[7];
 
         rk += 8;
@@ -908,60 +908,60 @@ void haes_encrypt(const uint8_t *in, uint8_t *out,const haes_key_t *key)
         }
 
         s0 =
-            Te0[(t0 >> 24)       ] ^
-            Te1[(t1 >> 16) & 0xff] ^
-            Te2[(t2 >>  8) & 0xff] ^
-            Te3[(t3      ) & 0xff] ^
+            haes_Te0[(t0 >> 24)       ] ^
+            haes_Te1[(t1 >> 16) & 0xff] ^
+            haes_Te2[(t2 >>  8) & 0xff] ^
+            haes_Te3[(t3      ) & 0xff] ^
             rk[0];
         s1 =
-            Te0[(t1 >> 24)       ] ^
-            Te1[(t2 >> 16) & 0xff] ^
-            Te2[(t3 >>  8) & 0xff] ^
-            Te3[(t0      ) & 0xff] ^
+            haes_Te0[(t1 >> 24)       ] ^
+            haes_Te1[(t2 >> 16) & 0xff] ^
+            haes_Te2[(t3 >>  8) & 0xff] ^
+            haes_Te3[(t0      ) & 0xff] ^
             rk[1];
         s2 =
-            Te0[(t2 >> 24)       ] ^
-            Te1[(t3 >> 16) & 0xff] ^
-            Te2[(t0 >>  8) & 0xff] ^
-            Te3[(t1      ) & 0xff] ^
+            haes_Te0[(t2 >> 24)       ] ^
+            haes_Te1[(t3 >> 16) & 0xff] ^
+            haes_Te2[(t0 >>  8) & 0xff] ^
+            haes_Te3[(t1      ) & 0xff] ^
             rk[2];
         s3 =
-            Te0[(t3 >> 24)       ] ^
-            Te1[(t0 >> 16) & 0xff] ^
-            Te2[(t1 >>  8) & 0xff] ^
-            Te3[(t2      ) & 0xff] ^
+            haes_Te0[(t3 >> 24)       ] ^
+            haes_Te1[(t0 >> 16) & 0xff] ^
+            haes_Te2[(t1 >>  8) & 0xff] ^
+            haes_Te3[(t2      ) & 0xff] ^
             rk[3];
     }
 
 
     s0 =
-        (Te4[(t0 >> 24)       ] & 0xff000000) ^
-        (Te4[(t1 >> 16) & 0xff] & 0x00ff0000) ^
-        (Te4[(t2 >>  8) & 0xff] & 0x0000ff00) ^
-        (Te4[(t3      ) & 0xff] & 0x000000ff) ^
+        (haes_Te4[(t0 >> 24)       ] & 0xff000000) ^
+        (haes_Te4[(t1 >> 16) & 0xff] & 0x00ff0000) ^
+        (haes_Te4[(t2 >>  8) & 0xff] & 0x0000ff00) ^
+        (haes_Te4[(t3      ) & 0xff] & 0x000000ff) ^
         rk[0];
-    PUTU32(out, s0);
+    HAES_PUTU32(out, s0);
     s1 =
-        (Te4[(t1 >> 24)       ] & 0xff000000) ^
-        (Te4[(t2 >> 16) & 0xff] & 0x00ff0000) ^
-        (Te4[(t3 >>  8) & 0xff] & 0x0000ff00) ^
-        (Te4[(t0      ) & 0xff] & 0x000000ff) ^
+        (haes_Te4[(t1 >> 24)       ] & 0xff000000) ^
+        (haes_Te4[(t2 >> 16) & 0xff] & 0x00ff0000) ^
+        (haes_Te4[(t3 >>  8) & 0xff] & 0x0000ff00) ^
+        (haes_Te4[(t0      ) & 0xff] & 0x000000ff) ^
         rk[1];
-    PUTU32(out +  4, s1);
+    HAES_PUTU32(out +  4, s1);
     s2 =
-        (Te4[(t2 >> 24)       ] & 0xff000000) ^
-        (Te4[(t3 >> 16) & 0xff] & 0x00ff0000) ^
-        (Te4[(t0 >>  8) & 0xff] & 0x0000ff00) ^
-        (Te4[(t1      ) & 0xff] & 0x000000ff) ^
+        (haes_Te4[(t2 >> 24)       ] & 0xff000000) ^
+        (haes_Te4[(t3 >> 16) & 0xff] & 0x00ff0000) ^
+        (haes_Te4[(t0 >>  8) & 0xff] & 0x0000ff00) ^
+        (haes_Te4[(t1      ) & 0xff] & 0x000000ff) ^
         rk[2];
-    PUTU32(out +  8, s2);
+    HAES_PUTU32(out +  8, s2);
     s3 =
-        (Te4[(t3 >> 24)       ] & 0xff000000) ^
-        (Te4[(t0 >> 16) & 0xff] & 0x00ff0000) ^
-        (Te4[(t1 >>  8) & 0xff] & 0x0000ff00) ^
-        (Te4[(t2      ) & 0xff] & 0x000000ff) ^
+        (haes_Te4[(t3 >> 24)       ] & 0xff000000) ^
+        (haes_Te4[(t0 >> 16) & 0xff] & 0x00ff0000) ^
+        (haes_Te4[(t1 >>  8) & 0xff] & 0x0000ff00) ^
+        (haes_Te4[(t2      ) & 0xff] & 0x000000ff) ^
         rk[3];
-    PUTU32(out + 12, s3);
+    HAES_PUTU32(out + 12, s3);
 }
 void haes_decrypt(const uint8_t *in, uint8_t *out,const haes_key_t *key)
 {
@@ -975,37 +975,37 @@ void haes_decrypt(const uint8_t *in, uint8_t *out,const haes_key_t *key)
 
     rk = key->rd_key;
 
-    s0 = GETU32(in     ) ^ rk[0];
-    s1 = GETU32(in +  4) ^ rk[1];
-    s2 = GETU32(in +  8) ^ rk[2];
-    s3 = GETU32(in + 12) ^ rk[3];
+    s0 = HAES_GETU32(in     ) ^ rk[0];
+    s1 = HAES_GETU32(in +  4) ^ rk[1];
+    s2 = HAES_GETU32(in +  8) ^ rk[2];
+    s3 = HAES_GETU32(in + 12) ^ rk[3];
 
     r = key->rounds >> 1;
     for (;;)
     {
         t0 =
-            Td0[(s0 >> 24)       ] ^
-            Td1[(s3 >> 16) & 0xff] ^
-            Td2[(s2 >>  8) & 0xff] ^
-            Td3[(s1      ) & 0xff] ^
+            haes_Td0[(s0 >> 24)       ] ^
+            haes_Td1[(s3 >> 16) & 0xff] ^
+            haes_Td2[(s2 >>  8) & 0xff] ^
+            haes_Td3[(s1      ) & 0xff] ^
             rk[4];
         t1 =
-            Td0[(s1 >> 24)       ] ^
-            Td1[(s0 >> 16) & 0xff] ^
-            Td2[(s3 >>  8) & 0xff] ^
-            Td3[(s2      ) & 0xff] ^
+            haes_Td0[(s1 >> 24)       ] ^
+            haes_Td1[(s0 >> 16) & 0xff] ^
+            haes_Td2[(s3 >>  8) & 0xff] ^
+            haes_Td3[(s2      ) & 0xff] ^
             rk[5];
         t2 =
-            Td0[(s2 >> 24)       ] ^
-            Td1[(s1 >> 16) & 0xff] ^
-            Td2[(s0 >>  8) & 0xff] ^
-            Td3[(s3      ) & 0xff] ^
+            haes_Td0[(s2 >> 24)       ] ^
+            haes_Td1[(s1 >> 16) & 0xff] ^
+            haes_Td2[(s0 >>  8) & 0xff] ^
+            haes_Td3[(s3      ) & 0xff] ^
             rk[6];
         t3 =
-            Td0[(s3 >> 24)       ] ^
-            Td1[(s2 >> 16) & 0xff] ^
-            Td2[(s1 >>  8) & 0xff] ^
-            Td3[(s0      ) & 0xff] ^
+            haes_Td0[(s3 >> 24)       ] ^
+            haes_Td1[(s2 >> 16) & 0xff] ^
+            haes_Td2[(s1 >>  8) & 0xff] ^
+            haes_Td3[(s0      ) & 0xff] ^
             rk[7];
 
         rk += 8;
@@ -1015,60 +1015,60 @@ void haes_decrypt(const uint8_t *in, uint8_t *out,const haes_key_t *key)
         }
 
         s0 =
-            Td0[(t0 >> 24)       ] ^
-            Td1[(t3 >> 16) & 0xff] ^
-            Td2[(t2 >>  8) & 0xff] ^
-            Td3[(t1      ) & 0xff] ^
+            haes_Td0[(t0 >> 24)       ] ^
+            haes_Td1[(t3 >> 16) & 0xff] ^
+            haes_Td2[(t2 >>  8) & 0xff] ^
+            haes_Td3[(t1      ) & 0xff] ^
             rk[0];
         s1 =
-            Td0[(t1 >> 24)       ] ^
-            Td1[(t0 >> 16) & 0xff] ^
-            Td2[(t3 >>  8) & 0xff] ^
-            Td3[(t2      ) & 0xff] ^
+            haes_Td0[(t1 >> 24)       ] ^
+            haes_Td1[(t0 >> 16) & 0xff] ^
+            haes_Td2[(t3 >>  8) & 0xff] ^
+            haes_Td3[(t2      ) & 0xff] ^
             rk[1];
         s2 =
-            Td0[(t2 >> 24)       ] ^
-            Td1[(t1 >> 16) & 0xff] ^
-            Td2[(t0 >>  8) & 0xff] ^
-            Td3[(t3      ) & 0xff] ^
+            haes_Td0[(t2 >> 24)       ] ^
+            haes_Td1[(t1 >> 16) & 0xff] ^
+            haes_Td2[(t0 >>  8) & 0xff] ^
+            haes_Td3[(t3      ) & 0xff] ^
             rk[2];
         s3 =
-            Td0[(t3 >> 24)       ] ^
-            Td1[(t2 >> 16) & 0xff] ^
-            Td2[(t1 >>  8) & 0xff] ^
-            Td3[(t0      ) & 0xff] ^
+            haes_Td0[(t3 >> 24)       ] ^
+            haes_Td1[(t2 >> 16) & 0xff] ^
+            haes_Td2[(t1 >>  8) & 0xff] ^
+            haes_Td3[(t0      ) & 0xff] ^
             rk[3];
     }
 
 
     s0 =
-        (Td4[(t0 >> 24)       ] & 0xff000000) ^
-        (Td4[(t3 >> 16) & 0xff] & 0x00ff0000) ^
-        (Td4[(t2 >>  8) & 0xff] & 0x0000ff00) ^
-        (Td4[(t1      ) & 0xff] & 0x000000ff) ^
+        (haes_Td4[(t0 >> 24)       ] & 0xff000000) ^
+        (haes_Td4[(t3 >> 16) & 0xff] & 0x00ff0000) ^
+        (haes_Td4[(t2 >>  8) & 0xff] & 0x0000ff00) ^
+        (haes_Td4[(t1      ) & 0xff] & 0x000000ff) ^
         rk[0];
-    PUTU32(out, s0);
+    HAES_PUTU32(out, s0);
     s1 =
-        (Td4[(t1 >> 24)       ] & 0xff000000) ^
-        (Td4[(t0 >> 16) & 0xff] & 0x00ff0000) ^
-        (Td4[(t3 >>  8) & 0xff] & 0x0000ff00) ^
-        (Td4[(t2      ) & 0xff] & 0x000000ff) ^
+        (haes_Td4[(t1 >> 24)       ] & 0xff000000) ^
+        (haes_Td4[(t0 >> 16) & 0xff] & 0x00ff0000) ^
+        (haes_Td4[(t3 >>  8) & 0xff] & 0x0000ff00) ^
+        (haes_Td4[(t2      ) & 0xff] & 0x000000ff) ^
         rk[1];
-    PUTU32(out +  4, s1);
+    HAES_PUTU32(out +  4, s1);
     s2 =
-        (Td4[(t2 >> 24)       ] & 0xff000000) ^
-        (Td4[(t1 >> 16) & 0xff] & 0x00ff0000) ^
-        (Td4[(t0 >>  8) & 0xff] & 0x0000ff00) ^
-        (Td4[(t3      ) & 0xff] & 0x000000ff) ^
+        (haes_Td4[(t2 >> 24)       ] & 0xff000000) ^
+        (haes_Td4[(t1 >> 16) & 0xff] & 0x00ff0000) ^
+        (haes_Td4[(t0 >>  8) & 0xff] & 0x0000ff00) ^
+        (haes_Td4[(t3      ) & 0xff] & 0x000000ff) ^
         rk[2];
-    PUTU32(out +  8, s2);
+    HAES_PUTU32(out +  8, s2);
     s3 =
-        (Td4[(t3 >> 24)       ] & 0xff000000) ^
-        (Td4[(t2 >> 16) & 0xff] & 0x00ff0000) ^
-        (Td4[(t1 >>  8) & 0xff] & 0x0000ff00) ^
-        (Td4[(t0      ) & 0xff] & 0x000000ff) ^
+        (haes_Td4[(t3 >> 24)       ] & 0xff000000) ^
+        (haes_Td4[(t2 >> 16) & 0xff] & 0x00ff0000) ^
+        (haes_Td4[(t1 >>  8) & 0xff] & 0x0000ff00) ^
+        (haes_Td4[(t0      ) & 0xff] & 0x000000ff) ^
         rk[3];
-    PUTU32(out + 12, s3);
+    HAES_PUTU32(out + 12, s3);
 }
 void haes_cbc_encrypt(const uint8_t *in, uint8_t *out,const size_t length, const haes_key_t *key, uint8_t *ivec, bool enc)
 {
