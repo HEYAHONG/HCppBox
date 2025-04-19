@@ -98,6 +98,15 @@ SECTIONS
 		KEEP (*(.HShellCommand))
 		PROVIDE ( __hshell_command_end = . );
 
+		PROVIDE ( __hruntime_init_start = . );
+		KEEP (*(.HRuntimeInit))
+		PROVIDE ( __hruntime_init_end = . );
+
+
+		PROVIDE ( __hruntime_loop_start = . );
+		KEEP (*(.HRuntimeLoop))
+		PROVIDE ( __hruntime_loop_end = . );
+
 
 		/* Need to pre-align so that the symbols come after padding */
 		. = ALIGN(8);

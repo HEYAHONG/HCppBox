@@ -10,7 +10,9 @@
 #include "h3rdparty.h"
 #include "heventslots.h"
 #include "heventloop.h"
-
+#include "stdbool.h"
+#include "stdint.h"
+#include "stdlib.h"
 
 
 void hruntime_init_lowlevel()
@@ -24,6 +26,11 @@ void hruntime_init_lowlevel()
 
 void hruntime_init()
 {
+
+#ifdef HRUNTIME_USING_INIT_SECTION
+    HRUNTIME_INIT_INVOKE();
+#endif // HRUNTIME_USING_INIT_SECTION
+
     /*
      * 系统初始化完成
      */
@@ -39,6 +46,11 @@ void hruntime_init()
 
 void hruntime_loop()
 {
+
+#ifdef HRUNTIME_USING_LOOP_SECTION
+    HRUNTIME_LOOP_INVOKE();
+#endif // HRUNTIME_USING_LOOP_SECTION
+
     /*
      * 系统循环
      */
@@ -62,4 +74,56 @@ void hruntime_loop()
     }
 
 }
+
+void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t array_size)
+{
+    if(array_base==NULL || array_size == 0)
+    {
+        return;
+    }
+
+    size_t priority_min=0;
+    size_t priority_max=0;
+    for(size_t i=0; i<array_size; i++)
+    {
+        if(array_base[i].priority < priority_min)
+        {
+            priority_min=array_base[i].priority;
+        }
+        if(array_base[i].priority > priority_max)
+        {
+            priority_max=array_base[i].priority;
+        }
+    }
+
+    for(size_t i=priority_min; priority_min<=priority_max;)
+    {
+        if(array_base[i].priority==i)
+        {
+            if(array_base[i].entry!=NULL)
+            {
+                array_base[i].entry(&array_base[i]);
+            }
+        }
+
+        if(i==priority_max)
+        {
+            break;
+        }
+
+        {
+            size_t priority=priority_max;
+            for(size_t j=0; j<array_size; j++)
+            {
+                if(array_base[j].priority > i && array_base[j].priority < priority )
+                {
+                    priority=array_base[j].priority;
+                }
+            }
+            i=priority;
+        }
+    }
+
+}
+
 
