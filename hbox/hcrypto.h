@@ -21,6 +21,7 @@ extern "C"
 #include "hcrypto/hmd5.h"
 #include "hcrypto/hsha.h"
 #include "hcrypto/hripemd160.h"
+#include "hcrypto/hsm3.h"
 
 #ifdef __cplusplus
 }
