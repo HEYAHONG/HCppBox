@@ -26,7 +26,6 @@
 #include "hunicode.h"
 #include "hstacklesscoroutine.h"
 #include "hmodbus.h"
-#include "hbase64.h"
 #include "hsimulator.h"
 #include "hgui.h"
 #include "hshell.h"

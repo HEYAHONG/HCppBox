@@ -367,10 +367,6 @@ nanopb_generator可通过以下方式获取：
 #include H3RDPARTY_SOFTFLOAT_HEADER
 ```
 
-## hbase64
-
-简易Base64编解码。可用于在Json中嵌入二进制编码。
-
 ## hgui
 
 在嵌入式场景中辅助实现GUI界面。
