@@ -2002,6 +2002,31 @@ static int huuid_test(int argc,const char *argv[])
         }
 
         {
+            huuid_node_t node= {0};
+            for(size_t j=0; j<sizeof(node); j++)
+            {
+                node[j]=rand()%0x100;
+            }
+            huuid_node_format(node);
+            uint64_t unix_ts_us =   time(NULL)*1000000; /**< 实际应用中应当使用getimeofday可获取毫秒数的函数，此处仅用于测试 */
+            uint16_t clock_seq  =   0xf4f;/**< 此处需要实际的值，此处仅用于测试*/
+            {
+                huuid_t uuid;
+                huuid_time_uuid_format(uuid,huuid_timestamp_convert(unix_ts_us),clock_seq,node);
+                huuid_string_t uuid_string;
+                huuid_unparse(uuid_string,uuid);
+                printf("huuid uuid v1:%s\r\n",uuid_string);
+            }
+            {
+                huuid_t uuid;
+                huuid_time_be_uuid_format(uuid,huuid_timestamp_convert(unix_ts_us),clock_seq,node);
+                huuid_string_t uuid_string;
+                huuid_unparse(uuid_string,uuid);
+                printf("huuid uuid v6:%s\r\n",uuid_string);
+            }
+        }
+
+        {
             //uuid V3
             huuid_t uuid;
             const char *name="a";
