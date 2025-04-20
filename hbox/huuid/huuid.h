@@ -115,10 +115,19 @@ typedef uint8_t huuid_node_t[6];
  */
 void huuid_node_format(huuid_node_t node);
 
+
+/** \brief 将UNIX时间戳转换为Gregorian Epoch时间戳（由uuid v1或者uuid v6使用）
+ *
+ * \param unix_ts_us uint64_t UNIX时间戳（us）（UNIX或类UNIX可通过gettimeofday获取）
+ * \return uint64_t Gregorian Epoch时间戳（单位100ns）
+ *
+ */
+uint64_t huuid_timestamp_convert(uint64_t unix_ts_us);
+
 /** \brief 时间uuid(V1)格式化。
  *
  * \param time_uuid huuid_t 待格式化的
- * \param timestamp uint64_t 60位时间戳
+ * \param timestamp uint64_t 60位时间戳(Gregorian Epoch时间戳)
  * \param clock_seq uint16_t clock_seq
  * \param node huuid_node_t node
  *
@@ -167,7 +176,7 @@ bool huuid_sha1_uuid_generate(huuid_t output,const uint8_t *name,size_t name_len
 /** \brief 时间uuid(V6)格式化。
  *
  * \param time_uuid huuid_t 待格式化的
- * \param timestamp uint64_t 60位时间戳
+ * \param timestamp uint64_t 60位时间戳(Gregorian Epoch时间戳)
  * \param clock_seq uint16_t clock_seq
  * \param node huuid_node_t node
  *

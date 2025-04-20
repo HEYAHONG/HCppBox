@@ -122,6 +122,11 @@ void huuid_node_format(huuid_node_t node)
     node[0] |= 0x01; /**<  防止与MAC地址冲突 */
 }
 
+uint64_t huuid_timestamp_convert(uint64_t unix_ts_us)
+{
+    return unix_ts_us*10+( (((uint64_t) 0x01B21DD2) << 32) + 0x13814000);
+}
+
 void huuid_time_uuid_format(huuid_t time_uuid,uint64_t timestamp,uint16_t clock_seq,huuid_node_t node)
 {
     if(time_uuid == NULL || node == NULL)
