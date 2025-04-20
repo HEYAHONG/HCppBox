@@ -104,6 +104,25 @@ void huuid_pack(const huuid_base_version_t *uu, huuid_t ptr);
 void huuid_unpack(const huuid_t in, huuid_base_version_t *uu);
 
 
+/*
+ * 声明一些命名空间(用于V3或者V5)
+ */
+HUUID_DECLARE_GLOBAL(huuid_dns_uuid);       /**< 声明DNS uuid */
+HUUID_DECLARE_GLOBAL(huuid_url_uuid);       /**< 声明URL uuid */
+HUUID_DECLARE_GLOBAL(huuid_oid_uuid);       /**< 声明OID uuid */
+HUUID_DECLARE_GLOBAL(huuid_x500_uuid);      /**< 声明X500 uuid */
+
+/** \brief MD5 uuid(V3)生成
+ *
+ * \param output huuid_t 待输出的uuid缓冲
+ * \param name const uint8_t* 名称
+ * \param name_len size_t 名称长度
+ * \param namespace_uuid const huuid_t 命名空间
+ * \return bool 是否产生成功
+ *
+ */
+bool huuid_md5_uuid_generate(huuid_t output,const uint8_t *name,size_t name_len,const huuid_t namespace_uuid);
+
 /** \brief 随机数uuid(V4)格式化。当使用随机数填充uuid后，再使用此函数格式化则可得到符合标准的uuid
  *
  * \param random_uuid uint8_t 待格式化的随机数据uuid
@@ -112,12 +131,27 @@ void huuid_unpack(const huuid_t in, huuid_base_version_t *uu);
 void huuid_random_uuid_format(huuid_t random_uuid);
 
 
+/** \brief SHA1 uuid(V5)生成
+ *
+ * \param output huuid_t 待输出的uuid缓冲
+ * \param name const uint8_t* 名称
+ * \param name_len size_t 名称长度
+ * \param namespace_uuid const huuid_t 命名空间
+ * \return bool 是否产生成功
+ *
+ */
+bool huuid_sha1_uuid_generate(huuid_t output,const uint8_t *name,size_t name_len,const huuid_t namespace_uuid);
+
+
 /** \brief 自定义uuid(V8)格式化。当用户自行设计uuid值时,使用此函数格式化后可得到符合标准的uuid
  *
  * \param custom_uuid huuid_t 待格式化的自定义uuid
  *
  */
 void huuid_custom_uuid_format(huuid_t custom_uuid);
+
+
+
 
 typedef char huuid_string_t[sizeof(huuid_t)*2+4+1]; /**< uuid字符串 */
 

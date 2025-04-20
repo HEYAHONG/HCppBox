@@ -1996,6 +1996,26 @@ static int huuid_test(int argc,const char *argv[])
                 }
             }
         }
+
+        {
+            //uuid V3
+            huuid_t uuid;
+            const char *name="a";
+            huuid_md5_uuid_generate(uuid,(const uint8_t *)name,strlen(name),huuid_url_uuid);
+            huuid_string_t uuid_string;
+            huuid_unparse(uuid_string,uuid);
+            printf("huuid uuid v3:name=%s,uuid=%s\r\n",name,uuid_string);
+        }
+
+        {
+            //uuid V5
+            huuid_t uuid;
+            const char *name="a";
+            huuid_sha1_uuid_generate(uuid,(const uint8_t *)name,strlen(name),huuid_url_uuid);
+            huuid_string_t uuid_string;
+            huuid_unparse(uuid_string,uuid);
+            printf("huuid uuid v5:name=%s,uuid=%s\r\n",name,uuid_string);
+        }
     }
     return 0;
 }
