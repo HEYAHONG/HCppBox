@@ -143,15 +143,20 @@ void huuid_random_uuid_format(huuid_t random_uuid);
 bool huuid_sha1_uuid_generate(huuid_t output,const uint8_t *name,size_t name_len,const huuid_t namespace_uuid);
 
 
+/** \brief 时间顺序+随机uuid(V7)格式化。当使用随机数填充uuid（后80位）后，再使用此函数格式化则可得到符合标准的uuid
+ *
+ * \param time_ordered_random_uuid huuid_t 待格式化的时间顺序+随机uuid
+ * \param unix_ts_ms uint64_t 48位UNIX毫秒时间戳
+ *
+ */
+void huuid_time_ordered_random_uuid_format(huuid_t time_ordered_random_uuid,uint64_t unix_ts_ms);
+
 /** \brief 自定义uuid(V8)格式化。当用户自行设计uuid值时,使用此函数格式化后可得到符合标准的uuid
  *
  * \param custom_uuid huuid_t 待格式化的自定义uuid
  *
  */
 void huuid_custom_uuid_format(huuid_t custom_uuid);
-
-
-
 
 typedef char huuid_string_t[sizeof(huuid_t)*2+4+1]; /**< uuid字符串 */
 

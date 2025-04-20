@@ -1981,19 +1981,23 @@ static int huuid_test(int argc,const char *argv[])
                 }
             }
             {
-                //自定义uuid
-                huuid_custom_uuid_format(uuid);
+                //时间顺序+随机 uuid
+                uint64_t unix_ts_ms=time(NULL)*1000; /**< 实际应用中应当使用getimeofday可获取毫秒数的函数，此处仅用于测试 */
+                huuid_t uuid1;
+                huuid_copy(uuid1,uuid);
+                huuid_time_ordered_random_uuid_format(uuid1,unix_ts_ms);
                 huuid_string_t uuid_string= {0};
-                huuid_unparse(uuid_string,uuid);
+                huuid_unparse(uuid_string,uuid1);
+                printf("huuid uuid_time_ordered_random:%s\r\n",uuid_string);
+            }
+            {
+                //自定义uuid
+                huuid_t uuid1;
+                huuid_copy(uuid1,uuid);
+                huuid_custom_uuid_format(uuid1);
+                huuid_string_t uuid_string= {0};
+                huuid_unparse(uuid_string,uuid1);
                 printf("huuid uuid_custom:%s\r\n",uuid_string);
-                {
-                    //测试解析
-                    huuid_t uuid1= {0};
-                    huuid_parse(uuid1,uuid_string);
-                    huuid_string_t uuid1_string= {0};
-                    huuid_unparse(uuid1_string,uuid1);
-                    printf("huuid uuid parse:%s\r\n",uuid1_string);
-                }
             }
         }
 

@@ -192,6 +192,21 @@ bool huuid_sha1_uuid_generate(huuid_t output,const uint8_t *name,size_t name_len
     return true;
 }
 
+void huuid_time_ordered_random_uuid_format(huuid_t time_ordered_random_uuid,uint64_t unix_ts_ms)
+{
+    if(time_ordered_random_uuid==NULL)
+    {
+        return;
+    }
+    huuid_base_version_t uuid;
+    huuid_unpack(time_ordered_random_uuid,&uuid);
+    uuid.time_low=(unix_ts_ms>>16);
+    uuid.time_mid=(unix_ts_ms&0xFFFF);
+    uuid.clock_seq = (uuid.clock_seq & 0x3FFF) | 0x8000;
+    uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0FFF) | 0x7000;
+    huuid_pack(&uuid,time_ordered_random_uuid);
+}
+
 void huuid_custom_uuid_format(huuid_t custom_uuid)
 {
     if(custom_uuid==NULL)
