@@ -112,6 +112,34 @@ void huuid_unpack(const huuid_t in, huuid_base_version_t *uu)
     memcpy(uu->node, ptr, sizeof(uu->node));
 }
 
+void huuid_node_format(huuid_node_t node)
+{
+    if(node==NULL)
+    {
+        return;
+    }
+
+    node[0] |= 0x01; /**<  防止与MAC地址冲突 */
+}
+
+void huuid_time_uuid_format(huuid_t time_uuid,uint64_t timestamp,uint16_t clock_seq,huuid_node_t node)
+{
+    if(time_uuid == NULL || node == NULL)
+    {
+        return;
+    }
+
+    huuid_base_version_t uuid;
+    memcpy(uuid.node,node,sizeof(huuid_node_t));
+    uuid.clock_seq=clock_seq;
+    uuid.time_low=((timestamp >> 0)&0xFFFFFFFF);
+    uuid.time_mid=((timestamp >> 32)&0xFFFF);
+    uuid.time_hi_and_version=((timestamp >> 48)&0xFFFF);
+    uuid.clock_seq = (uuid.clock_seq & 0x3FFF) | 0x8000;
+    uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0FFF) | 0x1000;
+    huuid_pack(&uuid,time_uuid);
+}
+
 HUUID_DEFINE_GLOBAL(huuid_dns_uuid,0x6b,0xa7,0xb8,0x10,0x9d,0xad,0x11,0xd1,0x80,0xb4,0x00,0xc0,0x4f,0xd4,0x30,0xc8);
 HUUID_DEFINE_GLOBAL(huuid_url_uuid,0x6b,0xa7,0xb8,0x11,0x9d,0xad,0x11,0xd1,0x80,0xb4,0x00,0xc0,0x4f,0xd4,0x30,0xc8);
 HUUID_DEFINE_GLOBAL(huuid_oid_uuid,0x6b,0xa7,0xb8,0x12,0x9d,0xad,0x11,0xd1,0x80,0xb4,0x00,0xc0,0x4f,0xd4,0x30,0xc8);
@@ -190,6 +218,27 @@ bool huuid_sha1_uuid_generate(huuid_t output,const uint8_t *name,size_t name_len
     }
 
     return true;
+}
+
+void huuid_time_be_uuid_format(huuid_t time_uuid,uint64_t timestamp,uint16_t clock_seq,huuid_node_t node)
+{
+    if(time_uuid == NULL || node == NULL)
+    {
+        return;
+    }
+
+    huuid_base_version_t uuid;
+    memcpy(uuid.node,node,sizeof(huuid_node_t));
+    uuid.clock_seq=clock_seq;
+    /*
+     * V6与V1的区别在于时间戳的高低位的分布不同
+     */
+    uuid.time_low=((timestamp >> 28)&0xFFFFFFFF);
+    uuid.time_mid=((timestamp >> 12)&0xFFFF);
+    uuid.time_hi_and_version=((timestamp >> 0)&0xFFFF);
+    uuid.clock_seq = (uuid.clock_seq & 0x3FFF) | 0x8000;
+    uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0FFF) | 0x6000;
+    huuid_pack(&uuid,time_uuid);
 }
 
 void huuid_time_ordered_random_uuid_format(huuid_t time_ordered_random_uuid,uint64_t unix_ts_ms)

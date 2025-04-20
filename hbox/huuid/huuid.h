@@ -103,6 +103,27 @@ void huuid_pack(const huuid_base_version_t *uu, huuid_t ptr);
  */
 void huuid_unpack(const huuid_t in, huuid_base_version_t *uu);
 
+/*
+ * uuid中使用的node
+ */
+typedef uint8_t huuid_node_t[6];
+
+/** \brief 随机node格式化，当使用随机数作为uuid的node时，需要使用此函数进行格式化。如果使用MAC地址则不需要使用此函数格式化
+ *
+ * \param node huuid_node_t node
+ *
+ */
+void huuid_node_format(huuid_node_t node);
+
+/** \brief 时间uuid(V1)格式化。
+ *
+ * \param time_uuid huuid_t 待格式化的
+ * \param timestamp uint64_t 60位时间戳
+ * \param clock_seq uint16_t clock_seq
+ * \param node huuid_node_t node
+ *
+ */
+void huuid_time_uuid_format(huuid_t time_uuid,uint64_t timestamp,uint16_t clock_seq,huuid_node_t node);
 
 /*
  * 声明一些命名空间(用于V3或者V5)
@@ -141,6 +162,17 @@ void huuid_random_uuid_format(huuid_t random_uuid);
  *
  */
 bool huuid_sha1_uuid_generate(huuid_t output,const uint8_t *name,size_t name_len,const huuid_t namespace_uuid);
+
+
+/** \brief 时间uuid(V6)格式化。
+ *
+ * \param time_uuid huuid_t 待格式化的
+ * \param timestamp uint64_t 60位时间戳
+ * \param clock_seq uint16_t clock_seq
+ * \param node huuid_node_t node
+ *
+ */
+void huuid_time_be_uuid_format(huuid_t time_uuid,uint64_t timestamp,uint16_t clock_seq,huuid_node_t node);
 
 
 /** \brief 时间顺序+随机uuid(V7)格式化。当使用随机数填充uuid（后80位）后，再使用此函数格式化则可得到符合标准的uuid
