@@ -2215,6 +2215,61 @@ static int hcrypto_test(int argc,const char *argv[])
     }
 
     {
+        uint8_t key[16];
+        {
+            printf("hcrypto sm4 key(sm4):");
+            for(size_t i=0; i<sizeof(key); i++)
+            {
+                key[i]=rand()%0x100;
+                printf("%02X",(int)key[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data[40];
+        {
+            printf("hcrypto sm4 data(sm4):");
+            for(size_t i=0; i<sizeof(data); i++)
+            {
+                data[i]=rand()%0x100;
+                printf("%02X",(int)data[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data_encrypt[sizeof(data)+HAES_BLOCK_SIZE]= {0};
+        {
+            hsm4_key_t sm4_key;
+            hsm4_set_encrypt_key(key,&sm4_key);
+            uint8_t inv[HSM4_BLOCK_SIZE]= {0};
+            hsm4_cbc_encrypt(data,data_encrypt,sizeof(data),&sm4_key,inv,true);
+        }
+        {
+            printf("hcrypto sm4 data(encrypt):");
+            for(size_t i=0; i<sizeof(data_encrypt); i++)
+            {
+                printf("%02X",(int)data_encrypt[i]);
+            }
+            printf("\r\n");
+        }
+        uint8_t data_decrypt[sizeof(data)+HAES_BLOCK_SIZE]= {0};
+        {
+            hsm4_key_t sm4_key;
+            hsm4_set_decrypt_key(key,&sm4_key);
+            uint8_t inv[HSM4_BLOCK_SIZE]= {0};
+            hsm4_cbc_encrypt(data_encrypt,data_decrypt,sizeof(data),&sm4_key,inv,false);
+        }
+        {
+            printf("hcrypto sm4 data(decrypt):");
+            for(size_t i=0; i<sizeof(data_decrypt); i++)
+            {
+                printf("%02X",(int)data_decrypt[i]);
+            }
+            printf("\r\n");
+        }
+        printf("hcrypto sm4 %s\r\n",(memcmp(data,data_decrypt,sizeof(data))==0)?"ok":"failed");
+    }
+
+
+    {
         //BCC校验测试
         uint8_t data[]="1234567890ABC";
         printf("hcrypto bcc:data=%s,bcc=%02X,check %s\r\n",(char *)data,hbcc_calculate(data,sizeof(data)),hbcc_check(data,sizeof(data),0x41)?"ok":"failed");

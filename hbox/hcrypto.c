@@ -18,4 +18,5 @@
 #include "hcrypto/hripemd160.c"
 #include "hcrypto/hsm3.c"
 #include "hcrypto/hmd4.c"
+#include "hcrypto/hsm4.c"
 
