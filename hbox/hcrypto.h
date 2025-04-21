@@ -25,6 +25,7 @@ extern "C"
 #include "hcrypto/hsm3.h"
 #include "hcrypto/hmd4.h"
 #include "hcrypto/hsm4.h"
+#include "hcrypto/hhmac.h"
 
 #ifdef __cplusplus
 }

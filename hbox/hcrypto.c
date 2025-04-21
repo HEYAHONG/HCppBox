@@ -19,4 +19,5 @@
 #include "hcrypto/hsm3.c"
 #include "hcrypto/hmd4.c"
 #include "hcrypto/hsm4.c"
+#include "hcrypto/hhmac.c"
 

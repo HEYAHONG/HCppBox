@@ -2804,6 +2804,121 @@ static int hcrypto_test(int argc,const char *argv[])
         }
     }
 
+    {
+        const char *key="1234567890";
+        const char *message="123455666";
+        {
+            hhmac_md4_context_t ctx;
+            hhmac_md4_starts(&ctx,(const uint8_t *)key,strlen(key));
+            hhmac_md4_update(&ctx,(const uint8_t *)message,strlen(message));
+            hhmac_md4_finish(&ctx);
+            printf("hcrypto hmac-md4:key=%s,message=%s,result=",key,message);
+            for(size_t i=0; i<sizeof(ctx.hash_result); i++)
+            {
+                printf("%02X",ctx.hash_result[i]);
+            }
+            printf("\r\n");
+        }
+        {
+            hhmac_md5_context_t ctx;
+            hhmac_md5_starts(&ctx,(const uint8_t *)key,strlen(key));
+            hhmac_md5_update(&ctx,(const uint8_t *)message,strlen(message));
+            hhmac_md5_finish(&ctx);
+            printf("hcrypto hmac-md5:key=%s,message=%s,result=",key,message);
+            for(size_t i=0; i<sizeof(ctx.hash_result); i++)
+            {
+                printf("%02X",ctx.hash_result[i]);
+            }
+            printf("\r\n");
+        }
+        {
+            hhmac_sha1_context_t ctx;
+            hhmac_sha1_starts(&ctx,(const uint8_t *)key,strlen(key));
+            hhmac_sha1_update(&ctx,(const uint8_t *)message,strlen(message));
+            hhmac_sha1_finish(&ctx);
+            printf("hcrypto hmac-sha1:key=%s,message=%s,result=",key,message);
+            for(size_t i=0; i<sizeof(ctx.hash_result); i++)
+            {
+                printf("%02X",ctx.hash_result[i]);
+            }
+            printf("\r\n");
+        }
+        {
+            hhmac_sha2_sha224_context_t ctx;
+            hhmac_sha2_sha224_starts(&ctx,(const uint8_t *)key,strlen(key));
+            hhmac_sha2_sha224_update(&ctx,(const uint8_t *)message,strlen(message));
+            hhmac_sha2_sha224_finish(&ctx);
+            printf("hcrypto hmac-sha2_sha224:key=%s,message=%s,result=",key,message);
+            for(size_t i=0; i<sizeof(ctx.hash_result); i++)
+            {
+                printf("%02X",ctx.hash_result[i]);
+            }
+            printf("\r\n");
+        }
+        {
+            hhmac_sha2_sha256_context_t ctx;
+            hhmac_sha2_sha256_starts(&ctx,(const uint8_t *)key,strlen(key));
+            hhmac_sha2_sha256_update(&ctx,(const uint8_t *)message,strlen(message));
+            hhmac_sha2_sha256_finish(&ctx);
+            printf("hcrypto hmac-sha2_sha256:key=%s,message=%s,result=",key,message);
+            for(size_t i=0; i<sizeof(ctx.hash_result); i++)
+            {
+                printf("%02X",ctx.hash_result[i]);
+            }
+            printf("\r\n");
+        }
+        {
+            hhmac_sha2_sha384_context_t ctx;
+            hhmac_sha2_sha384_starts(&ctx,(const uint8_t *)key,strlen(key));
+            hhmac_sha2_sha384_update(&ctx,(const uint8_t *)message,strlen(message));
+            hhmac_sha2_sha384_finish(&ctx);
+            printf("hcrypto hmac-sha2_sha384:key=%s,message=%s,result=",key,message);
+            for(size_t i=0; i<sizeof(ctx.hash_result); i++)
+            {
+                printf("%02X",ctx.hash_result[i]);
+            }
+            printf("\r\n");
+        }
+        {
+            hhmac_sha2_sha512_context_t ctx;
+            hhmac_sha2_sha512_starts(&ctx,(const uint8_t *)key,strlen(key));
+            hhmac_sha2_sha512_update(&ctx,(const uint8_t *)message,strlen(message));
+            hhmac_sha2_sha512_finish(&ctx);
+            printf("hcrypto hmac-sha2_sha512:key=%s,message=%s,result=",key,message);
+            for(size_t i=0; i<sizeof(ctx.hash_result); i++)
+            {
+                printf("%02X",ctx.hash_result[i]);
+            }
+            printf("\r\n");
+        }
+
+        {
+            hhmac_sm3_context_t ctx;
+            hhmac_sm3_starts(&ctx,(const uint8_t *)key,strlen(key));
+            hhmac_sm3_update(&ctx,(const uint8_t *)message,strlen(message));
+            hhmac_sm3_finish(&ctx);
+            printf("hcrypto hmac-sm3:key=%s,message=%s,result=",key,message);
+            for(size_t i=0; i<sizeof(ctx.hash_result); i++)
+            {
+                printf("%02X",ctx.hash_result[i]);
+            }
+            printf("\r\n");
+        }
+
+        {
+            hhmac_ripemd160_context_t ctx;
+            hhmac_ripemd160_starts(&ctx,(const uint8_t *)key,strlen(key));
+            hhmac_ripemd160_update(&ctx,(const uint8_t *)message,strlen(message));
+            hhmac_ripemd160_finish(&ctx);
+            printf("hcrypto hmac-ripemd160:key=%s,message=%s,result=",key,message);
+            for(size_t i=0; i<sizeof(ctx.hash_result); i++)
+            {
+                printf("%02X",ctx.hash_result[i]);
+            }
+            printf("\r\n");
+        }
+    }
+
     return 0;
 }
 
