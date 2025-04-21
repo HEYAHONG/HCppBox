@@ -64,6 +64,8 @@ int hhmac_md4_starts(hhmac_md4_context_t *ctx,const uint8_t *key,size_t key_len)
             ctx->buffer[i] ^= key_to_pad[i];
         }
     }
+
+    return 0;
 }
 
 int hhmac_md4_update(hhmac_md4_context_t *ctx,const uint8_t *message,size_t message_len)
@@ -147,6 +149,8 @@ int hhmac_md5_starts(hhmac_md5_context_t *ctx,const uint8_t *key,size_t key_len)
             ctx->buffer[i] ^= key_to_pad[i];
         }
     }
+
+    return 0;
 }
 
 int hhmac_md5_update(hhmac_md5_context_t *ctx,const uint8_t *message,size_t message_len)
@@ -230,6 +234,8 @@ int hhmac_sha1_starts(hhmac_sha1_context_t *ctx,const uint8_t *key,size_t key_le
             ctx->buffer[i] ^= key_to_pad[i];
         }
     }
+
+    return 0;
 }
 
 int hhmac_sha1_update(hhmac_sha1_context_t *ctx,const uint8_t *message,size_t message_len)
@@ -312,6 +318,8 @@ int hhmac_sha2_sha224_starts(hhmac_sha2_sha224_context_t *ctx,const uint8_t *key
             ctx->buffer[i] ^= key_to_pad[i];
         }
     }
+
+    return 0;
 }
 
 int hhmac_sha2_sha224_update(hhmac_sha2_sha224_context_t *ctx,const uint8_t *message,size_t message_len)
@@ -394,6 +402,8 @@ int hhmac_sha2_sha256_starts(hhmac_sha2_sha256_context_t *ctx,const uint8_t *key
             ctx->buffer[i] ^= key_to_pad[i];
         }
     }
+
+    return 0;
 }
 
 int hhmac_sha2_sha256_update(hhmac_sha2_sha256_context_t *ctx,const uint8_t *message,size_t message_len)
@@ -476,6 +486,8 @@ int hhmac_sha2_sha384_starts(hhmac_sha2_sha384_context_t *ctx,const uint8_t *key
             ctx->buffer[i] ^= key_to_pad[i];
         }
     }
+
+    return 0;
 }
 
 int hhmac_sha2_sha384_update(hhmac_sha2_sha384_context_t *ctx,const uint8_t *message,size_t message_len)
@@ -558,6 +570,8 @@ int hhmac_sha2_sha512_starts(hhmac_sha2_sha512_context_t *ctx,const uint8_t *key
             ctx->buffer[i] ^= key_to_pad[i];
         }
     }
+
+    return 0;
 }
 
 int hhmac_sha2_sha512_update(hhmac_sha2_sha512_context_t *ctx,const uint8_t *message,size_t message_len)
@@ -640,6 +654,8 @@ int hhmac_sm3_starts(hhmac_sm3_context_t *ctx,const uint8_t *key,size_t key_len)
             ctx->buffer[i] ^= key_to_pad[i];
         }
     }
+
+    return 0;
 }
 
 int hhmac_sm3_update(hhmac_sm3_context_t *ctx,const uint8_t *message,size_t message_len)
@@ -722,6 +738,8 @@ int hhmac_ripemd160_starts(hhmac_ripemd160_context_t *ctx,const uint8_t *key,siz
             ctx->buffer[i] ^= key_to_pad[i];
         }
     }
+
+    return 0;
 }
 
 int hhmac_ripemd160_update(hhmac_ripemd160_context_t *ctx,const uint8_t *message,size_t message_len)
