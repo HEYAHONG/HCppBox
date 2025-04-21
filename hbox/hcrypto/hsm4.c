@@ -9,18 +9,18 @@
 #include "hsm4.h"
 
 #define HSM4_ROTL32(n,x) (((x)<<(n)) | ((x)>>((-(n)&31))))
-#define HSM4_READ_UINT32(p)				                \
-        (  (((uint32_t) (p)[0]) << 24)			    \
-        | (((uint32_t) (p)[1]) << 16)			    \
-        | (((uint32_t) (p)[2]) << 8)			    \
+#define HSM4_READ_UINT32(p)                         \
+        (  (((uint32_t) (p)[0]) << 24)              \
+        | (((uint32_t) (p)[1]) << 16)               \
+        | (((uint32_t) (p)[2]) << 8)                \
         |  ((uint32_t) (p)[3]))
 
-#define HSM4_WRITE_UINT32(p, i)			                \
-        do {						                \
-        (p)[0] = ((i) >> 24) & 0xff;			    \
-        (p)[1] = ((i) >> 16) & 0xff;			    \
-        (p)[2] = ((i) >> 8) & 0xff;			        \
-        (p)[3] = (i) & 0xff;				        \
+#define HSM4_WRITE_UINT32(p, i)                     \
+        do {                                        \
+        (p)[0] = ((i) >> 24) & 0xff;                \
+        (p)[1] = ((i) >> 16) & 0xff;                \
+        (p)[2] = ((i) >> 8) & 0xff;                 \
+        (p)[3] = (i) & 0xff;                        \
         } while(0)
 
 static const uint32_t hsm4_fk[4] =
