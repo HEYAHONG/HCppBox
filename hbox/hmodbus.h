@@ -14,7 +14,7 @@ extern "C"
 {
 #endif // __cplusplus
 
-#include "modbus/hmodbus.h"
+#include "hmodbus/hmodbus.h"
 
 #ifdef __cplusplus
 }
