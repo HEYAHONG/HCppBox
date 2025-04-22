@@ -28,7 +28,7 @@ extern const hgui_scene1_app_t g_hgui_scene1_app;  /**<  全局APP对象,APP对�
  *
  */
 #ifndef HGUI_SCENE1_APP_IMPLEMENT
-#define HGUI_SCENE1_APP_IMPLEMENT  "gui/hgui_gui_scene1/hgui_scene1_app.c"
+#define HGUI_SCENE1_APP_IMPLEMENT  "hgui/hgui_gui_scene1/hgui_scene1_app.c"
 #endif // HGUI_SCENE1_APP_IMPLEMENT
 
 /** \brief 获取驱动指针

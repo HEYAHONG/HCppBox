@@ -298,13 +298,13 @@ hbox意为HYH的工具箱。
 
 实现在GUI界面中一些常用的功能,提供一些接口模板。
 
-具体实现见[gui](gui)目录
+具体实现见[hgui](hgui)目录
 
 ## hsimulator
 
 辅助实现一些可在嵌入式平台(如MCU)上运行的模拟器。
 
-具体实现见[simulator](simulator)。
+具体实现见[hsimulator](hsimulator)。
 
 模拟器相对真机的优点是可轻松控制运行状态（监控、复位、调试、升级等），缺点是一般来说模拟器的性能不如真机。
 

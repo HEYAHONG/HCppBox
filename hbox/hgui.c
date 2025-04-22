@@ -11,15 +11,15 @@
 /*
  * 基础组件
  */
-#include "gui/hgui_gui_common.c"
-#include "gui/hgui_gui_dotfont.c"
-#include "gui/hgui_gui_driver.c"
-#include "gui/hgui_gui_event.c"
-#include "gui/hgui_gui_pixel.c"
-#include "gui/hgui_gui_xpm.c"
+#include "hgui/hgui_gui_common.c"
+#include "hgui/hgui_gui_dotfont.c"
+#include "hgui/hgui_gui_driver.c"
+#include "hgui/hgui_gui_event.c"
+#include "hgui/hgui_gui_pixel.c"
+#include "hgui/hgui_gui_xpm.c"
 
 /*
  * 场景1
  */
-#include "gui/hgui_gui_scene1.c"
+#include "hgui/hgui_gui_scene1.c"
 

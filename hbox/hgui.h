@@ -14,7 +14,7 @@ extern "C"
 {
 #endif // __cplusplus
 
-#include "gui/hgui_gui_gui.h"
+#include "hgui/hgui_gui_gui.h"
 
 #ifdef __cplusplus
 }
