@@ -3,7 +3,9 @@
 
 #ifndef PB_MAIN_ENTRY_PB_H_INCLUDED
 #define PB_MAIN_ENTRY_PB_H_INCLUDED
-#include "../3rdparty/nanopb/pb.h"
+#include H3RDPARTY_NANOPB_PB_HEADER
+#include H3RDPARTY_NANOPB_PB_ENCODE_HEADER
+#include H3RDPARTY_NANOPB_PB_DECODE_HEADER
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.

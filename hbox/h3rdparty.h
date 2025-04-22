@@ -19,8 +19,8 @@
  * 引入cJSON库
  */
 #ifndef H3RDPARTY_USING_SYSTEM_CJSON
-#include "3rdparty/cJSON/cJSON.h"
-#include "3rdparty/cJSON/cJSON_Utils.h"
+#include "h3rdparty/3rdparty/cJSON/cJSON.h"
+#include "h3rdparty/3rdparty/cJSON/cJSON_Utils.h"
 #else
 #include "cJSON.h"
 #include "cJSON_Utils.h"
@@ -92,31 +92,49 @@ int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* f
 /*
  *  引入nanopb库
  */
-#ifndef H3RDPARTY_USING_SYSTEM_NANOPB
-#include "3rdparty/nanopb/pb.h"
-#include "3rdparty/nanopb/pb_encode.h"
-#include "3rdparty/nanopb/pb_decode.h"
+#ifndef H3RDPARTY_NANOPB_PB_HEADER
+#ifdef  H3RDPARTY_USING_SYSTEM_NANOPB
+#define H3RDPARTY_NANOPB_PB_HEADER "pb.h"
 #else
-#include "pb.h"
-#include "pb_encode.h"
-#include "pb_decode.h"
+#define H3RDPARTY_NANOPB_PB_HEADER "h3rdparty/3rdparty/nanopb/pb.h"
 #endif
+#endif
+#ifndef H3RDPARTY_NANOPB_PB_ENCODE_HEADER
+#ifdef  H3RDPARTY_USING_SYSTEM_NANOPB
+#define H3RDPARTY_NANOPB_PB_ENCODE_HEADER "pb_encode.h"
+#else
+#define H3RDPARTY_NANOPB_PB_ENCODE_HEADER "h3rdparty/3rdparty/nanopb/pb_encode.h"
+#endif
+#endif
+#ifndef H3RDPARTY_NANOPB_PB_DECODE_HEADER
+#ifdef  H3RDPARTY_USING_SYSTEM_NANOPB
+#define H3RDPARTY_NANOPB_PB_DECODE_HEADER "pb_decode.h"
+#else
+#define H3RDPARTY_NANOPB_PB_DECODE_HEADER "h3rdparty/3rdparty/nanopb/pb_decode.h"
+#endif
+#endif
+#include H3RDPARTY_NANOPB_PB_HEADER
+#include H3RDPARTY_NANOPB_PB_ENCODE_HEADER
+#include H3RDPARTY_NANOPB_PB_DECODE_HEADER
+
+
+
 
 /*
  * 引入paho.mqtt.embedded-c库,用户需要手动引入相应头文件
  */
 #ifndef H3RDPARTY_PAHO_MQTT_EMBEDDED_C_PACKET_HEADER
-#define H3RDPARTY_PAHO_MQTT_EMBEDDED_C_PACKET_HEADER "3rdparty/paho.mqtt.embedded-c/MQTTPacket/src/MQTTPacket.h"
+#define H3RDPARTY_PAHO_MQTT_EMBEDDED_C_PACKET_HEADER "h3rdparty/3rdparty/paho.mqtt.embedded-c/MQTTPacket/src/MQTTPacket.h"
 #endif
 
 /*
  * 引入softfp库,用户需要手动引入相应头文件
  */
 #ifndef H3RDPARTY_SOFTFP_HEADER
-#define H3RDPARTY_SOFTFP_HEADER "3rdparty/softfp/softfp.h"
+#define H3RDPARTY_SOFTFP_HEADER "h3rdparty/3rdparty/softfp/softfp.h"
 #endif
 #ifndef H3RDPARTY_SOFTFLOAT_HEADER
-#define H3RDPARTY_SOFTFLOAT_HEADER "3rdparty/softfp/softfloat.h"
+#define H3RDPARTY_SOFTFLOAT_HEADER "h3rdparty/3rdparty/softfp/softfloat.h"
 #endif
 
 #endif // __H3RDPARTY_H__

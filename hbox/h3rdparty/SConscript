@@ -11,7 +11,7 @@ cwd,
 cwd+'/cpp'
 ]
 
-group = DefineGroup('HBox', src, depend = [''], CPPPATH = CPPPATH)
+group = DefineGroup('HBox_3rdparty', src, depend = [''], CPPPATH = CPPPATH)
 
 list = os.listdir(cwd)
 for item in list:
