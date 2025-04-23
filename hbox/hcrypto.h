@@ -14,6 +14,8 @@ extern "C"
 {
 #endif // __cplusplus
 
+#include "hcrypto/hbignum.h"
+
 #include "hcrypto/hbase16.h"
 #include "hcrypto/hbase64.h"
 #include "hcrypto/haes.h"

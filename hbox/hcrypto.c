@@ -8,6 +8,8 @@
  **************************************************************/
 #include "hcrypto.h"
 
+#include "hcrypto/hbignum.c"
+
 #include "hcrypto/hbase16.c"
 #include "hcrypto/hbase64.c"
 #include "hcrypto/haes.c"

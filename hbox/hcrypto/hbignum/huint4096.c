@@ -1,0 +1,537 @@
+/***************************************************************
+ * Name:      huint4096.c
+ * Purpose:   实现huint4096接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2025-04-23
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+#include "huint4096.h"
+
+void huint4096_load(huint4096_t *num,const uint8_t *bytes,size_t bytes_count)
+{
+    if(num==NULL || bytes==NULL)
+    {
+        return;
+    }
+    size_t max_index=0;
+    //将已有字节赋值
+    for(size_t i=0; i<bytes_count;)
+    {
+        uint32_t val=0;
+        size_t bytes_remain=bytes_count-i;
+        if(bytes_remain >= 4)
+        {
+            val<<=8;
+            val+=bytes[i+3];
+        }
+        if(bytes_remain >= 3)
+        {
+            val<<=8;
+            val+=bytes[i+2];
+        }
+        if(bytes_remain >= 2)
+        {
+            val<<=8;
+            val+=bytes[i+1];
+        }
+        if(bytes_remain >= 1)
+        {
+            val<<=8;
+            val+=bytes[i+0];
+        }
+        {
+            size_t index=(i/sizeof(num->val[0]));
+            if(index < (sizeof(num->val)/sizeof(num->val[0])))
+            {
+                num->val[index]=val;
+            }
+            max_index=index;
+        }
+        if(bytes_remain >= 4)
+        {
+            i+=4;
+        }
+        else
+        {
+            i+=bytes_remain;
+        }
+    }
+
+    //清零剩余值
+    for(size_t i=(max_index+1); i< (sizeof(num->val)/sizeof(num->val[0])); i++)
+    {
+        num->val[i]=0;
+    }
+}
+
+void huint4096_load_uint32(huint4096_t *num,uint32_t uint32_num)
+{
+    if(num==NULL)
+    {
+        return;
+    }
+    num->val[0]=uint32_num;
+
+    //清零剩余值
+    for(size_t i=(1); i< (sizeof(num->val)/sizeof(num->val[0])); i++)
+    {
+        num->val[i]=0;
+    }
+}
+
+
+void huint4096_store(huint4096_t *num,uint8_t *bytes,size_t bytes_count)
+{
+    if(num==NULL || bytes==NULL)
+    {
+        return;
+    }
+    for(size_t i=0; i< (sizeof(num->val)/sizeof(num->val[0])); i++)
+    {
+        if(4*i >= bytes_count)
+        {
+            break;
+        }
+        size_t bytes_remain=bytes_count-4*i;
+        if(bytes_remain >=1)
+        {
+            bytes[4*i+0]=((num->val[i] >> 0)&0xFF);
+        }
+        if(bytes_remain >=2)
+        {
+            bytes[4*i+1]=((num->val[i] >> 8)&0xFF);
+        }
+        if(bytes_remain >=3)
+        {
+            bytes[4*i+2]=((num->val[i] >> 16)&0xFF);
+        }
+        if(bytes_remain >=4)
+        {
+            bytes[4*i+3]=((num->val[i] >> 24)&0xFF);
+        }
+    }
+}
+
+void huint4096_store_uint32(const huint4096_t *num,uint32_t* uint32_num)
+{
+    if(num==NULL || uint32_num ==NULL)
+    {
+        return;
+    }
+    (*uint32_num)=num->val[0];
+}
+
+void huint4096_copy(huint4096_t *dst,const huint4096_t *src)
+{
+    if(dst==NULL || src==NULL)
+    {
+        return;
+    }
+    for(size_t i=0; i< (sizeof(dst->val)/sizeof(dst->val[0])); i++)
+    {
+        dst->val[i]=src->val[i];
+    }
+}
+
+void huint4096_bitwise_not(huint4096_t *dst,const huint4096_t *src)
+{
+    if(dst==NULL || src==NULL)
+    {
+        return;
+    }
+    for(size_t i=0; i< (sizeof(dst->val)/sizeof(dst->val[0])); i++)
+    {
+        dst->val[i]=(~src->val[i]);
+    }
+}
+
+void huint4096_bitwise_and(huint4096_t *dst,const huint4096_t *src1,const huint4096_t *src2)
+{
+    if(dst==NULL || src1==NULL || src2==NULL)
+    {
+        return;
+    }
+    for(size_t i=0; i< (sizeof(dst->val)/sizeof(dst->val[0])); i++)
+    {
+        dst->val[i]=(src1->val[i] & src2->val[i]);
+    }
+}
+
+void huint4096_bitwise_or(huint4096_t *dst,const huint4096_t *src1,const huint4096_t *src2)
+{
+    if(dst==NULL || src1==NULL || src2==NULL)
+    {
+        return;
+    }
+    for(size_t i=0; i< (sizeof(dst->val)/sizeof(dst->val[0])); i++)
+    {
+        dst->val[i]=(src1->val[i] | src2->val[i]);
+    }
+}
+
+void huint4096_bitwise_xor(huint4096_t *dst,const huint4096_t *src1,const huint4096_t *src2)
+{
+    if(dst==NULL || src1==NULL || src2==NULL)
+    {
+        return;
+    }
+    for(size_t i=0; i< (sizeof(dst->val)/sizeof(dst->val[0])); i++)
+    {
+        dst->val[i]=(src1->val[i] ^ src2->val[i]);
+    }
+}
+
+int huint4096_compare(const huint4096_t *src1,const huint4096_t *src2)
+{
+    if(src1==NULL || src2==NULL)
+    {
+        return -2;
+    }
+    for(int i=((sizeof(src1->val)/sizeof(src2->val[0]))-1); i>=0 ; i--)
+    {
+        if(src1->val[i] > src2->val[i])
+        {
+            return 1;
+        }
+        if(src1->val[i] < src2->val[i])
+        {
+            return -1;
+        }
+    }
+    return 0;
+}
+
+void huint4096_complement(huint4096_t *dst,const huint4096_t *src)
+{
+    if(dst==NULL || src==NULL)
+    {
+        return;
+    }
+    //取反
+    huint4096_bitwise_not(dst,src);
+
+    //加1
+    uint64_t temp=0;
+    for(size_t i=0; i< (sizeof(dst->val)/sizeof(dst->val[0])); i++)
+    {
+        if(i==0)
+        {
+            temp+=((uint64_t)dst->val[i])+1;
+            dst->val[i]=(uint32_t)temp;
+            temp>>=32;
+        }
+        else
+        {
+            temp+=((uint64_t)dst->val[i]);
+            dst->val[i]=(uint32_t)temp;
+            temp>>=32;
+        }
+    }
+}
+
+static size_t huint4096_left_shift_internal(huint4096_t *dst,const huint4096_t *src,size_t bits)
+{
+    if(dst==NULL || src==NULL)
+    {
+        return 0;
+    }
+
+    size_t bit_shift=sizeof(uint32_t)*8;
+    if(bit_shift>bits)
+    {
+        bit_shift=bits;
+    }
+
+    uint64_t temp=0;
+    for(size_t i=0; i< (sizeof(dst->val)/sizeof(dst->val[0])); i++)
+    {
+        temp=((((uint64_t)src->val[i]) << (bit_shift)) | temp);
+        dst->val[i]=(uint32_t)temp;
+        temp >>= (sizeof(uint32_t)*8);
+    }
+
+    return bit_shift;
+}
+
+void huint4096_left_shift(huint4096_t *dst,const huint4096_t *src,size_t bits)
+{
+    if(dst==NULL || src==NULL)
+    {
+        return;
+    }
+
+    if(bits >= HUINT4096_BITS_COUNT)
+    {
+        //大于等于大数的位数，直接置0
+        huint4096_load_uint32(dst,0);
+        return;
+    }
+
+    huint4096_copy(dst,src);
+
+    while(bits > 0)
+    {
+        bits-=huint4096_left_shift_internal(dst,dst,bits);
+    }
+}
+
+static size_t huint4096_right_shift_internal(huint4096_t *dst,const huint4096_t *src,size_t bits)
+{
+    if(dst==NULL || src==NULL)
+    {
+        return 0;
+    }
+
+    size_t bit_shift=sizeof(uint32_t)*8;
+    if(bit_shift>bits)
+    {
+        bit_shift=bits;
+    }
+
+    uint64_t temp=0;
+    for(int i=((sizeof(dst->val)/sizeof(dst->val[0]))-1); i>=0 ; i--)
+    {
+        temp = (((((uint64_t)src->val[i]) << (sizeof(uint32_t)*8)) >> (bit_shift)) | temp);
+        dst->val[i]=(uint32_t)(temp >> (sizeof(uint32_t)*8));
+        temp <<= (sizeof(uint32_t)*8);
+    }
+
+    return bit_shift;
+}
+
+
+void huint4096_right_shift(huint4096_t *dst,const huint4096_t *src,size_t bits)
+{
+    if(dst==NULL || src==NULL)
+    {
+        return;
+    }
+
+    if(bits >= HUINT4096_BITS_COUNT)
+    {
+        //大于等于大数的位数，直接置0
+        huint4096_load_uint32(dst,0);
+        return;
+    }
+
+    huint4096_copy(dst,src);
+
+    while(bits > 0)
+    {
+        bits-=huint4096_right_shift_internal(dst,dst,bits);
+    }
+}
+
+void huint4096_bit_set(huint4096_t *dst,size_t bits)
+{
+    if(dst!=NULL)
+    {
+        if(bits >= HUINT4096_BITS_COUNT)
+        {
+            return;
+        }
+
+        dst->val[bits/(sizeof(dst->val[0])*8)] |= (1ULL << (bits%(sizeof(dst->val[0])*8)));
+    }
+}
+
+void huint4096_bit_clear(huint4096_t *dst,size_t bits)
+{
+    if(dst!=NULL)
+    {
+        if(bits >= HUINT4096_BITS_COUNT)
+        {
+            return;
+        }
+
+        dst->val[bits/(sizeof(dst->val[0])*8)] &= (~(1ULL << (bits%(sizeof(dst->val[0])*8))));
+    }
+}
+
+bool huint4096_bit(const huint4096_t *dst,size_t bits)
+{
+    if(dst!=NULL)
+    {
+        if(bits >= HUINT4096_BITS_COUNT)
+        {
+            return false;
+        }
+
+        return 0!=(dst->val[bits/(sizeof(dst->val[0])*8)] & (1ULL << (bits%(sizeof(dst->val[0])*8))));
+    }
+
+    return false;
+}
+
+size_t huint4096_clz(const huint4096_t *dst)
+{
+    if(dst!=NULL)
+    {
+        for(size_t i=0; i < HUINT4096_BITS_COUNT; i++)
+        {
+            if(huint4096_bit(dst,HUINT4096_BITS_COUNT-1-i))
+            {
+                return i;
+            }
+        }
+    }
+
+    return HUINT4096_BITS_COUNT;
+}
+
+size_t huint4096_ctz(const huint4096_t *dst)
+{
+    if(dst!=NULL)
+    {
+        for(size_t i=0; i < HUINT4096_BITS_COUNT; i++)
+        {
+            if(huint4096_bit(dst,i))
+            {
+                return i;
+            }
+        }
+    }
+
+    return HUINT4096_BITS_COUNT;
+}
+
+void huint4096_add(huint4096_t *dst,const huint4096_t *src1,const huint4096_t *src2)
+{
+    if(dst==NULL || src1==NULL || src2 == NULL)
+    {
+        return;
+    }
+
+    uint64_t temp=0;
+    for(size_t i=0; i< (sizeof(dst->val)/sizeof(dst->val[0])); i++)
+    {
+        temp=((uint64_t)src1->val[i])+src2->val[i]+temp;
+        dst->val[i]=(uint32_t)temp;
+        temp>>=32;
+    }
+}
+
+void huint4096_sub(huint4096_t *dst,const huint4096_t *src1,const huint4096_t *src2)
+{
+    if(dst==NULL || src1==NULL || src2 == NULL)
+    {
+        return;
+    }
+
+    //求补码
+    huint4096_complement(dst,src2);
+
+    //对补码进行加
+    huint4096_add(dst,dst,src1);
+}
+
+void huint4096_mul(huint4096_t *state,huint4096_t *dst,const huint4096_t *src1,const huint4096_t *src2)
+{
+    if(state == NULL || dst==NULL || src1==NULL || src2 == NULL)
+    {
+        return;
+    }
+
+    huint4096_load_uint32(dst,0);
+    size_t clz=huint4096_clz(src2);
+    size_t ctz=huint4096_ctz(src2);
+    for(size_t i=ctz; i < (HUINT4096_BITS_COUNT-clz); i++)
+    {
+        if(huint4096_bit(src2,i))
+        {
+            //当前位是1, src1左移后累加至结果
+            huint4096_left_shift(state,src1,i);
+            huint4096_add(dst,dst,state);
+        }
+    }
+}
+
+void huint4096_div(huint4096_t *state,huint4096_t *state1,huint4096_t *state2,huint4096_t *dst,const huint4096_t *src1,const huint4096_t *src2)
+{
+    if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
+    {
+        return;
+    }
+
+    huint4096_load_uint32(state,0);
+    huint4096_load_uint32(dst,0);
+    if(huint4096_compare(src2,state)==0 )
+    {
+        //除0错误
+        return;
+    }
+
+    if(huint4096_compare(src2,src1) > 0)
+    {
+        //除数大于被除数
+        huint4096_copy(state,src1);
+        huint4096_load_uint32(dst,0);
+        return;
+    }
+
+    size_t clz1=huint4096_clz(src1);
+    size_t clz2=huint4096_clz(src2);
+    if(clz1 > clz2)
+    {
+        //除数大于被除数
+        huint4096_copy(state,src1);
+        huint4096_load_uint32(dst,0);
+        return;
+    }
+
+    huint4096_copy(state,src1);
+
+    for(size_t i=0; i<= clz2-clz1; i++)
+    {
+        huint4096_left_shift(state1,src2,(clz2-clz1)-i);
+        if(huint4096_compare(state,state1) >= 0)
+        {
+            //被除数大于左移后的除数，直接相减并将相应位置1
+            huint4096_sub(state2,state,state1);
+            huint4096_bit_set(dst,(clz2-clz1)-i);
+            //余数保存至state
+            huint4096_copy(state,state2);
+        }
+    }
+
+}
+
+void huint4096_power(huint4096_t *state,huint4096_t *state1,huint4096_t *state2,huint4096_t *dst,const huint4096_t *src1,const huint4096_t *src2)
+{
+    if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
+    {
+        return;
+    }
+
+    huint4096_load_uint32(state,0);
+    huint4096_load_uint32(dst,1);
+    if(huint4096_compare(src1,state)==0 )
+    {
+        //底数为0
+        huint4096_load_uint32(dst,0);
+        return;
+    }
+    if(huint4096_compare(src2,state)==0 )
+    {
+        //任意数的0次方=1
+        huint4096_load_uint32(dst,1);
+        return;
+    }
+
+    size_t clz2=huint4096_clz(src2);
+    huint4096_copy(state,src1);
+    for(size_t i=0; i<(HUINT4096_BITS_COUNT - clz2); i++)
+    {
+        if(huint4096_bit(src2,i))
+        {
+            //,结果应当乘上当前state的值(将幂函数的指数按照2进制进行拆分成乘法表达式)
+            huint4096_mul(state1,state2,dst,state);
+            huint4096_copy(dst,state2);
+        }
+        //计算state的平方（state的平方相当于state的指数乘2，正好对应src2下一个二进制位）
+        huint4096_mul(state1,state2,state,state);
+        huint4096_copy(state,state2);
+    }
+
+}

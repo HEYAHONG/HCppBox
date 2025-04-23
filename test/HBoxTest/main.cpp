@@ -1978,6 +1978,30 @@ static int huuid_test(int argc,const char *argv[])
 static int hcrypto_test(int argc,const char *argv[])
 {
     {
+        //大数测试
+        huint128_t value[6];
+        {
+            huint128_load_uint32(&value[0],0x11);
+            huint128_load_uint32(&value[1],0x0e);
+            huint128_power(&value[2],&value[3],&value[4],&value[5],&value[0],&value[1]);
+            uint32_t a=0;
+            huint128_store_uint32(&value[0],&a);
+            uint32_t b=0;
+            huint128_store_uint32(&value[1],&b);
+            printf("hcrypto uint128:%08X pow %08X=%08X%08X\r\n",(int)a,(int)b,(int)value[5].val[1],(int)value[5].val[0]);
+        }
+        {
+            huint128_load_uint32(&value[0],0xFFFF234D);
+            huint128_load_uint32(&value[1],0xD0D);
+            huint128_div(&value[2],&value[3],&value[4],&value[5],&value[0],&value[1]);
+            uint32_t a=0;
+            huint128_store_uint32(&value[0],&a);
+            uint32_t b=0;
+            huint128_store_uint32(&value[1],&b);
+            printf("hcrypto uint128:%08X/%08X=%08X%08X,%08X%%%08X=%08X%08X\r\n",(int)a,(int)b,(int)value[5].val[1],(int)value[5].val[0],(int)a,(int)b,(int)value[2].val[1],(int)value[2].val[0]);
+        }
+    }
+    {
         const char *testdata="01234567890ABCabc~12345@#$%测试123";
         char encoding[1024]= {0};
         hbase16_encode_with_null_terminator(encoding,sizeof(encoding),(uint8_t *)testdata,strlen(testdata));
