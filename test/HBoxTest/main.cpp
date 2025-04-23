@@ -14,7 +14,6 @@ static int hobject_test(int argc,const char *argv[]);
 static int hringbuf_test(int argc,const char *argv[]);
 static int hunicode_test(int argc,const char *argv[]);
 static int hstacklesscoroutine_test(int argc,const char *argv[]);
-static int hbase64_test(int argc,const char *argv[]);
 static int hsimulator_test(int argc,const char *argv[]);
 static int h3rdparty_test(int argc,const char *argv[]);
 static int huuid_test(int argc,const char *argv[]);
@@ -33,7 +32,6 @@ static int (*test_cb[])(int,const char *[])=
     hringbuf_test,
     hunicode_test,
     hstacklesscoroutine_test,
-    hbase64_test,
     hsimulator_test,
     h3rdparty_test,
     huuid_test,
@@ -1426,80 +1424,8 @@ static int hstacklesscoroutine_test(int argc,const char *argv[])
     return 0;
 }
 
-static int hbase64_test(int argc,const char *argv[])
-{
-    {
-        printf("hbase64 test1:start!\r\n");
-        uint8_t text[]="1";
-        char text_encode[32]= {0};
-        size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
-        uint8_t text_decode[32]= {0};
-        size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
-        printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
-        printf("hbase64 test1:end!\r\n");
-    }
-    {
-        printf("hbase64 test2:start!\r\n");
-        uint8_t text[]="12";
-        char text_encode[32]= {0};
-        size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
-        uint8_t text_decode[32]= {0};
-        size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
-        printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
-        printf("hbase64 test2:end!\r\n");
-    }
-    {
-        printf("hbase64 test3:start!\r\n");
-        uint8_t text[]="123";
-        char text_encode[32]= {0};
-        size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
-        uint8_t text_decode[32]= {0};
-        size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
-        printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
-        printf("hbase64 test3:end!\r\n");
-    }
-    {
-        printf("hbase64 test4:start!\r\n");
-        uint8_t text[]="1234";
-        char text_encode[32]= {0};
-        size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
-        uint8_t text_decode[32]= {0};
-        size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
-        printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
-        printf("hbase64 test4:end!\r\n");
-    }
-    {
-        printf("hbase64 test5:start!\r\n");
-        uint8_t text[]="12345";
-        char text_encode[32]= {0};
-        size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
-        uint8_t text_decode[32]= {0};
-        size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
-        printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
-        printf("hbase64 test5:end!\r\n");
-    }
-    {
-        printf("hbase64 test6:start!\r\n");
-        uint8_t text[]="123456";
-        char text_encode[32]= {0};
-        size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
-        uint8_t text_decode[32]= {0};
-        size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
-        printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
-        printf("hbase64 test6:end!\r\n");
-    }
-    {
-        printf("hbase64 test7:start!\r\n");
-        uint8_t text[]="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        char text_encode[128]= {0};
-        size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
-        uint8_t text_decode[128]= {0};
-        size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
-        printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
-        printf("hbase64 test7:end!\r\n");
-    }
-    return 0;
-}
+
+
 
 HS_RISC_V_OPCODES_INSN_DECLARE(add);
 HS_RISC_V_OPCODES_CSR_DECLARE(misa);
@@ -2051,6 +1977,88 @@ static int huuid_test(int argc,const char *argv[])
 
 static int hcrypto_test(int argc,const char *argv[])
 {
+    {
+        const char *testdata="01234567890ABCabc~12345@#$%测试123";
+        char encoding[1024]= {0};
+        hbase16_encode_with_null_terminator(encoding,sizeof(encoding),(uint8_t *)testdata,strlen(testdata));
+        printf("hcrypto base16:data=%s,encoding=%s\r\n",testdata,encoding);
+        uint8_t decode[1024]= {0};
+        hbase16_decode(decode,sizeof(decode),encoding,strlen(encoding));
+        printf("hcrypto base16:decode=%s,encoding=%s\r\n",decode,encoding);
+        printf("hcrypto base16: %s\r\n",strcmp((char *)testdata,(char *)decode)==0?"ok":"failed");
+    }
+    {
+        {
+            printf("hcrypto base64 test1:start!\r\n");
+            uint8_t text[]="1";
+            char text_encode[32]= {0};
+            size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
+            uint8_t text_decode[32]= {0};
+            size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
+            printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
+            printf("hcrypto base64 test1:end!\r\n");
+        }
+        {
+            printf("hcrypto base64 test2:start!\r\n");
+            uint8_t text[]="12";
+            char text_encode[32]= {0};
+            size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
+            uint8_t text_decode[32]= {0};
+            size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
+            printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
+            printf("hcrypto base64 test2:end!\r\n");
+        }
+        {
+            printf("hcrypto base64 test3:start!\r\n");
+            uint8_t text[]="123";
+            char text_encode[32]= {0};
+            size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
+            uint8_t text_decode[32]= {0};
+            size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
+            printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
+            printf("hcrypto base64 test3:end!\r\n");
+        }
+        {
+            printf("hcrypto base64 test4:start!\r\n");
+            uint8_t text[]="1234";
+            char text_encode[32]= {0};
+            size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
+            uint8_t text_decode[32]= {0};
+            size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
+            printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
+            printf("hcrypto base64 test4:end!\r\n");
+        }
+        {
+            printf("hcrypto base64 test5:start!\r\n");
+            uint8_t text[]="12345";
+            char text_encode[32]= {0};
+            size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
+            uint8_t text_decode[32]= {0};
+            size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
+            printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
+            printf("hcrypto base64 test5:end!\r\n");
+        }
+        {
+            printf("hcrypto base64 test6:start!\r\n");
+            uint8_t text[]="123456";
+            char text_encode[32]= {0};
+            size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
+            uint8_t text_decode[32]= {0};
+            size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
+            printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
+            printf("hcrypto base64 test6:end!\r\n");
+        }
+        {
+            printf("hcrypto base64 test7:start!\r\n");
+            uint8_t text[]="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            char text_encode[128]= {0};
+            size_t text_encode_len=hbase64_encode(text_encode,sizeof(text_encode),text,strlen((char *)text));
+            uint8_t text_decode[128]= {0};
+            size_t text_decode_len=hbase64_decode(text_decode,sizeof(text_decode),text_encode,hbase64_get_encoding_length(text_encode));
+            printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
+            printf("hcrypto base64 test7:end!\r\n");
+        }
+    }
     {
         uint8_t key[16];
         {

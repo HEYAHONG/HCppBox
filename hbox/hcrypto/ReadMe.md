@@ -4,6 +4,13 @@
 
 # 数据编码/解码
 
+## base16
+
+16进制字符串，类似base64，可用于将二进制编码为字符串。
+
+- [hbase16.h](hbase16.h)
+- [hbase16.c](hbase16.c)
+
 ## base64
 
 - [hbase64.h](hbase64.h)

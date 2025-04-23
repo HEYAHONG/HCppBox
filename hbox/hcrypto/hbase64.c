@@ -202,7 +202,7 @@ size_t hbase64_get_encoding_length(const char *encoding)
     size_t ret=0;
     if(encoding!=NULL)
     {
-        while((*encoding)!='\0')
+        while(((*encoding)!='\0') && ((*encoding)!='\n') && ((*encoding)!='\r'))
         {
             encoding++;
             ret++;
