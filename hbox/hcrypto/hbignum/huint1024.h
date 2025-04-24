@@ -237,6 +237,21 @@ void huint1024_div(huint1024_t *state,huint1024_t *state1,huint1024_t *state2,hu
 void huint1024_power(huint1024_t *state,huint1024_t *state1,huint1024_t *state2,huint1024_t *dst,const huint1024_t *src1,const huint1024_t *src2);
 
 
+/** \brief 幂取模函数（常用于RSA等加密算法）
+ *
+ * \param state huint1024_t* 状态值，用于中间状态存储,不可为空
+ * \param state1 huint1024_t* 状态值，用于中间状态存储,不可为空
+ * \param state2 huint1024_t* 状态值，用于中间状态存储,不可为空
+ * \param state3 huint1024_t* 状态值，用于中间状态存储,不可为空
+ * \param dst huint1024_t* 目标大数,dst=src1的src2次方对src3取模
+ * \param src1 const huint1024_t* 源大数1
+ * \param src2 const huint1024_t* 源大数2
+ * \param src3 const huint1024_t* 源大数3
+ *
+ */
+void huint1024_power_mod(huint1024_t *state,huint1024_t *state1,huint1024_t *state2,huint1024_t *state3,huint1024_t *dst,const huint1024_t *src1,const huint1024_t *src2,const huint1024_t *src3);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

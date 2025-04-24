@@ -454,10 +454,11 @@ void huint4096_div(huint4096_t *state,huint4096_t *state1,huint4096_t *state2,hu
         return;
     }
 
-    huint4096_load_uint32(state,0);
+
     huint4096_load_uint32(dst,0);
     if(huint4096_compare(src2,state)==0 )
     {
+        huint4096_load_uint32(state,0);
         //除0错误
         return;
     }
@@ -532,6 +533,51 @@ void huint4096_power(huint4096_t *state,huint4096_t *state1,huint4096_t *state2,
         //计算state的平方（state的平方相当于state的指数乘2，正好对应src2下一个二进制位）
         huint4096_mul(state1,state2,state,state);
         huint4096_copy(state,state2);
+    }
+
+}
+
+void huint4096_power_mod(huint4096_t *state,huint4096_t *state1,huint4096_t *state2,huint4096_t *state3,huint4096_t *dst,const huint4096_t *src1,const huint4096_t *src2,const huint4096_t *src3)
+{
+    if(state == NULL || state1==NULL || state2== NULL || state3 == NULL || dst==NULL || src1==NULL || src2 == NULL)
+    {
+        return;
+    }
+
+    huint4096_load_uint32(state,0);
+    huint4096_load_uint32(dst,1);
+    if(huint4096_compare(src1,state)==0 )
+    {
+        //底数为0
+        huint4096_load_uint32(dst,0);
+        return;
+    }
+    if(huint4096_compare(src2,state)==0 )
+    {
+        //任意数的0次方=1
+        huint4096_load_uint32(dst,1);
+        return;
+    }
+
+    size_t clz2=huint4096_clz(src2);
+    huint4096_copy(state,src1);
+    for(size_t i=0; i<(HUINT4096_BITS_COUNT - clz2); i++)
+    {
+        if(huint4096_bit(src2,i))
+        {
+            //,结果应当乘上当前state的值(将幂函数的指数按照2进制进行拆分成乘法表达式)
+            huint4096_mul(state1,state2,dst,state);
+            huint4096_copy(dst,state2);
+
+            //对dst提前取模，防止计算过程溢出(先取模再做乘法=先做乘法再取模)
+            huint4096_div(dst,state1,state2,state3,dst,src3);
+        }
+        //计算state的平方（state的平方相当于state的指数乘2，正好对应src2下一个二进制位）
+        huint4096_mul(state1,state2,state,state);
+        huint4096_copy(state,state2);
+
+        //对state提前取模，防止计算过程溢出(先取模再做乘法=先做乘法再取模)
+        huint4096_div(state,state1,state2,state3,state,src3);
     }
 
 }

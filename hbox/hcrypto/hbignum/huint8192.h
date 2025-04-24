@@ -237,6 +237,21 @@ void huint8192_div(huint8192_t *state,huint8192_t *state1,huint8192_t *state2,hu
 void huint8192_power(huint8192_t *state,huint8192_t *state1,huint8192_t *state2,huint8192_t *dst,const huint8192_t *src1,const huint8192_t *src2);
 
 
+/** \brief 幂取模函数（常用于RSA等加密算法）
+ *
+ * \param state huint8192_t* 状态值，用于中间状态存储,不可为空
+ * \param state1 huint8192_t* 状态值，用于中间状态存储,不可为空
+ * \param state2 huint8192_t* 状态值，用于中间状态存储,不可为空
+ * \param state3 huint8192_t* 状态值，用于中间状态存储,不可为空
+ * \param dst huint8192_t* 目标大数,dst=src1的src2次方对src3取模
+ * \param src1 const huint8192_t* 源大数1
+ * \param src2 const huint8192_t* 源大数2
+ * \param src3 const huint8192_t* 源大数3
+ *
+ */
+void huint8192_power_mod(huint8192_t *state,huint8192_t *state1,huint8192_t *state2,huint8192_t *state3,huint8192_t *dst,const huint8192_t *src1,const huint8192_t *src2,const huint8192_t *src3);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

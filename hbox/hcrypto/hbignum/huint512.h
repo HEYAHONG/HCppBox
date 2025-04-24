@@ -237,6 +237,21 @@ void huint512_div(huint512_t *state,huint512_t *state1,huint512_t *state2,huint5
 void huint512_power(huint512_t *state,huint512_t *state1,huint512_t *state2,huint512_t *dst,const huint512_t *src1,const huint512_t *src2);
 
 
+/** \brief 幂取模函数（常用于RSA等加密算法）
+ *
+ * \param state huint512_t* 状态值，用于中间状态存储,不可为空
+ * \param state1 huint512_t* 状态值，用于中间状态存储,不可为空
+ * \param state2 huint512_t* 状态值，用于中间状态存储,不可为空
+ * \param state3 huint512_t* 状态值，用于中间状态存储,不可为空
+ * \param dst huint512_t* 目标大数,dst=src1的src2次方对src3取模
+ * \param src1 const huint512_t* 源大数1
+ * \param src2 const huint512_t* 源大数2
+ * \param src3 const huint512_t* 源大数3
+ *
+ */
+void huint512_power_mod(huint512_t *state,huint512_t *state1,huint512_t *state2,huint512_t *state3,huint512_t *dst,const huint512_t *src1,const huint512_t *src2,const huint512_t *src3);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

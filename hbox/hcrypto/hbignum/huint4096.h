@@ -237,6 +237,21 @@ void huint4096_div(huint4096_t *state,huint4096_t *state1,huint4096_t *state2,hu
 void huint4096_power(huint4096_t *state,huint4096_t *state1,huint4096_t *state2,huint4096_t *dst,const huint4096_t *src1,const huint4096_t *src2);
 
 
+/** \brief 幂取模函数（常用于RSA等加密算法）
+ *
+ * \param state huint4096_t* 状态值，用于中间状态存储,不可为空
+ * \param state1 huint4096_t* 状态值，用于中间状态存储,不可为空
+ * \param state2 huint4096_t* 状态值，用于中间状态存储,不可为空
+ * \param state3 huint4096_t* 状态值，用于中间状态存储,不可为空
+ * \param dst huint4096_t* 目标大数,dst=src1的src2次方对src3取模
+ * \param src1 const huint4096_t* 源大数1
+ * \param src2 const huint4096_t* 源大数2
+ * \param src3 const huint4096_t* 源大数3
+ *
+ */
+void huint4096_power_mod(huint4096_t *state,huint4096_t *state1,huint4096_t *state2,huint4096_t *state3,huint4096_t *dst,const huint4096_t *src1,const huint4096_t *src2,const huint4096_t *src3);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

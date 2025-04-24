@@ -1979,7 +1979,7 @@ static int hcrypto_test(int argc,const char *argv[])
 {
     {
         //大数测试
-        huint128_t value[6];
+        huint128_t value[8];
         {
             huint128_load_uint32(&value[0],0x11);
             huint128_load_uint32(&value[1],0x0e);
@@ -1989,6 +1989,26 @@ static int hcrypto_test(int argc,const char *argv[])
             uint32_t b=0;
             huint128_store_uint32(&value[1],&b);
             printf("hcrypto uint128:%08X pow %08X=%08X%08X\r\n",(int)a,(int)b,(int)value[5].val[1],(int)value[5].val[0]);
+            huint128_copy(&value[0],&value[5]);
+            huint128_load_uint32(&value[1],0xFEC00000U);
+            uint32_t c=0;
+            huint128_store_uint32(&value[1],&c);
+            huint128_div(&value[2],&value[3],&value[4],&value[5],&value[0],&value[1]);
+            printf("hcrypto uint128:%08X pow %08X mod %08X=%08X%08X\r\n",a,b,c,(int)value[2].val[1],(int)value[2].val[0]);
+        }
+        {
+            //专用的幂取模
+            huint128_load_uint32(&value[0],0x11);
+            huint128_load_uint32(&value[1],0x0e);
+            huint128_load_uint32(&value[2],0xFEC00000U);
+            huint128_power_mod(&value[3],&value[4],&value[5],&value[6],&value[7],&value[0],&value[1],&value[2]);
+            uint32_t a=0;
+            huint128_store_uint32(&value[0],&a);
+            uint32_t b=0;
+            huint128_store_uint32(&value[1],&b);
+            uint32_t c=0;
+            huint128_store_uint32(&value[2],&c);
+            printf("hcrypto uint128:%08X pow %08X mod %08X=%08X%08X\r\n",a,b,c,(int)value[7].val[1],(int)value[7].val[0]);
         }
         {
             huint128_load_uint32(&value[0],0xFFFF234D);

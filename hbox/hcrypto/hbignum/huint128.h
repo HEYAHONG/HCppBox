@@ -237,6 +237,21 @@ void huint128_div(huint128_t *state,huint128_t *state1,huint128_t *state2,huint1
 void huint128_power(huint128_t *state,huint128_t *state1,huint128_t *state2,huint128_t *dst,const huint128_t *src1,const huint128_t *src2);
 
 
+/** \brief 幂取模函数（常用于RSA等加密算法）
+ *
+ * \param state huint128_t* 状态值，用于中间状态存储,不可为空
+ * \param state1 huint128_t* 状态值，用于中间状态存储,不可为空
+ * \param state2 huint128_t* 状态值，用于中间状态存储,不可为空
+ * \param state3 huint128_t* 状态值，用于中间状态存储,不可为空
+ * \param dst huint128_t* 目标大数,dst=src1的src2次方对src3取模
+ * \param src1 const huint128_t* 源大数1
+ * \param src2 const huint128_t* 源大数2
+ * \param src3 const huint128_t* 源大数3
+ *
+ */
+void huint128_power_mod(huint128_t *state,huint128_t *state1,huint128_t *state2,huint128_t *state3,huint128_t *dst,const huint128_t *src1,const huint128_t *src2,const huint128_t *src3);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
