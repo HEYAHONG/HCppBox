@@ -98,11 +98,14 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
 
     for(size_t i=priority_min; priority_min<=priority_max;)
     {
-        if(array_base[i].priority==i)
+        for(size_t j=0; j<array_size; j++)
         {
-            if(array_base[i].entry!=NULL)
+            if(array_base[j].priority==i)
             {
-                array_base[i].entry(&array_base[i]);
+                if(array_base[j].entry!=NULL)
+                {
+                    array_base[j].entry(&array_base[j]);
+                }
             }
         }
 
