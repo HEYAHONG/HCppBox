@@ -2011,14 +2011,26 @@ static int hcrypto_test(int argc,const char *argv[])
             printf("hcrypto uint128:%08X pow %08X mod %08X=%08X%08X\r\n",a,b,c,(int)value[7].val[1],(int)value[7].val[0]);
         }
         {
-            huint128_load_uint32(&value[0],0xFFFF234D);
-            huint128_load_uint32(&value[1],0xD0D);
-            huint128_div(&value[2],&value[3],&value[4],&value[5],&value[0],&value[1]);
-            uint32_t a=0;
-            huint128_store_uint32(&value[0],&a);
-            uint32_t b=0;
-            huint128_store_uint32(&value[1],&b);
-            printf("hcrypto uint128:%08X/%08X=%08X%08X,%08X%%%08X=%08X%08X\r\n",(int)a,(int)b,(int)value[5].val[1],(int)value[5].val[0],(int)a,(int)b,(int)value[2].val[1],(int)value[2].val[0]);
+            {
+                huint128_load_uint32(&value[0],0xFFFF234D);
+                huint128_load_uint32(&value[1],0xD0D);
+                huint128_div(&value[2],&value[3],&value[4],&value[5],&value[0],&value[1]);
+                uint32_t a=0;
+                huint128_store_uint32(&value[0],&a);
+                uint32_t b=0;
+                huint128_store_uint32(&value[1],&b);
+                printf("hcrypto uint128:%08X/%08X=%08X%08X,%08X%%%08X=%08X%08X\r\n",(int)a,(int)b,(int)value[5].val[1],(int)value[5].val[0],(int)a,(int)b,(int)value[2].val[1],(int)value[2].val[0]);
+            }
+            {
+                huint128_load_uint64(&value[0],0xFFFFFFFFFFFF234DULL);
+                huint128_load_uint64(&value[1],0xD0D000000);
+                huint128_div(&value[2],&value[3],&value[4],&value[5],&value[0],&value[1]);
+                uint64_t a=0;
+                huint128_store_uint64(&value[0],&a);
+                uint64_t b=0;
+                huint128_store_uint64(&value[1],&b);
+                printf("hcrypto uint128:%016" PRIX64 "/%016" PRIX64 "=%08X%08X,%016" PRIX64 "%%%016" PRIX64 "=%08X%08X\r\n",a,b,(int)value[5].val[1],(int)value[5].val[0],a,b,(int)value[2].val[1],(int)value[2].val[0]);
+            }
         }
     }
     {

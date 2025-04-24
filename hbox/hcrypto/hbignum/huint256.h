@@ -43,6 +43,13 @@ void huint256_load(huint256_t *num,const uint8_t *bytes,size_t bytes_count);
  */
 void huint256_load_uint32(huint256_t *num,uint32_t uint32_num);
 
+/** \brief 从数字中加载大数
+ *
+ * \param num huint256_t* 大数
+ * \param uint64_num uint64_t 数字
+ *
+ */
+void huint256_load_uint64(huint256_t *num,uint64_t uint64_num);
 
 /** \brief 保存大数到字节
  *
@@ -61,6 +68,14 @@ void huint256_store(huint256_t *num,uint8_t *bytes,size_t bytes_count);
  *
  */
 void huint256_store_uint32(const huint256_t *num,uint32_t* uint32_num);
+
+/** \brief 保存大数数字
+ *
+ * \param num huint256_t* 大数
+ * \param uint64_num uint64_t* 数字
+ *
+ */
+void huint256_store_uint64(const huint256_t *num,uint64_t* uint64_num);
 
 /** \brief 复制
  *

@@ -80,6 +80,21 @@ void huint8192_load_uint32(huint8192_t *num,uint32_t uint32_num)
     }
 }
 
+void huint8192_load_uint64(huint8192_t *num,uint64_t uint64_num)
+{
+    if(num==NULL)
+    {
+        return;
+    }
+    num->val[0]=((uint64_num>>0)&0xFFFFFFFF);
+    num->val[1]=((uint64_num>>32)&0xFFFFFFFF);
+
+    //清零剩余值
+    for(size_t i=(2); i< (sizeof(num->val)/sizeof(num->val[0])); i++)
+    {
+        num->val[i]=0;
+    }
+}
 
 void huint8192_store(huint8192_t *num,uint8_t *bytes,size_t bytes_count)
 {
@@ -120,6 +135,15 @@ void huint8192_store_uint32(const huint8192_t *num,uint32_t* uint32_num)
         return;
     }
     (*uint32_num)=num->val[0];
+}
+
+void huint8192_store_uint64(const huint8192_t *num,uint64_t* uint64_num)
+{
+    if(num==NULL || uint64_num ==NULL)
+    {
+        return;
+    }
+    (*uint64_num)=num->val[0]+(((uint64_t)num->val[1]) << 32);
 }
 
 void huint8192_copy(huint8192_t *dst,const huint8192_t *src)

@@ -80,6 +80,21 @@ void huint4096_load_uint32(huint4096_t *num,uint32_t uint32_num)
     }
 }
 
+void huint4096_load_uint64(huint4096_t *num,uint64_t uint64_num)
+{
+    if(num==NULL)
+    {
+        return;
+    }
+    num->val[0]=((uint64_num>>0)&0xFFFFFFFF);
+    num->val[1]=((uint64_num>>32)&0xFFFFFFFF);
+
+    //清零剩余值
+    for(size_t i=(2); i< (sizeof(num->val)/sizeof(num->val[0])); i++)
+    {
+        num->val[i]=0;
+    }
+}
 
 void huint4096_store(huint4096_t *num,uint8_t *bytes,size_t bytes_count)
 {
@@ -120,6 +135,15 @@ void huint4096_store_uint32(const huint4096_t *num,uint32_t* uint32_num)
         return;
     }
     (*uint32_num)=num->val[0];
+}
+
+void huint4096_store_uint64(const huint4096_t *num,uint64_t* uint64_num)
+{
+    if(num==NULL || uint64_num ==NULL)
+    {
+        return;
+    }
+    (*uint64_num)=num->val[0]+(((uint64_t)num->val[1]) << 32);
 }
 
 void huint4096_copy(huint4096_t *dst,const huint4096_t *src)
