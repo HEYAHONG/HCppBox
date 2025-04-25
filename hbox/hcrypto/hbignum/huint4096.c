@@ -168,26 +168,26 @@ void huint4096_store(huint4096_t *num,uint8_t *bytes,size_t bytes_count)
     }
     for(size_t i=0; i< (sizeof(num->val)/sizeof(num->val[0])); i++)
     {
-        if(4*i >= bytes_count)
+        if(sizeof(num->val[0])*i >= bytes_count)
         {
             break;
         }
-        size_t bytes_remain=bytes_count-4*i;
+        size_t bytes_remain=bytes_count-sizeof(num->val[0])*i;
         if(bytes_remain >=1)
         {
-            bytes[4*i+0]=((num->val[i] >> 0)&0xFF);
+            bytes[sizeof(num->val[0])*i+0]=((num->val[i] >> 0)&0xFF);
         }
         if(bytes_remain >=2)
         {
-            bytes[4*i+1]=((num->val[i] >> 8)&0xFF);
+            bytes[sizeof(num->val[0])*i+1]=((num->val[i] >> 8)&0xFF);
         }
         if(bytes_remain >=3)
         {
-            bytes[4*i+2]=((num->val[i] >> 16)&0xFF);
+            bytes[sizeof(num->val[0])*i+2]=((num->val[i] >> 16)&0xFF);
         }
         if(bytes_remain >=4)
         {
-            bytes[4*i+3]=((num->val[i] >> 24)&0xFF);
+            bytes[sizeof(num->val[0])*i+3]=((num->val[i] >> 24)&0xFF);
         }
     }
 }
@@ -208,26 +208,26 @@ void huint4096_store_be(huint4096_t *num,uint8_t *bytes,size_t bytes_count)
     }
     for(size_t i=0; i< (sizeof(num->val)/sizeof(num->val[0])); i++)
     {
-        if(4*i >= bytes_count)
+        if(sizeof(num->val[0])*i >= bytes_count)
         {
             break;
         }
-        size_t bytes_remain=bytes_count-4*i;
+        size_t bytes_remain=bytes_count-sizeof(num->val[0])*i;
         if(bytes_remain >=1)
         {
-            bytes[(bytes_count-1)-4*i-0]=((num->val[i] >> 0)&0xFF);
+            bytes[(bytes_count-1)-sizeof(num->val[0])*i-0]=((num->val[i] >> 0)&0xFF);
         }
         if(bytes_remain >=2)
         {
-            bytes[(bytes_count-1)-4*i-1]=((num->val[i] >> 8)&0xFF);
+            bytes[(bytes_count-1)-sizeof(num->val[0])*i-1]=((num->val[i] >> 8)&0xFF);
         }
         if(bytes_remain >=3)
         {
-            bytes[(bytes_count-1)-4*i-2]=((num->val[i] >> 16)&0xFF);
+            bytes[(bytes_count-1)-sizeof(num->val[0])*i-2]=((num->val[i] >> 16)&0xFF);
         }
         if(bytes_remain >=4)
         {
-            bytes[(bytes_count-1)-4*i-3]=((num->val[i] >> 24)&0xFF);
+            bytes[(bytes_count-1)-sizeof(num->val[0])*i-3]=((num->val[i] >> 24)&0xFF);
         }
     }
 }
