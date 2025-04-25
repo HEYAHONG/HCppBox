@@ -34,6 +34,15 @@ struct huint256
  */
 void huint256_load(huint256_t *num,const uint8_t *bytes,size_t bytes_count);
 
+/** \brief 从字节中加载大数
+ *
+ * \param num huint256_t* 大数指针
+ * \param bytes const uint8_t* 字节（大端模式）
+ * \param bytes_count size_t 字节长度
+ *
+ */
+void huint256_load_be(huint256_t *num,const uint8_t *bytes,size_t bytes_count);
+
 
 /** \brief 从数字中加载大数
  *
@@ -59,6 +68,16 @@ void huint256_load_uint64(huint256_t *num,uint64_t uint64_num);
  *
  */
 void huint256_store(huint256_t *num,uint8_t *bytes,size_t bytes_count);
+
+
+/** \brief 保存大数到字节
+ *
+ * \param num huint256_t* 大数指针
+ * \param bytes uint8_t* 字节（大端模式）
+ * \param bytes_count size_t 字节长度
+ *
+ */
+void huint256_store_be(huint256_t *num,uint8_t *bytes,size_t bytes_count);
 
 
 /** \brief 保存大数数字

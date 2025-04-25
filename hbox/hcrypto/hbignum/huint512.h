@@ -34,6 +34,15 @@ struct huint512
  */
 void huint512_load(huint512_t *num,const uint8_t *bytes,size_t bytes_count);
 
+/** \brief 从字节中加载大数
+ *
+ * \param num huint512_t* 大数指针
+ * \param bytes const uint8_t* 字节（大端模式）
+ * \param bytes_count size_t 字节长度
+ *
+ */
+void huint512_load_be(huint512_t *num,const uint8_t *bytes,size_t bytes_count);
+
 
 /** \brief 从数字中加载大数
  *
@@ -59,6 +68,16 @@ void huint512_load_uint64(huint512_t *num,uint64_t uint64_num);
  *
  */
 void huint512_store(huint512_t *num,uint8_t *bytes,size_t bytes_count);
+
+
+/** \brief 保存大数到字节
+ *
+ * \param num huint512_t* 大数指针
+ * \param bytes uint8_t* 字节（大端模式）
+ * \param bytes_count size_t 字节长度
+ *
+ */
+void huint512_store_be(huint512_t *num,uint8_t *bytes,size_t bytes_count);
 
 
 /** \brief 保存大数数字

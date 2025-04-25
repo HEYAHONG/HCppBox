@@ -48,9 +48,73 @@ void huint128_load(huint128_t *num,const uint8_t *bytes,size_t bytes_count)
             }
             max_index=index;
         }
+        if(bytes_remain >= sizeof(num->val[0]))
+        {
+            i+=sizeof(num->val[0]);
+        }
+        else
+        {
+            i+=bytes_remain;
+        }
+    }
+
+    //清零剩余值
+    for(size_t i=(max_index+1); i< (sizeof(num->val)/sizeof(num->val[0])); i++)
+    {
+        num->val[i]=0;
+    }
+}
+
+void huint128_load_be(huint128_t *num,const uint8_t *bytes,size_t bytes_count)
+{
+    if(num==NULL || bytes==NULL)
+    {
+        return;
+    }
+    size_t max_index=0;
+    if(bytes_count > sizeof(num->val))
+    {
+        //丢弃高位
+        size_t bytes_overflow=bytes_count-sizeof(huint128_t);
+        bytes+=bytes_overflow;
+        bytes_count-=bytes_overflow;
+    }
+    //将已有字节赋值
+    for(size_t i=0; i<bytes_count;)
+    {
+        uint32_t val=0;
+        size_t bytes_remain=bytes_count-i;
         if(bytes_remain >= 4)
         {
-            i+=4;
+            val<<=8;
+            val+=bytes[(bytes_count-1-i)-3];
+        }
+        if(bytes_remain >= 3)
+        {
+            val<<=8;
+            val+=bytes[(bytes_count-1-i)-2];
+        }
+        if(bytes_remain >= 2)
+        {
+            val<<=8;
+            val+=bytes[(bytes_count-1-i)-1];
+        }
+        if(bytes_remain >= 1)
+        {
+            val<<=8;
+            val+=bytes[(bytes_count-1-i)-0];
+        }
+        {
+            size_t index=(i/sizeof(num->val[0]));
+            if(index < (sizeof(num->val)/sizeof(num->val[0])))
+            {
+                num->val[index]=val;
+            }
+            max_index=index;
+        }
+        if(bytes_remain >= sizeof(num->val[0]))
+        {
+            i+=sizeof(num->val[0]);
         }
         else
         {
@@ -124,6 +188,46 @@ void huint128_store(huint128_t *num,uint8_t *bytes,size_t bytes_count)
         if(bytes_remain >=4)
         {
             bytes[4*i+3]=((num->val[i] >> 24)&0xFF);
+        }
+    }
+}
+
+void huint128_store_be(huint128_t *num,uint8_t *bytes,size_t bytes_count)
+{
+    if(num==NULL || bytes==NULL)
+    {
+        return;
+    }
+    if(bytes_count > sizeof(num->val))
+    {
+        //高位置零
+        size_t bytes_overflow=bytes_count-sizeof(huint128_t);
+        memset(bytes,0,bytes_overflow);
+        bytes+=bytes_overflow;
+        bytes_count-=bytes_overflow;
+    }
+    for(size_t i=0; i< (sizeof(num->val)/sizeof(num->val[0])); i++)
+    {
+        if(4*i >= bytes_count)
+        {
+            break;
+        }
+        size_t bytes_remain=bytes_count-4*i;
+        if(bytes_remain >=1)
+        {
+            bytes[(bytes_count-1)-4*i-0]=((num->val[i] >> 0)&0xFF);
+        }
+        if(bytes_remain >=2)
+        {
+            bytes[(bytes_count-1)-4*i-1]=((num->val[i] >> 8)&0xFF);
+        }
+        if(bytes_remain >=3)
+        {
+            bytes[(bytes_count-1)-4*i-2]=((num->val[i] >> 16)&0xFF);
+        }
+        if(bytes_remain >=4)
+        {
+            bytes[(bytes_count-1)-4*i-3]=((num->val[i] >> 24)&0xFF);
         }
     }
 }
