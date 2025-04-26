@@ -19,7 +19,7 @@
 #include "hevent.h"
 #include "hdriverframework.h"
 #include "hmemory.h"
-#include "hunicode.h"
+#include "hlocale.h"
 #include "hstacklesscoroutine.h"
 #include "hmodbus.h"
 #include "hsimulator.h"

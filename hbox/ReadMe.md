@@ -149,15 +149,11 @@ hbox意为HYH的工具箱。
 
 具体实现见[hmemory](hmemory)目录
 
-## hunicode
+## hlocale
 
- 本组件主要用于辅助处理Unicode编码，主要用用于辅助处理`wchar_t`、UTF-8字符串与Unicode编码之间的转换。
+本组件主要用于辅助处理区域设置(如字符编码等)。
 
-本组件的主要作用是处理中文字符。
-
-当需要使用UTF-8字符串时，需要把C/C++源代码文件的编码改为UTF-8。
-
-若C/C++源代码文件编码不为UTF-8（常见于Windows）,定义的常量字符串编码将不是UTF-8字符串，无法使用本组件。
+具体实现见[hlocale](hlocale)目录
 
 ## hstacklesscoroutine
 
