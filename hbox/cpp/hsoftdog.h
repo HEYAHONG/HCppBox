@@ -12,7 +12,7 @@
 #ifdef __cplusplus
 
 #include "hcpprt.h"
-#include "hwatchdog.h"
+#include "hdriverframework.h"
 
 /*
 软狗,通过继承此类方便喂狗,在子类中调用watchdog_feed喂狗
