@@ -12,7 +12,7 @@
 #ifdef __cplusplus
 
 #include "hcpprt.h"
-#include "heventslots.h"
+#include "hevent.h"
 
 template<class lock=hlock,class cmemory=hcmemory>
 class hslots

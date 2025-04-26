@@ -8,8 +8,7 @@
  **************************************************************/
 #include "hruntime.h"
 #include "h3rdparty.h"
-#include "heventslots.h"
-#include "heventloop.h"
+#include "hevent.h"
 #include "stdbool.h"
 #include "stdint.h"
 #include "stdlib.h"

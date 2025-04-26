@@ -16,9 +16,7 @@
 #include "hcompiler.h"
 #include "hdefaults.h"
 #include "h3rdparty.h" //第三方库
-#include "heventloop.h"
-#include "heventslots.h"
-#include "heventchain.h"
+#include "hevent.h"
 #include "hwatchdog.h"
 #include "hmemoryheap.h"
 #include "hobject.h"
