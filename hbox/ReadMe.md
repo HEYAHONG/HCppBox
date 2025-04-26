@@ -71,15 +71,28 @@ hbox意为HYH的工具箱。
 
 ## hdefaults
 
-本组件主要提供一些定义及函数。本工具箱的可移植部分通常在本组件中进行。
+本组件主要提供一些定义及函数。
 
-|                        函数                         |      说明      |                             备注                             |
-| :-------------------------------------------------: | :------------: | :----------------------------------------------------------: |
-|     `hdefaults_tick_t hdefaults_tick_get(void)`     |  默认节拍获取  |                                                              |
-| `void * hdefaults_malloc(size_t nBytes,void *usr);` |  默认内存分配  |                                                              |
-|     `void hdefaults_free(void *ptr,void *usr);`     |  默认内存释放  |                                                              |
-|      `void  hdefaults_mutex_lock(void *usr);`       | 默认互斥锁加锁 | 通常在实现时使用临界区实现,如需使用互斥锁，必须使用支持递归的互斥锁 |
-|     `void  hdefaults_mutex_unlock(void *usr);`      | 默认互斥锁解锁 | 通常在实现时使用临界区实现，如需使用互斥锁，必须使用支持递归的互斥锁 |
+本组件主要用于提供统一访问OS接口的接口,其它组件一般不直接与OS接口打交道。
+
+一般情况下，一个MCU（不带MMU/MPU）基本工程只有一个程序。
+
+但在某些情况下，需要把一个MCU(不带MMU/MPU）程序分为多个部分（通常是基于许可或者保密要求），每个部分可单独开发，此时可使用本组件的`usercall`+API表的机制（以分为Kernel与App两部分为例，启动App程序时，将API表设置为Kernel的API表，此时App可通过`usercall`访问Kernel的资源）。
+
+本工具箱的可移植部分通常在本组件中进行。
+
+提供的函数如下：
+
+|                             函数                             |      说明      |                             备注                             |
+| :----------------------------------------------------------: | :------------: | :----------------------------------------------------------: |
+|         `hdefaults_tick_t hdefaults_tick_get(void)`          |  默认节拍获取  |                                                              |
+|     `void * hdefaults_malloc(size_t nBytes,void *usr);`      |  默认内存分配  |                                                              |
+|         `void hdefaults_free(void *ptr,void *usr);`          |  默认内存释放  |                                                              |
+|           `void  hdefaults_mutex_lock(void *usr);`           | 默认互斥锁加锁 | 通常在实现时使用临界区实现,如需使用互斥锁，必须使用支持递归的互斥锁 |
+|          `void  hdefaults_mutex_unlock(void *usr);`          | 默认互斥锁解锁 | 通常在实现时使用临界区实现，如需使用互斥锁，必须使用支持递归的互斥锁 |
+| `const hdefaults_api_table_t * hdefaults_get_api_table(void);` |   获取API表    |                                                              |
+| `const hdefaults_api_table_t * hdefaults_set_api_table(const hdefaults_api_table_t* new_api_table);` |   修改API表    |               一般情况下，只在程序初始化时调用               |
+|          `hdefaults_usercall(usercall_number,...)`           |    用户调用    |           一般不直接使用，用于封装`usercall`调用。           |
 
 提供的宏定义如下:
 
@@ -115,6 +128,8 @@ hbox意为HYH的工具箱。
 |     `HDEFAULTS_FREE`     |                  默认内存释放函数名称宏定义                  |                                                              |
 |  `HDEFAULTS_MUTEX_LOCK`  | 默认互斥锁加锁函数(无参数，无返回值)名称宏定义,要求锁支持递归。 | 一般用于嵌入式编程,一般使用临界区实现。对于无操作系统的环境,可采用计数+开中断的方式实现(参考rt-thread)。 |
 | `HDEFAULTS_MUTEX_UNLOCK` | 默认互斥锁解锁函数(无参数，无返回值)名称宏定义，要求锁支持递归。 | 一般用于嵌入式编程,一般使用临界区实现。对于无操作系统的环境,可采用计数+关中断的方式实现(参考rt-thread)。 |
+
+
 
 ##  heventloop
 
