@@ -8,7 +8,7 @@
  **************************************************************/
 
 #include "heventloop.h"
-#include "hmemoryheap.h"
+#include "hmemory.h"
 #include "hdefaults.h"
 
 typedef struct heventloop_event

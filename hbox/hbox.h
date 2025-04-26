@@ -18,9 +18,7 @@
 #include "h3rdparty.h" //第三方库
 #include "hevent.h"
 #include "hwatchdog.h"
-#include "hmemoryheap.h"
-#include "hobject.h"
-#include "hringbuf.h"
+#include "hmemory.h"
 #include "hunicode.h"
 #include "hstacklesscoroutine.h"
 #include "hmodbus.h"

@@ -9,7 +9,7 @@
 
 #include "heventchain.h"
 #include "hdefaults.h"
-#include "hmemoryheap.h"
+#include "hmemory.h"
 
 typedef struct heventchain_hook
 {

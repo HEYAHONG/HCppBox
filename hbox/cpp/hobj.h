@@ -10,7 +10,7 @@
 #define __HOBJ_H__
 #include "hcompiler.h"
 #include "hdefaults.h"
-#include "hobject.h"
+#include "hmemory.h"
 #include "hcpprt.h"
 #ifdef __cplusplus
 

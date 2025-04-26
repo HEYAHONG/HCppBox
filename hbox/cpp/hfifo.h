@@ -12,7 +12,7 @@
 #ifdef __cplusplus
 
 #include "hcpprt.h"
-#include "hringbuf.h"
+#include "hmemory.h"
 #include "stdint.h"
 #include "stdlib.h"
 
