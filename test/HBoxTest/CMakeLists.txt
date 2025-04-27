@@ -12,6 +12,8 @@ set_property(TARGET HBoxTest PROPERTY C_STANDARD 23)
 #启用HBox
 hbox_enable(HBoxTest)
 
+#启用HRC
+hrc_enable(HBoxTest)
 
 #添加源代码
 file(GLOB  HBOXTEST_CPP_C_FILES *.cpp *.CPP *.c *.C *.h)

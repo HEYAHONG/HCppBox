@@ -1,7 +1,9 @@
 ﻿#include <inttypes.h>
 #include <stdint.h>
 #include <thread>
+#include <functional>
 #include "hbox.h"
+#include "hrc.h"
 #include "time.h"
 static int hcompiler_test(int argc,const char *argv[]);
 static int hdefaults_test(int argc,const char *argv[]);
@@ -2120,6 +2122,117 @@ static int hcrypto_test(int argc,const char *argv[])
             printf("text=%s,encode=%s(%d),decode=%s(%d)\r\n",(char *)text,(char *)text_encode,(int)text_encode_len,(char *)text_decode,(int)text_decode_len);
             printf("hcrypto base64 test: %s\r\n",(strcmp((char *)text,(char *)text_decode)==0)?"ok":"failed");
             printf("hcrypto base64 test7:end!\r\n");
+        }
+    }
+    {
+        /*
+         * 可使用 openssl asn1parse --inform pem --in emqx/client-key.pem查看pem内容
+         */
+        const uint8_t *key_pem=RCGetHandle("emqx/client-key.pem");
+        if(key_pem!=NULL)
+        {
+            std::string pem((const char *)key_pem);
+            auto Replace=[](std::string& strBig, const std::string& strsrc, const std::string& strdst)
+            {
+                std::string::size_type pos = 0;
+                std::string::size_type srclen = strsrc.size();
+                std::string::size_type dstlen = strdst.size();
+
+                while ((pos = strBig.find(strsrc, pos)) != std::string::npos)
+                {
+                    strBig.replace(pos, srclen, strdst);
+                    pos += dstlen;
+                }
+            };
+            Replace(pem,"\r","");
+            auto GetLine=[](std::string &data) -> std::string
+            {
+                std::string::size_type pos=data.find("\n");
+                std::string ret=data.substr(0,pos);
+                if(pos!=std::string::npos)
+                {
+                    data=data.substr(pos+1);
+                }
+                else
+                {
+                    data.clear();
+                }
+                return ret;
+            };
+            std::string base64_pem;
+            bool  is_begin=false;
+            do
+            {
+                std::string Line=GetLine(pem);
+                if(Line.find("END RSA PRIVATE KEY")!= std::string::npos)
+                {
+                    is_begin=false;
+                }
+                if(is_begin)
+                {
+                    base64_pem+=Line;
+                }
+                if(Line.find("BEGIN RSA PRIVATE KEY")!= std::string::npos)
+                {
+                    is_begin=true;
+                }
+
+            }
+            while(!pem.empty());
+            uint8_t bin_pem[4096]= {0};
+            size_t len=hbase64_decode(bin_pem,sizeof(bin_pem),(const char *)base64_pem.c_str(),base64_pem.length());
+            printf("hcrypto asn1:input length=%d\r\n",(int)len);
+            /*
+             * RSAPrivateKey (PKCS#1)
+             *
+             *  RSAPrivateKey ::= SEQUENCE {
+             *      version           Version,
+             *      modulus           INTEGER,  -- n
+             *      publicExponent    INTEGER,  -- e
+             *      privateExponent   INTEGER,  -- d
+             *      prime1            INTEGER,  -- p
+             *      prime2            INTEGER,  -- q
+             *      exponent1         INTEGER,  -- d mod (p-1)
+             *      exponent2         INTEGER,  -- d mod (q-1)
+             *      coefficient       INTEGER,  -- (inverse of q) mod p
+             *      otherPrimeInfos   OtherPrimeInfos OPTIONAL
+             *  }
+             */
+            std::function<void(uint8_t *,size_t)> parse_asn1=[&](uint8_t *data,size_t len)
+            {
+                size_t current_length=0;
+                hasn1_ber_type_t type;
+                current_length+=hasn1_ber_type_get(&type,data,len);
+                printf("hcrypto asn1:class=%02X,p_c=%02X,tag=%d\r\n",(int)hasn1_ber_type_class_get(&type),(int)hasn1_ber_type_p_c_get(&type),(int)hasn1_ber_type_tag_get(&type));
+                hasn1_ber_length_t length;
+                current_length+=hasn1_ber_length_get(&length,data,len);
+                hasn1_ber_value_t value;
+                current_length+=hasn1_ber_value_get(&value,data,len);
+                printf("hcrypto asn1:total length=%d,value length=%d\r\n",(int)current_length,(int)value.length);
+                if(hasn1_ber_type_p_c_get(&type)!=HASN1_BER_TYPE_PRIMITIVE)
+                {
+                    //不是简单结构
+                    printf("hcrypto asn1:----Begin----\r\n");
+                    parse_asn1((uint8_t *)value.value,(size_t)value.length);
+                    printf("hcrypto asn1:----End----\r\n");
+                }
+                else
+                {
+                    printf("hcrypto asn1:data=");
+                    for(size_t i=0; i<value.length; i++)
+                    {
+                        printf("%02X",(int)value.value[i]);
+                    }
+                    printf("\r\n");
+                }
+                if(current_length > 0 && current_length < len)
+                {
+                    data+=current_length;
+                    len-=current_length;
+                    parse_asn1(data,len);
+                }
+            };
+            parse_asn1(bin_pem,len);
         }
     }
     {

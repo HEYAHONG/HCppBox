@@ -12,6 +12,7 @@
 
 #include "hcrypto/hbase16.c"
 #include "hcrypto/hbase64.c"
+#include "hcrypto/hasn1.c"
 #include "hcrypto/haes.c"
 #include "hcrypto/hbcc.c"
 #include "hcrypto/hlrc.c"
