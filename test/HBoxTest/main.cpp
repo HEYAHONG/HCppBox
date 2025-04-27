@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <thread>
 #include <functional>
+#include <string>
 #include "hbox.h"
 #include "hrc.h"
 #include "time.h"
