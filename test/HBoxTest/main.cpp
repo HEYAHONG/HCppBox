@@ -2199,41 +2199,20 @@ static int hcrypto_test(int argc,const char *argv[])
              *      otherPrimeInfos   OtherPrimeInfos OPTIONAL
              *  }
              */
-            std::function<void(uint8_t *,size_t)> parse_asn1=[&](uint8_t *data,size_t len)
+            hasn1_ber_parse([](void *usr,size_t depth,size_t index,const hasn1_ber_type_t *type,const hasn1_ber_value_t *value)
             {
-                size_t current_length=0;
-                hasn1_ber_type_t type;
-                current_length+=hasn1_ber_type_get(&type,data,len);
-                printf("hcrypto asn1:class=%02X,p_c=%02X,tag=%d\r\n",(int)hasn1_ber_type_class_get(&type),(int)hasn1_ber_type_p_c_get(&type),(int)hasn1_ber_type_tag_get(&type));
-                hasn1_ber_length_t length;
-                current_length+=hasn1_ber_length_get(&length,data,len);
-                hasn1_ber_value_t value;
-                current_length+=hasn1_ber_value_get(&value,data,len);
-                printf("hcrypto asn1:total length=%d,value length=%d\r\n",(int)current_length,(int)value.length);
-                if(hasn1_ber_type_p_c_get(&type)!=HASN1_BER_TYPE_PRIMITIVE)
+                printf("hcrypto asn1:depth=%d,index=%d,class=%02X,p_c=%02X,tag=%d,value length=%d\r\n",(int)depth,(int)index,(int)hasn1_ber_type_class_get(type),(int)hasn1_ber_type_p_c_get(type),(int)hasn1_ber_type_tag_get(type),(int)value->length);
+                if(hasn1_ber_type_p_c_get(type)==HASN1_BER_TYPE_PRIMITIVE)
                 {
-                    //不是简单结构
-                    printf("hcrypto asn1:----Begin----\r\n");
-                    parse_asn1((uint8_t *)value.value,(size_t)value.length);
-                    printf("hcrypto asn1:----End----\r\n");
-                }
-                else
-                {
-                    printf("hcrypto asn1:data=");
-                    for(size_t i=0; i<value.length; i++)
+                    printf("hcrypto asn1:");
+                    for(size_t i=0; i<value->length; i++)
                     {
-                        printf("%02X",(int)value.value[i]);
+                        printf("%02X",(int)value->value[i]);
                     }
                     printf("\r\n");
+
                 }
-                if(current_length > 0 && current_length < len)
-                {
-                    data+=current_length;
-                    len-=current_length;
-                    parse_asn1(data,len);
-                }
-            };
-            parse_asn1(bin_pem,len);
+            },NULL,0,bin_pem,len);
         }
     }
     {

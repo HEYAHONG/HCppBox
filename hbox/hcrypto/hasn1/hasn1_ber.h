@@ -207,6 +207,32 @@ size_t hasn1_ber_value_get(hasn1_ber_value_t *value,const uint8_t *data,size_t d
  */
 size_t hasn1_ber_value_set(const hasn1_ber_value_t *value,uint8_t *data,size_t data_length);
 
+
+/** \brief 解析回调
+ *
+ * \param usr void*                             用户参数
+ * \param depth size_t                          深度
+ * \param index size_t                          当前层级的引索
+ * \param type const hasn1_ber_type_t*          类型
+ * \param value const hasn1_ber_value_t*        值
+ *
+ */
+typedef void (*hasn1_ber_parse_callback_t)(void *usr,size_t depth,size_t index,const hasn1_ber_type_t *type,const hasn1_ber_value_t *value);
+
+
+/** \brief HASN.1解析
+ *
+ * \param callback hasn1_ber_parse_callback_t   回调
+ * \param usr void*                             用户参数
+ * \param depth size_t                          当前解析的层级，用户一般传0
+ * \param data const uint8_t*                   数据（按照TLV三元组存放的数据）
+ * \param data_length size_t                    数据长度。
+ * \return bool 是否解析成功
+ *
+ */
+bool hasn1_ber_parse(hasn1_ber_parse_callback_t callback,void *usr,size_t depth,const uint8_t *data,size_t data_length);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
