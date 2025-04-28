@@ -325,7 +325,7 @@ size_t hasn1_ber_length_set(const hasn1_ber_length_t *length,uint8_t *data,size_
 size_t hasn1_ber_value_get( hasn1_ber_value_t *value,const uint8_t *data,size_t data_length)
 {
     size_t ret=0;
-    if(data==NULL && data_length ==0)
+    if(data==NULL || data_length ==0)
     {
         return ret;
     }
@@ -379,7 +379,7 @@ size_t hasn1_ber_value_get( hasn1_ber_value_t *value,const uint8_t *data,size_t 
 size_t hasn1_ber_value_set(const hasn1_ber_value_t *value,uint8_t *data,size_t data_length)
 {
     size_t ret=0;
-    if(data==NULL && data_length ==0 || value == NULL)
+    if(data==NULL || data_length ==0 || value == NULL)
     {
         return ret;
     }
