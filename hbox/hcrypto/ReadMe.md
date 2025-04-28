@@ -53,6 +53,13 @@
 - [hsm4.h](hsm4.h)
 - [hsm4.c](hsm4.c)
 
+## 流加密
+
+### RC4
+
+- [hrc4.h](hrc4.h)
+- [hrc4.c](hrc4.c)
+
 # 消息摘要
 
 ## MD4

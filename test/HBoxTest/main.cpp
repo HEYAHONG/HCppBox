@@ -2432,6 +2432,38 @@ static int hcrypto_test(int argc,const char *argv[])
         printf("hcrypto sm4 %s\r\n",(memcmp(data,data_decrypt,sizeof(data))==0)?"ok":"failed");
     }
 
+    {
+        //RC4测试
+        const char * key="1234567891234567";
+        uint8_t data[12]="ABCDEFGHJ";
+        uint8_t data_encrypt[sizeof(data)]= {0};
+        uint8_t data_decrypt[sizeof(data)]= {0};
+        printf("hcrypto rc4:key=%s,data=%s\r\n",(const char *)key,(const char *)data);
+        {
+            //加密
+            hrc4_context_t rc4= {0};
+            hrc4_set_key(&rc4,(const uint8_t *)key,strlen(key));
+            hrc4_rc4(&rc4,sizeof(data),data,data_encrypt);
+        }
+        {
+            //打印加密后的数据
+            printf("hcrypto rc4:");
+            for(size_t i=0; i<strlen((const char *)data); i++)
+            {
+                printf("%02X",(int)data_encrypt[i]);
+            }
+            printf("\r\n");
+
+        }
+        {
+            //解密
+            hrc4_context_t rc4= {0};
+            hrc4_set_key(&rc4,(const uint8_t *)key,strlen(key));
+            hrc4_rc4(&rc4,sizeof(data),data_encrypt,data_decrypt);
+        }
+        printf("hcrypto rc4 %s\r\n",(memcmp(data,data_decrypt,sizeof(data))==0)?"ok":"failed");
+    }
+
 
     {
         //BCC校验测试
