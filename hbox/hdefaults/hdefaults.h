@@ -94,6 +94,17 @@
 #endif
 #endif
 
+//FreeBSD
+#ifdef __FreeBSD__
+#include "hdefaults_os_freebsd.h"
+#ifndef HDEFAULTS_OS_FREEBSD
+#define HDEFAULTS_OS_FREEBSD 1
+#endif // HDEFAULTS_OS_FREEBSD
+#ifndef HDEFAULTS_HAVE_OS
+#define HDEFAULTS_HAVE_OS 1
+#endif
+#endif
+
 //Android
 #ifdef __ANDROID__
 #include "hdefaults_os_android.h"

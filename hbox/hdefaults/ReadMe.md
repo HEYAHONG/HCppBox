@@ -33,6 +33,7 @@
 |   `HDEFAULTS_OS_NUTTX`    | 处于NuttX中                      |                                                              |
 |  `HDEFAULTS_OS_WINDOWS`   | 处于Windows中                    |                                                              |
 |    `HDEFAULTS_OS_UNIX`    | 处于UNIX(类UNIX中)               |                                                              |
+|  `HDEFAULTS_OS_FREEBSD`   | 处于FreeBSD中                    | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
 |   `HDEFAULTS_OS_LINUX`    | 处于Linux中                      | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
 |  `HDEFAULTS_OS_ANDROID`   | 处于Android中                    | 通常也会定义`HDEFAULTS_OS_UNIX`、`HDEFAULTS_OS_LINUX`        |
 |   `HDEFAULTS_OS_CYGWIN`   | 处于Cygwin中                     | 通常也会定义`HDEFAULTS_OS_UNIX`                              |

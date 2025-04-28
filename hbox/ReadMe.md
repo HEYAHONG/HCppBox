@@ -33,6 +33,7 @@ hbox意为HYH的工具箱。
 |      `__NuttX__`      |                      处于NuttX操作系统                       |                                                              |
 |        `WIN32`        |                        处于windows中                         |                                                              |
 |      `__unix__`       |                        处于(类)unix中                        | 若处于linux中，可使用`__linux__` 判断。在(类)unix中将使用pthread及其相关库（有些可能需要手动启用）。 |
+|     `__FreeBSD__`     |                        处于FreeBSD中                         |         通常也会定义`__unix__`，即处于(类) unix中。          |
 |      `__linux__`      |                         处于linux中                          |         通常也会定义`__unix__`，即处于(类) unix中。          |
 |     `__ANDROID__`     |                        处于Android中                         | 通常也会定义`__unix__`、`__linux__`，即处于(类) unix、linux中。 |
 |     `__CYGWIN__`      |                         处于Cygwin中                         |         通常也会定义`__unix__`，即处于(类) unix中。          |
