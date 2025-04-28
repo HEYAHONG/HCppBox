@@ -48,6 +48,7 @@
 #include <ifaddrs.h>
 #include <netdb.h>
 #include <netinet/tcp.h>
+#include <netinet/in.h>
 #include <strings.h>
 #include <sys/socket.h>
 #include <unistd.h>
