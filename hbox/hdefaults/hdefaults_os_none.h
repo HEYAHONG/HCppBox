@@ -15,4 +15,9 @@
 //#define HCPPRT_USE_CTORS 1
 #endif // HCPPRT_USE_CTORS
 
+/*
+ * 系统调用号
+ */
+#include "syscall/hdefaults_os_none_syscall.h"
+
 #endif
