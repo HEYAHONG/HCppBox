@@ -29,6 +29,10 @@
 | :-----------------------: | :------------------------------- | :----------------------------------------------------------- |
 |    `hdefaults_xstr(s)`    | 宏函数,将符号s的内容转换为字符串 |                                                              |
 |    `hdefaults_str(s)`     | 宏函数,将符号s转换为字符串       |                                                              |
+| `HDEFAULTS_BITS_16_OR_8`  | 16位/8位环境                     | 不保证代码在此环境可用                                       |
+|    `HDEFAULTS_BITS_32`    | 32位环境                         |                                                              |
+|    `HDEFAULTS_BITS_64`    | 64位环境                         |                                                              |
+| `HDEFAULTS_BITS_ABOVE_64` | 高于64位的环境                   | 不保证代码在此环境可用                                       |
 |  `HDEFAULTS_OS_RTTHREAD`  | 处于RT-Thread中                  |                                                              |
 |   `HDEFAULTS_OS_NUTTX`    | 处于NuttX中                      |                                                              |
 |  `HDEFAULTS_OS_WINDOWS`   | 处于Windows中                    |                                                              |
