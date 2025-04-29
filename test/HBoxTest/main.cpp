@@ -59,20 +59,6 @@ int main(int argc,const char *argv[])
 extern "C" void c_compiler_test();
 static int hcompiler_test(int argc,const char *argv[])
 {
-    {
-#ifdef HDEFAULTS_BITS_16_OR_8
-        printf("hcompiler:16/8 bits environment!\r\n");
-#endif // HDEFAULTS_BITS_16_OR_8
-#ifdef HDEFAULTS_BITS_32
-        printf("hcompiler:32 bits environment!\r\n");
-#endif // HDEFAULTS_BITS_32
-#ifdef HDEFAULTS_BITS_64
-        printf("hcompiler:64 bits environment!\r\n");
-#endif // HDEFAULTS_BITS_64
-#ifdef HDEFAULTS_BITS_ABOVE_64
-        printf("hcompiler: above 64 bits environment!\r\n");
-#endif // HDEFAULTS_BITS_ABOVE_64
-    }
     c_compiler_test();
 
     printf("hcompiler: " __DATE__ " " __TIME__ "\r\n");
@@ -109,6 +95,20 @@ static int hcompiler_test(int argc,const char *argv[])
 
 static int hdefaults_test(int argc,const char *argv[])
 {
+     {
+#ifdef HDEFAULTS_BITS_16_OR_8
+        printf("hdefaults:16/8 bits environment!\r\n");
+#endif // HDEFAULTS_BITS_16_OR_8
+#ifdef HDEFAULTS_BITS_32
+        printf("hdefaults:32 bits environment!\r\n");
+#endif // HDEFAULTS_BITS_32
+#ifdef HDEFAULTS_BITS_64
+        printf("hdefaults:64 bits environment!\r\n");
+#endif // HDEFAULTS_BITS_64
+#ifdef HDEFAULTS_BITS_ABOVE_64
+        printf("hdefaults: above 64 bits environment!\r\n");
+#endif // HDEFAULTS_BITS_ABOVE_64
+    }
 
     {
         hdefaults_tick_t start=hdefaults_tick_get();
