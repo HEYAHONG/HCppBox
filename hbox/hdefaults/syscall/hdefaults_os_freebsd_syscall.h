@@ -12,18 +12,18 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_open	5
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_close	6
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_wait4	7
-				/* 8 is old creat */
+/* 8 is old creat */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_link	9
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_unlink	10
-				/* 11 is obsolete execv */
+/* 11 is obsolete execv */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_chdir	12
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_fchdir	13
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_mknod	14
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_chmod	15
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_chown	16
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_break	17
-				/* 18 is freebsd4 getfsstat */
-				/* 19 is old lseek */
+/* 18 is freebsd4 getfsstat */
+/* 19 is old lseek */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getpid	20
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_mount	21
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_unmount	22
@@ -42,21 +42,21 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_fchflags	35
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sync	36
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_kill	37
-				/* 38 is old stat */
+/* 38 is old stat */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getppid	39
-				/* 40 is old lstat */
+/* 40 is old lstat */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_dup	41
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd10_pipe	42
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getegid	43
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_profil	44
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_ktrace	45
-				/* 46 is old sigaction */
+/* 46 is old sigaction */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getgid	47
-				/* 48 is old sigprocmask */
+/* 48 is old sigprocmask */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getlogin	49
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setlogin	50
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_acct	51
-				/* 52 is old sigpending */
+/* 52 is old sigpending */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sigaltstack	53
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_ioctl	54
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_reboot	55
@@ -66,33 +66,33 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_execve	59
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_umask	60
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_chroot	61
-				/* 62 is old fstat */
-				/* 63 is old getkerninfo */
-				/* 64 is old getpagesize */
+/* 62 is old fstat */
+/* 63 is old getkerninfo */
+/* 64 is old getpagesize */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_msync	65
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_vfork	66
-				/* 67 is obsolete vread */
-				/* 68 is obsolete vwrite */
+/* 67 is obsolete vread */
+/* 68 is obsolete vwrite */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sbrk	69
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sstk	70
-				/* 71 is old mmap */
+/* 71 is old mmap */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_vadvise	72
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_munmap	73
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_mprotect	74
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_madvise	75
-				/* 76 is obsolete vhangup */
-				/* 77 is obsolete vlimit */
+/* 76 is obsolete vhangup */
+/* 77 is obsolete vlimit */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_mincore	78
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getgroups	79
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setgroups	80
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getpgrp	81
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setpgid	82
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setitimer	83
-				/* 84 is old wait */
+/* 84 is old wait */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_swapon	85
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getitimer	86
-				/* 87 is old gethostname */
-				/* 88 is old sethostname */
+/* 87 is old gethostname */
+/* 88 is old sethostname */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getdtablesize	89
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_dup2	90
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_fcntl	92
@@ -101,23 +101,23 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setpriority	96
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_socket	97
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_connect	98
-				/* 99 is old accept */
+/* 99 is old accept */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getpriority	100
-				/* 101 is old send */
-				/* 102 is old recv */
-				/* 103 is old sigreturn */
+/* 101 is old send */
+/* 102 is old recv */
+/* 103 is old sigreturn */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_bind	104
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setsockopt	105
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_listen	106
-				/* 107 is obsolete vtimes */
-				/* 108 is old sigvec */
-				/* 109 is old sigblock */
-				/* 110 is old sigsetmask */
-				/* 111 is old sigsuspend */
-				/* 112 is old sigstack */
-				/* 113 is old recvmsg */
-				/* 114 is old sendmsg */
-				/* 115 is obsolete vtrace */
+/* 107 is obsolete vtimes */
+/* 108 is old sigvec */
+/* 109 is old sigblock */
+/* 110 is old sigsetmask */
+/* 111 is old sigsuspend */
+/* 112 is old sigstack */
+/* 113 is old recvmsg */
+/* 114 is old sendmsg */
+/* 115 is obsolete vtrace */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_gettimeofday	116
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getrusage	117
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getsockopt	118
@@ -126,12 +126,12 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_settimeofday	122
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_fchown	123
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_fchmod	124
-				/* 125 is old recvfrom */
+/* 125 is old recvfrom */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setreuid	126
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setregid	127
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_rename	128
-				/* 129 is old truncate */
-				/* 130 is old ftruncate */
+/* 129 is old truncate */
+/* 130 is old ftruncate */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_flock	131
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_mkfifo	132
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sendto	133
@@ -140,44 +140,44 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_mkdir	136
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_rmdir	137
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_utimes	138
-				/* 139 is obsolete sigreturn */
+/* 139 is obsolete sigreturn */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_adjtime	140
-				/* 141 is old getpeername */
-				/* 142 is old gethostid */
-				/* 143 is old sethostid */
-				/* 144 is old getrlimit */
-				/* 145 is old setrlimit */
-				/* 146 is old killpg */
+/* 141 is old getpeername */
+/* 142 is old gethostid */
+/* 143 is old sethostid */
+/* 144 is old getrlimit */
+/* 145 is old setrlimit */
+/* 146 is old killpg */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setsid	147
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_quotactl	148
-				/* 149 is old quota */
-				/* 150 is old getsockname */
+/* 149 is old quota */
+/* 150 is old getsockname */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_nlm_syscall	154
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_nfssvc	155
-				/* 156 is old getdirentries */
-				/* 157 is freebsd4 statfs */
-				/* 158 is freebsd4 fstatfs */
+/* 156 is old getdirentries */
+/* 157 is freebsd4 statfs */
+/* 158 is freebsd4 fstatfs */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_lgetfh	160
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getfh	161
-				/* 162 is freebsd4 getdomainname */
-				/* 163 is freebsd4 setdomainname */
-				/* 164 is freebsd4 uname */
+/* 162 is freebsd4 getdomainname */
+/* 163 is freebsd4 setdomainname */
+/* 164 is freebsd4 uname */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sysarch	165
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_rtprio	166
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_semsys	169
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_msgsys	170
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_shmsys	171
-				/* 173 is freebsd6 pread */
-				/* 174 is freebsd6 pwrite */
+/* 173 is freebsd6 pread */
+/* 174 is freebsd6 pwrite */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setfib	175
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_ntp_adjtime	176
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setgid	181
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setegid	182
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_seteuid	183
-				/* 184 is obsolete lfs_bmapv */
-				/* 185 is obsolete lfs_markv */
-				/* 186 is obsolete lfs_segclean */
-				/* 187 is obsolete lfs_segwait */
+/* 184 is obsolete lfs_bmapv */
+/* 185 is obsolete lfs_markv */
+/* 186 is obsolete lfs_segclean */
+/* 187 is obsolete lfs_segwait */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_stat	188
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_fstat	189
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_lstat	190
@@ -186,11 +186,11 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getrlimit	194
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setrlimit	195
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_getdirentries	196
-				/* 197 is freebsd6 mmap */
+/* 197 is freebsd6 mmap */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL___syscall	198
-				/* 199 is freebsd6 lseek */
-				/* 200 is freebsd6 truncate */
-				/* 201 is freebsd6 ftruncate */
+/* 199 is freebsd6 lseek */
+/* 200 is freebsd6 truncate */
+/* 201 is freebsd6 ftruncate */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL___sysctl	202
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_mlock	203
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_munlock	204
@@ -201,7 +201,7 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd7___semctl	220
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_semget	221
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_semop	222
-				/* 223 is obsolete semconfig */
+/* 223 is obsolete semconfig */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd7_msgctl	224
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_msgget	225
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_msgsnd	226
@@ -227,7 +227,7 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_ntp_gettime	248
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_minherit	250
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_rfork	251
-				/* 252 is obsolete openbsd_poll */
+/* 252 is obsolete openbsd_poll */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_issetugid	253
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_lchown	254
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_aio_read	255
@@ -235,15 +235,15 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_lio_listio	257
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_getdents	272
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_lchmod	274
-				/* 275 is obsolete netbsd_lchown */
+/* 275 is obsolete netbsd_lchown */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_lutimes	276
-				/* 277 is obsolete netbsd_msync */
+/* 277 is obsolete netbsd_msync */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_nstat	278
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_nfstat	279
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_nlstat	280
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_preadv	289
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_pwritev	290
-				/* 297 is freebsd4 fhstatfs */
+/* 297 is freebsd4 fhstatfs */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_fhopen	298
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_fhstat	299
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_modnext	300
@@ -259,17 +259,17 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getsid	310
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setresuid	311
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_setresgid	312
-				/* 313 is obsolete signanosleep */
+/* 313 is obsolete signanosleep */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_aio_return	314
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_aio_suspend	315
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_aio_cancel	316
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_aio_error	317
-				/* 318 is freebsd6 aio_read */
-				/* 319 is freebsd6 aio_write */
-				/* 320 is freebsd6 lio_listio */
+/* 318 is freebsd6 aio_read */
+/* 319 is freebsd6 aio_write */
+/* 320 is freebsd6 lio_listio */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_yield	321
-				/* 322 is obsolete thr_sleep */
-				/* 323 is obsolete thr_wakeup */
+/* 322 is obsolete thr_sleep */
+/* 323 is obsolete thr_wakeup */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_mlockall	324
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_munlockall	325
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL___getcwd	326
@@ -282,15 +282,15 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sched_get_priority_min	333
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sched_rr_get_interval	334
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_utrace	335
-				/* 336 is freebsd4 sendfile */
+/* 336 is freebsd4 sendfile */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_kldsym	337
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_jail	338
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_nnpfs_syscall	339
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sigprocmask	340
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sigsuspend	341
-				/* 342 is freebsd4 sigaction */
+/* 342 is freebsd4 sigaction */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sigpending	343
-				/* 344 is freebsd4 sigreturn */
+/* 344 is freebsd4 sigreturn */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sigtimedwait	345
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_sigwaitinfo	346
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL___acl_get_file	347
@@ -310,25 +310,25 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_getresgid	361
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_kqueue	362
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_freebsd11_kevent	363
-				/* 364 is obsolete __cap_get_proc */
-				/* 365 is obsolete __cap_set_proc */
-				/* 366 is obsolete __cap_get_fd */
-				/* 367 is obsolete __cap_get_file */
-				/* 368 is obsolete __cap_set_fd */
-				/* 369 is obsolete __cap_set_file */
+/* 364 is obsolete __cap_get_proc */
+/* 365 is obsolete __cap_set_proc */
+/* 366 is obsolete __cap_get_fd */
+/* 367 is obsolete __cap_get_file */
+/* 368 is obsolete __cap_set_fd */
+/* 369 is obsolete __cap_set_file */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_extattr_set_fd	371
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_extattr_get_fd	372
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_extattr_delete_fd	373
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL___setugid	374
-				/* 375 is obsolete nfsclnt */
+/* 375 is obsolete nfsclnt */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_eaccess	376
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_afs3_syscall	377
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_nmount	378
-				/* 379 is obsolete kse_exit */
-				/* 380 is obsolete kse_wakeup */
-				/* 381 is obsolete kse_create */
-				/* 382 is obsolete kse_thr_interrupt */
-				/* 383 is obsolete kse_release */
+/* 379 is obsolete kse_exit */
+/* 380 is obsolete kse_wakeup */
+/* 381 is obsolete kse_create */
+/* 382 is obsolete kse_thr_interrupt */
+/* 383 is obsolete kse_release */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL___mac_get_proc	384
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL___mac_set_proc	385
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL___mac_get_fd	386
@@ -381,7 +381,7 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_extattr_list_fd	437
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_extattr_list_file	438
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_extattr_list_link	439
-				/* 440 is obsolete kse_switchin */
+/* 440 is obsolete kse_switchin */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_ksem_timedwait	441
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_thr_suspend	442
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_thr_wake	443
@@ -451,7 +451,7 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_msgctl	511
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_shmctl	512
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_lpathconf	513
-				/* 514 is obsolete cap_new */
+/* 514 is obsolete cap_new */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL___cap_rights_get	515
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_cap_enter	516
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_cap_getmode	517
@@ -484,8 +484,8 @@
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_ppoll	545
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_futimens	546
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_utimensat	547
-				/* 548 is obsolete numa_getaffinity */
-				/* 549 is obsolete numa_setaffinity */
+/* 548 is obsolete numa_getaffinity */
+/* 549 is obsolete numa_setaffinity */
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_fdatasync	550
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_fstat	551
 #define	HDEFAULTS_OS_FREEBSD_SYSCALL_fstatat	552

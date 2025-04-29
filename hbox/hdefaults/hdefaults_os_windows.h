@@ -19,4 +19,10 @@
 #define HMEMORYHEAP_DEFAULT_POOL_SIZE 1*1024*1024
 #endif // HMEMORYHEAP_DEFAULT_POOL_SIZE
 
+/*
+ * 系统调用号
+ */
+
+#include "syscall/hdefaults_os_windows_syscall.h"
+
 #endif
