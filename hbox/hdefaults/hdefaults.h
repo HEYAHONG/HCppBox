@@ -338,12 +338,12 @@ enum
 #define hdefaults_usercall(usercall_number,...) \
         {\
             const hdefaults_api_table_t *api_table=hdefaults_get_api_table();\
-            intptr_t ret=0;\
+            intptr_t hdefaults_usercall_ret_value=0;\
             if(api_table!=NULL && api_table->usercall!=NULL)\
             {\
-                    ret=api_table->usercall((uintptr_t)(usercall_number),##__VA_ARGS__);\
+                    hdefaults_usercall_ret_value=api_table->usercall((uintptr_t)(usercall_number),##__VA_ARGS__);\
             }\
-            ret;\
+            hdefaults_usercall_ret_value;\
         }
 
 #ifdef __cplusplus
@@ -524,6 +524,8 @@ const hdefaults_api_table_t * hdefaults_get_api_table(void);
  *
  */
 const hdefaults_api_table_t * hdefaults_set_api_table(const hdefaults_api_table_t* new_api_table);
+
+#include "syscall/hdefaults_syscall.h"
 
 #ifdef __cplusplus
 }

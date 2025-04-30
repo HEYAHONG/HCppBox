@@ -170,6 +170,11 @@ intptr_t do_hdefaults_usercall(uintptr_t number,...)
     if(number < HDEFAULTS_USERCALL_NUMBER_RESERVED_SYSCALL_END)
     {
         //准备调用syscall
+        hdefaults_syscall_function_t func=hdefaults_syscall_function_find(number);
+        if(func!=NULL)
+        {
+            ret=func(number,va);
+        }
     }
     else if(number < HDEFAULTS_USERCALL_NUMBER_END)
     {
@@ -326,4 +331,7 @@ void  hdefaults_mutex_unlock(void *usr)
         do_hdefaults_mutex_unlock(usr);
     }
 }
+
+
+#include "syscall/hdefaults_syscall.c"
 

@@ -95,7 +95,7 @@ static int hcompiler_test(int argc,const char *argv[])
 
 static int hdefaults_test(int argc,const char *argv[])
 {
-     {
+    {
 #ifdef HDEFAULTS_BITS_16_OR_8
         printf("hdefaults:16/8 bits environment!\r\n");
 #endif // HDEFAULTS_BITS_16_OR_8
@@ -147,14 +147,23 @@ static int hdefaults_test(int argc,const char *argv[])
             void *mem=NULL;
             hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_MALLOC,&mem,1024,NULL);
             printf("hdefaults usercall malloc:addr=0x%" PRIX64 "\r\n",(uint64_t)(intptr_t)ptr);
-            int ret=0;
-            hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_FREE,&ret,mem,NULL);
+            int ret_value=0;
+            hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_FREE,&ret_value,mem,NULL);
         }
 
         {
-            int ret=0;
-            hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_GLOCK,&ret,NULL);
-            hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_GUNLOCK,&ret,NULL);
+            int ret_value=0;
+            hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_GLOCK,&ret_value,NULL);
+            hdefaults_usercall(HDEFAULTS_USERCALL_NUMBER_GUNLOCK,&ret_value,NULL);
+        }
+    }
+
+    {
+        hgettimeofday_timeval_t tv= {0};
+        hgettimeofday_timezone_t tz= {0};
+        if(hgettimeofday(&tv,&tz)==0)
+        {
+            printf("hdefaults hgettimeofday: tv_sec=%" PRIu64 "\ttv_usec=%" PRIu64 "\ttz_minuteswest=%d\ttz_dsttime=%d\r\n",tv.tv_sec,tv.tv_usec,tz.tz_minuteswest,tz.tz_dsttime);
         }
     }
 
