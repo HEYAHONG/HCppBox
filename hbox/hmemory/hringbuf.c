@@ -27,8 +27,8 @@ struct hringbuf
     uint8_t buff[0];
 };
 
-#ifndef     HRINGBUF_ALIGNED_SIZE
-#define    HRINGBUF_ALIGNED_SIZE sizeof(void *)
+#ifndef HRINGBUF_ALIGNED_SIZE
+#define HRINGBUF_ALIGNED_SIZE sizeof(void *)
 #endif // HRINGBUF_ALIGNED_SIZE
 
 hringbuf_t *hringbuf_get(uint8_t *buff,size_t length)
