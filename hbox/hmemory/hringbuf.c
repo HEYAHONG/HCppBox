@@ -27,6 +27,9 @@ struct hringbuf
     uint8_t buff[0];
 };
 
+#ifndef     HRINGBUF_ALIGNED_SIZE
+#define    HRINGBUF_ALIGNED_SIZE sizeof(void *)
+#endif // HRINGBUF_ALIGNED_SIZE
 
 hringbuf_t *hringbuf_get(uint8_t *buff,size_t length)
 {
@@ -34,10 +37,26 @@ hringbuf_t *hringbuf_get(uint8_t *buff,size_t length)
     {
         return NULL;
     }
+
+    if( length < HRINGBUF_ALIGNED_SIZE)
+    {
+        //空间太小
+        return NULL;
+    }
+
+    if((((uintptr_t)buff)% HRINGBUF_ALIGNED_SIZE)!=0)
+    {
+        //指针未对齐，某些平台上可能会出错,在此处进行内存对齐操作
+        size_t size_to_align=((((uintptr_t)buff)/HRINGBUF_ALIGNED_SIZE)+1)* HRINGBUF_ALIGNED_SIZE-((uintptr_t)buff);
+        buff+=size_to_align;
+        length-=size_to_align;
+    }
+
     if(length < (sizeof(hringbuf_t)+1))
     {
         return NULL;
     }
+
     size_t ringbuf_length=length-sizeof(hringbuf_t);
     hringbuf_t *ptr=(hringbuf_t *)buff;
     if(ptr->buff_length != ringbuf_length)
