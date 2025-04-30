@@ -9,16 +9,11 @@
 #ifndef __HDEFAULTS_H__
 #define __HDEFAULTS_H__
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
+
 
 #include "hdefaults/hdefaults.h"
 
-#ifdef __cplusplus
-}
-#endif // __cplusplus
+
 
 
 #endif // __HDEFAULTS_H__
