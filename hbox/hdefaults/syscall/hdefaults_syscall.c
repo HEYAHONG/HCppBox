@@ -23,15 +23,15 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
 #ifndef HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
     switch(number)
     {
+#ifdef HDEFAULTS_SYSCALL_HGETTIMEOFDAY
+    case HDEFAULTS_SYSCALL_HGETTIMEOFDAY:
+    {
+        ret=__hdefaults_usercall_hgettimeofday;
+    }
+    break;
+#endif
     default:
     {
-#ifdef HDEFAULTS_SYSCALL_HGETTIMEOFDAY
-        case HDEFAULTS_SYSCALL_HGETTIMEOFDAY:
-        {
-            ret=__hdefaults_usercall_hgettimeofday;
-        }
-        break;
-#endif
     }
     break;
     }
