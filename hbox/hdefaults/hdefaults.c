@@ -217,6 +217,11 @@ intptr_t do_hdefaults_usercall(uintptr_t number,...)
     return ret;
 }
 
+intptr_t  __hdefaults_usercall_return_check(uintptr_t usercall_number,intptr_t return_value)
+{
+    return return_value;
+}
+
 HDEFAULTS_USERCALL_DEFINE0(tick,HDEFAULTS_USERCALL_NUMBER_TICK,hdefaults_tick_t)
 {
     return hdefaults_tick_get();

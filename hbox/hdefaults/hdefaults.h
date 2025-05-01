@@ -329,6 +329,22 @@ enum
 };
 
 
+/** \brief 默认用户调用返回值检查
+ *
+ * \param usercall_number uintptr_t 用户调用号
+ * \param return_value intptr_t 返回值（注意:这不是用户调用实现的返回值,通常用于找不到相应调用时使用）
+ * \return intptr_t 同返回值
+ *
+ */
+intptr_t __hdefaults_usercall_return_check(uintptr_t usercall_number,intptr_t return_value);
+
+
+/** \brief 用户调用返回值检查(如需使用，需要#undef重新#define)
+ *
+ *
+ */
+#define hdefaults_usercall_return_check(usercall_number,return_value) __hdefaults_usercall_return_check(usercall_number,return_value)
+
 /** \brief 用户调用
  *
  * \param usercall_number 用户调用号,见HDEFAULTS_USERCALL_NUMBER_*
@@ -343,7 +359,7 @@ enum
             {\
                     hdefaults_usercall_ret_value=api_table->usercall((uintptr_t)(usercall_number),##__VA_ARGS__);\
             }\
-            hdefaults_usercall_ret_value;\
+            hdefaults_usercall_return_check(usercall_number,hdefaults_usercall_ret_value);\
         }
 
 #ifdef __cplusplus
