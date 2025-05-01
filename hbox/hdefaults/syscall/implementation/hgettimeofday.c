@@ -25,10 +25,16 @@
 #include <time.h>
 #endif
 
+#if defined(HGETTIMEOFDAY)
+extern int HGETTIMEOFDAY(hgettimeofday_timeval_t *tv, hgettimeofday_timezone_t * tz);
+#endif // defined
+
 HDEFAULTS_USERCALL_DEFINE2(hgettimeofday,HDEFAULTS_SYSCALL_HGETTIMEOFDAY,int,hgettimeofday_timeval_t *,tv, hgettimeofday_timezone_t *,tz)
 {
     int ret=-1;
-#if defined(HDEFAULTS_OS_UNIX)
+#if defined(HGETTIMEOFDAY)
+    ret=HGETTIMEOFDAY(tv,tz);
+#elif defined(HDEFAULTS_OS_UNIX)
     {
         struct timeval _tv= {0};
         struct timezone _tz= {0};

@@ -13,3 +13,20 @@
 - [wrapper](wrapper)：将系统调用包装成函数
 - [implementation](implementation)： 系统调用实现
 
+# 系统调用
+
+## `gettimeofday`
+
+获取当前时间。
+
+当系统支持`gettimeofday`时，采用系统的实现。
+
+当系统有类似的API时采用相应API实现。
+
+当找不到其它实现时，默认采用`hdefaults_tick_t hdefaults_tick_get(void)`实现。
+
+可外部配置的宏定义如下:
+
+| 宏定义          | 说明                     | 备注                          |
+| --------------- | ------------------------ | ----------------------------- |
+| `HGETTIMEOFDAY` | 用户实现的`gettimeofday` | 参数与返回值同`hgettimeofday` |
