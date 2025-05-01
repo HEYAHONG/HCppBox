@@ -9,11 +9,6 @@
 #ifndef __HDEFAULTS_H__
 #define __HDEFAULTS_H__
 
-
-
 #include "hdefaults/hdefaults.h"
-
-
-
 
 #endif // __HDEFAULTS_H__

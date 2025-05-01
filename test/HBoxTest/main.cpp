@@ -167,6 +167,19 @@ static int hdefaults_test(int argc,const char *argv[])
         }
     }
 
+    {
+        uint8_t random_buffer[32]= {0};
+        if(hgetrandom(random_buffer,sizeof(random_buffer),0) > 0)
+        {
+            printf("hdefaults hgetrandom:");
+            for(size_t i=0; i<sizeof(random_buffer); i++)
+            {
+                printf("%02X",(int)random_buffer[i]);
+            }
+            printf("\r\n");
+        }
+    }
+
     return 0;
 }
 static int heventloop_test(int argc,const char *argv[])
