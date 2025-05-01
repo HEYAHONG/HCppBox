@@ -16,6 +16,12 @@
 #define HDEFAULTS_SYSCALL_HSETTIMEOFDAY  HDEFAULTS_OS_FREEBSD_SYSCALL_settimeofday
 #endif
 
+#if defined(HDEFAULTS_OS_EMSCRIPTEN) && !defined(HSETTIMEOFDAY)
+/*
+ * Emscripten 默认不支持链接此系统调用
+ */
+#undef HDEFAULTS_SYSCALL_HSETTIMEOFDAY
+#endif // HDEFAULTS_OS_EMSCRIPTEN
 
 
 /*
