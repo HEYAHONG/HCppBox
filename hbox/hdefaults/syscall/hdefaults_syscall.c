@@ -10,10 +10,12 @@
 
 
 #include "wrapper/hgettimeofday.c"
+#include "wrapper/hsettimeofday.c"
 
 #ifndef HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
 
 #include "implementation/hgettimeofday.c"
+#include "implementation/hsettimeofday.c"
 
 #endif // HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
 
@@ -27,6 +29,13 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
     case HDEFAULTS_SYSCALL_HGETTIMEOFDAY:
     {
         ret=__hdefaults_usercall_hgettimeofday;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HSETTIMEOFDAY
+    case HDEFAULTS_SYSCALL_HSETTIMEOFDAY:
+    {
+        ret=__hdefaults_usercall_hsettimeofday;
     }
     break;
 #endif
