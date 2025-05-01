@@ -140,7 +140,10 @@ size_t hasn1_ber_type_get(hasn1_ber_type_t *type,const uint8_t *data,size_t data
     if(type!=NULL)
     {
         type->type=type_field;
-        memcpy(type->tag,&data[1],ret-1);
+        if(ret > 1)
+        {
+            memcpy(type->tag,&data[1],ret-1);
+        }
     }
     return ret;
 }
