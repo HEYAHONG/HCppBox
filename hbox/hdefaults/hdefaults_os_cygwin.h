@@ -13,4 +13,10 @@
 #include "pthread.h"
 
 
+/*
+ * 系统调用号
+ */
+#include "syscall/hdefaults_os_cygwin_syscall.h"
+
+
 #endif

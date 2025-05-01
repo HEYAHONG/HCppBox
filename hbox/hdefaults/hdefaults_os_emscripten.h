@@ -13,4 +13,9 @@
 #include "emscripten.h"
 #endif // __cplusplus
 
+/*
+ * 系统调用号
+ */
+#include "syscall/hdefaults_os_emscripten_syscall.h"
+
 #endif
