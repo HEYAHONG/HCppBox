@@ -22,4 +22,11 @@
 
 #endif // RT_USING_CPLUSPLUS
 
+
+/*
+ * 系统调用号
+ */
+#include "syscall/hdefaults_os_rtthread_syscall.h"
+
+
 #endif

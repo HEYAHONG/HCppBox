@@ -11,4 +11,10 @@
 #include "hdefaults_common.h"
 
 
+/*
+ * 系统调用号
+ */
+#include "syscall/hdefaults_os_nuttx_syscall.h"
+
+
 #endif
