@@ -9,13 +9,13 @@
 #include "h3rdparty.h"
 #include "hdefaults.h"
 #if defined(HDEFAULTS_OS_WINDOWS) || defined(HDEFAULTS_OS_UNIX)
-extern int putchar( int ch );
+extern int hputchar( int ch );
 #endif
 
 #ifdef _putchar
 #undef  _putchar
 #endif
-#define _putchar hputchar
+#define _putchar h3rdparty_printf_putchar
 static void (*putchar_cb)(char c)=NULL;
 void hprintf_set_callback(void (*cb)(char c))
 {
@@ -30,7 +30,7 @@ void _putchar(char c)
     else
     {
 #if defined(HDEFAULTS_OS_WINDOWS) || defined(HDEFAULTS_OS_UNIX)
-        putchar(c);
+        hputchar(c);
 #endif
     }
 }

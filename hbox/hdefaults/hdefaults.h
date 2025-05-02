@@ -542,6 +542,8 @@ const hdefaults_api_table_t * hdefaults_get_api_table(void);
 const hdefaults_api_table_t * hdefaults_set_api_table(const hdefaults_api_table_t* new_api_table);
 
 #include "syscall/hdefaults_syscall.h"
+#include "libc/hdefaults_libc_port.h"
+
 
 #ifdef __cplusplus
 }

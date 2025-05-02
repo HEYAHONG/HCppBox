@@ -339,4 +339,5 @@ void  hdefaults_mutex_unlock(void *usr)
 
 
 #include "syscall/hdefaults_syscall.c"
+#include "libc/hdefaults_libc_port.c"
 

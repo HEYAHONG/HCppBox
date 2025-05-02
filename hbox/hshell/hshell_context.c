@@ -9,13 +9,13 @@
 #include "hshell_context.h"
 
 
-extern int getchar(void);
-extern int putchar(int ch);
+extern int hgetchar(void);
+extern int hputchar(int ch);
 hshell_context_external_api_t hshell_context_default_external_api(void)
 {
     hshell_context_external_api_t api= {0};
-    api.getchar=getchar;
-    api.putchar=putchar;
+    api.getchar=hgetchar;
+    api.putchar=hputchar;
     api.invoke_command=NULL;
     return api;
 }
