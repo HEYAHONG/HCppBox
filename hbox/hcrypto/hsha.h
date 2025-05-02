@@ -325,6 +325,11 @@ struct hsha3_context
 typedef  hsha3_context_t hsha3_sha224_context_t;
 
 /*
+ * SHA3 224消息块
+ */
+typedef uint8_t hsha3_sha224_message_block_t[144];
+
+/*
  * SHA3 224
  */
 typedef uint8_t hsha3_sha224_t[28];
@@ -371,6 +376,11 @@ int hsha3_sha224(const uint8_t *input,size_t ilen,hsha3_sha224_t output);
  * SHA3 256上下文
  */
 typedef  hsha3_context_t hsha3_sha256_context_t;
+
+/*
+ * SHA3 256消息块
+ */
+typedef uint8_t hsha3_sha256_message_block_t[136];
 
 /*
  * SHA3 256
@@ -420,6 +430,11 @@ int hsha3_sha256(const uint8_t *input,size_t ilen,hsha3_sha256_t output);
 typedef  hsha3_context_t hsha3_sha384_context_t;
 
 /*
+ * SHA3 384消息块
+ */
+typedef uint8_t hsha3_sha384_message_block_t[104];
+
+/*
  * SHA3 384
  */
 typedef uint8_t hsha3_sha384_t[48];
@@ -466,6 +481,11 @@ int hsha3_sha384(const uint8_t *input,size_t ilen,hsha3_sha384_t output);
  * SHA3 512上下文
  */
 typedef  hsha3_context_t hsha3_sha512_context_t;
+
+/*
+ * SHA3 512消息块
+ */
+typedef uint8_t hsha3_sha512_message_block_t[72];
 
 /*
  * SHA3 512

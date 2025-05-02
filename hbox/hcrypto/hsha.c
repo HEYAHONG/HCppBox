@@ -1897,7 +1897,7 @@ int hsha3_sha224_starts(hsha3_sha224_context_t *ctx)
     }
     memset(ctx,0,sizeof(hsha3_sha224_context_t));
     ctx->olen=sizeof(hsha3_sha224_t);
-    ctx->max_block_size=144;
+    ctx->max_block_size=sizeof(hsha3_sha224_message_block_t);
     return 0;
 }
 
@@ -1962,7 +1962,7 @@ int hsha3_sha256_starts(hsha3_sha256_context_t *ctx)
     }
     memset(ctx,0,sizeof(hsha3_sha256_context_t));
     ctx->olen=sizeof(hsha3_sha256_t);
-    ctx->max_block_size=136;
+    ctx->max_block_size=sizeof(hsha3_sha256_message_block_t);
     return 0;
 }
 
@@ -2027,7 +2027,7 @@ int hsha3_sha384_starts(hsha3_sha384_context_t *ctx)
     }
     memset(ctx,0,sizeof(hsha3_sha384_context_t));
     ctx->olen=sizeof(hsha3_sha384_t);
-    ctx->max_block_size=104;
+    ctx->max_block_size=sizeof(hsha3_sha384_message_block_t);
     return 0;
 }
 
@@ -2091,7 +2091,7 @@ int hsha3_sha512_starts(hsha3_sha512_context_t *ctx)
     }
     memset(ctx,0,sizeof(hsha3_sha512_context_t));
     ctx->olen=sizeof(hsha3_sha512_t);
-    ctx->max_block_size=72;
+    ctx->max_block_size=sizeof(hsha3_sha512_message_block_t);
     return 0;
 }
 
