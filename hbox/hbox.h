@@ -21,7 +21,7 @@
 #include "hmemory.h"
 #include "hlocale.h"
 #include "hstacklesscoroutine.h"
-#include "hmodbus.h"
+#include "hnet.h"
 #include "hsimulator.h"
 #include "hgui.h"
 #include "hshell.h"

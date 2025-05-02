@@ -94,11 +94,11 @@ hbox意为HYH的工具箱。
 
 具体实现见[hstacklesscoroutine](hstacklesscoroutine)。
 
-## hmodbus
+## hnet
 
-本组件用于辅助实现[modbus](https://modbus.org)。
+本目录主要用于辅助实现网络相关代码。
 
-具体实现见[hmodbus](hmodbus)目录
+具体实现见[hnet](hnet)目录
 
 ## h3rdparty
 
