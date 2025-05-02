@@ -1678,5 +1678,475 @@ exit:
 
 }
 
+#define HSHA3_XOR_BYTE 0x6
+
+#ifdef H
+#undef H
+#endif // H
+#define H(b63, b31, b15) (b63 << 6 | b31 << 5 | b15 << 4)
+static const uint8_t hsha3_iota_r_packed[24] =
+{
+    H(0, 0, 0) | 0x01, H(0, 0, 1) | 0x82, H(1, 0, 1) | 0x8a, H(1, 1, 1) | 0x00,
+    H(0, 0, 1) | 0x8b, H(0, 1, 0) | 0x01, H(1, 1, 1) | 0x81, H(1, 0, 1) | 0x09,
+    H(0, 0, 0) | 0x8a, H(0, 0, 0) | 0x88, H(0, 1, 1) | 0x09, H(0, 1, 0) | 0x0a,
+    H(0, 1, 1) | 0x8b, H(1, 0, 0) | 0x8b, H(1, 0, 1) | 0x89, H(1, 0, 1) | 0x03,
+    H(1, 0, 1) | 0x02, H(1, 0, 0) | 0x80, H(0, 0, 1) | 0x0a, H(1, 1, 0) | 0x0a,
+    H(1, 1, 1) | 0x81, H(1, 0, 1) | 0x80, H(0, 1, 0) | 0x01, H(1, 1, 1) | 0x08,
+};
+#undef H
+
+static const uint32_t hsha3_rho[6] =
+{
+    0x3f022425, 0x1c143a09, 0x2c3d3615, 0x27191713, 0x312b382e, 0x3e030832
+};
+
+static const uint32_t hsha3_pi[6] =
+{
+    0x110b070a, 0x10050312, 0x04181508, 0x0d13170f, 0x0e14020c, 0x01060916
+};
+
+#ifdef ROTR64
+#undef ROTR64
+#endif // ROTR64
+#define ROTR64(x, y) (((x) << (64U - (y))) | ((x) >> (y))) // 64-bit rotate right
+#ifdef ABSORB
+#undef ABSORB
+#endif // ABSORB
+#define ABSORB(ctx, idx, v) do { ctx->state[(idx) >> 3] ^= ((uint64_t) (v)) << (((idx) & 0x7) << 3); \
+} while (0)
+#ifdef  SQUEEZE
+#undef  SQUEEZE
+#endif // SQUEEZE
+#define SQUEEZE(ctx, idx) ((uint8_t) (ctx->state[(idx) >> 3] >> (((idx) & 0x7) << 3)))
+#ifdef SWAP
+#undef SWAP
+#endif // SWAP
+#define SWAP(x, y) do { uint64_t tmp = (x); (x) = (y); (y) = tmp; } while (0)
+
+/* The permutation function.  */
+static void hsha3_keccak_f1600(hsha3_context_t *ctx)
+{
+    uint64_t lane[5];
+    uint64_t *s = ctx->state;
+    int i;
+    for (int round = 0; round < 24; round++)
+    {
+        uint64_t t;
+        for (i = 0; i < 5; i++)
+        {
+            lane[i] = s[i] ^ s[i + 5] ^ s[i + 10] ^ s[i + 15] ^ s[i + 20];
+        }
+        for (i = 0; i < 5; i++)
+        {
+            t = lane[(i + 4) % 5] ^ ROTR64(lane[(i + 1) % 5], 63);
+            s[i] ^= t;
+            s[i + 5] ^= t;
+            s[i + 10] ^= t;
+            s[i + 15] ^= t;
+            s[i + 20] ^= t;
+        }
+
+        /* Rho */
+        for (i = 1; i < 25; i += 4)
+        {
+            uint32_t r = hsha3_rho[(i - 1) >> 2];
+            for (int j = i; j < i + 4; j++) {
+                uint8_t r8 = (uint8_t) (r >> 24);
+                r <<= 8;
+                s[j] = ROTR64(s[j], r8);
+            }
+        }
+
+        /* Pi */
+        t = s[1];
+        for (i = 0; i < 24; i += 4)
+        {
+            uint32_t p = hsha3_pi[i >> 2];
+            for (unsigned j = 0; j < 4; j++) {
+                SWAP(s[p & 0xff], t);
+                p >>= 8;
+            }
+        }
+
+        /* Chi */
+        for (i = 0; i <= 20; i += 5)
+        {
+            lane[0] = s[i];
+            lane[1] = s[i + 1];
+            lane[2] = s[i + 2];
+            lane[3] = s[i + 3];
+            lane[4] = s[i + 4];
+            s[i + 0] ^= (~lane[1]) & lane[2];
+            s[i + 1] ^= (~lane[2]) & lane[3];
+            s[i + 2] ^= (~lane[3]) & lane[4];
+            s[i + 3] ^= (~lane[4]) & lane[0];
+            s[i + 4] ^= (~lane[0]) & lane[1];
+        }
+
+        /* Iota */
+        /* Decompress the round masks (see definition of rc) */
+        s[0] ^= ((hsha3_iota_r_packed[round] & 0x40ull) << 57 |
+                 (hsha3_iota_r_packed[round] & 0x20ull) << 26 |
+                 (hsha3_iota_r_packed[round] & 0x10ull) << 11 |
+                 (hsha3_iota_r_packed[round] & 0x8f));
+    }
+}
+
+#define HSHA3_GET_UINT64_LE( data, offset )               \
+    (                                                       \
+          ( (uint64_t) ( data )[( offset ) + 7] << 56 )     \
+        | ( (uint64_t) ( data )[( offset ) + 6] << 48 )     \
+        | ( (uint64_t) ( data )[( offset ) + 5] << 40 )     \
+        | ( (uint64_t) ( data )[( offset ) + 4] << 32 )     \
+        | ( (uint64_t) ( data )[( offset ) + 3] << 24 )     \
+        | ( (uint64_t) ( data )[( offset ) + 2] << 16 )     \
+        | ( (uint64_t) ( data )[( offset ) + 1] <<  8 )     \
+        | ( (uint64_t) ( data )[( offset )    ]       )     \
+    )
+
+static int hsha3_update(hsha3_context_t *ctx,const uint8_t *input,size_t ilen)
+{
+    if (ilen >= 8)
+    {
+        // 8-byte align index
+        int align_bytes = 8 - (ctx->index % 8);
+        if (align_bytes)
+        {
+            for (; align_bytes > 0; align_bytes--)
+            {
+                ABSORB(ctx, ctx->index, *input++);
+                ilen--;
+                ctx->index++;
+            }
+            if ((ctx->index = ctx->index % ctx->max_block_size) == 0)
+            {
+                hsha3_keccak_f1600(ctx);
+            }
+        }
+
+        // process input in 8-byte chunks
+        while (ilen >= 8)
+        {
+            ABSORB(ctx, ctx->index, HSHA3_GET_UINT64_LE(input, 0));
+            input += 8;
+            ilen -= 8;
+            if ((ctx->index = (ctx->index + 8) % ctx->max_block_size) == 0)
+            {
+                hsha3_keccak_f1600(ctx);
+            }
+        }
+    }
+
+    // handle remaining bytes
+    while (ilen-- > 0)
+    {
+        ABSORB(ctx, ctx->index, *input++);
+        if ((ctx->index = (ctx->index + 1) % ctx->max_block_size) == 0)
+        {
+            hsha3_keccak_f1600(ctx);
+        }
+    }
+
+    return 0;
+}
+
+static int hsha3_finish(hsha3_context_t *ctx,uint8_t *output, size_t olen)
+{
+    int ret = -1;
+
+    /* Catch SHA-3 families, with fixed output length */
+    if (ctx->olen > 0)
+    {
+        if (ctx->olen > olen)
+        {
+            ret = -1;
+            return ret;
+        }
+        olen = ctx->olen;
+    }
+
+    ABSORB(ctx, ctx->index, HSHA3_XOR_BYTE);
+    ABSORB(ctx, ctx->max_block_size - 1, 0x80);
+    hsha3_keccak_f1600(ctx);
+    ctx->index = 0;
+
+    while (olen-- > 0)
+    {
+        *output++ = SQUEEZE(ctx, ctx->index);
+
+        if ((ctx->index = (ctx->index + 1) % ctx->max_block_size) == 0)
+        {
+            hsha3_keccak_f1600(ctx);
+        }
+    }
+
+    ret = 0;
+    return ret;
+}
+
+#undef ROTR64
+#undef ABSORB
+#undef SQUEEZE
+#undef SWAP
+
+int hsha3_sha224_starts(hsha3_sha224_context_t *ctx)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    memset(ctx,0,sizeof(hsha3_sha224_context_t));
+    ctx->olen=sizeof(hsha3_sha224_t);
+    ctx->max_block_size=144;
+    return 0;
+}
+
+int hsha3_sha224_update(hsha3_sha224_context_t *ctx,const uint8_t *input,size_t ilen)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    if(input==NULL || ilen == 0)
+    {
+        return 0;
+    }
+    return hsha3_update(ctx,input,ilen);
+}
+
+int hsha3_sha224_finish(hsha3_sha224_context_t *ctx,hsha3_sha224_t output)
+{
+    if(ctx==NULL || output == NULL)
+    {
+        return -1;
+    }
+    return hsha3_finish(ctx,output,sizeof(hsha3_sha224_t));
+}
+
+
+int hsha3_sha224(const uint8_t *input,size_t ilen,hsha3_sha224_t output)
+{
+    int ret = -1;
+    if(input==NULL || output == NULL)
+    {
+        return ret;
+    }
+    hsha3_sha224_context_t ctx;
+
+    if ((ret = hsha3_sha224_starts(&ctx)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_sha224_update(&ctx, input, ilen)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_sha224_finish(&ctx, output)) != 0)
+    {
+        goto exit;
+    }
+
+exit:
+    return ret;
+
+}
+
+
+int hsha3_sha256_starts(hsha3_sha256_context_t *ctx)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    memset(ctx,0,sizeof(hsha3_sha256_context_t));
+    ctx->olen=sizeof(hsha3_sha256_t);
+    ctx->max_block_size=136;
+    return 0;
+}
+
+int hsha3_sha256_update(hsha3_sha256_context_t *ctx,const uint8_t *input,size_t ilen)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    if(input==NULL || ilen == 0)
+    {
+        return 0;
+    }
+    return hsha3_update(ctx,input,ilen);
+}
+
+int hsha3_sha256_finish(hsha3_sha256_context_t *ctx,hsha3_sha256_t output)
+{
+    if(ctx==NULL || output == NULL)
+    {
+        return -1;
+    }
+    return hsha3_finish(ctx,output,sizeof(hsha3_sha256_t));
+}
+
+
+int hsha3_sha256(const uint8_t *input,size_t ilen,hsha3_sha256_t output)
+{
+    int ret = -1;
+    if(input==NULL || output == NULL)
+    {
+        return ret;
+    }
+    hsha3_sha256_context_t ctx;
+
+    if ((ret = hsha3_sha256_starts(&ctx)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_sha256_update(&ctx, input, ilen)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_sha256_finish(&ctx, output)) != 0)
+    {
+        goto exit;
+    }
+
+exit:
+    return ret;
+
+}
+
+
+int hsha3_sha384_starts(hsha3_sha384_context_t *ctx)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    memset(ctx,0,sizeof(hsha3_sha384_context_t));
+    ctx->olen=sizeof(hsha3_sha384_t);
+    ctx->max_block_size=104;
+    return 0;
+}
+
+int hsha3_sha384_update(hsha3_sha384_context_t *ctx,const uint8_t *input,size_t ilen)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    if(input==NULL || ilen == 0)
+    {
+        return 0;
+    }
+    return hsha3_update(ctx,input,ilen);
+}
+
+int hsha3_sha384_finish(hsha3_sha384_context_t *ctx,hsha3_sha384_t output)
+{
+    if(ctx==NULL || output == NULL)
+    {
+        return -1;
+    }
+    return hsha3_finish(ctx,output,sizeof(hsha3_sha384_t));
+}
+
+
+int hsha3_sha384(const uint8_t *input,size_t ilen,hsha3_sha384_t output)
+{
+    int ret = -1;
+    if(input==NULL || output == NULL)
+    {
+        return ret;
+    }
+    hsha3_sha384_context_t ctx;
+
+    if ((ret = hsha3_sha384_starts(&ctx)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_sha384_update(&ctx, input, ilen)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_sha384_finish(&ctx, output)) != 0)
+    {
+        goto exit;
+    }
+
+exit:
+    return ret;
+
+}
+
+int hsha3_sha512_starts(hsha3_sha512_context_t *ctx)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    memset(ctx,0,sizeof(hsha3_sha512_context_t));
+    ctx->olen=sizeof(hsha3_sha512_t);
+    ctx->max_block_size=72;
+    return 0;
+}
+
+int hsha3_sha512_update(hsha3_sha512_context_t *ctx,const uint8_t *input,size_t ilen)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    if(input==NULL || ilen == 0)
+    {
+        return 0;
+    }
+    return hsha3_update(ctx,input,ilen);
+}
+
+int hsha3_sha512_finish(hsha3_sha512_context_t *ctx,hsha3_sha512_t output)
+{
+    if(ctx==NULL || output == NULL)
+    {
+        return -1;
+    }
+    return hsha3_finish(ctx,output,sizeof(hsha3_sha512_t));
+}
+
+
+int hsha3_sha512(const uint8_t *input,size_t ilen,hsha3_sha512_t output)
+{
+    int ret = -1;
+    if(input==NULL || output == NULL)
+    {
+        return ret;
+    }
+    hsha3_sha512_context_t ctx;
+
+    if ((ret = hsha3_sha512_starts(&ctx)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_sha512_update(&ctx, input, ilen)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_sha512_finish(&ctx, output)) != 0)
+    {
+        goto exit;
+    }
+
+exit:
+    return ret;
+
+}
+
+
 
 

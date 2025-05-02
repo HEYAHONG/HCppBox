@@ -2913,6 +2913,158 @@ static int hcrypto_test(int argc,const char *argv[])
             }
         }
 
+        const char sha3_test_buf[2][32]=
+        {
+            "",
+            "abc"
+        };
+        {
+            const hsha3_sha224_t sha3_224_test_sum[] =
+            {
+                { /* "" */
+                    0x6B, 0x4E, 0x03, 0x42, 0x36, 0x67, 0xDB, 0xB7,
+                    0x3B, 0x6E, 0x15, 0x45, 0x4F, 0x0E, 0xB1, 0xAB,
+                    0xD4, 0x59, 0x7F, 0x9A, 0x1B, 0x07, 0x8E, 0x3F,
+                    0x5B, 0x5A, 0x6B, 0xC7
+                },
+                { /* "abc" */
+                    0xE6, 0x42, 0x82, 0x4C, 0x3F, 0x8C, 0xF2, 0x4A,
+                    0xD0, 0x92, 0x34, 0xEE, 0x7D, 0x3C, 0x76, 0x6F,
+                    0xC9, 0xA3, 0xA5, 0x16, 0x8D, 0x0C, 0x94, 0xAD,
+                    0x73, 0xB4, 0x6F, 0xDF
+                }
+            };
+
+            for(size_t i=0; i<(sizeof(sha3_test_buf)/sizeof(sha3_test_buf[0])); i++)
+            {
+                if(i<2)
+                {
+                    hsha3_sha224_t sha3= {0};
+                    hsha3_sha224((const uint8_t *)sha3_test_buf[i],strlen(sha3_test_buf[i]),sha3);
+                    printf("hcrypto sha3 sha224:data=%s\r\n",(char *)sha3_test_buf[i]);
+                    printf("hcrypto sha3 sha224:");
+                    for(size_t i=0; i<sizeof(sha3); i++)
+                    {
+                        printf("%02X",sha3[i]);
+                    }
+                    printf("\t%s\r\n",(memcmp(sha3,sha3_224_test_sum[i],sizeof(sha3))==0)?"ok":"failed");
+                }
+            }
+        }
+
+        {
+            const hsha3_sha256_t sha3_256_test_sum[] =
+            {
+                { /* "" */
+                    0xA7, 0xFF, 0xC6, 0xF8, 0xBF, 0x1E, 0xD7, 0x66,
+                    0x51, 0xC1, 0x47, 0x56, 0xA0, 0x61, 0xD6, 0x62,
+                    0xF5, 0x80, 0xFF, 0x4D, 0xE4, 0x3B, 0x49, 0xFA,
+                    0x82, 0xD8, 0x0A, 0x4B, 0x80, 0xF8, 0x43, 0x4A
+                },
+                { /* "abc" */
+                    0x3A, 0x98, 0x5D, 0xA7, 0x4F, 0xE2, 0x25, 0xB2,
+                    0x04, 0x5C, 0x17, 0x2D, 0x6B, 0xD3, 0x90, 0xBD,
+                    0x85, 0x5F, 0x08, 0x6E, 0x3E, 0x9D, 0x52, 0x5B,
+                    0x46, 0xBF, 0xE2, 0x45, 0x11, 0x43, 0x15, 0x32
+                }
+            };
+
+            for(size_t i=0; i<(sizeof(sha3_test_buf)/sizeof(sha3_test_buf[0])); i++)
+            {
+                if(i<2)
+                {
+                    hsha3_sha256_t sha3= {0};
+                    hsha3_sha256((const uint8_t *)sha3_test_buf[i],strlen(sha3_test_buf[i]),sha3);
+                    printf("hcrypto sha3 sha256:data=%s\r\n",(char *)sha3_test_buf[i]);
+                    printf("hcrypto sha3 sha256:");
+                    for(size_t i=0; i<sizeof(sha3); i++)
+                    {
+                        printf("%02X",sha3[i]);
+                    }
+                    printf("\t%s\r\n",(memcmp(sha3,sha3_256_test_sum[i],sizeof(sha3))==0)?"ok":"failed");
+                }
+            }
+        }
+
+        {
+            const hsha3_sha384_t sha3_384_test_sum[] =
+            {
+                { /* "" */
+                    0x0C, 0x63, 0xA7, 0x5B, 0x84, 0x5E, 0x4F, 0x7D,
+                    0x01, 0x10, 0x7D, 0x85, 0x2E, 0x4C, 0x24, 0x85,
+                    0xC5, 0x1A, 0x50, 0xAA, 0xAA, 0x94, 0xFC, 0x61,
+                    0x99, 0x5E, 0x71, 0xBB, 0xEE, 0x98, 0x3A, 0x2A,
+                    0xC3, 0x71, 0x38, 0x31, 0x26, 0x4A, 0xDB, 0x47,
+                    0xFB, 0x6B, 0xD1, 0xE0, 0x58, 0xD5, 0xF0, 0x04
+                },
+                { /* "abc" */
+                    0xEC, 0x01, 0x49, 0x82, 0x88, 0x51, 0x6F, 0xC9,
+                    0x26, 0x45, 0x9F, 0x58, 0xE2, 0xC6, 0xAD, 0x8D,
+                    0xF9, 0xB4, 0x73, 0xCB, 0x0F, 0xC0, 0x8C, 0x25,
+                    0x96, 0xDA, 0x7C, 0xF0, 0xE4, 0x9B, 0xE4, 0xB2,
+                    0x98, 0xD8, 0x8C, 0xEA, 0x92, 0x7A, 0xC7, 0xF5,
+                    0x39, 0xF1, 0xED, 0xF2, 0x28, 0x37, 0x6D, 0x25
+                }
+            };
+
+            for(size_t i=0; i<(sizeof(sha3_test_buf)/sizeof(sha3_test_buf[0])); i++)
+            {
+                if(i<2)
+                {
+                    hsha3_sha384_t sha3= {0};
+                    hsha3_sha384((const uint8_t *)sha3_test_buf[i],strlen(sha3_test_buf[i]),sha3);
+                    printf("hcrypto sha3 sha384:data=%s\r\n",(char *)sha3_test_buf[i]);
+                    printf("hcrypto sha3 sha384:");
+                    for(size_t i=0; i<sizeof(sha3); i++)
+                    {
+                        printf("%02X",sha3[i]);
+                    }
+                    printf("\t%s\r\n",(memcmp(sha3,sha3_384_test_sum[i],sizeof(sha3))==0)?"ok":"failed");
+                }
+            }
+        }
+
+        {
+            const hsha3_sha512_t sha3_512_test_sum[] =
+            {
+                { /* "" */
+                    0xA6, 0x9F, 0x73, 0xCC, 0xA2, 0x3A, 0x9A, 0xC5,
+                    0xC8, 0xB5, 0x67, 0xDC, 0x18, 0x5A, 0x75, 0x6E,
+                    0x97, 0xC9, 0x82, 0x16, 0x4F, 0xE2, 0x58, 0x59,
+                    0xE0, 0xD1, 0xDC, 0xC1, 0x47, 0x5C, 0x80, 0xA6,
+                    0x15, 0xB2, 0x12, 0x3A, 0xF1, 0xF5, 0xF9, 0x4C,
+                    0x11, 0xE3, 0xE9, 0x40, 0x2C, 0x3A, 0xC5, 0x58,
+                    0xF5, 0x00, 0x19, 0x9D, 0x95, 0xB6, 0xD3, 0xE3,
+                    0x01, 0x75, 0x85, 0x86, 0x28, 0x1D, 0xCD, 0x26
+                },
+                { /* "abc" */
+                    0xB7, 0x51, 0x85, 0x0B, 0x1A, 0x57, 0x16, 0x8A,
+                    0x56, 0x93, 0xCD, 0x92, 0x4B, 0x6B, 0x09, 0x6E,
+                    0x08, 0xF6, 0x21, 0x82, 0x74, 0x44, 0xF7, 0x0D,
+                    0x88, 0x4F, 0x5D, 0x02, 0x40, 0xD2, 0x71, 0x2E,
+                    0x10, 0xE1, 0x16, 0xE9, 0x19, 0x2A, 0xF3, 0xC9,
+                    0x1A, 0x7E, 0xC5, 0x76, 0x47, 0xE3, 0x93, 0x40,
+                    0x57, 0x34, 0x0B, 0x4C, 0xF4, 0x08, 0xD5, 0xA5,
+                    0x65, 0x92, 0xF8, 0x27, 0x4E, 0xEC, 0x53, 0xF0
+                }
+            };
+
+            for(size_t i=0; i<(sizeof(sha3_test_buf)/sizeof(sha3_test_buf[0])); i++)
+            {
+                if(i<2)
+                {
+                    hsha3_sha512_t sha3= {0};
+                    hsha3_sha512((const uint8_t *)sha3_test_buf[i],strlen(sha3_test_buf[i]),sha3);
+                    printf("hcrypto sha3 sha512:data=%s\r\n",(char *)sha3_test_buf[i]);
+                    printf("hcrypto sha3 sha512:");
+                    for(size_t i=0; i<sizeof(sha3); i++)
+                    {
+                        printf("%02X",sha3[i]);
+                    }
+                    printf("\t%s\r\n",(memcmp(sha3,sha3_512_test_sum[i],sizeof(sha3))==0)?"ok":"failed");
+                }
+            }
+        }
 
     }
 

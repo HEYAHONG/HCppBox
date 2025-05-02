@@ -307,6 +307,207 @@ int hsha2_sha512_finish(hsha2_sha512_context_t *ctx,hsha2_sha512_t output);
  */
 int hsha2_sha512(const uint8_t *input,size_t ilen,hsha2_sha512_t output);
 
+/*
+ * SHA3上下文
+ */
+typedef struct hsha3_context hsha3_context_t;
+struct hsha3_context
+{
+    uint64_t state[25];
+    uint32_t index;
+    uint16_t olen;
+    uint16_t max_block_size;
+};
+
+/*
+ * SHA3 224上下文
+ */
+typedef  hsha3_context_t hsha3_sha224_context_t;
+
+/*
+ * SHA3 224
+ */
+typedef uint8_t hsha3_sha224_t[28];
+
+/** \brief sha3_sha224 开始
+ *
+ * \param ctx hsha3_sha224_context_t* sha3_sha224上下文指针
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha224_starts(hsha3_sha224_context_t *ctx);
+
+/** \brief sha3_sha224 更新
+ *
+ * \param ctx hsha3_sha224_context_t* sha3_sha224上下文指针
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t 输入数据长度
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha224_update(hsha3_sha224_context_t *ctx,const uint8_t *input,size_t ilen);
+
+/** \brief sha3_sha224 完成
+ *
+ * \param ctx hsha3_sha224_context_t* sha3_sha224上下文指针
+ * \param output hsha3_sha224_t 输出SHA3 SHA224
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha224_finish(hsha3_sha224_context_t *ctx,hsha3_sha224_t output);
+
+/** \brief sha3_sha224计算
+ *
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t    输入数据长度
+ * \param output hsha3_sha224_t 输出SHA3 SHA224
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha224(const uint8_t *input,size_t ilen,hsha3_sha224_t output);
+
+
+/*
+ * SHA3 256上下文
+ */
+typedef  hsha3_context_t hsha3_sha256_context_t;
+
+/*
+ * SHA3 256
+ */
+typedef uint8_t hsha3_sha256_t[32];
+
+/** \brief sha3_sha256 开始
+ *
+ * \param ctx hsha3_sha256_context_t* sha3_sha256上下文指针
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha256_starts(hsha3_sha256_context_t *ctx);
+
+/** \brief sha3_sha256 更新
+ *
+ * \param ctx hsha3_sha256_context_t* sha3_sha256上下文指针
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t 输入数据长度
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha256_update(hsha3_sha256_context_t *ctx,const uint8_t *input,size_t ilen);
+
+/** \brief sha3_sha256 完成
+ *
+ * \param ctx hsha3_sha256_context_t* sha3_sha256上下文指针
+ * \param output hsha3_sha256_t 输出SHA3 SHA256
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha256_finish(hsha3_sha256_context_t *ctx,hsha3_sha256_t output);
+
+/** \brief sha3_sha256计算
+ *
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t    输入数据长度
+ * \param output hsha3_sha256_t 输出SHA3 SHA256
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha256(const uint8_t *input,size_t ilen,hsha3_sha256_t output);
+
+/*
+ * SHA3 384上下文
+ */
+typedef  hsha3_context_t hsha3_sha384_context_t;
+
+/*
+ * SHA3 384
+ */
+typedef uint8_t hsha3_sha384_t[48];
+
+/** \brief sha3_sha384 开始
+ *
+ * \param ctx hsha3_sha384_context_t* sha3_sha384上下文指针
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha384_starts(hsha3_sha384_context_t *ctx);
+
+/** \brief sha3_sha384 更新
+ *
+ * \param ctx hsha3_sha384_context_t* sha3_sha384上下文指针
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t 输入数据长度
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha384_update(hsha3_sha384_context_t *ctx,const uint8_t *input,size_t ilen);
+
+/** \brief sha3_sha384 完成
+ *
+ * \param ctx hsha3_sha384_context_t* sha3_sha384上下文指针
+ * \param output hsha3_sha384_t 输出SHA3 SHA384
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha384_finish(hsha3_sha384_context_t *ctx,hsha3_sha384_t output);
+
+/** \brief sha3_sha384计算
+ *
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t    输入数据长度
+ * \param output hsha3_sha384_t 输出SHA3 SHA384
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha384(const uint8_t *input,size_t ilen,hsha3_sha384_t output);
+
+
+/*
+ * SHA3 512上下文
+ */
+typedef  hsha3_context_t hsha3_sha512_context_t;
+
+/*
+ * SHA3 512
+ */
+typedef uint8_t hsha3_sha512_t[64];
+
+/** \brief sha3_sha512 开始
+ *
+ * \param ctx hsha3_sha512_context_t* sha3_sha512上下文指针
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha512_starts(hsha3_sha512_context_t *ctx);
+
+/** \brief sha3_sha512 更新
+ *
+ * \param ctx hsha3_sha512_context_t* sha3_sha512上下文指针
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t 输入数据长度
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha512_update(hsha3_sha512_context_t *ctx,const uint8_t *input,size_t ilen);
+
+/** \brief sha3_sha512 完成
+ *
+ * \param ctx hsha3_sha512_context_t* sha3_sha512上下文指针
+ * \param output hsha3_sha512_t 输出SHA3 SHA512
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha512_finish(hsha3_sha512_context_t *ctx,hsha3_sha512_t output);
+
+/** \brief sha3_sha512计算
+ *
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t    输入数据长度
+ * \param output hsha3_sha512_t 输出SHA3 SHA512
+ * \return int 0=未出错
+ *
+ */
+int hsha3_sha512(const uint8_t *input,size_t ilen,hsha3_sha512_t output);
 
 #ifdef __cplusplus
 }
