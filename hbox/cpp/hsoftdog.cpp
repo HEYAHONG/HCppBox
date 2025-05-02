@@ -7,7 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hsoftdog.h"
-#include "hstacklesscoroutine.h"
+#include "hruntime.h"
 
 HSTACKLESSCOROUTINE_BLOCK_START(hsoftdog)
 HWATCHDOG_FEED();

@@ -3,6 +3,13 @@
 辅助处理运行时相关工作，如：
 
 - 处理各个C语言组件的初始化及任务循环。
+- 简易多任务系统。
+
+#  组件
+
+## hruntime
+
+处理各个C语言组件的初始化及任务循环。
 
 
 可外部配置的宏定义如下:
@@ -12,3 +19,8 @@
 | `HRUNTIME_USING_INIT_SECTION` | 启用初始化段 | 当`hruntime_init`被调用时将调用初始化段中的函数 |
 | `HRUNTIME_USING_LOOP_SECTION` |  启用循环段  |  当`hruntime_loop`被调用时将调用循环段中的函数  |
 
+## hstacklesscoroutine
+
+本组件用于辅助编写简易无栈协程。无栈协程可用于实现简易的多任务系统。
+
+具体实现见[hstacklesscoroutine](hstacklesscoroutine)。

@@ -10,7 +10,6 @@
 #include "hcompiler.h"
 #include "hdefaults.h"
 #include "h3rdparty.h"
-#include "hstacklesscoroutine.h"
 #include "hevent.h"
 #include "hruntime.h"
 

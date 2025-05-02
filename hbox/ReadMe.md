@@ -88,12 +88,6 @@ hbox意为HYH的工具箱。
 
 具体实现见[hlocale](hlocale)目录
 
-## hstacklesscoroutine
-
-本组件用于辅助编写简易无栈协程。无栈协程可用于实现简易的多任务系统。
-
-具体实现见[hstacklesscoroutine](hstacklesscoroutine)。
-
 ## hnet
 
 本目录主要用于辅助实现网络相关代码。
