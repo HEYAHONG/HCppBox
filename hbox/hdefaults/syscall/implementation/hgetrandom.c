@@ -43,6 +43,8 @@ HDEFAULTS_USERCALL_DEFINE3(hgetrandom,HDEFAULTS_SYSCALL_HGETRANDOM,hgetrandom_ss
     ret=getrandom(buffer,length,flags);
 #else
     {
+        static bool is_random_init=false;
+        if(!is_random_init)
         {
             //使用当前时间作为随机数种子
             hgettimeofday_timeval_t tv= {0};
@@ -50,6 +52,7 @@ HDEFAULTS_USERCALL_DEFINE3(hgetrandom,HDEFAULTS_SYSCALL_HGETRANDOM,hgetrandom_ss
             if(tv.tv_usec!=0 && tv.tv_sec!=0)
             {
                 srand(tv.tv_sec+tv.tv_usec);
+                is_random_init=true;
             }
         }
         {
