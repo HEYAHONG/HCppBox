@@ -8,7 +8,7 @@
  **************************************************************/
 #include "hmodbus.h"
 
-static uint16_t CRC16(const uint8_t *arr_buff,size_t len)
+static uint16_t hmodbus_crc16(const uint8_t *arr_buff,size_t len)
 {
     uint16_t crc=0xFFFF;
     size_t  i, j;
@@ -44,7 +44,7 @@ bool modbus_rtu_adu_check_crc(const uint8_t *adu,size_t adu_length)
     {
         return false;
     }
-    uint16_t crc1=CRC16(adu,adu_length-2);
+    uint16_t crc1=hmodbus_crc16(adu,adu_length-2);
     uint16_t crc2=adu[adu_length-1];
     crc2<<=8;
     crc2+=adu[adu_length-2];
@@ -66,7 +66,7 @@ bool modbus_rtu_adu_append_crc(uint8_t *adu,size_t adu_length)
     {
         return false;
     }
-    uint16_t crc=CRC16(adu,adu_length-2);
+    uint16_t crc=hmodbus_crc16(adu,adu_length-2);
     adu[adu_length-2]=(crc&0xff);
     adu[adu_length-1]=(crc>>8);
     return true;
