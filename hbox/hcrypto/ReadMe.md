@@ -60,6 +60,11 @@
 - [hrc4.h](hrc4.h)
 - [hrc4.c](hrc4.c)
 
+### ChaCha20
+
+- [hchacha20.h](hchacha20.h)
+- [hchacha20.c](hchacha20.c)
+
 # 消息摘要
 
 ## MD4
