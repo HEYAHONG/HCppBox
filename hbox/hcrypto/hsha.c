@@ -1678,7 +1678,7 @@ exit:
 
 }
 
-#define HSHA3_XOR_BYTE 0x6
+
 
 #ifdef H
 #undef H
@@ -1850,6 +1850,8 @@ static int hsha3_update(hsha3_context_t *ctx,const uint8_t *input,size_t ilen)
     return 0;
 }
 
+#define HSHA3_XOR_BYTE 0x6
+
 static int hsha3_finish(hsha3_context_t *ctx,uint8_t *output, size_t olen)
 {
     int ret = -1;
@@ -1866,6 +1868,42 @@ static int hsha3_finish(hsha3_context_t *ctx,uint8_t *output, size_t olen)
     }
 
     ABSORB(ctx, ctx->index, HSHA3_XOR_BYTE);
+    ABSORB(ctx, ctx->max_block_size - 1, 0x80);
+    hsha3_keccak_f1600(ctx);
+    ctx->index = 0;
+
+    while (olen-- > 0)
+    {
+        *output++ = SQUEEZE(ctx, ctx->index);
+
+        if ((ctx->index = (ctx->index + 1) % ctx->max_block_size) == 0)
+        {
+            hsha3_keccak_f1600(ctx);
+        }
+    }
+
+    ret = 0;
+    return ret;
+}
+
+#define HSHA3_SHAKE_XOR_BYTE 0x1f
+
+static int hsha3_shake_finish(hsha3_context_t *ctx,uint8_t *output, size_t olen)
+{
+    int ret = -1;
+
+    /* Catch SHA-3 families, with fixed output length */
+    if (ctx->olen > 0)
+    {
+        if (ctx->olen > olen)
+        {
+            ret = -1;
+            return ret;
+        }
+        olen = ctx->olen;
+    }
+
+    ABSORB(ctx, ctx->index, HSHA3_SHAKE_XOR_BYTE);
     ABSORB(ctx, ctx->max_block_size - 1, 0x80);
     hsha3_keccak_f1600(ctx);
     ctx->index = 0;
@@ -2146,6 +2184,135 @@ exit:
     return ret;
 
 }
+
+int hsha3_shake128_starts(hsha3_shake128_context_t *ctx)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    memset(ctx,0,sizeof(hsha3_shake128_context_t));
+    ctx->olen=sizeof(hsha3_shake128_t);
+    ctx->max_block_size=sizeof(hsha3_shake128_message_block_t);
+    return 0;
+}
+
+int hsha3_shake128_update(hsha3_shake128_context_t *ctx,const uint8_t *input,size_t ilen)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    if(input==NULL || ilen == 0)
+    {
+        return 0;
+    }
+    return hsha3_update(ctx,input,ilen);
+}
+
+int hsha3_shake128_finish(hsha3_shake128_context_t *ctx,hsha3_shake128_t output,size_t output_len)
+{
+    if(ctx==NULL || output == NULL || output_len < sizeof(hsha3_shake128_t) )
+    {
+        return -1;
+    }
+    return hsha3_shake_finish(ctx,output,output_len);
+}
+
+
+int hsha3_shake128(const uint8_t *input,size_t ilen,hsha3_shake128_t output,size_t output_len)
+{
+    int ret = -1;
+    if(input==NULL || output == NULL)
+    {
+        return ret;
+    }
+    hsha3_shake128_context_t ctx;
+
+    if ((ret = hsha3_shake128_starts(&ctx)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_shake128_update(&ctx, input, ilen)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_shake128_finish(&ctx, output,output_len)) != 0)
+    {
+        goto exit;
+    }
+
+exit:
+    return ret;
+
+}
+
+int hsha3_shake256_starts(hsha3_shake256_context_t *ctx)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    memset(ctx,0,sizeof(hsha3_shake256_context_t));
+    ctx->olen=sizeof(hsha3_shake256_t);
+    ctx->max_block_size=sizeof(hsha3_shake256_message_block_t);
+    return 0;
+}
+
+int hsha3_shake256_update(hsha3_shake256_context_t *ctx,const uint8_t *input,size_t ilen)
+{
+    if(ctx==NULL)
+    {
+        return -1;
+    }
+    if(input==NULL || ilen == 0)
+    {
+        return 0;
+    }
+    return hsha3_update(ctx,input,ilen);
+}
+
+int hsha3_shake256_finish(hsha3_shake256_context_t *ctx,hsha3_shake256_t output,size_t output_len)
+{
+    if(ctx==NULL || output == NULL || output_len < sizeof(hsha3_shake256_t) )
+    {
+        return -1;
+    }
+    return hsha3_shake_finish(ctx,output,output_len);
+}
+
+
+int hsha3_shake256(const uint8_t *input,size_t ilen,hsha3_shake256_t output,size_t output_len)
+{
+    int ret = -1;
+    if(input==NULL || output == NULL)
+    {
+        return ret;
+    }
+    hsha3_shake256_context_t ctx;
+
+    if ((ret = hsha3_shake256_starts(&ctx)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_shake256_update(&ctx, input, ilen)) != 0)
+    {
+        goto exit;
+    }
+
+    if ((ret = hsha3_shake256_finish(&ctx, output,output_len)) != 0)
+    {
+        goto exit;
+    }
+
+exit:
+    return ret;
+
+}
+
 
 
 

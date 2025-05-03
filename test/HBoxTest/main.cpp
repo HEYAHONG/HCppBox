@@ -3066,6 +3066,62 @@ static int hcrypto_test(int argc,const char *argv[])
             }
         }
 
+        {
+            const hsha3_shake128_t sha3_test_sum[] =
+            {
+                { /* "" */
+                    0x7f,0x9c,0x2b,0xa4,0xe8,0x8f,0x82,0x7d,0x61,0x60,0x45,0x50,0x76,0x05,0x85,0x3e
+                },
+                { /* "abc" */
+                    0x58,0x81,0x09,0x2d,0xd8,0x18,0xbf,0x5c,0xf8,0xa3,0xdd,0xb7,0x93,0xfb,0xcb,0xa7
+                }
+            };
+
+            for(size_t i=0; i<(sizeof(sha3_test_buf)/sizeof(sha3_test_buf[0])); i++)
+            {
+                if(i<2)
+                {
+                    hsha3_shake128_t sha3= {0};
+                    hsha3_shake128((const uint8_t *)sha3_test_buf[i],strlen(sha3_test_buf[i]),sha3,sizeof(sha3));
+                    printf("hcrypto sha3 shake128:data=%s\r\n",(char *)sha3_test_buf[i]);
+                    printf("hcrypto sha3 shake128:");
+                    for(size_t i=0; i<sizeof(sha3); i++)
+                    {
+                        printf("%02X",sha3[i]);
+                    }
+                    printf("\t%s\r\n",(memcmp(sha3,sha3_test_sum[i],sizeof(sha3))==0)?"ok":"failed");
+                }
+            }
+        }
+
+        {
+            const hsha3_shake256_t sha3_test_sum[] =
+            {
+                { /* "" */
+                    0x46,0xb9,0xdd,0x2b,0x0b,0xa8,0x8d,0x13,0x23,0x3b,0x3f,0xeb,0x74,0x3e,0xeb,0x24,0x3f,0xcd,0x52,0xea,0x62,0xb8,0x1b,0x82,0xb5,0x0c,0x27,0x64,0x6e,0xd5,0x76,0x2f
+                },
+                { /* "abc" */
+                    0x48,0x33,0x66,0x60,0x13,0x60,0xa8,0x77,0x1c,0x68,0x63,0x08,0x0c,0xc4,0x11,0x4d,0x8d,0xb4,0x45,0x30,0xf8,0xf1,0xe1,0xee,0x4f,0x94,0xea,0x37,0xe7,0x8b,0x57,0x39
+                }
+            };
+
+            for(size_t i=0; i<(sizeof(sha3_test_buf)/sizeof(sha3_test_buf[0])); i++)
+            {
+                if(i<2)
+                {
+                    hsha3_shake256_t sha3= {0};
+                    hsha3_shake256((const uint8_t *)sha3_test_buf[i],strlen(sha3_test_buf[i]),sha3,sizeof(sha3));
+                    printf("hcrypto sha3 shake256:data=%s\r\n",(char *)sha3_test_buf[i]);
+                    printf("hcrypto sha3 shake256:");
+                    for(size_t i=0; i<sizeof(sha3); i++)
+                    {
+                        printf("%02X",sha3[i]);
+                    }
+                    printf("\t%s\r\n",(memcmp(sha3,sha3_test_sum[i],sizeof(sha3))==0)?"ok":"failed");
+                }
+            }
+        }
+
     }
 
     {

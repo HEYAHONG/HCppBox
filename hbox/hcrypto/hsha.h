@@ -529,6 +529,116 @@ int hsha3_sha512_finish(hsha3_sha512_context_t *ctx,hsha3_sha512_t output);
  */
 int hsha3_sha512(const uint8_t *input,size_t ilen,hsha3_sha512_t output);
 
+
+/*
+ * SHA3 shake128上下文
+ */
+typedef  hsha3_context_t hsha3_shake128_context_t;
+
+/*
+ * SHA3 shake128消息块
+ */
+typedef uint8_t hsha3_shake128_message_block_t[168];
+
+/*
+ * SHA3 shake128,shake128可输出更长输出,此处为最小输出
+ */
+typedef uint8_t hsha3_shake128_t[16];
+
+/** \brief sha3_shake128 开始
+ *
+ * \param ctx hsha3_shake128_context_t* sha3_shake128上下文指针
+ * \return int 0=未出错
+ *
+ */
+int hsha3_shake128_starts(hsha3_shake128_context_t *ctx);
+
+/** \brief sha3_shake128 更新
+ *
+ * \param ctx hsha3_shake128_context_t* sha3_shake128上下文指针
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t 输入数据长度
+ * \return int 0=未出错
+ *
+ */
+int hsha3_shake128_update(hsha3_shake128_context_t *ctx,const uint8_t *input,size_t ilen);
+
+/** \brief sha3_shake128 完成
+ *
+ * \param ctx hsha3_shake128_context_t* sha3_shake128上下文指针
+ * \param output hsha3_shake128_t 输出SHA3 shake128
+ * \param output_len size_t 输出长度(需要大于等于最小长度)
+ * \return int 0=未出错
+ *
+ */
+int hsha3_shake128_finish(hsha3_shake128_context_t *ctx,hsha3_shake128_t output,size_t output_len);
+
+/** \brief sha3_shake128计算
+ *
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t    输入数据长度
+ * \param output hsha3_shake128_t 输出SHA3 shake128
+ * \param output_len size_t 输出长度(需要大于等于最小长度)
+ * \return int 0=未出错
+ *
+ */
+int hsha3_shake128(const uint8_t *input,size_t ilen,hsha3_shake128_t output,size_t output_len);
+
+
+/*
+ * SHA3 shake256上下文
+ */
+typedef  hsha3_context_t hsha3_shake256_context_t;
+
+/*
+ * SHA3 shake256消息块
+ */
+typedef uint8_t hsha3_shake256_message_block_t[136];
+
+/*
+ * SHA3 shake256,shake256可输出更长输出,此处为最小输出
+ */
+typedef uint8_t hsha3_shake256_t[32];
+
+/** \brief sha3_shake256 开始
+ *
+ * \param ctx hsha3_shake256_context_t* sha3_shake256上下文指针
+ * \return int 0=未出错
+ *
+ */
+int hsha3_shake256_starts(hsha3_shake256_context_t *ctx);
+
+/** \brief sha3_shake256 更新
+ *
+ * \param ctx hsha3_shake256_context_t* sha3_shake256上下文指针
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t 输入数据长度
+ * \return int 0=未出错
+ *
+ */
+int hsha3_shake256_update(hsha3_shake256_context_t *ctx,const uint8_t *input,size_t ilen);
+
+/** \brief sha3_shake256 完成
+ *
+ * \param ctx hsha3_shake256_context_t* sha3_shake256上下文指针
+ * \param output hsha3_shake256_t 输出SHA3 shake256
+ * \param output_len size_t 输出长度(需要大于等于最小长度)
+ * \return int 0=未出错
+ *
+ */
+int hsha3_shake256_finish(hsha3_shake256_context_t *ctx,hsha3_shake256_t output,size_t output_len);
+
+/** \brief sha3_shake256计算
+ *
+ * \param input const uint8_t* 输入数据
+ * \param ilen size_t    输入数据长度
+ * \param output hsha3_shake256_t 输出SHA3 shake256
+ * \param output_len size_t 输出长度(需要大于等于最小长度)
+ * \return int 0=未出错
+ *
+ */
+int hsha3_shake256(const uint8_t *input,size_t ilen,hsha3_shake256_t output,size_t output_len);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
