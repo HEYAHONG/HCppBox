@@ -46,11 +46,11 @@ size_t heventslots_with_internal_heap_min_size(void)
     return sizeof(heventslots_t)+2*sizeof(heventslots_slot_t)+64;//空间足够2个槽。
 }
 
-static void *internal_heap_mem_alloc(size_t nbytes,void *usr)
+static void *heventslots_internal_heap_mem_alloc(size_t nbytes,void *usr)
 {
     return hmemoryheap_pool_malloc((hmemoryheap_pool_t *)usr,nbytes);
 }
-static void internal_heap_mem_free(void * ptr,void *usr)
+static void heventslots_internal_heap_mem_free(void * ptr,void *usr)
 {
     hmemoryheap_pool_free((hmemoryheap_pool_t *)usr,ptr);
 }
@@ -62,7 +62,7 @@ heventslots_t * heventslots_with_internal_heap_init(void *usr,void (*mutex_lock)
         return NULL;
     }
     hmemoryheap_pool_t *pool=hmemoryheap_pool_format(usr,mutex_lock,mutex_unlock,(uint8_t *)mem,length);
-    heventslots_t *slots=heventslots_new_with_memmang_and_lock(pool,internal_heap_mem_alloc,internal_heap_mem_free,mutex_lock,mutex_unlock);
+    heventslots_t *slots=heventslots_new_with_memmang_and_lock(pool,heventslots_internal_heap_mem_alloc,heventslots_internal_heap_mem_free,mutex_lock,mutex_unlock);
     if(slots!=NULL)
     {
         slots->has_internal_heap=1;

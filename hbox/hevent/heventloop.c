@@ -46,11 +46,11 @@ size_t heventloop_with_internal_heap_min_size(void)
     return sizeof(heventloop_t)+2*sizeof(heventloop_event_t)+64;//空间足够2个事件。
 }
 
-static void *internal_heap_mem_alloc(size_t nbytes,void *usr)
+static void *heventloop_internal_heap_mem_alloc(size_t nbytes,void *usr)
 {
     return hmemoryheap_pool_malloc((hmemoryheap_pool_t *)usr,nbytes);
 }
-static void internal_heap_mem_free(void * ptr,void *usr)
+static void heventloop_internal_heap_mem_free(void * ptr,void *usr)
 {
     hmemoryheap_pool_free((hmemoryheap_pool_t *)usr,ptr);
 }
@@ -62,7 +62,7 @@ heventloop_t * heventloop_with_internal_heap_init(void *usr,void (*mutex_lock)(v
         return NULL;
     }
     hmemoryheap_pool_t *pool=hmemoryheap_pool_format(usr,mutex_lock,mutex_unlock,(uint8_t *)mem,length);
-    heventloop_t *loop=heventloop_new_with_memmang_and_lock(pool,internal_heap_mem_alloc,internal_heap_mem_free,mutex_lock,mutex_unlock);
+    heventloop_t *loop=heventloop_new_with_memmang_and_lock(pool,heventloop_internal_heap_mem_alloc,heventloop_internal_heap_mem_free,mutex_lock,mutex_unlock);
     if(loop!=NULL)
     {
         loop->has_internal_heap=1;

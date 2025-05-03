@@ -48,11 +48,11 @@ size_t heventchain_with_internal_heap_min_size(void)
     return sizeof(heventchain_t)+2*sizeof(heventchain_hook_t)+64;//足够两个钩子
 }
 
-static void *internal_heap_mem_alloc(size_t nbytes,void *usr)
+static void *heventchain_internal_heap_mem_alloc(size_t nbytes,void *usr)
 {
     return hmemoryheap_pool_malloc((hmemoryheap_pool_t *)usr,nbytes);
 }
-static void internal_heap_mem_free(void * ptr,void *usr)
+static void heventchain_internal_heap_mem_free(void * ptr,void *usr)
 {
     hmemoryheap_pool_free((hmemoryheap_pool_t *)usr,ptr);
 }
@@ -64,7 +64,7 @@ heventchain_t * heventchain_with_internal_heap_init(void *usr,void (*mutex_lock)
         return NULL;
     }
     hmemoryheap_pool_t *pool=hmemoryheap_pool_format(usr,mutex_lock,mutex_unlock,(uint8_t *)mem,length);
-    heventchain_t *chain=heventchain_new_with_memmang_and_lock(pool,internal_heap_mem_alloc,internal_heap_mem_free,mutex_lock,mutex_unlock);
+    heventchain_t *chain=heventchain_new_with_memmang_and_lock(pool,heventchain_internal_heap_mem_alloc,heventchain_internal_heap_mem_free,mutex_lock,mutex_unlock);
     if(chain!=NULL)
     {
         chain->has_internal_heap=1;
