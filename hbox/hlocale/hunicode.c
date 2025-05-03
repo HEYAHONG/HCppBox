@@ -14,7 +14,7 @@
  * \return size_t 第几位为0
  *
  */
-static size_t char_zero_bit(char c)
+static size_t hunicode_char_zero_bit(char c)
 {
     uint8_t u_c=(uint8_t)c;
     for(size_t i=0; i<8; i++)
@@ -28,12 +28,12 @@ static size_t char_zero_bit(char c)
     return 0;
 }
 //获取一个字符在UTF-8在编码长度中的长度，返回0表示出错
-static size_t utf8_char_length(const char *utf8str)
+static size_t hunicode_utf8_char_length(const char *utf8str)
 {
     size_t len=0;
     if(utf8str!=NULL)
     {
-        uint8_t zero_bit=char_zero_bit(utf8str[0]);
+        uint8_t zero_bit=hunicode_char_zero_bit(utf8str[0]);
         if(zero_bit==0)
         {
             //单个字符
@@ -55,7 +55,7 @@ bool hunicode_cchar_string_is_utf8(const char *str)
         size_t index=0;
         while(str[index]!='\0')
         {
-            uint8_t utf8_char_len=utf8_char_length(&str[index]);
+            uint8_t utf8_char_len=hunicode_utf8_char_length(&str[index]);
             if(utf8_char_len==0)
             {
                 ret=false;
@@ -71,7 +71,7 @@ bool hunicode_cchar_string_is_utf8(const char *str)
                 const char *utf8_char=&str[index];
                 for(size_t i=1; i<utf8_char_len; i++)
                 {
-                    if(char_zero_bit(utf8_char[i])!=1)
+                    if(hunicode_char_zero_bit(utf8_char[i])!=1)
                     {
                         ret=false;
                         break;
@@ -117,7 +117,7 @@ size_t hunicode_cchar_utf8_string_length(const char *utf8_str)
         while(utf8_str[index]!='\0')
         {
             const char *utf8_char=&utf8_str[index];
-            size_t utf8_char_len=utf8_char_length(utf8_char);
+            size_t utf8_char_len=hunicode_utf8_char_length(utf8_char);
             if(utf8_char_len==0)
             {
                 break;
@@ -137,7 +137,7 @@ size_t hunicode_cchar_utf8_string_length(const char *utf8_str)
                         index+=i;
                         break;
                     }
-                    if(char_zero_bit(utf8_char[i])==1)
+                    if(hunicode_char_zero_bit(utf8_char[i])==1)
                     {
                         if(i==(utf8_char_len-1))
                         {
@@ -243,7 +243,7 @@ void hunicode_char_from_utf8_string(hunicode_char_t *dest,size_t dest_length,con
         while(src[index]!='\0')
         {
             const char *utf8_char=&src[index];
-            size_t utf8_char_len=utf8_char_length(utf8_char);
+            size_t utf8_char_len=hunicode_utf8_char_length(utf8_char);
             if(utf8_char_len==0)
             {
                 break;
@@ -268,7 +268,7 @@ void hunicode_char_from_utf8_string(hunicode_char_t *dest,size_t dest_length,con
                         index+=i;
                         break;
                     }
-                    if(char_zero_bit(utf8_char[i])==1)
+                    if(hunicode_char_zero_bit(utf8_char[i])==1)
                     {
                         temp<<=6;
                         temp|=(utf8_char[i]&0x3F);
