@@ -45,7 +45,7 @@ static struct
 
 
 
-static void check_watchdog_parameter()
+static void hwatchdog_check_watchdog_parameter()
 {
     if(hwatchdog_dog.mem_alloc==NULL)
     {
@@ -75,7 +75,7 @@ static void check_watchdog_parameter()
 
 void hwatchdog_set_memmang_and_lock(void *usr,void *(*mem_alloc)(size_t,void *),void (*mem_free)(void *,void *),void (*mutex_lock)(void *),void (*mutex_unlock)(void *))
 {
-    check_watchdog_parameter();
+    hwatchdog_check_watchdog_parameter();
 
     hwatchdog_dog.usr=usr;
 
@@ -102,7 +102,7 @@ void hwatchdog_set_memmang_and_lock(void *usr,void *(*mem_alloc)(size_t,void *),
 
 void *hwatchdog_get_usr_ptr(void)
 {
-    check_watchdog_parameter();
+    hwatchdog_check_watchdog_parameter();
 
     return hwatchdog_dog.usr;
 }
@@ -120,7 +120,7 @@ void hwatchdog_setup_software_dog(void (*sys_reset)(),hwatchdog_tick_t (*sys_tic
 
 bool hwatchdog_is_valid(void)
 {
-    check_watchdog_parameter();
+    hwatchdog_check_watchdog_parameter();
 
     if(hwatchdog_dog.hw_feed!=NULL)
     {
@@ -137,7 +137,7 @@ bool hwatchdog_is_valid(void)
 
 void hwatchdog_feed(void)
 {
-    check_watchdog_parameter();
+    hwatchdog_check_watchdog_parameter();
 
     bool is_all_ok=true;
 
@@ -198,7 +198,7 @@ void hwatchdog_feed(void)
 
 void hwatchdog_add_watch(bool (*check)(hwatchdog_watch_info_t *info),hwatchdog_tick_t timeout_ms,hwatchdog_watch_info_t info)
 {
-    check_watchdog_parameter();
+    hwatchdog_check_watchdog_parameter();
 
     if(check==NULL)
     {
@@ -264,7 +264,7 @@ void hwatchdog_add_watch(bool (*check)(hwatchdog_watch_info_t *info),hwatchdog_t
 }
 
 
-static bool softdog_check(hwatchdog_watch_info_t *info)
+static bool hwatchdog_softdog_check(hwatchdog_watch_info_t *info)
 {
     bool ret=false;
     if(info!=NULL && info->usr !=NULL)
@@ -278,7 +278,7 @@ static bool softdog_check(hwatchdog_watch_info_t *info)
 
 hwatchdog_softdog_t *hwatchdog_softdog_new(hwatchdog_tick_t timeout_ms)
 {
-    check_watchdog_parameter();
+    hwatchdog_check_watchdog_parameter();
     hwatchdog_softdog_t *ret=(hwatchdog_softdog_t *)hwatchdog_dog.mem_alloc(sizeof(hwatchdog_softdog_t),hwatchdog_dog.usr);
     if(ret==NULL)
     {
@@ -287,7 +287,7 @@ hwatchdog_softdog_t *hwatchdog_softdog_new(hwatchdog_tick_t timeout_ms)
     if(ret!=NULL)
     {
         ret->flag=false;
-        HWATCHDOG_ADD_WATCH(softdog_check,timeout_ms,ret);
+        HWATCHDOG_ADD_WATCH(hwatchdog_softdog_check,timeout_ms,ret);
     }
     return ret;
 }
@@ -302,7 +302,7 @@ void hwatchdog_softdog_feed(hwatchdog_softdog_t * softdog)
 
 void hwatchdog_cleanup(void)
 {
-    check_watchdog_parameter();
+    hwatchdog_check_watchdog_parameter();
     //加锁
     if(hwatchdog_dog.mutex_lock!=NULL)
     {
