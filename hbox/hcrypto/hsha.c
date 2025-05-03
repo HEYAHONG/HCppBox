@@ -1892,7 +1892,6 @@ static int hsha3_shake_finish(hsha3_context_t *ctx,uint8_t *output, size_t olen)
 {
     int ret = -1;
 
-    /* Catch SHA-3 families, with fixed output length */
     if (ctx->olen > 0)
     {
         if (ctx->olen > olen)
@@ -1900,7 +1899,6 @@ static int hsha3_shake_finish(hsha3_context_t *ctx,uint8_t *output, size_t olen)
             ret = -1;
             return ret;
         }
-        olen = ctx->olen;
     }
 
     ABSORB(ctx, ctx->index, HSHA3_SHAKE_XOR_BYTE);

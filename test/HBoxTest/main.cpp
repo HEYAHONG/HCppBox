@@ -3090,6 +3090,15 @@ static int hcrypto_test(int argc,const char *argv[])
                         printf("%02X",sha3[i]);
                     }
                     printf("\t%s\r\n",(memcmp(sha3,sha3_test_sum[i],sizeof(sha3))==0)?"ok":"failed");
+                    uint8_t shake[2*sizeof(sha3)]={0};
+                    hsha3_shake128((const uint8_t *)sha3_test_buf[i],strlen(sha3_test_buf[i]),shake,sizeof(shake));
+                    printf("hcrypto sha3 shake128(more output):");
+                    for(size_t i=0; i<sizeof(shake); i++)
+                    {
+                        printf("%02X",shake[i]);
+                    }
+                    printf("\r\n");
+
                 }
             }
         }
@@ -3118,6 +3127,14 @@ static int hcrypto_test(int argc,const char *argv[])
                         printf("%02X",sha3[i]);
                     }
                     printf("\t%s\r\n",(memcmp(sha3,sha3_test_sum[i],sizeof(sha3))==0)?"ok":"failed");
+                    uint8_t shake[2*sizeof(sha3)]={0};
+                    hsha3_shake256((const uint8_t *)sha3_test_buf[i],strlen(sha3_test_buf[i]),shake,sizeof(shake));
+                    printf("hcrypto sha3 shake256(more output):");
+                    for(size_t i=0; i<sizeof(shake); i++)
+                    {
+                        printf("%02X",shake[i]);
+                    }
+                    printf("\r\n");
                 }
             }
         }
