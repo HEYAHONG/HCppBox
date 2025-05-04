@@ -8,11 +8,7 @@
  **************************************************************/
 #include "hbignum.h"
 
-#include "hbignum/huint128.c"
-#include "hbignum/huint256.c"
-#include "hbignum/huint512.c"
-#include "hbignum/huint1024.c"
-#include "hbignum/huint2048.c"
-#include "hbignum/huint4096.c"
-#include "hbignum/huint8192.c"
+
+
+#include "hbignum/huint.c"
 

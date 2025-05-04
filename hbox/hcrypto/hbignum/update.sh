@@ -23,7 +23,8 @@ CheckTool mkdir
 [ $? -eq 0 ] || exit;
 CheckTool sed
 [ $? -eq 0 ] || exit;
-
+CheckTool bc
+[ $? -eq 0 ] || exit;
 
 #获取当前目录
 slef_path=
@@ -52,38 +53,19 @@ fi
 
 pushd "${script_dir}"
 
-#uint128为基础模板
+echo "#include \"huint128.h\"" > huint.h
+echo "#include \"huint128.c\"" > huint.c
 
-##uint256
-cp huint128.h huint256.h
-cp huint128.c huint256.c
-sed -i "s/128/256/g" huint256.*
-
-##uint512
-cp huint128.h huint512.h
-cp huint128.c huint512.c
-sed -i "s/128/512/g" huint512.*
-
-##uint1024
-cp huint128.h huint1024.h
-cp huint128.c huint1024.c
-sed -i "s/128/1024/g" huint1024.*
-
-
-##uint2048
-cp huint128.h huint2048.h
-cp huint128.c huint2048.c
-sed -i "s/128/2048/g" huint2048.*
-
-##uint4096
-cp huint128.h huint4096.h
-cp huint128.c huint4096.c
-sed -i "s/128/4096/g" huint4096.*
-
-##uint8192
-cp huint128.h huint8192.h
-cp huint128.c huint8192.c
-sed -i "s/128/8192/g" huint8192.*
-
+i=128
+while [ $i -le 8192 ]
+do
+    i=`echo 32+$i | bc`
+    cp huint128.h huint$i.h
+    sed -i "s/128/$i/g" huint$i.h
+    cp huint128.c huint$i.c
+    sed -i "s/128/$i/g" huint$i.c
+    echo "#include \"huint$i.h\"" >> huint.h
+    echo "#include \"huint$i.c\"" >> huint.c
+done
 
 popd

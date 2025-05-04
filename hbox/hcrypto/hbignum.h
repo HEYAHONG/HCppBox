@@ -9,18 +9,17 @@
 #ifndef __HBIGNUM_H__
 #define __HBIGNUM_H__
 
+/*
+ * 大数计算,计算时应选择 最大参数(不包括中间值)位数*2+32 的位数的大数,这样可以保证加、减、乘、除及幂取模运算不会溢出。
+ */
+
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
 
-#include "hbignum/huint128.h"
-#include "hbignum/huint256.h"
-#include "hbignum/huint512.h"
-#include "hbignum/huint1024.h"
-#include "hbignum/huint2048.h"
-#include "hbignum/huint4096.h"
-#include "hbignum/huint8192.h"
+#include "hbignum/huint.h"
 
 #ifdef __cplusplus
 }
