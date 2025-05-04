@@ -6,8 +6,8 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#ifndef __HLOCALE_H__
-#define __HLOCALE_H__
+#ifndef __HLOCALE_H_INCLUDE__
+#define __HLOCALE_H_INCLUDE__
 
 #ifdef __cplusplus
 extern "C"
@@ -21,4 +21,4 @@ extern "C"
 #endif // __cplusplus
 
 
-#endif // __HLOCALE_H__
+#endif // __HLOCALE_H_INCLUDE__
