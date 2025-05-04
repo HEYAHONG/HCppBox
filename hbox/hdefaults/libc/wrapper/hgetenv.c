@@ -8,11 +8,11 @@
  **************************************************************/
 #include "hgetenv.h"
 #include "hdefaults.h"
+#include "stdlib.h"
 
 #ifdef HGETENV
 extern char * HGETENV(const char *name);
 #endif // HGETENV
-extern char * getenv(const char *name);
 
 char * hgetenv(const char *name)
 {
