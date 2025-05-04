@@ -16,6 +16,7 @@ extern "C"
 
 #include "wrapper/hputchar.h"
 #include "wrapper/hgetchar.h"
+#include "wrapper/hgetenv.h"
 
 #ifdef __cplusplus
 }

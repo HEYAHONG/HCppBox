@@ -10,4 +10,5 @@
 
 #include "wrapper/hputchar.c"
 #include "wrapper/hgetchar.c"
+#include "wrapper/hgetenv.c"
 
