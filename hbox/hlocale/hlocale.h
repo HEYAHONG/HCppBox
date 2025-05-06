@@ -8,6 +8,8 @@
  **************************************************************/
 #ifndef __HLOCALE_H__
 #define __HLOCALE_H__
+#include "stdint.h"
+#include "stdbool.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -23,6 +25,22 @@ extern "C"
  *
  */
 const char *hlocale_locale_get(void);
+
+
+/** \brief 字符集是否是UTF-8
+ *
+ * \return bool 是否为UTF-8
+ *
+ */
+bool hlocale_charset_is_utf8(void);
+
+/** \brief 字符集是否是GB2312
+ * 注意：虽然不严谨,GBK也视作GB2312
+ *
+ * \return bool 是否为GB2312
+ *
+ */
+bool hlocale_charset_is_gb2312(void);
 
 #ifdef __cplusplus
 }

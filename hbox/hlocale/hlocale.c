@@ -50,4 +50,59 @@ const char *hlocale_locale_get(void)
     return locale;
 }
 
+bool hlocale_charset_is_utf8(void)
+{
+    const char *locale=hlocale_locale_get();
+    if(locale!=NULL && locale[0]!='\0')
+    {
+        /*
+         * windows下根据代码页判断
+         */
+        if(strstr(locale,"CP65001")!=NULL || strstr(locale,"cp65001")!=NULL)
+        {
+            return true;
+        }
+        /*
+         * 其它系统通过UTF-8字符串判断
+         */
+        if(strstr(locale,"UTF-8")!=NULL || strstr(locale,"utf-8")!=NULL || strstr(locale,"UTF8")!=NULL || strstr(locale,"utf8")!=NULL)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
+bool hlocale_charset_is_gb2312(void)
+{
+    const char *locale=hlocale_locale_get();
+    if(locale!=NULL && locale[0]!='\0')
+    {
+        /*
+         * windows下根据代码页判断
+         */
+        if(strstr(locale,"CP936")!=NULL || strstr(locale,"cp936")!=NULL)
+        {
+            return true;
+        }
+        if(strstr(locale,"CP20936")!=NULL || strstr(locale,"cp20936")!=NULL)
+        {
+            return true;
+        }
+        //FreeBSD
+        if(strstr(locale,"eucCN")!=NULL)
+        {
+            return true;
+        }
+        //其它环境下
+        if(strstr(locale,"GB2312")!=NULL || strstr(locale,"gb2312")!=NULL)
+        {
+            return true;
+        }
+        if(strstr(locale,"GBK")!=NULL || strstr(locale,"gbk")!=NULL)
+        {
+            return true;
+        }
+    }
+    return false;
+}

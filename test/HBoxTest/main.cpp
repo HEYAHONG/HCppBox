@@ -1270,6 +1270,8 @@ static int hlocale_test(int argc,const char *argv[])
 {
     {
         printf("hlocale:%s\r\n",hlocale_locale_get());
+        printf("hlocale:UTF-8 = %s\r\n",hlocale_charset_is_utf8()?"true":"false");
+        printf("hlocale:GB2312 = %s\r\n",hlocale_charset_is_gb2312()?"true":"false");
     }
     {
         const char *const ascii_test_string="testtest";
