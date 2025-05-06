@@ -14,7 +14,12 @@ extern "C"
 {
 #endif // __cplusplus
 
+#include "hlocale/hlocale.h"
+/*
+ * 本组件中，采用unicode作为核心组件，其它字符集必须实现向unicode的转换
+ */
 #include "hlocale/hunicode.h"
+#include "hlocale/hgb2312.h"
 
 #ifdef __cplusplus
 }

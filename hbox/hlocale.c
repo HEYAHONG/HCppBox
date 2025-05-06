@@ -8,5 +8,6 @@
  **************************************************************/
 #include "hlocale.h"
 
-
+#include "hlocale/hlocale.c"
 #include "hlocale/hunicode.c"
+#include "hlocale/hgb2312.c"
