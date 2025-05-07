@@ -128,6 +128,8 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
 
 }
 
+#ifdef HRUNTIME_USING_SYMBOL_TABLE
+
 #include "symbol/hdefaults_symbol_table.c"
 
 const struct
@@ -149,6 +151,8 @@ hruntime_symbol_array_list[]=
     }
 };
 
+#endif
+
 const hruntime_symbol_t *hruntime_symbol_find(const char *name)
 {
     const hruntime_symbol_t *ret=NULL;
@@ -156,6 +160,8 @@ const hruntime_symbol_t *hruntime_symbol_find(const char *name)
     {
         return ret;
     }
+
+#ifdef HRUNTIME_USING_SYMBOL_TABLE
     for(size_t i=0; i<sizeof(hruntime_symbol_array_list)/sizeof(hruntime_symbol_array_list[0]); i++)
     {
         const hruntime_symbol_t *   array_base=hruntime_symbol_array_list[i].array_base;
@@ -176,6 +182,7 @@ const hruntime_symbol_t *hruntime_symbol_find(const char *name)
             break;
         }
     }
+#endif
 
     if(ret==NULL)
     {

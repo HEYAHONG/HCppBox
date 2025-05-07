@@ -299,6 +299,16 @@ extern const  hruntime_symbol_t __hruntime_symbol_end[];
 
 #endif
 
+#if defined(HDEFAULTS_OS_WINDOWS) || defined(HDEFAULTS_OS_UNIX)
+/*
+ *  某些操作系统下，默认启用符号表
+ */
+#ifndef HRUNTIME_USING_SYMBOL_TABLE
+#define HRUNTIME_USING_SYMBOL_TABLE     1
+#endif
+
+#endif
+
 
 #ifdef __cplusplus
 }
