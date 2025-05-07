@@ -11,6 +11,9 @@
 #include "huuid_short.h"
 /*
  * 本文件主要用于缩短uuid，主要用于BLE等场景。
+ * 一般情况下，短uuid是长uuid的一部分。
+ * 由于uuid v1采用的60位时间戳的起点早于更常用的Unix时间戳的起始时间，因此，60位时间戳小于0x01B21DD213814000的uuid v1一般可手工分配（不会与自动生成的uuid冲突）。
+ * 经典的例子就是蓝牙的128位基础uuid(00000000-0000-1000-8000-00805F9B34FB)
  */
 #include "huuid.h"
 #ifdef __cplusplus
