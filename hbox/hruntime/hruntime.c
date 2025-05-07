@@ -128,4 +128,85 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
 
 }
 
+#include "symbol/hdefaults_symbol_table.c"
+
+const struct
+{
+    const hruntime_symbol_t *   array_base;
+    size_t                      array_size;
+}
+hruntime_symbol_array_list[]=
+{
+    {
+        //内置的hdefaults符号表(优先级较高)
+        hruntime_defaults_symbol_table,
+        sizeof(hruntime_defaults_symbol_table)/sizeof(hruntime_defaults_symbol_table[0])
+    },
+    {
+        //结束
+        NULL,
+        0
+    }
+};
+
+const hruntime_symbol_t *hruntime_symbol_find(const char *name)
+{
+    const hruntime_symbol_t *ret=NULL;
+    if(name==NULL || strlen(name) == 0)
+    {
+        return ret;
+    }
+    for(size_t i=0; i<sizeof(hruntime_symbol_array_list)/sizeof(hruntime_symbol_array_list[0]); i++)
+    {
+        const hruntime_symbol_t *   array_base=hruntime_symbol_array_list[i].array_base;
+        size_t                      array_size=hruntime_symbol_array_list[i].array_size;
+        if(array_base!=NULL && array_size!=0)
+        {
+            for(size_t i=0; i<array_size; i++)
+            {
+                if(array_base[i].symbol_name!=NULL && strcmp(array_base[i].symbol_name,name)==0)
+                {
+                    ret=&array_base[i];
+                    break;
+                }
+            }
+        }
+        if(ret!=NULL)
+        {
+            break;
+        }
+    }
+
+    if(ret==NULL)
+    {
+        const hruntime_symbol_t *   array_base=NULL;
+        size_t                      array_size=0;
+#ifdef HRUNTIME_USING_SYMBOL_SECTION
+#if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
+        {
+            array_base=(hruntime_symbol_t *)&HRuntimeLoop$$Base;
+            array_size=(((uintptr_t)(hruntime_symbol_t *)&HRuntimeLoop$$Limit)-((uintptr_t)(hruntime_symbol_t *)&HRuntimeLoop$$Base))/sizeof(hruntime_symbol_t);
+        }
+#elif  defined(HCOMPILER_GCC) || defined(HCOMPILER_CLANG)
+        {
+            array_base=__hruntime_symbol_start;
+            array_size=(((uintptr_t)__hruntime_symbol_end)-((uintptr_t)__hruntime_symbol_start))/sizeof(hruntime_symbol_t);
+        }
+#endif
+#endif // HRUNTIME_USING_SYMBOL_SECTION
+        if(array_base!=NULL && array_size!=0)
+        {
+            for(size_t i=0; i<array_size; i++)
+            {
+                if(array_base[i].symbol_name!=NULL && strcmp(array_base[i].symbol_name,name)==0)
+                {
+                    ret=&array_base[i];
+                    break;
+                }
+            }
+        }
+
+    }
+    return ret;
+}
 

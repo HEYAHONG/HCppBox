@@ -24,6 +24,7 @@ void  main_init(const hruntime_function_t *func)
     HSHELL_COMMANDS_REGISTER(NULL);
 }
 HRUNTIME_INIT_EXPORT(main,255,main_init,NULL);
+HRUNTIME_SYMBOL_EXPORT(main_init);
 
 /*
  * 主循环
@@ -33,4 +34,4 @@ void  main_loop(const hruntime_function_t *func)
 
 }
 HRUNTIME_LOOP_EXPORT(main,255,main_loop,NULL);
-
+HRUNTIME_SYMBOL_EXPORT(main_loop);

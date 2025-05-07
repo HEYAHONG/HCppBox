@@ -218,6 +218,88 @@ hruntime_function_array_invoke(__hruntime_loop_start,(((uintptr_t)__hruntime_loo
 #endif
 
 
+typedef struct hruntime_symbol hruntime_symbol_t;
+struct hruntime_symbol
+{
+    const char *symbol_name;
+    uintptr_t   symbol_addr;
+};
+
+/** \brief 寻找符号（一般用于模块化时加载模块,与hdefaults的API表不同，此函数一般在模块加载过程中使用）
+ *
+ * \param name const char* 符号名称
+ * \return const hruntime_symbol_t* 符号地址
+ *
+ */
+const hruntime_symbol_t *hruntime_symbol_find(const char *name);
+
+#if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
+/*
+ * armcc/armclang,使用名称为HRuntimeSymbol的section
+ */
+
+/*
+ * 导出符号
+ */
+#define HRUNTIME_SYMBOL_EXPORT(name) \
+    __USED\
+    __SECTION("HRuntimeSymbol")\
+    static const hruntime_symbol_t hruntime_symbol_##name = \
+    {\
+        #name ,\
+        (uintptr_t)&name\
+    }
+
+/*
+ * 调用导出的符号函数
+ */
+extern const  int HRuntimeSymbol$$Base;
+extern const  int HRuntimeSymbol$$Limit;
+
+#elif defined(HCOMPILER_GCC) || defined(HCOMPILER_CLANG)
+/*
+ * gcc/clang,使用名称为.HRuntimeSymbol的section
+ * gcc/clang必须在链接脚本中提供__hruntime_symbol_start与__hruntime_symbol_end,脚本示例如下:
+ *          PROVIDE ( __hruntime_symbol_start = . );
+ *          KEEP (*(.HRuntimeSymbol))
+ *          PROVIDE ( __hruntime_symbol_end = . );
+ *
+ */
+
+/*
+* 导出符号
+*/
+#define HRUNTIME_SYMBOL_EXPORT(name) \
+    __USED\
+    __SECTION(".HRuntimeSymbol")\
+    static const hruntime_symbol_t hruntime_symbol_##name = \
+    {\
+        #name ,\
+        (uintptr_t)&name\
+    }
+
+/*
+ * 调用导出的符号函数
+ */
+extern const  hruntime_symbol_t __hruntime_symbol_start[];
+extern const  hruntime_symbol_t __hruntime_symbol_end[];
+
+
+#else
+/*
+ * 不支持的编译器（使用相关宏定义将无任何效果，也不会报错）
+ */
+
+
+/*
+ * 导出符号
+ */
+#define HRUNTIME_SYMBOL_EXPORT(name)
+
+
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
