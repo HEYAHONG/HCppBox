@@ -107,6 +107,10 @@ SECTIONS
 		KEEP (*(.HRuntimeLoop))
 		PROVIDE ( __hruntime_loop_end = . );
 
+		PROVIDE ( __hruntime_symbol_start = . );
+		KEEP (*(.HRuntimeSymbol))
+		PROVIDE ( __hruntime_symbol_end = . );
+
 
 		/* Need to pre-align so that the symbols come after padding */
 		. = ALIGN(8);
