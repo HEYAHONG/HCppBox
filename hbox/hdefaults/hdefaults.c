@@ -18,7 +18,7 @@
 #include "windows.h"
 static CRITICAL_SECTION g_mutex_lock;
 static bool g_is_mutex_lock_init=false;
-void check_mutex_lock()
+static void check_mutex_lock()
 {
     if(!g_is_mutex_lock_init)
     {
@@ -32,7 +32,7 @@ void check_mutex_lock()
 static pthread_mutex_t g_mutex_lock;
 static pthread_mutexattr_t g_mutex_lock_attr;
 static bool g_is_mutex_lock_init=false;
-void check_mutex_lock()
+static void check_mutex_lock()
 {
     if(!g_is_mutex_lock_init)
     {

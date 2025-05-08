@@ -128,9 +128,14 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
 
 }
 
+#ifdef HRUNTIME_SYMBOL_SCAN
+#undef HRUNTIME_USING_SYMBOL_TABLE
+#endif // HRUNTIME_SYMBOL_SCAN
+
 #ifdef HRUNTIME_USING_SYMBOL_TABLE
 
-#include "symbol/hdefaults_symbol_table.c"
+#include "symbol/hbox_symbol.c"
+#include "symbol/hbox_h3rdparty_symbol.c"
 
 const struct
 {
@@ -140,9 +145,12 @@ const struct
 hruntime_symbol_array_list[]=
 {
     {
-        //内置的hdefaults符号表(优先级较高)
-        hruntime_defaults_symbol_table,
-        sizeof(hruntime_defaults_symbol_table)/sizeof(hruntime_defaults_symbol_table[0])
+        hruntime_hbox_symbol,
+        sizeof(hruntime_hbox_symbol)/sizeof(hruntime_hbox_symbol[0])
+    },
+    {
+        hruntime_hbox_h3rdparty_symbol,
+        sizeof(hruntime_hbox_h3rdparty_symbol)/sizeof(hruntime_hbox_h3rdparty_symbol[0])
     },
     {
         //结束
