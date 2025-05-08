@@ -128,8 +128,10 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
 
 }
 
-#ifdef HRUNTIME_SYMBOL_SCAN
+#if defined(HRUNTIME_SYMBOL_SCAN) || defined(HRUNTIME_NO_SYMBOL_TABLE)
+#ifdef HRUNTIME_USING_SYMBOL_TABLE
 #undef HRUNTIME_USING_SYMBOL_TABLE
+#endif // HRUNTIME_USING_SYMBOL_TABLE
 #endif // HRUNTIME_SYMBOL_SCAN
 
 #ifdef HRUNTIME_USING_SYMBOL_TABLE

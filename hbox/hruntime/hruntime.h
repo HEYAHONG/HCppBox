@@ -299,7 +299,7 @@ extern const  hruntime_symbol_t __hruntime_symbol_end[];
 
 #endif
 
-#if defined(HDEFAULTS_OS_WINDOWS) || defined(HDEFAULTS_OS_UNIX) || defined(HDEFAULTS_OS_CYGWIN) || defined(HDEFAULTS_OS_EMSCRIPTEN) 
+#if defined(HDEFAULTS_OS_WINDOWS) || defined(HDEFAULTS_OS_UNIX) || defined(HDEFAULTS_OS_CYGWIN) || defined(HDEFAULTS_OS_EMSCRIPTEN)
 /*
  *  某些操作系统下，默认启用符号表
  */
