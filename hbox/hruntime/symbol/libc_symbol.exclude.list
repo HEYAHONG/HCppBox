@@ -1,0 +1,8 @@
+gettimeofday
+settimeofday
+random
+getrandom
+signal
+read
+setjmp
+longjmp

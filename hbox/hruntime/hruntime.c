@@ -138,6 +138,7 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
 
 #include "symbol/hbox_symbol.c"
 #include "symbol/hbox_h3rdparty_symbol.c"
+#include "symbol/libc_symbol.c"
 
 const struct
 {
@@ -153,6 +154,10 @@ hruntime_symbol_array_list[]=
     {
         hruntime_hbox_h3rdparty_symbol,
         sizeof(hruntime_hbox_h3rdparty_symbol)/sizeof(hruntime_hbox_h3rdparty_symbol[0])
+    },
+    {
+        hruntime_libc_symbol,
+        sizeof(hruntime_libc_symbol)/sizeof(hruntime_libc_symbol[0])
     },
     {
         //结束
