@@ -67,7 +67,7 @@ void hshell_context_init(hshell_context_t *ctx)
     memset(&real_context->history,0,sizeof(real_context->history));
 }
 
-hshell_context_t *hshell_context_check_context(hshell_context_t *ctx)
+hshell_context_t * __hshell_context_check_context(hshell_context_t *ctx)
 {
     hshell_context_t *real_context=hshell_context_real_context_get(ctx);
     if(real_context->flags.init!=1)
@@ -79,7 +79,7 @@ hshell_context_t *hshell_context_check_context(hshell_context_t *ctx)
 
 const char *hshell_prompt_string_set(hshell_context_t *ctx,const char *prompt)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     const char *old_prompt_string=context->prompt;
     if(prompt!=NULL)
     {
@@ -90,13 +90,13 @@ const char *hshell_prompt_string_set(hshell_context_t *ctx,const char *prompt)
 
 const char *hshell_prompt_string_get(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     return context->prompt;
 }
 
 hshell_context_external_api_t hshell_external_api_set(hshell_context_t *ctx,hshell_context_external_api_t api)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     hshell_context_external_api_t old_api=context->api;
     context->api=api;
     return old_api;
@@ -104,13 +104,13 @@ hshell_context_external_api_t hshell_external_api_set(hshell_context_t *ctx,hshe
 
 hshell_context_external_api_t hshell_external_api_get(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     return context->api;
 }
 
 bool hshell_echo_set(hshell_context_t *ctx,bool echo)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     bool old_echo=(context->flags.echo!=0);
     context->flags.echo=(echo?0x1:0x0);
     return old_echo;
@@ -118,13 +118,13 @@ bool hshell_echo_set(hshell_context_t *ctx,bool echo)
 
 bool hshell_echo_get(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     return context->flags.echo!=0;
 }
 
 bool hshell_command_name_shortcut_set(hshell_context_t *ctx,bool command_name_shortcut)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     bool old_command_name_shortcut=(context->flags.command_name_shortcut!=0);
     context->flags.command_name_shortcut=(command_name_shortcut?0x1:0x0);
     return old_command_name_shortcut;
@@ -132,13 +132,13 @@ bool hshell_command_name_shortcut_set(hshell_context_t *ctx,bool command_name_sh
 
 bool hshell_command_name_shortcut_get(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     return context->flags.command_name_shortcut!=0;
 }
 
 bool hshell_show_banner_set(hshell_context_t *ctx,bool show_banner)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     bool old_show_banner=(context->flags.show_banner!=0);
     context->flags.show_banner=(show_banner?0x1:0x0);
     return old_show_banner;
@@ -146,13 +146,13 @@ bool hshell_show_banner_set(hshell_context_t *ctx,bool show_banner)
 
 bool hshell_show_banner_get(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     return context->flags.show_banner!=0;
 }
 
 void hshell_command_array_set(hshell_context_t *ctx,const hshell_command_t *array_base,size_t array_count)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(array_base==NULL)
     {
         array_count=0;
@@ -163,7 +163,7 @@ void hshell_command_array_set(hshell_context_t *ctx,const hshell_command_t *arra
 
 int hshell_context_getchar(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->api.getchar!=NULL)
     {
         return context->api.getchar();
@@ -176,7 +176,7 @@ int hshell_context_getchar(hshell_context_t *ctx)
 
 int hshell_context_putchar(hshell_context_t *ctx,int ch)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->api.putchar!=NULL)
     {
         return context->api.putchar(ch);
@@ -194,7 +194,7 @@ static void hshell_context_printf_out(char character, void* arg)
 
 int hshell_context_printf(hshell_context_t *ctx,const char *fmt,...)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     int ret=0;
     va_list va;
     va_start(va, fmt);
@@ -205,7 +205,7 @@ int hshell_context_printf(hshell_context_t *ctx,const char *fmt,...)
 
 void hshell_subcontext_enter(hshell_context_t *ctx,hshell_context_t *next_ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(next_ctx==NULL || next_ctx==context)
     {
         return;
@@ -215,7 +215,7 @@ void hshell_subcontext_enter(hshell_context_t *ctx,hshell_context_t *next_ctx)
 
 void hshell_subcontext_exit(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->sub_context.next!=NULL)
     {
         context->sub_context.next=NULL;
@@ -224,7 +224,7 @@ void hshell_subcontext_exit(hshell_context_t *ctx)
 
 void hshell_subcontext_exit_from_sub(hshell_context_t *sub_ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(sub_ctx);
+    hshell_context_t *context=__hshell_context_check_context(sub_ctx);
     if(context->sub_context.prev!=NULL)
     {
         context->sub_context.prev->sub_context.next=NULL;

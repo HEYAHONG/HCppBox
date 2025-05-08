@@ -13,7 +13,7 @@
 #include "stdarg.h"
 
 
-extern hshell_context_t *hshell_context_check_context(hshell_context_t *ctx);
+extern hshell_context_t *__hshell_context_check_context(hshell_context_t *ctx);
 
 static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline);
 int hshell_execute(hshell_context_t *ctx,char *cmdline)
@@ -23,7 +23,7 @@ int hshell_execute(hshell_context_t *ctx,char *cmdline)
 
 static void hshell_show_banner(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->flags.show_banner==0)
     {
         return;
@@ -36,7 +36,7 @@ static void hshell_show_banner(hshell_context_t *ctx)
 
 static int hshell_login(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->flags.login==0)
     {
         context->flags.login=1;
@@ -50,14 +50,14 @@ static int hshell_login(hshell_context_t *ctx)
 
 static bool hshell_is_login(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     return context->flags.login!=0;
 }
 
 static int hshell_internal_command_exit_entry(hshell_context_t *ctx,int *ret_code,int argc,const char *argv[])
 {
     int ret=0;
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(ret_code!=NULL)
     {
         //内部返回码为EOF
@@ -103,7 +103,7 @@ static struct
 static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_code,int argc,const char *argv[])
 {
     int ret=0;
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(argv[1]==NULL || strlen(argv[1])==0)
     {
         {
@@ -386,7 +386,7 @@ static int hshell_process_execute_command_shortcut_strcmp(const char *str_short,
 
 static void hshell_backspace(hshell_context_t *ctx,size_t count)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     for(size_t i=0; i<count; i++)
     {
         hshell_context_printf(context,"\b");
@@ -396,7 +396,7 @@ static void hshell_backspace(hshell_context_t *ctx,size_t count)
 static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const char *argv[])
 {
     int ret=0;
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     hshell_context_printf(context,"\r\n");
     bool command_processed=false;
 
@@ -673,7 +673,7 @@ static void hshell_util_strip_c_escape_sequences(char *str_to_strip)
 static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline)
 {
     int ret=0;
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(cmdline==NULL)
     {
         ret=-1;
@@ -838,7 +838,7 @@ static int hshell_process_execute_arg_parse(hshell_context_t *ctx,char *cmdline)
 
 static void hshell_input_buffer_clear(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     {
         //复位buffer
         memset(context->buffer,0,sizeof(context->buffer));
@@ -848,7 +848,7 @@ static void hshell_input_buffer_clear(hshell_context_t *ctx)
 
 static void hshell_history_store(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->flags.echo==0)
     {
         return;
@@ -862,7 +862,7 @@ static void hshell_history_store(hshell_context_t *ctx)
 
 static void hshell_history_load_next(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->flags.echo==0)
     {
         return;
@@ -905,7 +905,7 @@ static void hshell_history_load_next(hshell_context_t *ctx)
 
 static void hshell_history_load_prev(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->flags.echo==0)
     {
         return;
@@ -958,7 +958,7 @@ static void hshell_history_load_prev(hshell_context_t *ctx)
 static int hshell_process_execute(hshell_context_t *ctx)
 {
     int ret=0;
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
 
     if(context->buffer[0]!='\0')
     {
@@ -981,7 +981,7 @@ static int hshell_process_execute(hshell_context_t *ctx)
 static int hshell_process_control(hshell_context_t *ctx)
 {
     int ret=0;
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->flags.escape!=0)
     {
         int ch=hshell_context_getchar(context);
@@ -1127,7 +1127,7 @@ static int hshell_process_control(hshell_context_t *ctx)
 static int hshell_process_input_start_execute(hshell_context_t *ctx)
 {
     int ret=0;
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     context->buffer_ptr=strlen((char *)context->buffer);//将指针放在末尾
     ret=hshell_process_execute(context);
     return ret;
@@ -1135,7 +1135,7 @@ static int hshell_process_input_start_execute(hshell_context_t *ctx)
 
 static bool hshell_process_input_check_complete(hshell_context_t *ctx)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->flags.input_complete!=0)
     {
         context->flags.input_complete=0;
@@ -1216,7 +1216,7 @@ static void hshell_process_input_strip_comments(char *line)
 static int hshell_process_input(hshell_context_t *ctx)
 {
     int ret=0;
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->flags.escape!=0)
     {
         //正在转义过程中，不接受数据
@@ -1359,7 +1359,7 @@ static int hshell_process_input(hshell_context_t *ctx)
 static int hshell_show_prompt_string(hshell_context_t *ctx)
 {
     int ret=0;
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     if(context->flags.login!=0 && context->flags.prompt==0)
     {
         context->flags.prompt=1;
@@ -1372,11 +1372,11 @@ static int hshell_show_prompt_string(hshell_context_t *ctx)
 int hshell_loop(hshell_context_t *ctx)
 {
     int ret=0;
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
 
     if(context->sub_context.next!=NULL)
     {
-        hshell_context_t *sub_context=hshell_context_check_context(context->sub_context.next);
+        hshell_context_t *sub_context=__hshell_context_check_context(context->sub_context.next);
         sub_context->api=context->api;
         sub_context->sub_context.prev=context;
         return hshell_loop(context->sub_context.next);
@@ -1417,7 +1417,7 @@ static void hshell_printf_out(char character, void* arg)
 
 int hshell_printf(hshell_context_t *ctx,const char *fmt,...)
 {
-    hshell_context_t *context=hshell_context_check_context(ctx);
+    hshell_context_t *context=__hshell_context_check_context(ctx);
     int ret=0;
     va_list va;
     va_start(va, fmt);

@@ -7292,8 +7292,6 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hgettimeofday),(uintptr_t)&hgettimeofday},
     {hdefaults_str(hsettimeofday),(uintptr_t)&hsettimeofday},
     {hdefaults_str(hgetrandom),(uintptr_t)&hgetrandom},
-//    {hdefaults_str(hgettimeofday_tick_get),(uintptr_t)&hgettimeofday_tick_get},
-//    {hdefaults_str(hgettimeofday_tick_set),(uintptr_t)&hgettimeofday_tick_set},
     {hdefaults_str(hputchar),(uintptr_t)&hputchar},
     {hdefaults_str(hgetchar),(uintptr_t)&hgetchar},
     {hdefaults_str(hgetenv),(uintptr_t)&hgetenv},
@@ -7559,7 +7557,6 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hstacklesscoroutine2_await),(uintptr_t)&hstacklesscoroutine2_await},
 ///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hshell.c
     {hdefaults_str(hshell_execute),(uintptr_t)&hshell_execute},
-//    {hdefaults_str(hshell_context_check_context),(uintptr_t)&hshell_context_check_context},
     {hdefaults_str(hshell_context_printf),(uintptr_t)&hshell_context_printf},
     {hdefaults_str(hshell_subcontext_exit_from_sub),(uintptr_t)&hshell_subcontext_exit_from_sub},
     {hdefaults_str(hshell_context_getchar),(uintptr_t)&hshell_context_getchar},
@@ -7778,4 +7775,3 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(huuid_uuid_ble_get),(uintptr_t)&huuid_uuid_ble_get},
     {hdefaults_str(huuid_uuid_ble_set),(uintptr_t)&huuid_uuid_ble_set},
 };
-

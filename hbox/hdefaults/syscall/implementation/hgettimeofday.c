@@ -19,7 +19,7 @@
 
 static uint64_t hgettimeofday_tick_offset=0;            //偏移量
 static hdefaults_tick_t hgettimeofday_last_tick=0;       //用于检测hdefaults_tick_t是否溢出
-uint64_t hgettimeofday_tick_get(void)
+uint64_t __hgettimeofday_tick_get(void)
 {
     hdefaults_mutex_lock(NULL);
     hdefaults_tick_t current_tick=hdefaults_tick_get();
@@ -32,7 +32,7 @@ uint64_t hgettimeofday_tick_get(void)
     return hgettimeofday_tick_offset+current_tick;
 }
 
-void hgettimeofday_tick_set(uint64_t tick)
+void __hgettimeofday_tick_set(uint64_t tick)
 {
     hdefaults_mutex_lock(NULL);
     hdefaults_tick_t current_tick=hdefaults_tick_get();
@@ -105,7 +105,7 @@ HDEFAULTS_USERCALL_DEFINE2(hgettimeofday,HDEFAULTS_SYSCALL_HGETTIMEOFDAY,int,hge
     }
 #else
     {
-        uint64_t tick=hgettimeofday_tick_get();
+        uint64_t tick=__hgettimeofday_tick_get();
         if(tv!=NULL)
         {
             tv->tv_sec   = tick/1000;

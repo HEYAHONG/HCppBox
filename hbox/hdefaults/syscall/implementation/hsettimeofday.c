@@ -27,7 +27,7 @@
 /*
  * 此函数在hgettimeofday.c定义
  */
-extern void hgettimeofday_tick_set(uint64_t tick);
+extern void __hgettimeofday_tick_set(uint64_t tick);
 
 
 #ifdef HDEFAULTS_SYSCALL_HSETTIMEOFDAY
@@ -96,7 +96,7 @@ HDEFAULTS_USERCALL_DEFINE2(hsettimeofday,HDEFAULTS_SYSCALL_HSETTIMEOFDAY,int,con
         if(tv!=NULL)
         {
             tick=tv->tv_sec*1000+tv->tv_usec/1000;
-            hgettimeofday_tick_set(tick);
+            __hgettimeofday_tick_set(tick);
         }
         if(tz!=NULL)
         {
