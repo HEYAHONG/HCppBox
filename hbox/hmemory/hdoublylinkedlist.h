@@ -63,7 +63,7 @@ void hdoublylinkedlist_enum(hdoublylinkedlist_head_t *list_head,hdoublylinkedlis
 
 /** \brief 在当前项前面添加项
  *
- * \param item hdoublylinkedlist_head_t*      原列表中的项（一般使用双向链表头）
+ * \param item hdoublylinkedlist_head_t*      原链表中的项（一般使用双向链表头）
  * \param new_item hdoublylinkedlist_head_t*  新项
  *
  */
@@ -72,7 +72,7 @@ void hdoublylinkedlist_add_front(hdoublylinkedlist_head_t *item,hdoublylinkedlis
 
 /** \brief 在当前项后面添加项
  *
- * \param item hdoublylinkedlist_head_t*      原列表中的项（一般使用双向链表头）
+ * \param item hdoublylinkedlist_head_t*      原链表中的项（一般使用双向链表头）
  * \param new_item hdoublylinkedlist_head_t*  新项
  *
  */
@@ -82,7 +82,7 @@ void hdoublylinkedlist_add_back(hdoublylinkedlist_head_t *item,hdoublylinkedlist
 /** \brief 将当前项从链表中移除
  * 注意：遍历过程中不可移除项。本操作也不会释放内存。
  *
- * \param item hdoublylinkedlist_head_t* 原列表中的项
+ * \param item hdoublylinkedlist_head_t* 原链表中的项
  *
  */
 void hdoublylinkedlist_remove(hdoublylinkedlist_head_t *item);
