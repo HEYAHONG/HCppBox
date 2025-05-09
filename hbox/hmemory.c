@@ -24,3 +24,8 @@
  */
 #include "hmemory/hobject.c"
 
+/*
+ * 双向链表
+ */
+#include "hmemory/hdoublylinkedlist.c"
+

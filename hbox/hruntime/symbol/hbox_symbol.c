@@ -7482,6 +7482,11 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hobject_managed_struct_init),(uintptr_t)&hobject_managed_struct_init},
     {hdefaults_str(hobject_managed_struct_base),(uintptr_t)&hobject_managed_struct_base},
     {hdefaults_str(hobject_managed_struct),(uintptr_t)&hobject_managed_struct},
+    {hdefaults_str(hdoublylinkedlist_init),(uintptr_t)&hdoublylinkedlist_init},
+    {hdefaults_str(hdoublylinkedlist_enum),(uintptr_t)&hdoublylinkedlist_enum},
+    {hdefaults_str(hdoublylinkedlist_add_front),(uintptr_t)&hdoublylinkedlist_add_front},
+    {hdefaults_str(hdoublylinkedlist_add_back),(uintptr_t)&hdoublylinkedlist_add_back},
+    {hdefaults_str(hdoublylinkedlist_remove),(uintptr_t)&hdoublylinkedlist_remove},
 ///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hnet.c
     {hdefaults_str(modbus_rtu_adu_check_crc),(uintptr_t)&modbus_rtu_adu_check_crc},
     {hdefaults_str(modbus_rtu_adu_append_crc),(uintptr_t)&modbus_rtu_adu_append_crc},

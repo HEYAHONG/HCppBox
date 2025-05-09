@@ -18,6 +18,7 @@ extern "C"
 #include "hmemory/hmemoryheap.h"
 #include "hmemory/hobject.h"
 #include "hmemory/hringbuf.h"
+#include "hmemory/hdoublylinkedlist.h"
 
 
 #ifdef __cplusplus
