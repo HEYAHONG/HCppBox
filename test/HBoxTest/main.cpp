@@ -1305,7 +1305,7 @@ static int hlocale_test(int argc,const char *argv[])
             //测试GB2312转换
             hunicode_char_t unicode_string[32]= {0};
             hunicode_char_from_utf8_string(unicode_string,sizeof(unicode_string)/sizeof(unicode_string[0]),utf8_test_string);
-            char gb2312_string[sizeof(unicode_string)*2]={0};
+            char gb2312_string[sizeof(unicode_string)*2]= {0};
             hgb2312_string_from_unicode(gb2312_string,sizeof(gb2312_string)/sizeof(gb2312_string[0]),unicode_string,sizeof(unicode_string)/sizeof(unicode_string[0]));
             hunicode_char_t unicode_string2[sizeof(unicode_string)]= {0};
             hgb2312_string_to_unicode(unicode_string2,sizeof(unicode_string2)/sizeof(unicode_string2[0]),gb2312_string,sizeof(gb2312_string)/sizeof(gb2312_string[0]));
@@ -3643,41 +3643,80 @@ static int hcrypto_test(int argc,const char *argv[])
     }
 
     {
-        const  hpoly1305_mac_t mac_result= {0xdd,0xb9,0xda,0x7d,0xdd,0x5e,0x52,0x79,0x27,0x30,0xed,0x5c,0xda,0x5f,0x90,0xa4};
-        hpoly1305_key_t key={0};
         {
-            printf("hcrypto hpoly1305:key=");
-            for (size_t i = 0; i < sizeof(key); i++)
+            const  hpoly1305_mac_t mac_result= {0xdd,0xb9,0xda,0x7d,0xdd,0x5e,0x52,0x79,0x27,0x30,0xed,0x5c,0xda,0x5f,0x90,0xa4};
+            hpoly1305_key_t key= {0};
             {
-                key[i] = (uint8_t)(i + 221);
-                printf("%02X",(int)key[i]);
+                printf("hcrypto hpoly1305:key=");
+                for (size_t i = 0; i < sizeof(key); i++)
+                {
+                    key[i] = (uint8_t)(i + 221);
+                    printf("%02X",(int)key[i]);
+                }
+                printf("\r\n");
             }
-            printf("\r\n");
+            hpoly1305_context_t ctx;
+            hpoly1305_starts(&ctx,key);
+            uint8_t msg[73]= {0};
+            {
+                printf("hcrypto hpoly1305:msg=");
+                for (size_t i = 0; i < sizeof(msg); i++)
+                {
+                    msg[i] = (uint8_t)(i + 121);
+                    printf("%02X",(int)msg[i]);
+                }
+                printf("\r\n");
+            }
+            hpoly1305_update(&ctx,msg,sizeof(msg));
+            hpoly1305_mac_t mac= {0};
+            hpoly1305_finish(&ctx,mac);
+            {
+                printf("hcrypto hpoly1305:mac=");
+                for (size_t i = 0; i < sizeof(mac); i++)
+                {
+                    printf("%02X",(int)mac[i]);
+                }
+                printf("\r\n");
+            }
+            printf("hcrypto hpoly1305:%s\r\n",memcmp(mac_result,mac,sizeof(mac))==0?"ok":"failed");
         }
-        hpoly1305_context_t ctx;
-        hpoly1305_starts(&ctx,key);
-        uint8_t msg[73]={0};
+
         {
-            printf("hcrypto hpoly1305:msg=");
-            for (size_t i = 0; i < sizeof(msg); i++)
+            //RFC 7539 参考的例子（Text Vector #4）
+            const  hpoly1305_mac_t mac_result= {0x45,0x41,0x66,0x9a,0x7e,0xaa,0xee,0x61,0xe7,0x08,0xdc,0x7c,0xbc,0xc5,0xeb,0x62};
+            hpoly1305_key_t key= {0x1c,0x92,0x40,0xa5,0xeb,0x55,0xd3,0x8a,0xf3,0x33,0x88,0x86,0x04,0xf6,0xb5,0xf0,0x47,0x39,0x17,0xc1,0x40,0x2b,0x80,0x09,0x9d,0xca,0x5c,0xbc,0x20,0x70,0x75,0xc0};
             {
-                msg[i] = (uint8_t)(i + 121);
-                printf("%02X",(int)msg[i]);
+                printf("hcrypto hpoly1305:key=");
+                for (size_t i = 0; i < sizeof(key); i++)
+                {
+                    printf("%02X",(int)key[i]);
+                }
+                printf("\r\n");
             }
-            printf("\r\n");
-        }
-        hpoly1305_update(&ctx,msg,sizeof(msg));
-        hpoly1305_mac_t mac={0};
-        hpoly1305_finish(&ctx,mac);
-        {
-            printf("hcrypto hpoly1305:mac=");
-            for (size_t i = 0; i < sizeof(mac); i++)
+            hpoly1305_context_t ctx;
+            hpoly1305_starts(&ctx,key);
+            uint8_t msg[]= "'Twas brillig, and the slithy toves\nDid gyre and gimble in the wabe:\nAll mimsy were the borogoves,\nAnd the mome raths outgrabe.";
             {
-                printf("%02X",(int)mac[i]);
+                printf("hcrypto hpoly1305:msg=");
+                for (size_t i = 0; i < sizeof(msg)-1; i++)
+                {
+                    printf("%02X",(int)msg[i]);
+                }
+                printf("\r\n");
             }
-            printf("\r\n");
+            hpoly1305_update(&ctx,msg,sizeof(msg)-1);
+            hpoly1305_mac_t mac= {0};
+            hpoly1305_finish(&ctx,mac);
+            {
+                printf("hcrypto hpoly1305:mac=");
+                for (size_t i = 0; i < sizeof(mac); i++)
+                {
+                    printf("%02X",(int)mac[i]);
+                }
+                printf("\r\n");
+            }
+            printf("hcrypto hpoly1305:%s\r\n",memcmp(mac_result,mac,sizeof(mac))==0?"ok":"failed");
         }
-        printf("hcrypto hpoly1305:%s\r\n",memcmp(mac_result,mac,sizeof(mac))==0?"ok":"failed");
     }
 
     return 0;
