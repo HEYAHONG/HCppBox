@@ -116,7 +116,7 @@ if [ -f ${libc} ]
 then
     for i in `objdump -T /lib/x86_64-linux-gnu/libc.so.6 | awk '{ print $7 }'`
     do
-      if [ -n "`echo ${symbol} | grep $i`" ]
+      if [ -n "`echo ${symbol} | grep -w $i`" ]
       then
         libc_symbol="$i $libc_symbol"
       fi
