@@ -114,7 +114,7 @@ echo C运行库为${libc}
 libc_symbol=""
 if [ -f ${libc} ]
 then
-    for i in `objdump -T /lib/x86_64-linux-gnu/libc.so.6 | awk '{ print $7 }'`
+    for i in `objdump -T ${libc} | awk '{ print $7 }'`
     do
       if [ -n "`echo ${symbol} | grep -w $i`" ]
       then
