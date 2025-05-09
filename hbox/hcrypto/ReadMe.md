@@ -103,3 +103,8 @@
 - [hhmac.h](hhmac.h)
 - [hhmac.c](hhmac.c)
 
+## POLY1305
+
+- [hpoly1305.h](hpoly1305.h)
+- [hpoly1305.c](hpoly1305.c)
+

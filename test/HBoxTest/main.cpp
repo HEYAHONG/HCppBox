@@ -3642,6 +3642,44 @@ static int hcrypto_test(int argc,const char *argv[])
         }
     }
 
+    {
+        const  hpoly1305_mac_t mac_result= {0xdd,0xb9,0xda,0x7d,0xdd,0x5e,0x52,0x79,0x27,0x30,0xed,0x5c,0xda,0x5f,0x90,0xa4};
+        hpoly1305_key_t key={0};
+        {
+            printf("hcrypto hpoly1305:key=");
+            for (size_t i = 0; i < sizeof(key); i++)
+            {
+                key[i] = (uint8_t)(i + 221);
+                printf("%02X",(int)key[i]);
+            }
+            printf("\r\n");
+        }
+        hpoly1305_context_t ctx;
+        hpoly1305_starts(&ctx,key);
+        uint8_t msg[73]={0};
+        {
+            printf("hcrypto hpoly1305:msg=");
+            for (size_t i = 0; i < sizeof(msg); i++)
+            {
+                msg[i] = (uint8_t)(i + 121);
+                printf("%02X",(int)msg[i]);
+            }
+            printf("\r\n");
+        }
+        hpoly1305_update(&ctx,msg,sizeof(msg));
+        hpoly1305_mac_t mac={0};
+        hpoly1305_finish(&ctx,mac);
+        {
+            printf("hcrypto hpoly1305:mac=");
+            for (size_t i = 0; i < sizeof(mac); i++)
+            {
+                printf("%02X",(int)mac[i]);
+            }
+            printf("\r\n");
+        }
+        printf("hcrypto hpoly1305:%s\r\n",memcmp(mac_result,mac,sizeof(mac))==0?"ok":"failed");
+    }
+
     return 0;
 }
 

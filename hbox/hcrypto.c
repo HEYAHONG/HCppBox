@@ -26,4 +26,5 @@
 #include "hcrypto/hmd4.c"
 #include "hcrypto/hsm4.c"
 #include "hcrypto/hhmac.c"
+#include "hcrypto/hpoly1305.c"
 

@@ -32,6 +32,7 @@ extern "C"
 #include "hcrypto/hmd4.h"
 #include "hcrypto/hsm4.h"
 #include "hcrypto/hhmac.h"
+#include "hcrypto/hpoly1305.h"
 
 #ifdef __cplusplus
 }
