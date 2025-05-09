@@ -41,7 +41,7 @@ void hdoublylinkedlist_init(hdoublylinkedlist_head_t *list_head);
  *
  */
 #define HDOUBLYLINKEDLIST_FOREACH(list_head,item)      \
-    for(hdoublylinkedlist_head_t * item=list_head;item->next!=NULL && item->next!= list_head;item=item->next)
+    for(hdoublylinkedlist_head_t * item=list_head;item!=NULL; (item->next!=list_head)?(item=item->next):(item=NULL))
 
 /** \brief 双向链表枚举回调
  *
