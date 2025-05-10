@@ -543,6 +543,7 @@ const hdefaults_api_table_t * hdefaults_set_api_table(const hdefaults_api_table_
 
 #include "syscall/hdefaults_syscall.h"
 #include "libc/hdefaults_libc_port.h"
+#include "libdl/hdefaults_libdl_port.h"
 
 
 #ifdef __cplusplus

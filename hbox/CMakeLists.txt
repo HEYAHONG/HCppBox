@@ -23,6 +23,14 @@ target_link_libraries(${targetname} HBox)
 target_compile_definitions(${targetname} PUBLIC  HBOX_ENABLE=1)
 endfunction()
 
+include(CheckIncludeFile)
+#查找libdl库
+check_include_file(dlfcn.h HAVE_DLFCN_H)
+if(HAVE_DLFCN_H)
+target_link_libraries(HBox dl)
+target_compile_definitions(HBox PUBLIC  HAVE_DLFCN_H=1)
+endif()
+
 #添加dotfontscan工具构建
 add_custom_target(dotfontscan_tool 	${CMAKE_COMMAND} -E make_directory dotfontscan && ${CMAKE_COMMAND}  -S ${CMAKE_CURRENT_SOURCE_DIR}/hgui/tools/dotfontscan/ -B dotfontscan && ${CMAKE_COMMAND} --build dotfontscan 
 									WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/

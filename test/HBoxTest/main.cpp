@@ -180,6 +180,29 @@ static int hdefaults_test(int argc,const char *argv[])
         }
     }
 
+    {
+        //Windows下的操作
+#if defined(HDEFAULTS_OS_WINDOWS) || defined(HDEFAULTS_OS_CYGWIN)
+        const char *crt_name="msvcrt.dll";
+#elif   defined(HDEFAULTS_OS_LINUX) && defined(HDEFAULTS_BITS_64)
+        const char *crt_name="/lib/x86_64-linux-gnu/libc.so";
+#else
+        const char *crt_name="dummy";
+#endif
+        void * handle=hdlopen(crt_name,HRTLD_LAZY);
+        if(handle!=NULL)
+        {
+            printf("hdefaults libdl:open crt(%s) success!\r\n",crt_name);
+            printf("hdefaults libdl:printf addr=%p\r\n",hdlsym(handle,"printf"));
+            hdlclose(handle);
+        }
+        else
+        {
+            printf("hdefaults libdl:open crt(%s) failed!\r\n",crt_name);
+        }
+
+    }
+
     return 0;
 }
 static int heventloop_test(int argc,const char *argv[])
