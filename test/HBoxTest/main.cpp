@@ -185,7 +185,9 @@ static int hdefaults_test(int argc,const char *argv[])
 #if defined(HDEFAULTS_OS_WINDOWS) || defined(HDEFAULTS_OS_CYGWIN)
         const char *crt_name="msvcrt.dll";
 #elif   defined(HDEFAULTS_OS_LINUX) && defined(HDEFAULTS_BITS_64)
-        const char *crt_name="/lib/x86_64-linux-gnu/libc.so";
+        const char *crt_name="/lib/x86_64-linux-gnu/libc.so.6";
+#elif   defined(HDEFAULTS_OS_FREEBSD)
+        const char *crt_name="/lib/libc.so.7";
 #else
         const char *crt_name="dummy";
 #endif
