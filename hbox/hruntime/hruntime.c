@@ -177,24 +177,27 @@ const hruntime_symbol_t *hruntime_symbol_find(const char *name)
     }
 
 #ifdef HRUNTIME_USING_SYMBOL_TABLE
-    for(size_t i=0; i<sizeof(hruntime_symbol_array_list)/sizeof(hruntime_symbol_array_list[0]); i++)
+    if(ret==NULL)
     {
-        const hruntime_symbol_t *   array_base=hruntime_symbol_array_list[i].array_base;
-        size_t                      array_size=hruntime_symbol_array_list[i].array_size;
-        if(array_base!=NULL && array_size!=0)
+        for(size_t i=0; i<sizeof(hruntime_symbol_array_list)/sizeof(hruntime_symbol_array_list[0]); i++)
         {
-            for(size_t i=0; i<array_size; i++)
+            const hruntime_symbol_t *   array_base=hruntime_symbol_array_list[i].array_base;
+            size_t                      array_size=hruntime_symbol_array_list[i].array_size;
+            if(array_base!=NULL && array_size!=0)
             {
-                if(array_base[i].symbol_name!=NULL && strcmp(array_base[i].symbol_name,name)==0)
+                for(size_t i=0; i<array_size; i++)
                 {
-                    ret=&array_base[i];
-                    break;
+                    if(array_base[i].symbol_name!=NULL && strcmp(array_base[i].symbol_name,name)==0)
+                    {
+                        ret=&array_base[i];
+                        break;
+                    }
                 }
             }
-        }
-        if(ret!=NULL)
-        {
-            break;
+            if(ret!=NULL)
+            {
+                break;
+            }
         }
     }
 #endif

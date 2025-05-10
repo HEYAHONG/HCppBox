@@ -155,17 +155,27 @@ void *operator new[](size_t size)
     return hdefaults_malloc(size,NULL);
 }
 
-void operator delete(void *ptr)
+#ifdef _GLIBCXX_USE_NOEXCEPT
+#define DELETE_USE_NOEXCEPT  _GLIBCXX_USE_NOEXCEPT
+#endif // _GLIBCXX_USE_NOEXCEPT
+
 #ifdef __clang__
-throw()
+#ifndef DELETE_USE_NOEXCEPT
+#define DELETE_USE_NOEXCEPT throw()
+#endif // DELETE_USE_NOEXCEPT
+#endif
+
+void operator delete(void *ptr)
+#ifdef DELETE_USE_NOEXCEPT
+DELETE_USE_NOEXCEPT
 #endif
 {
     hdefaults_free(ptr,NULL);
 }
 
 void operator delete[](void *ptr)
-#ifdef __clang__
-throw()
+#ifdef DELETE_USE_NOEXCEPT
+DELETE_USE_NOEXCEPT
 #endif
 {
     hdefaults_free(ptr,NULL);
