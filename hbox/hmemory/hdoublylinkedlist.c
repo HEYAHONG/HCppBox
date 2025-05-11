@@ -19,6 +19,19 @@ void hdoublylinkedlist_init(hdoublylinkedlist_head_t *list_head)
     }
 }
 
+bool hdoublylinkedlist_is_empty(hdoublylinkedlist_head_t* item)
+{
+    if(item==NULL)
+    {
+        return true;
+    }
+    if((item->prev==NULL || item->prev==item)&&(item->next==NULL || item->next==item))
+    {
+        return true;
+    }
+    return false;
+}
+
 void hdoublylinkedlist_enum(hdoublylinkedlist_head_t *list_head,hdoublylinkedlist_on_enum_callback_t cb,void *usr)
 {
     if(list_head==NULL || cb == NULL)

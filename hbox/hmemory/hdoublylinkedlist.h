@@ -33,6 +33,13 @@ struct hdoublylinkedlist_head
  */
 void hdoublylinkedlist_init(hdoublylinkedlist_head_t *list_head);
 
+/** \brief 链表是否为空
+ *
+ * \param item hdoublylinkedlist_head_t* 链表项
+ * \return bool 是否为空项,链表项为空时返回true,链表项不为空时一般不可进行内存释放
+ *
+ */
+bool hdoublylinkedlist_is_empty(hdoublylinkedlist_head_t* item);
 
 /** \brief 循环遍历双向链表(过程中不可移除链表中的项)
  *
