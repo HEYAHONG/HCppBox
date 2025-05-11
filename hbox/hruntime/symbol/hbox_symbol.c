@@ -7280,6 +7280,9 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hhmac_ripemd160_starts),(uintptr_t)&hhmac_ripemd160_starts},
     {hdefaults_str(hhmac_ripemd160_update),(uintptr_t)&hhmac_ripemd160_update},
     {hdefaults_str(hhmac_ripemd160_finish),(uintptr_t)&hhmac_ripemd160_finish},
+    {hdefaults_str(hpoly1305_starts),(uintptr_t)&hpoly1305_starts},
+    {hdefaults_str(hpoly1305_update),(uintptr_t)&hpoly1305_update},
+    {hdefaults_str(hpoly1305_finish),(uintptr_t)&hpoly1305_finish},
 ///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hdefaults.c
     {hdefaults_str(hdefaults_syscall_function_find),(uintptr_t)&hdefaults_syscall_function_find},
     {hdefaults_str(hdefaults_tick_get),(uintptr_t)&hdefaults_tick_get},
@@ -7295,6 +7298,9 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hputchar),(uintptr_t)&hputchar},
     {hdefaults_str(hgetchar),(uintptr_t)&hgetchar},
     {hdefaults_str(hgetenv),(uintptr_t)&hgetenv},
+    {hdefaults_str(hdlopen),(uintptr_t)&hdlopen},
+    {hdefaults_str(hdlclose),(uintptr_t)&hdlclose},
+    {hdefaults_str(hdlsym),(uintptr_t)&hdlsym},
 ///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hdriverframework.c
     {hdefaults_str(hwatchdog_set_memmang_and_lock),(uintptr_t)&hwatchdog_set_memmang_and_lock},
     {hdefaults_str(hwatchdog_get_usr_ptr),(uintptr_t)&hwatchdog_get_usr_ptr},
@@ -7483,6 +7489,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hobject_managed_struct_base),(uintptr_t)&hobject_managed_struct_base},
     {hdefaults_str(hobject_managed_struct),(uintptr_t)&hobject_managed_struct},
     {hdefaults_str(hdoublylinkedlist_init),(uintptr_t)&hdoublylinkedlist_init},
+    {hdefaults_str(hdoublylinkedlist_is_empty),(uintptr_t)&hdoublylinkedlist_is_empty},
     {hdefaults_str(hdoublylinkedlist_enum),(uintptr_t)&hdoublylinkedlist_enum},
     {hdefaults_str(hdoublylinkedlist_add_front),(uintptr_t)&hdoublylinkedlist_add_front},
     {hdefaults_str(hdoublylinkedlist_add_back),(uintptr_t)&hdoublylinkedlist_add_back},
