@@ -237,21 +237,21 @@ const hruntime_symbol_t *hruntime_symbol_find(const char *name);
 
 /** \brief 注册符号表
  *
- * \param table_start hruntime_symbol_t* 符号表起始地址
+ * \param table_start const hruntime_symbol_t* 符号表起始地址
  * \param table_size size_t              符号表大小
  * \return bool 是否成功
  *
  */
-bool hruntime_symbol_dynamic_table_register(hruntime_symbol_t *table_start,size_t table_size);
+bool hruntime_symbol_dynamic_table_register(const hruntime_symbol_t *table_start,size_t table_size);
 
 /** \brief 反注册符号表
  *
- * \param table_start hruntime_symbol_t* 符号表起始地址
+ * \param table_start const hruntime_symbol_t* 符号表起始地址
  * \param table_size size_t              符号表大小
  * \return bool 是否成功
  *
  */
-bool hruntime_symbol_dynamic_table_unregister(hruntime_symbol_t *table_start,size_t table_size);
+bool hruntime_symbol_dynamic_table_unregister(const hruntime_symbol_t *table_start,size_t table_size);
 
 
 /** \brief 寻找动态表中的符号（一般用于模块化时加载模块,与hdefaults的API表不同，此函数一般在模块加载过程中使用）

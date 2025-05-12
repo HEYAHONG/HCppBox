@@ -205,6 +205,22 @@ static int hdefaults_test(int argc,const char *argv[])
 
     }
 
+    {
+        printf("hdefaults libdl:symbol_table printf=%p\r\n",hdlsym(NULL,"printf"));
+        printf("hdefaults libdl:symbol_table register!\r\n");
+        static const hruntime_symbol_t symbol_table[]=
+        {
+            {
+                "printf",(uintptr_t)&hprintf
+            }
+        };
+        hruntime_symbol_dynamic_table_register(symbol_table,sizeof(symbol_table)/sizeof(symbol_table[0]));
+        printf("hdefaults libdl:symbol_table printf=%p\r\n",hdlsym(NULL,"printf"));
+        printf("hdefaults libdl:symbol_table unregister!\r\n");
+        hruntime_symbol_dynamic_table_unregister(symbol_table,sizeof(symbol_table)/sizeof(symbol_table[0]));
+        printf("hdefaults libdl:symbol_table printf=%p\r\n",hdlsym(NULL,"printf"));
+    }
+
     return 0;
 }
 static int heventloop_test(int argc,const char *argv[])

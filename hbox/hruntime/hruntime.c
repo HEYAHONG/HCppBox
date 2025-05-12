@@ -249,7 +249,7 @@ typedef struct
     const hruntime_symbol_t *table_start;
     size_t table_size;
 } hruntime_symbol_dynamic_table_list_item_t;
-bool hruntime_symbol_dynamic_table_register(hruntime_symbol_t *table_start,size_t table_size)
+bool hruntime_symbol_dynamic_table_register(const hruntime_symbol_t *table_start,size_t table_size)
 {
     bool ret=false;
     if(table_start==NULL || table_size == 0)
@@ -291,7 +291,7 @@ bool hruntime_symbol_dynamic_table_register(hruntime_symbol_t *table_start,size_
     return ret;
 }
 
-bool hruntime_symbol_dynamic_table_unregister(hruntime_symbol_t *table_start,size_t table_size)
+bool hruntime_symbol_dynamic_table_unregister(const hruntime_symbol_t *table_start,size_t table_size)
 {
     bool ret=false;
     if(table_start==NULL || table_size == 0)
