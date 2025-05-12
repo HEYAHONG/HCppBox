@@ -1,20 +1,20 @@
 /***************************************************************
- * Name:      h3rdparty.c
- * Purpose:   引入第三方源代码文件
+ * Name:      hfree.c
+ * Purpose:   实现hfree接口
  * Author:    HYH (hyhsystem.cn)
- * Created:   2024-09-27
+ * Created:   2025-05-12
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "h3rdparty.h"
+#include "hfree.h"
 #include "hdefaults.h"
 
-void h3rdparty_init(void)
+void  hfree(void *ptr)
 {
+    if(ptr !=NULL)
     {
-        //初始化cJSON
-        cJSON_Hooks hook= {hmalloc,hfree};
-        cJSON_InitHooks(&hook);
+        hdefaults_free(ptr,NULL);
     }
 }
+
 

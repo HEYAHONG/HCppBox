@@ -17,6 +17,10 @@ extern "C"
 #include "wrapper/hputchar.h"
 #include "wrapper/hgetchar.h"
 #include "wrapper/hgetenv.h"
+#include "wrapper/hmalloc.h"
+#include "wrapper/hfree.h"
+#include "wrapper/hcalloc.h"
+#include "wrapper/hrealloc.h"
 
 #ifdef __cplusplus
 }
