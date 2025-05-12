@@ -176,6 +176,13 @@ const hruntime_symbol_t *hruntime_symbol_find(const char *name)
         return ret;
     }
 
+#ifdef HRUNTIME_USING_SYMBOL_DYNAMIC_TABLE
+    if(ret==NULL)
+    {
+        ret=hruntime_symbol_dynamic_find(name);
+    }
+#endif // HRUNTIME_USING_SYMBOL_DYNAMIC_TABLE
+
 #ifdef HRUNTIME_USING_SYMBOL_TABLE
     if(ret==NULL)
     {
@@ -235,3 +242,141 @@ const hruntime_symbol_t *hruntime_symbol_find(const char *name)
     return ret;
 }
 
+static hdoublylinkedlist_head_t hruntime_symbol_dynamic_table_list_head= {0};
+typedef struct
+{
+    hdoublylinkedlist_head_t list_head;
+    const hruntime_symbol_t *table_start;
+    size_t table_size;
+} hruntime_symbol_dynamic_table_list_item_t;
+bool hruntime_symbol_dynamic_table_register(hruntime_symbol_t *table_start,size_t table_size)
+{
+    bool ret=false;
+    if(table_start==NULL || table_size == 0)
+    {
+        return ret;
+    }
+
+    hruntime_symbol_dynamic_table_list_item_t *item=(hruntime_symbol_dynamic_table_list_item_t *)hdefaults_malloc(sizeof(hruntime_symbol_dynamic_table_list_item_t),NULL);
+    if(item==NULL)
+    {
+        return ret;
+    }
+
+    item->table_size=table_size;
+    item->table_start=table_start;
+
+    hdefaults_mutex_lock(NULL);
+    ret=true;
+    if(hdoublylinkedlist_is_empty(&hruntime_symbol_dynamic_table_list_head))
+    {
+        //当头为空,直接添加到链表头上
+        hdoublylinkedlist_add_back(&hruntime_symbol_dynamic_table_list_head,&item->list_head);
+        //由于仅有一个项，应当初始化为空
+        hdoublylinkedlist_init(&item->list_head);
+    }
+    else
+    {
+        //获取真正的链表头
+        hdoublylinkedlist_head_t *list_head=hruntime_symbol_dynamic_table_list_head.next;
+        //添加当前项到链表
+        hdoublylinkedlist_add_front(list_head,&item->list_head);
+    }
+    hdefaults_mutex_unlock(NULL);
+    if(!ret)
+    {
+        hdefaults_free(item,NULL);
+    }
+    return ret;
+}
+
+bool hruntime_symbol_dynamic_table_unregister(hruntime_symbol_t *table_start,size_t table_size)
+{
+    bool ret=false;
+    if(table_start==NULL || table_size == 0)
+    {
+        return ret;
+    }
+
+    if(hdoublylinkedlist_is_empty(&hruntime_symbol_dynamic_table_list_head))
+    {
+        return ret;
+    }
+
+    //获取真正的链表头
+    hdoublylinkedlist_head_t *list_head=hruntime_symbol_dynamic_table_list_head.next;
+    hruntime_symbol_dynamic_table_list_item_t *item=NULL;
+    hdefaults_mutex_lock(NULL);
+    HDOUBLYLINKEDLIST_FOREACH(list_head,list_item)
+    {
+        const hruntime_symbol_dynamic_table_list_item_t * temp=GET_STRUCT_PTR_BY_MEMBER_PTR(list_item,hruntime_symbol_dynamic_table_list_item_t,list_head);
+        if(temp !=NULL && (temp->table_start==table_start && temp->table_size==table_size))
+        {
+            item=(hruntime_symbol_dynamic_table_list_item_t *)temp;
+            break;
+        }
+    }
+
+    if(item!=NULL)
+    {
+        if(list_head==&item->list_head)
+        {
+            //当前项是链表头
+            if(hdoublylinkedlist_is_empty(list_head))
+            {
+                //重新恢复为无链表项的状态
+                hdoublylinkedlist_init(&hruntime_symbol_dynamic_table_list_head);
+            }
+            else
+            {
+                //使用下一项作为新的链表头
+                hruntime_symbol_dynamic_table_list_head.next=list_head->next;
+                hruntime_symbol_dynamic_table_list_head.prev=list_head->next;
+            }
+        }
+        hdoublylinkedlist_remove(&item->list_head);
+        hdefaults_free(item,NULL);
+        item=NULL;
+        ret=true;
+    }
+
+    hdefaults_mutex_unlock(NULL);
+    return ret;
+}
+
+const hruntime_symbol_t *hruntime_symbol_dynamic_find(const char *name)
+{
+    const hruntime_symbol_t * ret=NULL;
+    if(name==NULL || strlen(name) == 0)
+    {
+        return ret;
+    }
+
+    if(hdoublylinkedlist_is_empty(&hruntime_symbol_dynamic_table_list_head))
+    {
+        return ret;
+    }
+
+    //获取真正的链表头
+    hdoublylinkedlist_head_t *list_head=hruntime_symbol_dynamic_table_list_head.next;
+    hdefaults_mutex_lock(NULL);
+    HDOUBLYLINKEDLIST_FOREACH(list_head,list_item)
+    {
+        const hruntime_symbol_dynamic_table_list_item_t * temp=GET_STRUCT_PTR_BY_MEMBER_PTR(list_item,hruntime_symbol_dynamic_table_list_item_t,list_head);
+        if(temp!=NULL && temp->table_start!=NULL && temp->table_size!=0)
+        {
+            for(size_t i=0; i< temp->table_size; i++)
+            {
+                if(temp->table_start[i].symbol_name!=NULL && strcmp(name,temp->table_start[i].symbol_name)==0)
+                {
+                    ret=&temp->table_start[i];
+                    /*
+                     * 即便已查找到符号，仍然需要继续查找，以最后一个查找到的符号为准
+                     */
+                }
+            }
+        }
+    }
+    hdefaults_mutex_unlock(NULL);
+    return ret;
+}

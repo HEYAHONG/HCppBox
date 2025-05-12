@@ -10,6 +10,7 @@
 #define __HRUNTIME_H__
 #include "hdefaults.h"
 #include "hcompiler.h"
+#include "hmemory.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -233,6 +234,34 @@ struct hruntime_symbol
  */
 const hruntime_symbol_t *hruntime_symbol_find(const char *name);
 
+
+/** \brief 注册符号表
+ *
+ * \param table_start hruntime_symbol_t* 符号表起始地址
+ * \param table_size size_t              符号表大小
+ * \return bool 是否成功
+ *
+ */
+bool hruntime_symbol_dynamic_table_register(hruntime_symbol_t *table_start,size_t table_size);
+
+/** \brief 注册符号表
+ *
+ * \param table_start hruntime_symbol_t* 符号表起始地址
+ * \param table_size size_t              符号表大小
+ * \return bool 是否成功
+ *
+ */
+bool hruntime_symbol_dynamic_table_unregister(hruntime_symbol_t *table_start,size_t table_size);
+
+
+/** \brief 寻找动态表中的符号（一般用于模块化时加载模块,与hdefaults的API表不同，此函数一般在模块加载过程中使用）
+ *
+ * \param name const char* 符号名称
+ * \return const hruntime_symbol_t* 符号地址
+ *
+ */
+const hruntime_symbol_t *hruntime_symbol_dynamic_find(const char *name);
+
 #if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
 /*
  * armcc/armclang,使用名称为HRuntimeSymbol的section
@@ -307,6 +336,12 @@ extern const  hruntime_symbol_t __hruntime_symbol_end[];
 #define HRUNTIME_USING_SYMBOL_TABLE     1
 #endif
 
+/*
+ *  某些操作系统下，默认启用动态符号表
+ */
+#ifndef HRUNTIME_USING_SYMBOL_DYNAMIC_TABLE
+#define HRUNTIME_USING_SYMBOL_DYNAMIC_TABLE     1
+#endif
 #endif
 
 
