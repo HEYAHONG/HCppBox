@@ -244,7 +244,7 @@ const hruntime_symbol_t *hruntime_symbol_find(const char *name);
  */
 bool hruntime_symbol_dynamic_table_register(hruntime_symbol_t *table_start,size_t table_size);
 
-/** \brief 注册符号表
+/** \brief 反注册符号表
  *
  * \param table_start hruntime_symbol_t* 符号表起始地址
  * \param table_size size_t              符号表大小
