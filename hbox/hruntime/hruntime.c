@@ -270,6 +270,7 @@ bool hruntime_symbol_dynamic_table_register(hruntime_symbol_t *table_start,size_
     ret=true;
     if(hdoublylinkedlist_is_empty(&hruntime_symbol_dynamic_table_list_head))
     {
+        hdoublylinkedlist_init(&hruntime_symbol_dynamic_table_list_head);
         //当头为空,直接添加到链表头上
         hdoublylinkedlist_add_back(&hruntime_symbol_dynamic_table_list_head,&item->list_head);
         //由于仅有一个项，应当初始化为空
