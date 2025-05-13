@@ -1,26 +1,25 @@
 /***************************************************************
- * Name:      hruntime.h
- * Purpose:   声明hruntime接口
+ * Name:      hintelhex.h
+ * Purpose:   声明hintelhex接口
  * Author:    HYH (hyhsystem.cn)
- * Created:   2025-05-03
+ * Created:   2025-05-13
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#ifndef __HRUNTIME_H_INCLUDE__
-#define __HRUNTIME_H_INCLUDE__
+#ifndef __HINTELHEX_H__
+#define __HINTELHEX_H__
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
 
-#include "hruntime/hruntime.h"
-#include "hruntime/hstacklesscoroutine.h"
-#include "hruntime/hexecutableloader.h"
+#include "hintelhex/hintelhex_common.h"
+#include "hintelhex/hintelhex_reader.h"
 
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
 
-#endif // __HRUNTIME_H_INCLUDE__
+#endif // __HINTELHEX_H__

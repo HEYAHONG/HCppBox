@@ -28,3 +28,12 @@
 本组件用于辅助编写简易无栈协程。无栈协程可用于实现简易的多任务系统。
 
 具体实现见[hstacklesscoroutine](hstacklesscoroutine)。
+
+## hexecutableloader
+
+本组件用于加载可执行代码到内存中(并不负责执行这些代码)。
+
+ 注意：本组件加载的代码可供本地执行，也可供模拟器使用。
+
+具体实现见[hexecutableloader](hexecutableloader)。
+

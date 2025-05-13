@@ -1821,6 +1821,40 @@ static int hsimulator_test(int argc,const char *argv[])
             printf("hsimulator mcs_51_serial mode=%d,baud=%d!\r\n",(int)hs_mcs_51_serial_config_mode_get(core,&mcs_51_uart),(int)hs_mcs_51_serial_config_baud_get(core,&mcs_51_uart));
 
         }
+
+        {
+            //测试intelhex读取
+            const uint8_t *helloworld_ihx=RCGetHandle("simulator/mcs_51/rom/helloworld/helloworld.ihx");
+            size_t helloworld_ihx_len=RCGetSize("simulator/mcs_51/rom/helloworld/helloworld.ihx");
+            if(helloworld_ihx!=NULL)
+            {
+                hintelhex_reader_t reader;
+                uint8_t code[64*1024];
+                memset(code,0xFF,sizeof(code));
+                hintelhex_reader_init(&reader,[](hintelhex_reader_t *reader,hintelhex_reader_operate_t op,uint32_t address,const uint8_t *data,size_t data_len)
+                {
+                    uint8_t *code=(uint8_t *)reader->usr;
+                    if(op==HINTELHEX_READER_OPERATE_DATA)
+                    {
+                        if(address+data_len < 0x10000)
+                        {
+                            memcpy(&code[address],data,data_len);
+                        }
+                    }
+                    if(op==HINTELHEX_READER_OPERATE_END_OF_FILE)
+                    {
+                        printf("hsimulator mcs51 ihx(helloworld.ihx) load:end of file!\r\n");
+                        if(memcmp(hs_mcs_51_rom_helloworld.code,code,hs_mcs_51_rom_helloworld.len)==0)
+                        {
+                            printf("hsimulator mcs51 ihx(helloworld.ihx) load:ok\r\n");
+                        }
+                    }
+                },code);
+                printf("hsimulator mcs51 ihx(helloworld.ihx) load:start!\r\n");
+                hintelhex_reader_input(&reader,(const char *)helloworld_ihx,helloworld_ihx_len);
+                printf("hsimulator mcs51 ihx(helloworld.ihx) load:end!\r\n");
+            }
+        }
     }
 
     {

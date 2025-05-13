@@ -10,3 +10,4 @@
 
 #include "hruntime/hruntime.c"
 #include "hruntime/hstacklesscoroutine.c"
+#include "hruntime/hexecutableloader.c"
