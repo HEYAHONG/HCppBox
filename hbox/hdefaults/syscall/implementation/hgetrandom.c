@@ -39,7 +39,7 @@ HDEFAULTS_USERCALL_DEFINE3(hgetrandom,HDEFAULTS_SYSCALL_HGETRANDOM,hgetrandom_ss
     hgetrandom_ssize_t ret=-1;
 #if defined(HGETRANDOM)
     ret=HGETRANDOM(buffer,length,flags);
-#elif defined(HDEFAULTS_OS_UNIX) && (!defined(HDEFAULTS_LIBC_UCLIBC))
+#elif defined(HDEFAULTS_OS_UNIX) && !(defined(HDEFAULTS_OS_ANDROID)) && (!defined(HDEFAULTS_LIBC_UCLIBC))
     ret=getrandom(buffer,length,flags);
 #else
     {
