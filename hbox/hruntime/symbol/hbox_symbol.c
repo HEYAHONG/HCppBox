@@ -7574,6 +7574,9 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hstacklesscoroutine2_delay),(uintptr_t)&hstacklesscoroutine2_delay},
     {hdefaults_str(hstacklesscoroutine_awaiter2_init),(uintptr_t)&hstacklesscoroutine_awaiter2_init},
     {hdefaults_str(hstacklesscoroutine2_await),(uintptr_t)&hstacklesscoroutine2_await},
+    {hdefaults_str(hintelhex_common_buffer_init),(uintptr_t)&hintelhex_common_buffer_init},
+    {hdefaults_str(hintelhex_reader_init),(uintptr_t)&hintelhex_reader_init},
+    {hdefaults_str(hintelhex_reader_input),(uintptr_t)&hintelhex_reader_input},
 ///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hshell.c
     {hdefaults_str(hshell_execute),(uintptr_t)&hshell_execute},
     {hdefaults_str(hshell_context_printf),(uintptr_t)&hshell_context_printf},
