@@ -44,7 +44,7 @@ void hintelhex_reader_input(hintelhex_reader_t *reader,const char *data,size_t d
             {
                 //处理单行
                 uint8_t *line_binary=reader->buffer.line_binary;
-                size_t line_binary_len=hbase16_decode(line_binary,sizeof(reader->buffer.line_binary),&line[1],line_index-1);
+                size_t line_binary_len=hbase16_decode(line_binary,sizeof(reader->buffer.line_binary),(char *)&line[1],line_index-1);
                 if(hlrc_check(line_binary,line_binary_len-1,line_binary[line_binary_len-1]))
                 {
                     uint8_t len=line_binary[0];
