@@ -16,6 +16,7 @@ extern "C"
 
 #include "hintelhex/hintelhex_common.h"
 #include "hintelhex/hintelhex_reader.h"
+#include "hintelhex/hintelhex_writer.h"
 
 #ifdef __cplusplus
 }

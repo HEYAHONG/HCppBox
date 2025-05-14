@@ -7577,6 +7577,13 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hintelhex_common_buffer_init),(uintptr_t)&hintelhex_common_buffer_init},
     {hdefaults_str(hintelhex_reader_init),(uintptr_t)&hintelhex_reader_init},
     {hdefaults_str(hintelhex_reader_input),(uintptr_t)&hintelhex_reader_input},
+    {hdefaults_str(hintelhex_writer_init),(uintptr_t)&hintelhex_writer_init},
+    {hdefaults_str(hintelhex_writer_write_data),(uintptr_t)&hintelhex_writer_write_data},
+    {hdefaults_str(hintelhex_writer_write_extended_linear_address),(uintptr_t)&hintelhex_writer_write_extended_linear_address},
+    {hdefaults_str(hintelhex_writer_write_extended_segment_address),(uintptr_t)&hintelhex_writer_write_extended_segment_address},
+    {hdefaults_str(hintelhex_writer_write_end_of_file),(uintptr_t)&hintelhex_writer_write_end_of_file},
+    {hdefaults_str(hintelhex_writer_write_start_segment_address),(uintptr_t)&hintelhex_writer_write_start_segment_address},
+    {hdefaults_str(hintelhex_writer_write_start_linear_address),(uintptr_t)&hintelhex_writer_write_start_linear_address},
 ///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hshell.c
     {hdefaults_str(hshell_execute),(uintptr_t)&hshell_execute},
     {hdefaults_str(hshell_context_printf),(uintptr_t)&hshell_context_printf},

@@ -1855,6 +1855,18 @@ static int hsimulator_test(int argc,const char *argv[])
                 printf("hsimulator mcs51 ihx(helloworld.ihx) load:end!\r\n");
             }
         }
+        {
+            //测试intelhex写入
+            hintelhex_writer_t writer;
+            hintelhex_writer_init(&writer,[](hintelhex_writer_t *writer,const char *line,size_t line_length)
+            {
+                printf("hsimulator mcs51 ihx(helloworld.ihx) store:%s\r\n",line);
+            },NULL);
+            printf("hsimulator mcs51 ihx(helloworld.ihx) store:start!\r\n");
+            hintelhex_writer_write_data(&writer,0,(const uint8_t *)hs_mcs_51_rom_helloworld.code,hs_mcs_51_rom_helloworld.len);
+            hintelhex_writer_write_end_of_file(&writer);
+            printf("hsimulator mcs51 ihx(helloworld.ihx) store:end!\r\n");
+        }
     }
 
     {

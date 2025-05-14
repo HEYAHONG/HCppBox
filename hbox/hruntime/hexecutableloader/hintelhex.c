@@ -10,3 +10,4 @@
 
 #include "hintelhex/hintelhex_common.c"
 #include "hintelhex/hintelhex_reader.c"
+#include "hintelhex/hintelhex_writer.c"
