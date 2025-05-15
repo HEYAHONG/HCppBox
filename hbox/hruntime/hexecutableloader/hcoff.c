@@ -1,14 +1,11 @@
 /***************************************************************
- * Name:      hexecutableloader.c
- * Purpose:   实现hexecutableloader接口
+ * Name:      hcoff.c
+ * Purpose:   实现hcoff接口
  * Author:    HYH (hyhsystem.cn)
- * Created:   2025-05-13
+ * Created:   2025-05-15
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "hexecutableloader.h"
+#include "hcoff.h"
 
-#include "hexecutableloader/hintelhex.c"
-#include "hexecutableloader/hcoff.c"
-
-
+#include "hcoff/hcoff_common.c"
