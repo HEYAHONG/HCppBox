@@ -13,11 +13,12 @@ int main()
     }
     {
         //枚举测试
-        printf("RCEnum\r\n");
+        printf("RCEnum:\r\n");
+        printf("\t| %-64s\t| %s\r\n","Name","Length");
         RCEnum([](const unsigned char *Name,size_t NameLength,const unsigned char *Resource,size_t ResourceLength)
-               {
-                   printf("name:%s\r\ndata:\r\n%s",Name,Resource);
-               });
+        {
+            printf("\t| %-64s\t| %d\r\n",Name,(int)ResourceLength);
+        });
     }
     return 0;
 }
