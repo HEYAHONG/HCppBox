@@ -1479,7 +1479,8 @@ static int hruntime_test(int argc,const char *argv[])
                     hcoff_sectionheader_t sectionheader= {0};
                     if(hcoff_sectionheader_read(&sectionheader,i,&input_file))
                     {
-                        printf("hcoff sectionheader:name=%s,index=%d\r\n",(const char *)sectionheader.s_name,(int)i);
+                        char section_name[64]= {0};
+                        printf("hcoff sectionheader:name=%s,index=%d\r\n",(const char *)(hcoff_sectionheader_name_read(&sectionheader,&input_file,section_name,sizeof(section_name))!=NULL?section_name:""),(int)i);
                         printf("hcoff sectionheader:rawdata addr=%08X,length=%d\r\n",(int)sectionheader.s_scnptr,(int)sectionheader.s_size);
                     }
                 }
@@ -1517,7 +1518,8 @@ static int hruntime_test(int argc,const char *argv[])
                 hcoff_sectionheader_t sectionheader= {0};
                 if(hcoff_sectionheader_read(&sectionheader,i,&input_file))
                 {
-                    printf("hcoff sectionheader:name=%s,index=%d\r\n",(const char *)sectionheader.s_name,(int)i);
+                    char section_name[64]= {0};
+                    printf("hcoff sectionheader:name=%s,index=%d\r\n",(const char *)(hcoff_sectionheader_name_read(&sectionheader,&input_file,section_name,sizeof(section_name))!=NULL?section_name:""),(int)i);
                     printf("hcoff sectionheader:rawdata addr=%08X,length=%d\r\n",(int)sectionheader.s_scnptr,(int)sectionheader.s_size);
                 }
             }

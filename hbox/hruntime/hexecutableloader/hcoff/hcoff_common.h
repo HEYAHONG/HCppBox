@@ -190,6 +190,18 @@ struct hcoff_sectionheader
  */
 bool hcoff_sectionheader_read(hcoff_sectionheader_t *sectionheader,size_t index,hcoff_file_input_t *input_file);
 
+/** \brief COFF文件读取段名称(当名称长度超过7时，需要从字符串表中获取名称字符串)
+ *
+ *
+ * \param sectionheader hcoff_sectionheader_t* 段头
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \param namebuf void* 用于存储名称的缓冲
+ * \param namebulen size_t 用于存储名称的缓冲大小
+ * \return const char* 失败返回NULL
+ *
+ */
+const char *hcoff_sectionheader_name_read(const hcoff_sectionheader_t *sectionheader,hcoff_file_input_t *input_file,void *namebuf,size_t namebulen);
+
 
 #ifdef __cplusplus
 }

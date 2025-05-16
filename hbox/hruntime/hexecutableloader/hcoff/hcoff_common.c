@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hcoff_common.h"
+#include "stdlib.h"
 
 static bool hcoff_fileheader_is_magic_number(uint16_t magic)
 {
@@ -85,6 +86,26 @@ typedef struct
     unsigned char s_flags[4];	/* flags				*/
 } hcoff_sectionheader_bytes_t;
 
+
+typedef struct
+{
+    union
+    {
+        unsigned char e_name[8];
+
+        struct
+        {
+            unsigned char e_zeroes[4];
+            unsigned char e_offset[4];
+        } e;
+    } e;
+
+    unsigned char e_value[4];
+    unsigned char e_scnum[2];
+    unsigned char e_type[2];
+    unsigned char e_sclass[1];
+    unsigned char e_numaux[1];
+} hcoff_symbol_entry_bytes_t;
 
 bool hcoff_fileheader_read(hcoff_fileheader_t *fileheader,const uint8_t* fileheader_bytes,size_t fileheader_bytes_length)
 {
@@ -273,3 +294,76 @@ bool hcoff_sectionheader_read(hcoff_sectionheader_t *sectionheader,size_t index,
 
     return ret;
 }
+
+const char *hcoff_sectionheader_name_read(const hcoff_sectionheader_t *sectionheader,hcoff_file_input_t *input_file,void *namebuf,size_t namebulen)
+{
+    if(sectionheader==NULL)
+    {
+        return NULL;
+    }
+    if(sectionheader->s_name[0]!='/')
+    {
+        if(namebuf==NULL || namebulen < sizeof(sectionheader->s_name))
+        {
+            return NULL;
+        }
+        memcpy(namebuf,sectionheader->s_name,sizeof(sectionheader->s_name));
+        return (const char *)namebuf;
+    }
+    else
+    {
+        size_t str_index=0;
+        {
+            char str_index_str[8]= {0};
+            memcpy(str_index_str,&sectionheader->s_name[1],sizeof(sectionheader->s_name)-1);
+            str_index=strtoull(str_index_str,NULL,10);
+        }
+        if(str_index < 4 )
+        {
+            return NULL;
+        }
+        uintptr_t strtab_offset=0;
+        size_t strtab_size=0;
+        {
+            hcoff_fileheader_t filehdr;
+            uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
+            if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+            {
+                return NULL;
+            }
+            if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+            {
+                return NULL;
+            }
+            strtab_offset=filehdr.f_symptr+filehdr.f_nsyms*sizeof(hcoff_symbol_entry_bytes_t);
+            uint8_t strtab_size_buffer[4]= {0};
+            if(sizeof(strtab_size_buffer) > hcoff_file_input_read(input_file,strtab_offset,strtab_size_buffer,sizeof(strtab_size_buffer)))
+            {
+                return NULL;
+            }
+            if((filehdr.f_magic&0xFF) != buffer[0])
+            {
+                strtab_size=strtab_size_buffer[0]*(1ULL << 24)+strtab_size_buffer[1]*(1ULL << 16) + strtab_size_buffer[2]*(1ULL << 8)+strtab_size_buffer[0]*(1ULL << 0);
+            }
+            else
+            {
+                strtab_size=strtab_size_buffer[0]*(1ULL << 0)+strtab_size_buffer[1]*(1ULL << 8) + strtab_size_buffer[2]*(1ULL << 16)+strtab_size_buffer[0]*(1ULL << 24);
+            }
+        }
+        if(str_index > strtab_size)
+        {
+            return NULL;
+        }
+        if(str_index+namebulen > strtab_size)
+        {
+            namebulen=strtab_size-str_index;
+        }
+        if(0 < hcoff_file_input_read(input_file,strtab_offset+str_index,namebuf,namebulen-1))
+        {
+            ((uint8_t *)namebuf)[namebulen-1]='\0';
+            return (const char *)namebuf;
+        }
+    }
+    return NULL;
+}
+
