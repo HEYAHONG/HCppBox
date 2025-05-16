@@ -73,16 +73,16 @@ typedef struct
 
 typedef struct
 {
-  unsigned char s_name[8];	/* section name				*/
-  unsigned char s_paddr[4];	/* physical address, aliased s_nlib 	*/
-  unsigned char s_vaddr[4];	/* virtual address			*/
-  unsigned char s_size[4];	/* section size				*/
-  unsigned char s_scnptr[4];	/* file ptr to raw data for section 	*/
-  unsigned char s_relptr[4];	/* file ptr to relocation		*/
-  unsigned char s_lnnoptr[4];	/* file ptr to line numbers		*/
-  unsigned char s_nreloc[2];	/* number of relocation entries		*/
-  unsigned char s_nlnno[2];	/* number of line number entries	*/
-  unsigned char s_flags[4];	/* flags				*/
+    unsigned char s_name[8];	/* section name				*/
+    unsigned char s_paddr[4];	/* physical address, aliased s_nlib 	*/
+    unsigned char s_vaddr[4];	/* virtual address			*/
+    unsigned char s_size[4];	/* section size				*/
+    unsigned char s_scnptr[4];	/* file ptr to raw data for section 	*/
+    unsigned char s_relptr[4];	/* file ptr to relocation		*/
+    unsigned char s_lnnoptr[4];	/* file ptr to line numbers		*/
+    unsigned char s_nreloc[2];	/* number of relocation entries		*/
+    unsigned char s_nlnno[2];	/* number of line number entries	*/
+    unsigned char s_flags[4];	/* flags				*/
 } hcoff_sectionheader_bytes_t;
 
 
@@ -158,4 +158,118 @@ bool hcoff_fileheader_is_relocatable_object_file(hcoff_fileheader_t *fileheader)
     return false;
 }
 
+void hcoff_file_input_init(hcoff_file_input_t *input,hcoff_file_input_read_t read,void *usr)
+{
+    if(input!=NULL)
+    {
+        input->read=read;
+        input->usr=usr;
+    }
+}
 
+size_t hcoff_file_input_read(hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length)
+{
+    if(input==NULL || input->read==NULL)
+    {
+        return 0;
+    }
+    return input->read(input,address,buffer,buffer_length);
+}
+
+bool hcoff_sectionheader_read(hcoff_sectionheader_t *sectionheader,size_t index,hcoff_file_input_t *input_file)
+{
+    bool ret=false;
+    if(sectionheader==NULL)
+    {
+        return ret;
+    }
+    bool is_big_endian=false;
+    uintptr_t section_offset=0;
+    size_t section_count=0;
+    {
+        hcoff_fileheader_t filehdr;
+        uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
+        if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+        {
+            return ret;
+        }
+        if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+        {
+            return ret;
+        }
+        is_big_endian=(filehdr.f_magic&0xFF != buffer[0]);
+        section_offset=hcoff_fileheader_section_offset_get(&filehdr);
+        section_count=hcoff_fileheader_section_count_get(&filehdr);
+    }
+
+    if(index >= section_count || section_offset == 0)
+    {
+        return ret;
+    }
+
+    hcoff_sectionheader_bytes_t sectionheader_bytes= {0};
+
+    if(sizeof(sectionheader_bytes) > hcoff_file_input_read(input_file,section_offset+index*sizeof(sectionheader_bytes),&sectionheader_bytes,sizeof(sectionheader_bytes)))
+    {
+        return ret;
+    }
+
+    ret=true;
+
+    if(is_big_endian)
+    {
+#ifdef HCOFF_COMMON_GETUINT32
+#undef HCOFF_COMMON_GETUINT32
+#endif // HCOFF_COMMON_GETUINT32
+#define HCOFF_COMMON_GETUINT32(v,a) v=a[0]*(1ULL << 24) + a[1]*(1ULL << 16)+a[2]*(1ULL << 8) + a[3]*(1ULL << 0)
+#ifdef HCOFF_COMMON_GETUINT16
+#undef HCOFF_COMMON_GETUINT16
+#endif // HCOFF_COMMON_GETUINT16
+#define HCOFF_COMMON_GETUINT16(v,a) v=a[0]*(1ULL << 8) + a[1]*(1ULL << 0)
+
+        memcpy(sectionheader->s_name,sectionheader_bytes.s_name,sizeof(sectionheader->s_name));
+        HCOFF_COMMON_GETUINT32(sectionheader->s_paddr,sectionheader_bytes.s_paddr);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_vaddr,sectionheader_bytes.s_vaddr);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_size,sectionheader_bytes.s_size);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_scnptr,sectionheader_bytes.s_scnptr);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_relptr,sectionheader_bytes.s_relptr);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_lnnoptr,sectionheader_bytes.s_lnnoptr);
+        HCOFF_COMMON_GETUINT16(sectionheader->s_nreloc,sectionheader_bytes.s_nreloc);
+        HCOFF_COMMON_GETUINT16(sectionheader->s_nlnno,sectionheader_bytes.s_nlnno);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_flags,sectionheader_bytes.s_flags);
+
+
+#undef HCOFF_COMMON_GETUINT32
+#undef HCOFF_COMMON_GETUINT16
+    }
+    else
+    {
+
+#ifdef HCOFF_COMMON_GETUINT32
+#undef HCOFF_COMMON_GETUINT32
+#endif // HCOFF_COMMON_GETUINT32
+#define HCOFF_COMMON_GETUINT32(v,a) v=a[0]*(1ULL << 0) + a[1]*(1ULL << 8)+a[2]*(1ULL << 16) + a[3]*(1ULL << 24)
+#ifdef HCOFF_COMMON_GETUINT16
+#undef HCOFF_COMMON_GETUINT16
+#endif // HCOFF_COMMON_GETUINT16
+#define HCOFF_COMMON_GETUINT16(v,a) v=a[0]*(1ULL << 0) + a[1]*(1ULL << 8)
+
+        memcpy(sectionheader->s_name,sectionheader_bytes.s_name,sizeof(sectionheader->s_name));
+        HCOFF_COMMON_GETUINT32(sectionheader->s_paddr,sectionheader_bytes.s_paddr);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_vaddr,sectionheader_bytes.s_vaddr);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_size,sectionheader_bytes.s_size);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_scnptr,sectionheader_bytes.s_scnptr);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_relptr,sectionheader_bytes.s_relptr);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_lnnoptr,sectionheader_bytes.s_lnnoptr);
+        HCOFF_COMMON_GETUINT16(sectionheader->s_nreloc,sectionheader_bytes.s_nreloc);
+        HCOFF_COMMON_GETUINT16(sectionheader->s_nlnno,sectionheader_bytes.s_nlnno);
+        HCOFF_COMMON_GETUINT32(sectionheader->s_flags,sectionheader_bytes.s_flags);
+
+
+#undef HCOFF_COMMON_GETUINT32
+#undef HCOFF_COMMON_GETUINT16
+
+    }
+
+    return ret;
+}

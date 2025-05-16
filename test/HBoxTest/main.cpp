@@ -1453,13 +1453,36 @@ static int hruntime_test(int argc,const char *argv[])
             printf("hcoff fileheader:%s\r\n",RC_PATH);
             const uint8_t * helloworld_obj=RCGetHandle(RC_PATH);
             size_t helloworld_obj_size=RCGetSize(RC_PATH);
-            hcoff_fileheader_t hdr={0};
+            hcoff_fileheader_t hdr= {0};
             if(hcoff_fileheader_read(&hdr,helloworld_obj,helloworld_obj_size))
             {
                 //文件头读取成功
                 printf("hcoff fileheader:magic=%08X,nscns=%d,timdat=%d,symptr=%08X,nsyms=%d,opthdr=%d,flags=%08X\r\n",(int)hdr.f_magic,(int)hdr.f_nscns,(int)hdr.f_timdat,(int)hdr.f_symptr,(int)hdr.f_nsyms,(int)hdr.f_opthdr,(int)hdr.f_flags);
-                printf("hcoff fileheader section:section_offset=%08X,section_count=%d\r\n",hcoff_fileheader_section_offset_get(&hdr),hcoff_fileheader_section_count_get(&hdr));
+                printf("hcoff fileheader section:section_offset=%08X,section_count=%d\r\n",(int)hcoff_fileheader_section_offset_get(&hdr),(int)hcoff_fileheader_section_count_get(&hdr));
                 printf("hcoff fileheader relocatable_object_file:%s\r\n",hcoff_fileheader_is_relocatable_object_file(&hdr)?"true":"false");
+                hcoff_file_input_t input_file= {0};
+                hcoff_file_input_init(&input_file,[](hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length) -> size_t
+                {
+                    size_t ret=0;
+                    if(input == NULL || input->usr==NULL || buffer == NULL )
+                    {
+                        return ret;
+                    }
+                    const uint8_t *data=(const uint8_t *)input->usr;
+                    memcpy(buffer,&data[address],buffer_length);
+                    ret=buffer_length;
+                    return ret;
+
+                },(void *)helloworld_obj);
+                for(size_t i=0; i < hcoff_fileheader_section_count_get(&hdr) ; i++)
+                {
+                    hcoff_sectionheader_t sectionheader= {0};
+                    if(hcoff_sectionheader_read(&sectionheader,i,&input_file))
+                    {
+                        printf("hcoff sectionheader:name=%s,index=%d\r\n",(const char *)sectionheader.s_name,(int)i);
+                        printf("hcoff sectionheader:rawdata addr=%08X,length=%d\r\n",(int)sectionheader.s_scnptr,(int)sectionheader.s_size);
+                    }
+                }
             }
         }
         {
@@ -1467,13 +1490,36 @@ static int hruntime_test(int argc,const char *argv[])
             printf("hcoff fileheader:%s\r\n",RC_PATH);
             const uint8_t * helloworld_obj=RCGetHandle(RC_PATH);
             size_t helloworld_obj_size=RCGetSize(RC_PATH);
-            hcoff_fileheader_t hdr={0};
+            hcoff_fileheader_t hdr= {0};
             if(hcoff_fileheader_read(&hdr,helloworld_obj,helloworld_obj_size))
             {
                 //文件头读取成功
                 printf("hcoff fileheader:magic=%08X,nscns=%d,timdat=%d,symptr=%08X,nsyms=%d,opthdr=%d,flags=%08X\r\n",(int)hdr.f_magic,(int)hdr.f_nscns,(int)hdr.f_timdat,(int)hdr.f_symptr,(int)hdr.f_nsyms,(int)hdr.f_opthdr,(int)hdr.f_flags);
-                printf("hcoff fileheader section:section_offset=%08X,section_count=%d\r\n",hcoff_fileheader_section_offset_get(&hdr),hcoff_fileheader_section_count_get(&hdr));
+                printf("hcoff fileheader section:section_offset=%08X,section_count=%d\r\n",(int)hcoff_fileheader_section_offset_get(&hdr),(int)hcoff_fileheader_section_count_get(&hdr));
                 printf("hcoff fileheader relocatable_object_file:%s\r\n",hcoff_fileheader_is_relocatable_object_file(&hdr)?"true":"false");
+            }
+            hcoff_file_input_t input_file= {0};
+            hcoff_file_input_init(&input_file,[](hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length) -> size_t
+            {
+                size_t ret=0;
+                if(input == NULL || input->usr==NULL || buffer == NULL )
+                {
+                    return ret;
+                }
+                const uint8_t *data=(const uint8_t *)input->usr;
+                memcpy(buffer,&data[address],buffer_length);
+                ret=buffer_length;
+                return ret;
+
+            },(void *)helloworld_obj);
+            for(size_t i=0; i < hcoff_fileheader_section_count_get(&hdr) ; i++)
+            {
+                hcoff_sectionheader_t sectionheader= {0};
+                if(hcoff_sectionheader_read(&sectionheader,i,&input_file))
+                {
+                    printf("hcoff sectionheader:name=%s,index=%d\r\n",(const char *)sectionheader.s_name,(int)i);
+                    printf("hcoff sectionheader:rawdata addr=%08X,length=%d\r\n",(int)sectionheader.s_scnptr,(int)sectionheader.s_size);
+                }
             }
         }
     }

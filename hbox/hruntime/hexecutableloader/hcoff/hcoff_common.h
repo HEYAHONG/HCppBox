@@ -94,7 +94,7 @@ bool hcoff_fileheader_read(hcoff_fileheader_t *fileheader,const uint8_t* filehea
 /** \brief COFF文件头获取段在文件中地址
  *
  * \param fileheader hcoff_fileheader_t* COFF文件头
- * \return uintptr_t 段文件中地址
+ * \return uintptr_t 段在文件中地址
  *
  */
 uintptr_t hcoff_fileheader_section_offset_get(hcoff_fileheader_t *fileheader);
@@ -117,7 +117,44 @@ size_t hcoff_fileheader_section_count_get(hcoff_fileheader_t *fileheader);
 bool hcoff_fileheader_is_relocatable_object_file(hcoff_fileheader_t *fileheader);
 
 
+typedef struct hcoff_file_input hcoff_file_input_t;
 
+/** \brief COFF输入文件读取
+ *
+ * \param input hcoff_file_input_t* 输入文件
+ * \param address uintptr_t 文件内部的地址
+ * \param buffer void* 缓冲区地址
+ * \param buffer_length size_t 缓冲区大小
+ * \return size_t 已读取的大小
+ *
+ */
+typedef size_t (*hcoff_file_input_read_t)(hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length);
+
+struct hcoff_file_input
+{
+    hcoff_file_input_read_t read;
+    void *usr;
+};
+
+/** \brief COFF输入文件初始化
+ *
+ * \param input hcoff_file_input_t*     输入文件
+ * \param read hcoff_file_input_read_t  文件读取操作
+ * \param usr void* 用户操作
+ *
+ */
+void hcoff_file_input_init(hcoff_file_input_t *input,hcoff_file_input_read_t read,void *usr);
+
+/** \brief COFF输入文件读取
+ *
+ * \param input hcoff_file_input_t* 输入文件
+ * \param address uintptr_t 文件内部的地址
+ * \param buffer void* 缓冲区地址
+ * \param buffer_length size_t 缓冲区大小
+ * \return size_t 已读取的大小
+ *
+ */
+size_t hcoff_file_input_read(hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length);
 
 typedef struct hcoff_sectionheader hcoff_sectionheader_t;
 struct hcoff_sectionheader
@@ -142,6 +179,16 @@ struct hcoff_sectionheader
 #define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_MEM_SHARED        (1 << 28)
 #define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_MEM_READ          (1 << 30)
 
+
+/** \brief COFF文件读取段头
+ *
+ * \param sectionheader hcoff_sectionheader_t* 段头
+ * \param index size_t 引索，从0开始
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return bool 是否读取成功
+ *
+ */
+bool hcoff_sectionheader_read(hcoff_sectionheader_t *sectionheader,size_t index,hcoff_file_input_t *input_file);
 
 
 #ifdef __cplusplus
