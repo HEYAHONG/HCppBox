@@ -224,7 +224,7 @@ bool hcoff_sectionheader_read(hcoff_sectionheader_t *sectionheader,size_t index,
         {
             return ret;
         }
-        is_big_endian=(filehdr.f_magic&0xFF != buffer[0]);
+        is_big_endian=((filehdr.f_magic&0xFF) != buffer[0]);
         section_offset=hcoff_fileheader_section_offset_get(&filehdr);
         section_count=hcoff_fileheader_section_count_get(&filehdr);
     }
@@ -392,7 +392,7 @@ bool hcoff_section_relocation_read(hcoff_section_relocation_t *relocation,size_t
         {
             return ret;
         }
-        is_big_endian=(filehdr.f_magic&0xFF != buffer[0]);
+        is_big_endian=((filehdr.f_magic&0xFF) != buffer[0]);
     }
 
     uintptr_t section_relocation_offset=sectionheader->s_relptr;
