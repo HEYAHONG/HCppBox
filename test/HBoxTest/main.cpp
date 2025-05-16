@@ -1482,6 +1482,17 @@ static int hruntime_test(int argc,const char *argv[])
                         char section_name[64]= {0};
                         printf("hcoff sectionheader:name=%s,index=%d\r\n",(const char *)(hcoff_sectionheader_name_read(&sectionheader,&input_file,section_name,sizeof(section_name))!=NULL?section_name:""),(int)i);
                         printf("hcoff sectionheader:rawdata addr=%08X,length=%d\r\n",(int)sectionheader.s_scnptr,(int)sectionheader.s_size);
+                        if(sectionheader.s_relptr != 0 && sectionheader.s_nreloc !=0)
+                        {
+                            hcoff_section_relocation_t relocation= {0};
+                            for(size_t j=0; j<sectionheader.s_nreloc; j++)
+                            {
+                                if(hcoff_section_relocation_read(&relocation,j,&sectionheader,&input_file))
+                                {
+                                    printf("hcoff section relocation:vaddr=%08X,symndx=%d,type=%d\r\n",(int)relocation.r_vaddr,(int)relocation.r_symndx,(int)relocation.r_type);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1521,6 +1532,17 @@ static int hruntime_test(int argc,const char *argv[])
                     char section_name[64]= {0};
                     printf("hcoff sectionheader:name=%s,index=%d\r\n",(const char *)(hcoff_sectionheader_name_read(&sectionheader,&input_file,section_name,sizeof(section_name))!=NULL?section_name:""),(int)i);
                     printf("hcoff sectionheader:rawdata addr=%08X,length=%d\r\n",(int)sectionheader.s_scnptr,(int)sectionheader.s_size);
+                    if(sectionheader.s_relptr != 0 && sectionheader.s_nreloc !=0)
+                    {
+                        hcoff_section_relocation_t relocation= {0};
+                        for(size_t j=0; j<sectionheader.s_nreloc; j++)
+                        {
+                            if(hcoff_section_relocation_read(&relocation,j,&sectionheader,&input_file))
+                            {
+                                printf("hcoff section relocation:vaddr=%08X,symndx=%d,type=%d\r\n",(int)relocation.r_vaddr,(int)relocation.r_symndx,(int)relocation.r_type);
+                            }
+                        }
+                    }
                 }
             }
         }
