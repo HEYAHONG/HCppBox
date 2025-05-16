@@ -255,6 +255,89 @@ struct hcoff_section_relocation
  */
 bool hcoff_section_relocation_read(hcoff_section_relocation_t *relocation,size_t index,const hcoff_sectionheader_t *sectionheader,hcoff_file_input_t *input_file);
 
+/** \brief COFF判断是否为符号（而不是辅助信息）
+ *
+ * \param index size_t 符号表的引索
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return bool 是否为符号（而非辅助信息）
+ *
+ */
+bool hcoff_symbol_is_symbol(size_t index,hcoff_file_input_t *input_file);
+
+typedef struct hcoff_symbol_entry hcoff_symbol_entry_t;
+struct hcoff_symbol_entry
+{
+    union
+    {
+        uint8_t e_name[8];
+        struct
+        {
+            uint32_t e_zeroes;
+            uint32_t e_offset;
+        } e;
+    } e;
+
+    uint32_t e_value;
+    uint16_t e_scnum;
+    uint16_t e_type;
+    uint8_t e_sclass;
+    uint8_t  e_numaux;
+};
+
+
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_EFCN        0xff    /* physical end of function	*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_NULL        0
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_AUTO        1       /* automatic variable		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_EXT         2       /* external symbol		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_STAT        3       /* static			*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_REG         4       /* register variable		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_EXTDEF      5       /* external definition		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_LABEL       6       /* label			*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_ULABEL      7       /* undefined label		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_MOS         8       /* member of structure		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_ARG         9       /* function argument		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_STRTAG      10      /* structure tag		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_MOU         11      /* member of union		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_UNTAG       12      /* union tag			*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_TPDEF       13      /* type definition		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_USTATIC     14      /* undefined static		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_ENTAG       15      /* enumeration tag		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_MOE         16      /* member of enumeration	*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_REGPARM     17      /* register parameter		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_FIELD       18      /* bit field			*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_AUTOARG     19      /* auto argument		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_LASTENT     20      /* dummy entry (end of block)	*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_BLOCK       100     /* ".bb" or ".eb"		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_FCN         101     /* ".bf" or ".ef"		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_EOS         102     /* end of structure		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_FILE        103     /* file name			*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_LINE        104     /* line # reformatted as symbol table entry */
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_ALIAS       105     /* duplicate tag		*/
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_HIDDEN      106     /* ext symbol in dmert public lib */
+#define HCOFF_SYMBOL_ENTRY_E_SCLASS_WEAKEXT     127     /* weak symbol -- GNU extension.  */
+
+
+/** \brief COFF读取符号入口
+ *
+ * \param symbol_entry hcoff_symbol_entry_t* 符号入口
+ * \param index size_t 引索
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return bool 是否成功
+ *
+ */
+bool hcoff_symbol_entry_read(hcoff_symbol_entry_t *symbol_entry,size_t index,hcoff_file_input_t *input_file);
+
+/** \brief COFF文件读取符号名称(当名称长度超过8时，需要从字符串表中获取名称字符串)
+ *
+ *
+ * \param symbol_entry hcoff_symbol_entry_t* 节头
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \param namebuf void* 用于存储名称的缓冲
+ * \param namebulen size_t 用于存储名称的缓冲大小，需要大于8
+ * \return const char* 失败返回NULL
+ *
+ */
+const char *hcoff_symbol_entry_name_read(const hcoff_symbol_entry_t *symbol_entry,hcoff_file_input_t *input_file,void *namebuf,size_t namebulen);
 
 #ifdef __cplusplus
 }

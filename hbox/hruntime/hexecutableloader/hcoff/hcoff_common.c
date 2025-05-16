@@ -113,6 +113,34 @@ typedef struct
     unsigned char e_numaux[1];
 } hcoff_symbol_entry_bytes_t;
 
+/*
+ * Aux大小与symbol一致，均存储在符号表中
+ */
+typedef union
+{
+    /* Aux sym format 4: file.  */
+    union
+    {
+        char x_fname[18];
+        struct
+        {
+            unsigned char x_zeroes[4];
+            unsigned char x_offset[4];
+        } x_n;
+    } x_file;
+    /* Aux sym format 5: section.  */
+    struct
+    {
+        unsigned char x_scnlen[4];		/* section length		*/
+        unsigned char x_nreloc[2];		/* # relocation entries		*/
+        unsigned char x_nlinno[2];		/* # line numbers		*/
+        unsigned char x_checksum[4];	/* section COMDAT checksum	*/
+        unsigned char x_associated[2];	/* COMDAT assoc section index	*/
+        unsigned char x_comdat[1];		/* COMDAT selection number	*/
+    } x_scn;
+} hcoff_symbol_aux_entry_bytes_t;
+
+
 bool hcoff_fileheader_read(hcoff_fileheader_t *fileheader,const uint8_t* fileheader_bytes,size_t fileheader_bytes_length)
 {
     bool ret=false;
@@ -309,11 +337,12 @@ const char *hcoff_sectionheader_name_read(const hcoff_sectionheader_t *sectionhe
     }
     if(sectionheader->s_name[0]!='/')
     {
-        if(namebuf==NULL || namebulen < sizeof(sectionheader->s_name))
+        if(namebuf==NULL || namebulen <= sizeof(sectionheader->s_name))
         {
             return NULL;
         }
         memcpy(namebuf,sectionheader->s_name,sizeof(sectionheader->s_name));
+        ((uint8_t *)namebuf)[sizeof(sectionheader->s_name)]='\0';
         return (const char *)namebuf;
     }
     else
@@ -444,3 +473,224 @@ bool hcoff_section_relocation_read(hcoff_section_relocation_t *relocation,size_t
     return ret;
 }
 
+bool hcoff_symbol_is_symbol(size_t index,hcoff_file_input_t *input_file)
+{
+    bool ret=false;
+    hcoff_fileheader_t filehdr;
+    uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
+    if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+    {
+        return ret;
+    }
+    if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+    {
+        return ret;
+    }
+
+    if(index >= filehdr.f_nsyms)
+    {
+        return ret;
+    }
+
+    {
+        uintptr_t symboltable_offset=filehdr.f_symptr;
+        for(size_t i=0; i<filehdr.f_nsyms; i++)
+        {
+            if(i==index)
+            {
+                ret=true;
+                break;
+            }
+            hcoff_symbol_entry_bytes_t symbol_entry_bytes= {0};
+            if(sizeof(hcoff_symbol_entry_bytes_t) > hcoff_file_input_read(input_file,symboltable_offset+i*sizeof(hcoff_symbol_entry_bytes_t),&symbol_entry_bytes,sizeof(symbol_entry_bytes)))
+            {
+                return ret;
+            }
+
+            //跳过辅助信息
+            i+=symbol_entry_bytes.e_numaux[0];
+        }
+    }
+
+    return ret;
+}
+
+bool hcoff_symbol_entry_read(hcoff_symbol_entry_t *symbol_entry,size_t index,hcoff_file_input_t *input_file)
+{
+    bool ret=false;
+    if(symbol_entry==NULL)
+    {
+        return ret;
+    }
+    if(!hcoff_symbol_is_symbol(index,input_file))
+    {
+        return ret;
+    }
+    bool is_big_endian=false;
+    uintptr_t symboltable_offset=0;
+    size_t symboltable_count=0;
+    {
+        hcoff_fileheader_t filehdr;
+        uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
+        if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+        {
+            return ret;
+        }
+        if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+        {
+            return ret;
+        }
+        is_big_endian=((filehdr.f_magic&0xFF) != buffer[0]);
+        symboltable_offset=filehdr.f_symptr;
+        symboltable_count=filehdr.f_nsyms;
+    }
+
+    if(index >= symboltable_count)
+    {
+        return ret;
+    }
+
+    hcoff_symbol_entry_bytes_t symbol_entry_bytes= {0};
+    if(sizeof(hcoff_symbol_entry_bytes_t) > hcoff_file_input_read(input_file,symboltable_offset+index*sizeof(hcoff_symbol_entry_bytes_t),&symbol_entry_bytes,sizeof(symbol_entry_bytes)))
+    {
+        return ret;
+    }
+    ret=true;
+
+    if(is_big_endian)
+    {
+#ifdef HCOFF_COMMON_GETUINT32
+#undef HCOFF_COMMON_GETUINT32
+#endif // HCOFF_COMMON_GETUINT32
+#define HCOFF_COMMON_GETUINT32(v,a) v=a[0]*(1ULL << 24) + a[1]*(1ULL << 16)+a[2]*(1ULL << 8) + a[3]*(1ULL << 0)
+#ifdef HCOFF_COMMON_GETUINT16
+#undef HCOFF_COMMON_GETUINT16
+#endif // HCOFF_COMMON_GETUINT16
+#define HCOFF_COMMON_GETUINT16(v,a) v=a[0]*(1ULL << 8) + a[1]*(1ULL << 0)
+
+        if(symbol_entry_bytes.e.e_name[0]=='\0')
+        {
+            //符号存储在字符串表中
+            HCOFF_COMMON_GETUINT32(symbol_entry->e.e.e_zeroes,symbol_entry_bytes.e.e.e_zeroes);
+            HCOFF_COMMON_GETUINT32(symbol_entry->e.e.e_offset,symbol_entry_bytes.e.e.e_offset);
+        }
+        else
+        {
+            //字符串存储在e_name中
+            memcpy(symbol_entry->e.e_name,symbol_entry_bytes.e.e_name,sizeof(symbol_entry->e.e_name));
+        }
+
+        HCOFF_COMMON_GETUINT32(symbol_entry->e_value,symbol_entry_bytes.e_value);
+        HCOFF_COMMON_GETUINT16(symbol_entry->e_scnum,symbol_entry_bytes.e_scnum);
+        HCOFF_COMMON_GETUINT16(symbol_entry->e_type,symbol_entry_bytes.e_type);
+        symbol_entry->e_sclass=symbol_entry_bytes.e_sclass[0];
+        symbol_entry->e_numaux=symbol_entry_bytes.e_numaux[0];
+
+#undef HCOFF_COMMON_GETUINT32
+#undef HCOFF_COMMON_GETUINT16
+    }
+    else
+    {
+
+#ifdef HCOFF_COMMON_GETUINT32
+#undef HCOFF_COMMON_GETUINT32
+#endif // HCOFF_COMMON_GETUINT32
+#define HCOFF_COMMON_GETUINT32(v,a) v=a[0]*(1ULL << 0) + a[1]*(1ULL << 8)+a[2]*(1ULL << 16) + a[3]*(1ULL << 24)
+#ifdef HCOFF_COMMON_GETUINT16
+#undef HCOFF_COMMON_GETUINT16
+#endif // HCOFF_COMMON_GETUINT16
+#define HCOFF_COMMON_GETUINT16(v,a) v=a[0]*(1ULL << 0) + a[1]*(1ULL << 8)
+
+        if(symbol_entry_bytes.e.e_name[0]=='\0')
+        {
+            //符号存储在字符串表中
+            HCOFF_COMMON_GETUINT32(symbol_entry->e.e.e_zeroes,symbol_entry_bytes.e.e.e_zeroes);
+            HCOFF_COMMON_GETUINT32(symbol_entry->e.e.e_offset,symbol_entry_bytes.e.e.e_offset);
+        }
+        else
+        {
+            //字符串存储在e_name中
+            memcpy(symbol_entry->e.e_name,symbol_entry_bytes.e.e_name,sizeof(symbol_entry->e.e_name));
+        }
+
+        HCOFF_COMMON_GETUINT32(symbol_entry->e_value,symbol_entry_bytes.e_value);
+        HCOFF_COMMON_GETUINT16(symbol_entry->e_scnum,symbol_entry_bytes.e_scnum);
+        HCOFF_COMMON_GETUINT16(symbol_entry->e_type,symbol_entry_bytes.e_type);
+        symbol_entry->e_sclass=symbol_entry_bytes.e_sclass[0];
+        symbol_entry->e_numaux=symbol_entry_bytes.e_numaux[0];
+
+#undef HCOFF_COMMON_GETUINT32
+#undef HCOFF_COMMON_GETUINT16
+
+    }
+
+    return ret;
+}
+
+const char *hcoff_symbol_entry_name_read(const hcoff_symbol_entry_t *symbol_entry,hcoff_file_input_t *input_file,void *namebuf,size_t namebulen)
+{
+    if(symbol_entry==NULL)
+    {
+        return NULL;
+    }
+    if(symbol_entry->e.e_name[0]!='\0')
+    {
+        if(namebuf==NULL || namebulen <= sizeof(symbol_entry->e.e_name))
+        {
+            return NULL;
+        }
+        memcpy(namebuf,symbol_entry->e.e_name,sizeof(symbol_entry->e.e_name));
+        ((uint8_t *)namebuf)[sizeof(symbol_entry->e.e_name)]='\0';
+        return (const char *)namebuf;
+    }
+    else
+    {
+        size_t str_index=symbol_entry->e.e.e_offset;
+        if(str_index < 4 )
+        {
+            return NULL;
+        }
+        uintptr_t strtab_offset=0;
+        size_t strtab_size=0;
+        {
+            hcoff_fileheader_t filehdr;
+            uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
+            if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+            {
+                return NULL;
+            }
+            if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+            {
+                return NULL;
+            }
+            strtab_offset=filehdr.f_symptr+filehdr.f_nsyms*sizeof(hcoff_symbol_entry_bytes_t);
+            uint8_t strtab_size_buffer[4]= {0};
+            if(sizeof(strtab_size_buffer) > hcoff_file_input_read(input_file,strtab_offset,strtab_size_buffer,sizeof(strtab_size_buffer)))
+            {
+                return NULL;
+            }
+            if((filehdr.f_magic&0xFF) != buffer[0])
+            {
+                strtab_size=strtab_size_buffer[0]*(1ULL << 24)+strtab_size_buffer[1]*(1ULL << 16) + strtab_size_buffer[2]*(1ULL << 8)+strtab_size_buffer[0]*(1ULL << 0);
+            }
+            else
+            {
+                strtab_size=strtab_size_buffer[0]*(1ULL << 0)+strtab_size_buffer[1]*(1ULL << 8) + strtab_size_buffer[2]*(1ULL << 16)+strtab_size_buffer[0]*(1ULL << 24);
+            }
+        }
+        if(str_index > strtab_size)
+        {
+            return NULL;
+        }
+        if(str_index+namebulen > strtab_size)
+        {
+            namebulen=strtab_size-str_index;
+        }
+        if(0 < hcoff_file_input_read(input_file,strtab_offset+str_index,namebuf,namebulen-1))
+        {
+            ((uint8_t *)namebuf)[namebulen-1]='\0';
+            return (const char *)namebuf;
+        }
+    }
+    return NULL;
+}
