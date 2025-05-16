@@ -84,11 +84,40 @@ struct hcoff_fileheader
  *
  * \param fileheader hcoff_fileheader_t*    COFF文件头
  * \param fileheader_bytes uint8_t*         COFF文件头字节指针
- * \param fileheader_bytes_length size_t    COFF文件头大小
+ * \param fileheader_bytes_length size_t    COFF文件头大小,小于sizeof(hcoff_fileheader_t)时将失败
  * \return bool 是否成功读取
  *
  */
-bool hcoff_fileheader_read(hcoff_fileheader_t *fileheader,uint8_t* fileheader_bytes,size_t fileheader_bytes_length);
+bool hcoff_fileheader_read(hcoff_fileheader_t *fileheader,const uint8_t* fileheader_bytes,size_t fileheader_bytes_length);
+
+
+/** \brief COFF文件头获取段在文件中地址
+ *
+ * \param fileheader hcoff_fileheader_t* COFF文件头
+ * \return uintptr_t 段文件中地址
+ *
+ */
+uintptr_t hcoff_fileheader_section_offset_get(hcoff_fileheader_t *fileheader);
+
+/** \brief COFF文件头获取段数量
+ *
+ * \param fileheader hcoff_fileheader_t* COFF文件头
+ * \return size_t   段数量
+ *
+ */
+size_t hcoff_fileheader_section_count_get(hcoff_fileheader_t *fileheader);
+
+
+/** \brief COFF文件头获取是否是可重定位的对象文件
+ *
+ * \param fileheader hcoff_fileheader_t* COFF文件头
+ * \return bool 是否是可重定位的对象文件
+ *
+ */
+bool hcoff_fileheader_is_relocatable_object_file(hcoff_fileheader_t *fileheader);
+
+
+
 
 typedef struct hcoff_sectionheader hcoff_sectionheader_t;
 struct hcoff_sectionheader

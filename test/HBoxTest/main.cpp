@@ -16,7 +16,7 @@ static int hmemoryheap_test(int argc,const char *argv[]);
 static int hobject_test(int argc,const char *argv[]);
 static int hringbuf_test(int argc,const char *argv[]);
 static int hlocale_test(int argc,const char *argv[]);
-static int hstacklesscoroutine_test(int argc,const char *argv[]);
+static int hruntime_test(int argc,const char *argv[]);
 static int hsimulator_test(int argc,const char *argv[]);
 static int h3rdparty_test(int argc,const char *argv[]);
 static int huuid_test(int argc,const char *argv[]);
@@ -34,7 +34,7 @@ static int (*test_cb[])(int,const char *[])=
     hobject_test,
     hringbuf_test,
     hlocale_test,
-    hstacklesscoroutine_test,
+    hruntime_test,
     hsimulator_test,
     h3rdparty_test,
     huuid_test,
@@ -1444,81 +1444,115 @@ static void hstacklesscoroutine2_co4(hstacklesscoroutine2_scheduler_t *scheduler
     HSTACKLESSCOROUTINE2_BLOCK_END(ccb)
 }
 
-static int hstacklesscoroutine_test(int argc,const char *argv[])
+static int hruntime_test(int argc,const char *argv[])
 {
     {
-        //版本1
-        printf("hstacklesscoroutine:display coroutine!\r\n");
+        //COFF测试
         {
-            auto enum_cb=[](hstacklesscoroutine_entry_t entry)
+            const char * RC_PATH="runtime/coff/helloworld.i386.obj";
+            printf("hcoff fileheader:%s\r\n",RC_PATH);
+            const uint8_t * helloworld_obj=RCGetHandle(RC_PATH);
+            size_t helloworld_obj_size=RCGetSize(RC_PATH);
+            hcoff_fileheader_t hdr={0};
+            if(hcoff_fileheader_read(&hdr,helloworld_obj,helloworld_obj_size))
             {
-                printf("hstacklesscoroutine:%08X\r\n",(int)(intptr_t)entry);
-            };
-            HSTACKLESSCOROUTINE_GROUP_FOREACH(main,enum_cb)
-        }
-        printf("hstacklesscoroutine_test1:start!\r\n");
-        do
-        {
-            HSTACKLESSCOROUTINE_GROUP_ENTRY(main,NULL);
-        }
-        while(!hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)) || !hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_cpp)));
-        printf("hstacklesscoroutine_test1:end!\r\n");
-        printf("hstacklesscoroutine_test2:start!\r\n");
-        hstacklesscoroutine_coroutine_restart(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c));
-        hstacklesscoroutine_coroutine_restart(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_cpp));
-        do
-        {
-            HSTACKLESSCOROUTINE_ENTRY(co1_c);
-            HSTACKLESSCOROUTINE_ENTRY(co1_cpp);
-            if(hstacklesscoroutine_is_suspend(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)))
-            {
-                if(!hstacklesscoroutine_is_await(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)))
-                {
-                    hstacklesscoroutine_coroutine_resume(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c));
-                }
-            }
-            else
-            {
-                hstacklesscoroutine_coroutine_suspend(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c));
+                //文件头读取成功
+                printf("hcoff fileheader:magic=%08X,nscns=%d,timdat=%d,symptr=%08X,nsyms=%d,opthdr=%d,flags=%08X\r\n",(int)hdr.f_magic,(int)hdr.f_nscns,(int)hdr.f_timdat,(int)hdr.f_symptr,(int)hdr.f_nsyms,(int)hdr.f_opthdr,(int)hdr.f_flags);
+                printf("hcoff fileheader section:section_offset=%08X,section_count=%d\r\n",hcoff_fileheader_section_offset_get(&hdr),hcoff_fileheader_section_count_get(&hdr));
+                printf("hcoff fileheader relocatable_object_file:%s\r\n",hcoff_fileheader_is_relocatable_object_file(&hdr)?"true":"false");
             }
         }
-        while(!hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)) || !hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_cpp)));
-        printf("hstacklesscoroutine_test2:end!\r\n");
+        {
+            const char * RC_PATH="runtime/coff/helloworld.x86_64.obj";
+            printf("hcoff fileheader:%s\r\n",RC_PATH);
+            const uint8_t * helloworld_obj=RCGetHandle(RC_PATH);
+            size_t helloworld_obj_size=RCGetSize(RC_PATH);
+            hcoff_fileheader_t hdr={0};
+            if(hcoff_fileheader_read(&hdr,helloworld_obj,helloworld_obj_size))
+            {
+                //文件头读取成功
+                printf("hcoff fileheader:magic=%08X,nscns=%d,timdat=%d,symptr=%08X,nsyms=%d,opthdr=%d,flags=%08X\r\n",(int)hdr.f_magic,(int)hdr.f_nscns,(int)hdr.f_timdat,(int)hdr.f_symptr,(int)hdr.f_nsyms,(int)hdr.f_opthdr,(int)hdr.f_flags);
+                printf("hcoff fileheader section:section_offset=%08X,section_count=%d\r\n",hcoff_fileheader_section_offset_get(&hdr),hcoff_fileheader_section_count_get(&hdr));
+                printf("hcoff fileheader relocatable_object_file:%s\r\n",hcoff_fileheader_is_relocatable_object_file(&hdr)?"true":"false");
+            }
+        }
     }
     {
-        //版本2
-        uint32_t ccb_buffer1[1024]= {0};
+        //无栈协程测试
         {
-            hstacklesscoroutine2_ccb_t *ccb=hstacklesscoroutine2_ccb_init((void *)ccb_buffer1,sizeof(ccb_buffer1));
-            hstacklesscoroutine2_ccb_set(ccb,hstacklesscoroutine2_task_init(hstacklesscoroutine2_co1,NULL));
-            hstacklesscoroutine2_scheduler_ccb_register(NULL,ccb);
+            //版本1
+            printf("hstacklesscoroutine:display coroutine!\r\n");
+            {
+                auto enum_cb=[](hstacklesscoroutine_entry_t entry)
+                {
+                    printf("hstacklesscoroutine:%08X\r\n",(int)(intptr_t)entry);
+                };
+                HSTACKLESSCOROUTINE_GROUP_FOREACH(main,enum_cb)
+            }
+            printf("hstacklesscoroutine_test1:start!\r\n");
+            do
+            {
+                HSTACKLESSCOROUTINE_GROUP_ENTRY(main,NULL);
+            }
+            while(!hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)) || !hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_cpp)));
+            printf("hstacklesscoroutine_test1:end!\r\n");
+            printf("hstacklesscoroutine_test2:start!\r\n");
+            hstacklesscoroutine_coroutine_restart(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c));
+            hstacklesscoroutine_coroutine_restart(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_cpp));
+            do
+            {
+                HSTACKLESSCOROUTINE_ENTRY(co1_c);
+                HSTACKLESSCOROUTINE_ENTRY(co1_cpp);
+                if(hstacklesscoroutine_is_suspend(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)))
+                {
+                    if(!hstacklesscoroutine_is_await(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)))
+                    {
+                        hstacklesscoroutine_coroutine_resume(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c));
+                    }
+                }
+                else
+                {
+                    hstacklesscoroutine_coroutine_suspend(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c));
+                }
+            }
+            while(!hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_c)) || !hstacklesscoroutine_is_finished(HSTACKLESSCOROUTINE_GET_GLOBAL_CCB(co1_cpp)));
+            printf("hstacklesscoroutine_test2:end!\r\n");
         }
-        uint32_t ccb_buffer2[1024]= {0};
         {
-            hstacklesscoroutine2_ccb_t *ccb=hstacklesscoroutine2_ccb_init((void *)ccb_buffer2,sizeof(ccb_buffer2));
-            hstacklesscoroutine2_ccb_set(ccb,hstacklesscoroutine2_task_init(hstacklesscoroutine2_co2,NULL));
-            hstacklesscoroutine2_scheduler_ccb_register(NULL,ccb);
-        }
-        uint32_t ccb_buffer3[1024]= {0};
-        {
-            hstacklesscoroutine2_ccb_t *ccb=hstacklesscoroutine2_ccb_init((void *)ccb_buffer3,sizeof(ccb_buffer3));
-            hstacklesscoroutine2_ccb_set(ccb,hstacklesscoroutine2_task_init(hstacklesscoroutine2_co3,NULL));
-            hstacklesscoroutine2_scheduler_ccb_register(NULL,ccb);
-        }
+            //版本2
+            uint32_t ccb_buffer1[1024]= {0};
+            {
+                hstacklesscoroutine2_ccb_t *ccb=hstacklesscoroutine2_ccb_init((void *)ccb_buffer1,sizeof(ccb_buffer1));
+                hstacklesscoroutine2_ccb_set(ccb,hstacklesscoroutine2_task_init(hstacklesscoroutine2_co1,NULL));
+                hstacklesscoroutine2_scheduler_ccb_register(NULL,ccb);
+            }
+            uint32_t ccb_buffer2[1024]= {0};
+            {
+                hstacklesscoroutine2_ccb_t *ccb=hstacklesscoroutine2_ccb_init((void *)ccb_buffer2,sizeof(ccb_buffer2));
+                hstacklesscoroutine2_ccb_set(ccb,hstacklesscoroutine2_task_init(hstacklesscoroutine2_co2,NULL));
+                hstacklesscoroutine2_scheduler_ccb_register(NULL,ccb);
+            }
+            uint32_t ccb_buffer3[1024]= {0};
+            {
+                hstacklesscoroutine2_ccb_t *ccb=hstacklesscoroutine2_ccb_init((void *)ccb_buffer3,sizeof(ccb_buffer3));
+                hstacklesscoroutine2_ccb_set(ccb,hstacklesscoroutine2_task_init(hstacklesscoroutine2_co3,NULL));
+                hstacklesscoroutine2_scheduler_ccb_register(NULL,ccb);
+            }
 
-        uint32_t ccb_buffer4[1024]= {0};
-        {
-            hstacklesscoroutine2_ccb_t *ccb=hstacklesscoroutine2_ccb_init((void *)ccb_buffer4,sizeof(ccb_buffer4));
-            hstacklesscoroutine2_ccb_set(ccb,hstacklesscoroutine2_task_init(hstacklesscoroutine2_co4,NULL));
-            hstacklesscoroutine2_scheduler_ccb_register(NULL,ccb);
-        }
+            uint32_t ccb_buffer4[1024]= {0};
+            {
+                hstacklesscoroutine2_ccb_t *ccb=hstacklesscoroutine2_ccb_init((void *)ccb_buffer4,sizeof(ccb_buffer4));
+                hstacklesscoroutine2_ccb_set(ccb,hstacklesscoroutine2_task_init(hstacklesscoroutine2_co4,NULL));
+                hstacklesscoroutine2_scheduler_ccb_register(NULL,ccb);
+            }
 
 #ifdef HSTACKLESSCOROUTINE2_BARE_MACHINE
-        printf("hstacklesscoroutine2:bare machine!\r\n");
+            printf("hstacklesscoroutine2:bare machine!\r\n");
 #endif // HSTACKLESSCOROUTINE2_BARE_MACHINE
 
-        //启动调度器
-        hstacklesscoroutine2_scheduler_start(NULL);
+            //启动调度器
+            hstacklesscoroutine2_scheduler_start(NULL);
+        }
     }
     return 0;
 }

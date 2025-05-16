@@ -71,14 +71,29 @@ typedef struct
     unsigned char f_flags[2];	/* flags			*/
 } hcoff_fileheader_bytes_t;
 
+typedef struct
+{
+  unsigned char s_name[8];	/* section name				*/
+  unsigned char s_paddr[4];	/* physical address, aliased s_nlib 	*/
+  unsigned char s_vaddr[4];	/* virtual address			*/
+  unsigned char s_size[4];	/* section size				*/
+  unsigned char s_scnptr[4];	/* file ptr to raw data for section 	*/
+  unsigned char s_relptr[4];	/* file ptr to relocation		*/
+  unsigned char s_lnnoptr[4];	/* file ptr to line numbers		*/
+  unsigned char s_nreloc[2];	/* number of relocation entries		*/
+  unsigned char s_nlnno[2];	/* number of line number entries	*/
+  unsigned char s_flags[4];	/* flags				*/
+} hcoff_sectionheader_bytes_t;
 
-bool hcoff_fileheader_read(hcoff_fileheader_t *fileheader,uint8_t* fileheader_bytes,size_t fileheader_bytes_length)
+
+bool hcoff_fileheader_read(hcoff_fileheader_t *fileheader,const uint8_t* fileheader_bytes,size_t fileheader_bytes_length)
 {
     bool ret=false;
     if(fileheader==NULL || fileheader_bytes == NULL || fileheader_bytes_length < sizeof(hcoff_fileheader_bytes_t))
     {
         return ret;
     }
+    fileheader->f_magic=HCOFF_FILEHEADER_F_MAGIC_UNKNOWN;
     hcoff_fileheader_bytes_t hdr;
     memcpy(&hdr,fileheader_bytes,sizeof(hcoff_fileheader_bytes_t));
     if(!ret)
@@ -114,5 +129,33 @@ bool hcoff_fileheader_read(hcoff_fileheader_t *fileheader,uint8_t* fileheader_by
     return ret;
 }
 
+uintptr_t hcoff_fileheader_section_offset_get(hcoff_fileheader_t *fileheader)
+{
+    uintptr_t ret=0;
+    if(fileheader!=NULL)
+    {
+        return sizeof(hcoff_fileheader_bytes_t)+fileheader->f_opthdr;
+    }
+    return ret;
+}
+
+size_t hcoff_fileheader_section_count_get(hcoff_fileheader_t *fileheader)
+{
+    size_t ret=0;
+    if(fileheader!=NULL)
+    {
+        ret=fileheader->f_nscns;
+    }
+    return ret;
+}
+
+bool hcoff_fileheader_is_relocatable_object_file(hcoff_fileheader_t *fileheader)
+{
+    if(fileheader!=NULL)
+    {
+        return (fileheader->f_flags&(HCOFF_FILEHEADER_F_FLAGS_F_EXEC | HCOFF_FILEHEADER_F_FLAGS_IMAGE_FILE_SYSTEM |HCOFF_FILEHEADER_F_FLAGS_IMAGE_FILE_DLL))==0;
+    }
+    return false;
+}
 
 
