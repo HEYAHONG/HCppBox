@@ -284,6 +284,7 @@ struct hcoff_symbol_entry
     uint8_t  e_numaux;
 };
 
+#define HCOFF_SYMBOL_ENTRY_E_TYPE_SYMBOL_KEEP          (1U << 5)   /*由链接器使用*/
 
 #define HCOFF_SYMBOL_ENTRY_E_SCLASS_EFCN        0xff    /* physical end of function	*/
 #define HCOFF_SYMBOL_ENTRY_E_SCLASS_NULL        0
