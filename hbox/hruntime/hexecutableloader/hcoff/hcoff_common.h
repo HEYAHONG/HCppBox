@@ -156,6 +156,15 @@ void hcoff_file_input_init(hcoff_file_input_t *input,hcoff_file_input_read_t rea
  */
 size_t hcoff_file_input_read(hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length);
 
+
+/** \brief COFF文件是否为大端
+ *
+ * \param input hcoff_file_input_t* 输入文件
+ * \return bool 是否为大端,通常情况下,小端模式更加常见。
+ *
+ */
+bool hcoff_file_input_is_big_endian(hcoff_file_input_t *input_file);
+
 typedef struct hcoff_sectionheader hcoff_sectionheader_t;
 struct hcoff_sectionheader
 {
@@ -170,6 +179,29 @@ struct hcoff_sectionheader
     uint16_t s_nlnno;       /* number of line number entries	*/
     uint32_t s_flags;       /* flags				*/
 };
+
+/*
+ * hcoff_sectionheader节名。
+ * 注意:
+ *     --通常嵌入式时会启用GCC/Clang的-fdata-sections -ffunctiong-sections,此处只表示节名的第一部分(以.或者$分割),如.text.foo与.text$mn均表示.text节
+ *     --节名可以不是唯一的，即多个不同的节可使用同一个节名。
+ */
+#define HCOFF_SECTIONHEADER_S_NAME_TEXT         ".text"         /**< 代码节,存储可执行代码 */
+#define HCOFF_SECTIONHEADER_S_NAME_RDATA        ".rdata"        /**< 只读数据节,存储只读数据(如字符串) */
+#define HCOFF_SECTIONHEADER_S_NAME_PDATA        ".pdata"        /**< 异常表节 */
+#define HCOFF_SECTIONHEADER_S_NAME_XDATA        ".xdata"        /**< 异常处理表节 */
+#define HCOFF_SECTIONHEADER_S_NAME_IDATA        ".idata"        /**< 导入表节 */
+#define HCOFF_SECTIONHEADER_S_NAME_EDATA        ".edata"        /**< 导出表节 */
+#define HCOFF_SECTIONHEADER_S_NAME_RSRC         ".rsrc"         /**< 资源节 */
+#define HCOFF_SECTIONHEADER_S_NAME_CRT          ".crt"          /**< C运行时节，通常用于可执行文件 */
+#define HCOFF_SECTIONHEADER_S_NAME_TLS          ".tls"          /**< 线程局部变量节 */
+#define HCOFF_SECTIONHEADER_S_NAME_RELOC        ".reloc"        /**< 可执行文件的重定位节 */
+#define HCOFF_SECTIONHEADER_S_NAME_SDATA        ".sdata"        /**< 短数据节,短可读可写数据,通常用于具有全局指针的架构 */
+#define HCOFF_SECTIONHEADER_S_NAME_DATA         ".data"         /**< 数据节，可读可写数据，通常用于全局变量 */
+#define HCOFF_SECTIONHEADER_S_NAME_BSS          ".bss"          /**< 未初始化的数据节 */
+
+
+
 
 /*
  * hcoff_sectionheader_t标志

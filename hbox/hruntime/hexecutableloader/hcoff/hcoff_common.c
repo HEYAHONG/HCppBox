@@ -231,6 +231,25 @@ size_t hcoff_file_input_read(hcoff_file_input_t *input,uintptr_t address,void *b
     return input->read(input,address,buffer,buffer_length);
 }
 
+bool hcoff_file_input_is_big_endian(hcoff_file_input_t *input_file)
+{
+    bool ret=false;
+    {
+        hcoff_fileheader_t filehdr;
+        uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
+        if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+        {
+            return ret;
+        }
+        if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+        {
+            return ret;
+        }
+        ret=((filehdr.f_magic&0xFF) != buffer[0]);
+    }
+    return ret;
+}
+
 bool hcoff_sectionheader_read(hcoff_sectionheader_t *sectionheader,size_t index,hcoff_file_input_t *input_file)
 {
     bool ret=false;
