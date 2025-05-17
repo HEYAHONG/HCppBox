@@ -1504,7 +1504,7 @@ static int hruntime_test(int argc,const char *argv[])
                         {
                             char namebuf[64]= {0};
                             hcoff_symbol_entry_name_read(&symbol_entry,&input_file,namebuf,sizeof(namebuf));
-                            printf("hcoff symbol(index=%d):%s,type=%d,sclass=%d\r\n",(int)i,namebuf,(int)symbol_entry.e_type,(int)symbol_entry.e_sclass);
+                            printf("hcoff symbol(index=%06d):%-32s(%08X),section=%d,type=%02X,sclass=%d\r\n",(int)i,namebuf,(int)symbol_entry.e_value,(int)(int16_t)symbol_entry.e_scnum,(int)symbol_entry.e_type,(int)symbol_entry.e_sclass);
                         }
                     }
                 }
@@ -1567,7 +1567,7 @@ static int hruntime_test(int argc,const char *argv[])
                     {
                         char namebuf[64]= {0};
                         hcoff_symbol_entry_name_read(&symbol_entry,&input_file,namebuf,sizeof(namebuf));
-                        printf("hcoff symbol(index=%d):%s,type=%d,sclass=%d\r\n",(int)i,namebuf,(int)symbol_entry.e_type,(int)symbol_entry.e_sclass);
+                        printf("hcoff symbol(index=%06d):%-32s(%08X),section=%d,type=%02X,sclass=%d\r\n",(int)i,namebuf,(int)symbol_entry.e_value,(int)(int16_t)symbol_entry.e_scnum,(int)symbol_entry.e_type,(int)symbol_entry.e_sclass);
                     }
                 }
             }
