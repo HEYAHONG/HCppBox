@@ -1448,8 +1448,15 @@ static int hruntime_test(int argc,const char *argv[])
 {
     {
         //COFF测试
+        const char *coff_list[]=
         {
-            const char * RC_PATH="runtime/coff/helloworld.i386.obj";
+            "runtime/coff/helloworld.i386.obj",
+            "runtime/coff/helloworld.x86_64.obj",
+            "runtime/coff/helloworld.aarch64.obj"
+        };
+        for(size_t i=0; i<sizeof(coff_list)/sizeof(coff_list[0]); i++)
+        {
+            const char * RC_PATH=coff_list[i];
             printf("hcoff fileheader:%s\r\n",RC_PATH);
             const uint8_t * helloworld_obj=RCGetHandle(RC_PATH);
             size_t helloworld_obj_size=RCGetSize(RC_PATH);
@@ -1506,68 +1513,6 @@ static int hruntime_test(int argc,const char *argv[])
                             hcoff_symbol_entry_name_read(&symbol_entry,&input_file,namebuf,sizeof(namebuf));
                             printf("hcoff symbol(index=%06d):%-32s(%08X),section=%d,type=%02X,sclass=%d\r\n",(int)i,namebuf,(int)symbol_entry.e_value,(int)(int16_t)symbol_entry.e_scnum,(int)symbol_entry.e_type,(int)symbol_entry.e_sclass);
                         }
-                    }
-                }
-            }
-        }
-        {
-            const char * RC_PATH="runtime/coff/helloworld.x86_64.obj";
-            printf("hcoff fileheader:%s\r\n",RC_PATH);
-            const uint8_t * helloworld_obj=RCGetHandle(RC_PATH);
-            size_t helloworld_obj_size=RCGetSize(RC_PATH);
-            hcoff_fileheader_t hdr= {0};
-            if(hcoff_fileheader_read(&hdr,helloworld_obj,helloworld_obj_size))
-            {
-                //文件头读取成功
-                printf("hcoff fileheader:magic=%08X,nscns=%d,timdat=%d,symptr=%08X,nsyms=%d,opthdr=%d,flags=%08X\r\n",(int)hdr.f_magic,(int)hdr.f_nscns,(int)hdr.f_timdat,(int)hdr.f_symptr,(int)hdr.f_nsyms,(int)hdr.f_opthdr,(int)hdr.f_flags);
-                printf("hcoff fileheader section:section_offset=%08X,section_count=%d\r\n",(int)hcoff_fileheader_section_offset_get(&hdr),(int)hcoff_fileheader_section_count_get(&hdr));
-                printf("hcoff fileheader relocatable_object_file:%s\r\n",hcoff_fileheader_is_relocatable_object_file(&hdr)?"true":"false");
-            }
-            hcoff_file_input_t input_file= {0};
-            hcoff_file_input_init(&input_file,[](hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length) -> size_t
-            {
-                size_t ret=0;
-                if(input == NULL || input->usr==NULL || buffer == NULL )
-                {
-                    return ret;
-                }
-                const uint8_t *data=(const uint8_t *)input->usr;
-                memcpy(buffer,&data[address],buffer_length);
-                ret=buffer_length;
-                return ret;
-
-            },(void *)helloworld_obj);
-            for(size_t i=0; i < hcoff_fileheader_section_count_get(&hdr) ; i++)
-            {
-                hcoff_sectionheader_t sectionheader= {0};
-                if(hcoff_sectionheader_read(&sectionheader,i,&input_file))
-                {
-                    char section_name[64]= {0};
-                    printf("hcoff sectionheader:name=%s,index=%d\r\n",(const char *)(hcoff_sectionheader_name_read(&sectionheader,&input_file,section_name,sizeof(section_name))!=NULL?section_name:""),(int)i);
-                    printf("hcoff sectionheader:rawdata addr=%08X,length=%d\r\n",(int)sectionheader.s_scnptr,(int)sectionheader.s_size);
-                    if(sectionheader.s_relptr != 0 && sectionheader.s_nreloc !=0)
-                    {
-                        hcoff_section_relocation_t relocation= {0};
-                        for(size_t j=0; j<sectionheader.s_nreloc; j++)
-                        {
-                            if(hcoff_section_relocation_read(&relocation,j,&sectionheader,&input_file))
-                            {
-                                printf("hcoff section relocation:vaddr=%08X,symndx=%d,type=%d\r\n",(int)relocation.r_vaddr,(int)relocation.r_symndx,(int)relocation.r_type);
-                            }
-                        }
-                    }
-                }
-            }
-            for(size_t i=0; i<hdr.f_nsyms; i++)
-            {
-                if(hcoff_symbol_is_symbol(i,&input_file))
-                {
-                    hcoff_symbol_entry_t symbol_entry;
-                    if(hcoff_symbol_entry_read(&symbol_entry,i,&input_file))
-                    {
-                        char namebuf[64]= {0};
-                        hcoff_symbol_entry_name_read(&symbol_entry,&input_file,namebuf,sizeof(namebuf));
-                        printf("hcoff symbol(index=%06d):%-32s(%08X),section=%d,type=%02X,sclass=%d\r\n",(int)i,namebuf,(int)symbol_entry.e_value,(int)(int16_t)symbol_entry.e_scnum,(int)symbol_entry.e_type,(int)symbol_entry.e_sclass);
                     }
                 }
             }

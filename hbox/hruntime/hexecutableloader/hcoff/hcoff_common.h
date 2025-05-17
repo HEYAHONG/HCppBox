@@ -214,8 +214,26 @@ struct hcoff_section_relocation
 };
 
 /*
- * 重定位的类型根据架构的不同而不同，下面列出一些常用的类型(X86_64、I386)
+ * 重定位的类型根据架构的不同而不同，下面列出一些常用的类型(aarch64、X86_64、I386)
  */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_ABSOLUTE        0x0000    /* No relocation required */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_ADDR32          0x0001    /* The 32-bit VA of the target. */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_ADDR32NB        0x0002    /* The 32-bit RVA of the target. */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_BRANCH26        0x0003    /* The 26-bit relative displacement to the target, for B and BL instructions. */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_PAGEBASE_REL21  0x0004    /* The page base of the target, for ADRP instruction. */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_REL21           0x0005    /* The 12-bit relative displacement to the target, for instruction ADR */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_PAGEOFFSET_12A  0x0006    /* The 12-bit page offset of the target, for instructions ADD/ADDS (immediate) with zero shift. */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_PAGEOFFSET_12L  0x0007    /* The 12-bit page offset of the target, for instruction LDR (indexed, unsigned immediate). */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_SECREL          0x0008    /* The 32-bit offset of the target from the beginning of its section. This is used to support debugging information and static thread local storage. */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_SECREL_LOW12A   0x0009    /* Bit 0:11 of section offset of the target, for instructions ADD/ADDS (immediate) with zero shift. */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_SECREL_HIGH12A  0x000A    /* Bit 12:23 of section offset of the target, for instructions ADD/ADDS (immediate) with zero shift. */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_SECREL_LOW12L   0x000B    /* Bit 0:11 of section offset of the target, for instruction LDR (indexed, unsigned immediate). */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_TOKEN           0x000C    /* CLR token */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_SECTION         0x000D    /* The 16-bit section index of the section that contains the target. This is used to support debugging information. */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_ADDR64          0x000E    /* The 64-bit VA of the relocation target. */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_BRANCH19        0x000F    /* 19 bit offset << 2 & sign ext. for conditional B */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_BRANCH14        0x0010    /* The 14-bit offset to the relocation target, for instructions TBZ and TBNZ. */
+#define HCOFF_SECTION_RELOCATION_R_TYPE_AARCH64_ARM64_REL32           0x0011    /* The 32-bit relative address from the byte following the relocation. */
 #define HCOFF_SECTION_RELOCATION_R_TYPE_X86_64_AMD64_ABS            0           /* Reference is absolute, no relocation is necessary.  */
 #define HCOFF_SECTION_RELOCATION_R_TYPE_X86_64_AMD64_DIR64          1           /* 64-bit address (VA).  */
 #define HCOFF_SECTION_RELOCATION_R_TYPE_X86_64_AMD64_DIR32          2           /* 32-bit address (VA) R_DIR32.  */
