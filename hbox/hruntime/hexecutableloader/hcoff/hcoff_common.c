@@ -421,6 +421,31 @@ const char *hcoff_sectionheader_name_read(const hcoff_sectionheader_t *sectionhe
     return NULL;
 }
 
+bool hcoff_sectionheader_name_match(const char *section_name,const hcoff_sectionheader_t *sectionheader,hcoff_file_input_t *input_file)
+{
+    bool ret=false;
+    if(section_name==NULL || strlen(section_name)==0 || sectionheader == NULL)
+    {
+        return ret;
+    }
+    char namebuff[64]={0};
+    if(NULL==hcoff_sectionheader_name_read(sectionheader,input_file,namebuff,sizeof(namebuff)))
+    {
+        return ret;
+    }
+    size_t namelen=strlen(section_name);
+    if(namelen > sizeof(namebuff))
+    {
+        return ret;
+    }
+    if(namebuff[namelen]=='$' || namebuff[namelen]=='.')
+    {
+        namebuff[namelen]='\0';
+    }
+    ret=(0==strcmp(section_name,namebuff));
+    return ret;
+}
+
 bool hcoff_section_relocation_read(hcoff_section_relocation_t *relocation,size_t index,const hcoff_sectionheader_t *sectionheader,hcoff_file_input_t *input_file)
 {
     bool ret=false;

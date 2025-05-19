@@ -1451,7 +1451,9 @@ static int hruntime_test(int argc,const char *argv[])
         const char *coff_list[]=
         {
             "runtime/coff/helloworld.i386.obj",
+            "runtime/coff/helloworld.i386.msvc.obj",
             "runtime/coff/helloworld.x86_64.obj",
+            "runtime/coff/helloworld.x86_64.msvc.obj",
             "runtime/coff/helloworld.aarch64.obj"
         };
         for(size_t i=0; i<sizeof(coff_list)/sizeof(coff_list[0]); i++)
@@ -1489,6 +1491,37 @@ static int hruntime_test(int argc,const char *argv[])
                         char section_name[64]= {0};
                         printf("hcoff sectionheader:name=%s,index=%d\r\n",(const char *)(hcoff_sectionheader_name_read(&sectionheader,&input_file,section_name,sizeof(section_name))!=NULL?section_name:""),(int)i);
                         printf("hcoff sectionheader:rawdata addr=%08X,length=%d\r\n",(int)sectionheader.s_scnptr,(int)sectionheader.s_size);
+                        {
+                            //通过名称判断类型
+                            if(hcoff_sectionheader_name_match(HCOFF_SECTIONHEADER_S_NAME_TEXT,&sectionheader,&input_file))
+                            {
+                                printf("hcoff sectionheader:type=%s\r\n",HCOFF_SECTIONHEADER_S_NAME_TEXT);
+                            }
+                            if(hcoff_sectionheader_name_match(HCOFF_SECTIONHEADER_S_NAME_RDATA,&sectionheader,&input_file))
+                            {
+                                printf("hcoff sectionheader:type=%s\r\n",HCOFF_SECTIONHEADER_S_NAME_RDATA);
+                            }
+                            if(hcoff_sectionheader_name_match(HCOFF_SECTIONHEADER_S_NAME_PDATA,&sectionheader,&input_file))
+                            {
+                                printf("hcoff sectionheader:type=%s\r\n",HCOFF_SECTIONHEADER_S_NAME_PDATA);
+                            }
+                            if(hcoff_sectionheader_name_match(HCOFF_SECTIONHEADER_S_NAME_XDATA,&sectionheader,&input_file))
+                            {
+                                printf("hcoff sectionheader:type=%s\r\n",HCOFF_SECTIONHEADER_S_NAME_XDATA);
+                            }
+                            if(hcoff_sectionheader_name_match(HCOFF_SECTIONHEADER_S_NAME_SDATA,&sectionheader,&input_file))
+                            {
+                                printf("hcoff sectionheader:type=%s\r\n",HCOFF_SECTIONHEADER_S_NAME_SDATA);
+                            }
+                            if(hcoff_sectionheader_name_match(HCOFF_SECTIONHEADER_S_NAME_DATA,&sectionheader,&input_file))
+                            {
+                                printf("hcoff sectionheader:type=%s\r\n",HCOFF_SECTIONHEADER_S_NAME_DATA);
+                            }
+                            if(hcoff_sectionheader_name_match(HCOFF_SECTIONHEADER_S_NAME_BSS,&sectionheader,&input_file))
+                            {
+                                printf("hcoff sectionheader:type=%s\r\n",HCOFF_SECTIONHEADER_S_NAME_BSS);
+                            }
+                        }
                         if(sectionheader.s_relptr != 0 && sectionheader.s_nreloc !=0)
                         {
                             hcoff_section_relocation_t relocation= {0};

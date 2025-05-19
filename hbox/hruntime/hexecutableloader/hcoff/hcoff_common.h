@@ -234,6 +234,17 @@ bool hcoff_sectionheader_read(hcoff_sectionheader_t *sectionheader,size_t index,
  */
 const char *hcoff_sectionheader_name_read(const hcoff_sectionheader_t *sectionheader,hcoff_file_input_t *input_file,void *namebuf,size_t namebulen);
 
+
+/** \brief COFF文件匹配节名
+ *
+ * \param section_name const char* 待匹配的节名,具体见 HCOFF_SECTIONHEADER_S_NAME_*
+ * \param sectionheader const hcoff_sectionheader_t* 节头
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return bool 是否匹配成功
+ *
+ */
+bool hcoff_sectionheader_name_match(const char *section_name,const hcoff_sectionheader_t *sectionheader,hcoff_file_input_t *input_file);
+
 /*
  * hcoff_section_relocation_t并不适用于所有COFF文件,某些架构的COFF文件需要在结构体末尾添加额外的程序。
  */
