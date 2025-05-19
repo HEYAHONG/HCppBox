@@ -12,5 +12,4 @@
 - `helloworld.aarch64.obj`:`clang --target=aarch64-w64-windows-gnu -c helloworld.c -o helloworld.aarch64.obj`
 - `helloworld.i386.msvc.obj`:MSVC X86环境下执行:`cl /c /Fohelloworld.i386.msvc.obj /nologo helloworld.c`
 - `helloworld.x86_64.msvc.obj`:MSVC X64环境下执行:`cl /c /Fohelloworld.x86_64.msvc.obj /nologo helloworld.c`
-  `helloworld.c`
 
