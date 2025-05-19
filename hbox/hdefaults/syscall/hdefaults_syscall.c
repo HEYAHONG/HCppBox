@@ -12,12 +12,18 @@
 #include "wrapper/hgettimeofday.c"
 #include "wrapper/hsettimeofday.c"
 #include "wrapper/hgetrandmon.c"
+#include "wrapper/hmmap.c"
+#include "wrapper/hmsync.c"
+#include "wrapper/hmunmap.c"
 
 #ifndef HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
 
 #include "implementation/hgettimeofday.c"
 #include "implementation/hsettimeofday.c"
 #include "implementation/hgetrandom.c"
+#include "implementation/hmmap.c"
+#include "implementation/hmsync.c"
+#include "implementation/hmunmap.c"
 
 #endif // HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
 
@@ -33,6 +39,18 @@
 #ifdef HDEFAULTS_SYSCALL_NO_HGETRANDOM
 #undef HDEFAULTS_SYSCALL_HGETRANDOM
 #endif // HDEFAULTS_SYSCALL_NO_HGETRANDOM
+
+#ifdef HDEFAULTS_SYSCALL_NO_HMMAP
+#undef HDEFAULTS_SYSCALL_HMMAP
+#endif // HDEFAULTS_SYSCALL_NO_HMMAP
+
+#ifdef HDEFAULTS_SYSCALL_NO_HMSYNC
+#undef HDEFAULTS_SYSCALL_HMSYNC
+#endif // HDEFAULTS_SYSCALL_NO_HMSYNC
+
+#ifdef HDEFAULTS_SYSCALL_NO_HMUNMAP
+#undef HDEFAULTS_SYSCALL_HMUNMAP
+#endif // HDEFAULTS_SYSCALL_NO_HMUNMAP
 
 hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
 {
@@ -58,6 +76,27 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
     case HDEFAULTS_SYSCALL_HGETRANDOM:
     {
         ret=__hdefaults_usercall_hgetrandom;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HMMAP
+    case HDEFAULTS_SYSCALL_HMMAP:
+    {
+        ret=__hdefaults_usercall_hmmap;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HMSYNC
+    case HDEFAULTS_SYSCALL_HMSYNC:
+    {
+        ret=__hdefaults_usercall_hmsync;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HMUNMAP
+    case HDEFAULTS_SYSCALL_HMUNMAP:
+    {
+        ret=__hdefaults_usercall_hmunmap;
     }
     break;
 #endif

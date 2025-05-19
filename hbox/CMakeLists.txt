@@ -31,6 +31,12 @@ target_link_libraries(HBox dl)
 target_compile_definitions(HBox PUBLIC  HAVE_DLFCN_H=1)
 endif()
 
+#查找sys/mman.h
+check_include_file(sys/mman.h HAVE_SYS_MMAN_H)
+if(HAVE_SYS_MMAN_H)
+target_compile_definitions(HBox PUBLIC  HAVE_SYS_MMAN_H=1)
+endif()
+
 #添加dotfontscan工具构建
 add_custom_target(dotfontscan_tool 	${CMAKE_COMMAND} -E make_directory dotfontscan && ${CMAKE_COMMAND}  -S ${CMAKE_CURRENT_SOURCE_DIR}/hgui/tools/dotfontscan/ -B dotfontscan && ${CMAKE_COMMAND} --build dotfontscan 
 									WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
