@@ -15,6 +15,8 @@
 #include "wrapper/hmmap.c"
 #include "wrapper/hmsync.c"
 #include "wrapper/hmunmap.c"
+#include "wrapper/hmprotect.c"
+
 
 #ifndef HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
 
@@ -24,6 +26,7 @@
 #include "implementation/hmmap.c"
 #include "implementation/hmsync.c"
 #include "implementation/hmunmap.c"
+#include "implementation/hmprotect.c"
 
 #endif // HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
 
@@ -51,6 +54,10 @@
 #ifdef HDEFAULTS_SYSCALL_NO_HMUNMAP
 #undef HDEFAULTS_SYSCALL_HMUNMAP
 #endif // HDEFAULTS_SYSCALL_NO_HMUNMAP
+
+#ifdef HDEFAULTS_SYSCALL_NO_HMPROTECT
+#undef HDEFAULTS_SYSCALL_HMPROTECT
+#endif // HDEFAULTS_SYSCALL_NO_HMPROTECT
 
 hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
 {
@@ -97,6 +104,13 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
     case HDEFAULTS_SYSCALL_HMUNMAP:
     {
         ret=__hdefaults_usercall_hmunmap;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HMPROTECT
+    case HDEFAULTS_SYSCALL_HMPROTECT:
+    {
+        ret=__hdefaults_usercall_hmprotect;
     }
     break;
 #endif

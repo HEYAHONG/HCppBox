@@ -2,7 +2,7 @@
  * Name:      hmsync.c
  * Purpose:   实现hmsync接口
  * Author:    HYH (hyhsystem.cn)
- * Created:   2025-05-01
+ * Created:   2025-05-19
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/

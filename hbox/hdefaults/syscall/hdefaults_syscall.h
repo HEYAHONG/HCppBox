@@ -32,7 +32,7 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number);
 #include "wrapper/hmmap.h"
 #include "wrapper/hmsync.h"
 #include "wrapper/hmunmap.h"
-
+#include "wrapper/hmprotect.h"
 
 #ifdef __cplusplus
 }

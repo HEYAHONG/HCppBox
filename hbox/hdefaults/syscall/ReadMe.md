@@ -107,3 +107,15 @@
 | `HMUNMAP`                      | 用户实现的`munmap` | 参数与返回值同`hmunmap` |
 | `HDEFAULTS_SYSCALL_NO_HMUNMAP` | 不实现`munmap`     |                         |
 
+## `mprotect`
+
+修改内存保护标志。
+
+当系统支持`mprotect`时，采用系统的实现。
+
+可外部配置的宏定义如下:
+
+| 宏定义                           | 说明                 | 备注                      |
+| -------------------------------- | -------------------- | ------------------------- |
+| `HMPROTECT`                      | 用户实现的`mprotect` | 参数与返回值同`hmprotect` |
+| `HDEFAULTS_SYSCALL_NO_HMPROTECT` | 不实现`mprotect`     |                           |
