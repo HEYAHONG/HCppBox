@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hdefaults.h"
+#include "hmman.h"
 
 #if    defined(HDEFAULTS_OS_LINUX_SYSCALL32_msync)
 #define HDEFAULTS_SYSCALL_HMSYNC  HDEFAULTS_OS_LINUX_SYSCALL32_msync
@@ -63,7 +64,23 @@ HDEFAULTS_USERCALL_DEFINE3(hmsync,HDEFAULTS_SYSCALL_HMSYNC,int,void *,addr, size
 
     }
 #else
-    //不支持msync
+    {
+        if(addr!=NULL &&(((uintptr_t)addr)%HMMAN_ALIGNED_SIZE)==0)
+        {
+            hmman_parameter_t *para=(hmman_parameter_t *)(((uintptr_t)addr)-HMMAN_ALIGNED_SIZE);
+            if(para!=NULL && para->mem!=NULL)
+            {
+                if((para->flags&HMMAN_MAP_ANONYMOUS)==0)
+                {
+                    //非匿名映射需要保存文件
+                }
+                else
+                {
+                    ret=0;
+                }
+            }
+        }
+    }
 #endif
     return ret;
 }

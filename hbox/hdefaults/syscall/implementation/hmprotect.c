@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hdefaults.h"
+#include "hmman.h"
 
 #if    defined(HDEFAULTS_OS_LINUX_SYSCALL32_mprotect)
 #define HDEFAULTS_SYSCALL_HMPROTECT  HDEFAULTS_OS_LINUX_SYSCALL32_mprotect

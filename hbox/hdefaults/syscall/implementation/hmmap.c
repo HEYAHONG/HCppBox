@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hdefaults.h"
+#include "hmman.h"
 
 #if    defined(HDEFAULTS_OS_LINUX_SYSCALL32_mmap)
 #define HDEFAULTS_SYSCALL_HMMAP  HDEFAULTS_OS_LINUX_SYSCALL32_mmap
@@ -142,7 +143,26 @@ HDEFAULTS_USERCALL_DEFINE6(hmmap,HDEFAULTS_SYSCALL_HMMAP,void *,void *,addr, siz
         }
     }
 #else
-    //不支持mmap
+    if(len!=0)
+    {
+        if((HMMAN_MAP_ANONYMOUS&flags)!=0)
+        {
+            //匿名映射采用malloc模拟
+            void *mem=hmalloc(HMMAN_ALIGNED_SIZE+HMMAN_ALIGNED_PARAMETER_SIZE+len);
+            if(mem!=NULL)
+            {
+                hmman_parameter_t *para=HMMAN_ALIGNED_MEM_PTR_SIZE(mem);
+                memset(mem,0,HMMAN_ALIGNED_SIZE+HMMAN_ALIGNED_PARAMETER_SIZE+len);
+                para->mem=mem;
+                para->len=len;
+                para->prot=prot;
+                para->flags=flags;
+                para->fildes=fildes;
+                para->offset=off;
+                ret=(void *)(((uintptr_t)para)+HMMAN_ALIGNED_PARAMETER_SIZE);
+            }
+        }
+    }
 #endif
     return ret;
 }
