@@ -81,11 +81,13 @@ void hintelhex_reader_input(hintelhex_reader_t *reader,const char *data,size_t d
                         reader->buffer.address=line_binary[4]*(1UL << 24)+line_binary[5]*(1UL << 16);
                         reader->op(reader,HINTELHEX_READER_OPERATE_EXTENDED_LINEAR_ADDRESS,reader->buffer.address,&line_binary[4],len);
                     }
+                    break;
                     case HINTELHEX_RECORD_TYPE_START_LINEAR_ADDRESS_RECORD:
                     {
                         uint32_t eip=line_binary[4]*(1UL << 24)+line_binary[5]*(1UL << 16)+line_binary[6]*(1UL << 8)+line_binary[7]*(1UL << 0);
                         reader->op(reader,HINTELHEX_READER_OPERATE_START_LINEAR_ADDRESS,eip,&line_binary[4],len);
                     }
+                    break;
                     default:
                     {
 
