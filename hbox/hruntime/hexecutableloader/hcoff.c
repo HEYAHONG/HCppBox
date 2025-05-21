@@ -9,3 +9,4 @@
 #include "hcoff.h"
 
 #include "hcoff/hcoff_common.c"
+#include "hcoff/hcoff_i386.c"

@@ -428,7 +428,7 @@ bool hcoff_sectionheader_name_match(const char *section_name,const hcoff_section
     {
         return ret;
     }
-    char namebuff[64]={0};
+    char namebuff[64]= {0};
     if(NULL==hcoff_sectionheader_name_read(sectionheader,input_file,namebuff,sizeof(namebuff)))
     {
         return ret;
