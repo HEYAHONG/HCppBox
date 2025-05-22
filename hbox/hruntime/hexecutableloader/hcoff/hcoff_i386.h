@@ -11,6 +11,7 @@
 #include "stdint.h"
 #include "stdbool.h"
 #include "hcoff_common.h"
+#include "hruntime.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -46,6 +47,121 @@ const hcoff_i386_section_relocation_info_t * hcoff_i386_section_relocation_info_
  *
  */
 bool hcoff_i386_section_relocation_doit(uint8_t *relocation_addr,uint32_t diff,const hcoff_i386_section_relocation_t *relocation);
+
+
+/** \brief 获取是否是读取与执行的节
+ *
+ * \param index size_t 引索
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return bool 是否是读取与执行的节
+ *
+ */
+bool hcoff_i386_is_rx_section(size_t index,hcoff_file_input_t *input_file);
+
+
+/** \brief 获取具有读取与执行的节的偏移
+ *
+ * \param index size_t 引索
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return size_t 偏移，-1=失败
+ *
+ */
+intptr_t hcoff_i386_rx_section_offset_get(size_t index,hcoff_file_input_t *input_file);
+
+/** \brief 获取具有读取与执行的节的大小
+ *
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return size_t 大小
+ *
+ */
+size_t hcoff_i386_rx_section_size_get(hcoff_file_input_t *input_file);
+
+/** \brief 获取是否是只读的节
+ *
+ * \param index size_t 引索
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return bool 是否是只读的节
+ *
+ */
+bool hcoff_i386_is_ro_section(size_t index,hcoff_file_input_t *input_file);
+
+
+/** \brief 获取具有只读的节的偏移
+ *
+ * \param index size_t 引索
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return size_t 偏移，-1=失败
+ *
+ */
+intptr_t hcoff_i386_ro_section_offset_get(size_t index,hcoff_file_input_t *input_file);
+
+/** \brief 获取具有只读的节的大小
+ *
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return size_t 大小
+ *
+ */
+size_t hcoff_i386_ro_section_size_get(hcoff_file_input_t *input_file);
+
+/** \brief 获取是否是读取与写入的节
+ *
+ * \param index size_t 引索
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return bool 是否是读取与写入的节
+ *
+ */
+bool hcoff_i386_is_rw_section(size_t index,hcoff_file_input_t *input_file);
+
+
+/** \brief 获取具有读取与写入的节的偏移
+ *
+ * \param index size_t 引索
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return size_t 偏移，-1=失败
+ *
+ */
+intptr_t hcoff_i386_rw_section_offset_get(size_t index,hcoff_file_input_t *input_file);
+
+/** \brief 获取具有读取与写入的节的大小
+ *
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return size_t 大小
+ *
+ */
+size_t hcoff_i386_rw_section_size_get(hcoff_file_input_t *input_file);
+
+
+typedef struct hcoff_i386_relocatable  hcoff_i386_relocatable_t;
+struct hcoff_i386_relocatable
+{
+    void * rx_sections_ptr;
+    size_t rx_sections_size;
+    void * ro_sections_ptr;
+    size_t ro_sections_size;
+    void * rw_sections_ptr;
+    size_t rw_sections_size;
+    hruntime_symbol_t * symbol_table;
+    size_t             symbol_table_size;
+};
+
+typedef const hruntime_symbol_t *(*hcoff_i386_external_symbol_find_t)(const char *name);
+
+/** \brief 创建可重定位对象
+ *
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \param extern_symbol hcoff_i386_external_symbol_find_t 外部符号寻找回调
+ * \return const hcoff_i386_relocatable_t* 可重定位对象指针,失败返回NULL
+ *
+ */
+const hcoff_i386_relocatable_t *hcoff_i386_relocatable_new(hcoff_file_input_t *input_file,hcoff_i386_external_symbol_find_t extern_symbol);
+
+
+/** \brief 删除可重定位对象
+ *
+ * \param i386_relocatable const hcoff_i386_relocatable_t* 可重定位对象指针
+ *
+ */
+void hcoff_i386_relocatable_delete(const hcoff_i386_relocatable_t * i386_relocatable);
 
 #ifdef __cplusplus
 }
