@@ -67,7 +67,7 @@ const hcoff_i386_section_relocation_info_t * hcoff_i386_section_relocation_info_
         {
             static const hcoff_i386_section_relocation_info_t relocation_info=
             {
-                "secrrel32",
+                "secrel32",
                 0xFFFFFFFF,
                 0xFFFFFFFF,
                 HCOFF_SECTION_RELOCATION_R_TYPE_I386_SECREL32,

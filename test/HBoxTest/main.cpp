@@ -1529,7 +1529,14 @@ static int hruntime_test(int argc,const char *argv[])
                             {
                                 if(hcoff_section_relocation_read(&relocation,j,&sectionheader,&input_file))
                                 {
-                                    printf("hcoff section relocation:vaddr=%08X,symndx=%d,type=%d\r\n",(int)relocation.r_vaddr,(int)relocation.r_symndx,(int)relocation.r_type);
+                                    const char *type_name="";
+                                    {
+                                        if(hdr.f_magic==HCOFF_FILEHEADER_F_MAGIC_I386)
+                                        {
+                                            type_name=(const char *)hcoff_i386_section_relocation_info_get(&relocation)->name;
+                                        }
+                                    }
+                                    printf("hcoff section relocation:vaddr=%08X,symndx=%d,type=%s(%d)\r\n",(int)relocation.r_vaddr,(int)relocation.r_symndx,type_name,(int)relocation.r_type);
                                 }
                             }
                         }
