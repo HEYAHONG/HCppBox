@@ -32,6 +32,7 @@
 #elif defined(HDEFAULTS_OS_WINDOWS)
 #include <windows.h>
 #include <io.h>
+#include <errno.h>
 
 #ifndef FILE_MAP_EXECUTE
 # define FILE_MAP_EXECUTE   0x0020

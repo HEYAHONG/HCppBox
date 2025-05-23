@@ -31,6 +31,8 @@
 #include <sys/mman.h>
 #elif defined(HDEFAULTS_OS_WINDOWS)
 #include <windows.h>
+#include <errno.h>
+
 static int hmman_munmap_error(DWORD err, int deferr)
 {
     if (0 == err)
