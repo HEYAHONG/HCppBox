@@ -269,7 +269,7 @@ static void hs_risc_v_core_rv32_exec_exception_raise(hs_risc_v_core_rv32_t *core
     hs_risc_v_core_rv32_exception_raise(core,cause,false);
 }
 
-static bool hs_risc_v_core_rv32_exec_io(hs_risc_v_core_rv32_t *core,hs_risc_v_core_rv32_io_opt_t opt,uint32_t address,uint8_t *data,size_t len)
+static bool hs_risc_v_core_rv32_exec_io(hs_risc_v_core_rv32_t *core,uint32_t opt,uint32_t address,uint8_t *data,size_t len)
 {
     if(core!=NULL && core->io!=NULL)
     {
