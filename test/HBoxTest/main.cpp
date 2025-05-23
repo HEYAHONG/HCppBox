@@ -1696,6 +1696,9 @@ static int hruntime_test(int argc,const char *argv[])
 #elif defined(_M_X64) || defined(__x86_64) || defined(__x86_64__)
 #if defined(HDEFAULTS_OS_UNIX) 
         {
+            //x86_64架构下才支持测试加载x86_64可重定位对象
+            //默认支持x86_64的Linux。
+            //Windows下支持在Cygwin/MSYS2 MSYS下测试。
             printf("hcoff:current arch=amd64\r\n");
             const char *coff_list[]=
             {
