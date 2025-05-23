@@ -20,7 +20,7 @@ int coff_entry()
     /*
      * x86_64模式下，编译器生成的32位地址可能会溢出，故而不直接调用外部函数，如需调用应使用函数指针
      */
-#if !defined(__x86_64) && !defined(__x86_64__)
+#if !defined(_M_X64) && !defined(__x86_64) && !defined(__x86_64__)
     hprintf("helloworld coff!\r\n");
 #endif
     return 0;

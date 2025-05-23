@@ -1693,14 +1693,14 @@ static int hruntime_test(int argc,const char *argv[])
 
         }
 #endif
-#elif defined(__x86_64) || defined(__x86_64__)
-#if defined(HDEFAULTS_OS_UNIX)
+#elif defined(_M_X64) || defined(__x86_64) || defined(__x86_64__)
+#if defined(HDEFAULTS_OS_UNIX) 
         {
             printf("hcoff:current arch=amd64\r\n");
             const char *coff_list[]=
             {
                 "runtime/coff/helloworld.x86_64.obj",
-                //"runtime/coff/helloworld.x86_64.msvc.obj",
+                "runtime/coff/helloworld.x86_64.msvc.obj",
             };
             for(size_t i=0; i<sizeof(coff_list)/sizeof(coff_list[0]); i++)
             {
