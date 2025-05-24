@@ -1694,7 +1694,7 @@ static int hruntime_test(int argc,const char *argv[])
         }
 #endif
 #elif defined(_M_X64) || defined(__x86_64) || defined(__x86_64__)
-#if defined(HDEFAULTS_OS_UNIX) 
+#if defined(HDEFAULTS_OS_UNIX)
         {
             //x86_64架构下才支持测试加载x86_64可重定位对象
             //默认支持x86_64的Linux。
@@ -1766,6 +1766,26 @@ static int hruntime_test(int argc,const char *argv[])
                                 break;
                             }
                         }
+                    }
+                    {
+                        //设置hprintf指针
+                        /*
+                         *  注意:在x64下，由于Windows与非Windows下的调用约定的差异,跨ABI调用函数会导致传参问题。因此外部函数调用的测试仅支持在Cygwin或者MSYS2 MSYS下测试
+                         */
+#if defined(HDEFAULTS_OS_CYGWIN)
+                        for(size_t i=0; i<obj->symbol_table_size; i++)
+                        {
+                            if(strcmp("_hprintf",obj->symbol_table[i].symbol_name)==0 || strcmp("hprintf",obj->symbol_table[i].symbol_name)==0 )
+                            {
+                                //设置函数指针
+                                typedef int (*hprintf_t)(const char *format,...);
+                                hprintf_t* data=(hprintf_t*)obj->symbol_table[i].symbol_addr;
+                                (*data)=(hprintf_t)hprintf;
+                                break;
+                            }
+                        }
+#endif
+
                     }
                     {
                         //进入
