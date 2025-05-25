@@ -51,6 +51,23 @@ jobs:
       working-directory: ${{github.workspace}}/build-x86
       run: ${{github.workspace}}/build-x86/HBoxTest/HBoxTest && ${{github.workspace}}/build-x86/HRCTest/HRCTest && ${{github.workspace}}/build-x86/HCPPObjectTest/HCPPObjectTest
 
+    - name: Install aarch64 toolchain
+      run: sudo apt-get update &&  sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user
+
+    - name: Configure CMake(aarch64)
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: LDFLAGS="-static -static-libgcc -static-libstdc++"  cmake -B ${{github.workspace}}/build-aarch64 -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/test/cmake/toolchain-aarch64.cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} test
+
+    - name: Build(aarch64)
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build-aarch64 --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build-aarch64
+      run: qemu-aarch64 ${{github.workspace}}/build-aarch64/HBoxTest/HBoxTest && qemu-aarch64 ${{github.workspace}}/build-aarch64/HRCTest/HRCTest && qemu-aarch64 ${{github.workspace}}/build-aarch64/HCPPObjectTest/HCPPObjectTest
+
+
     - uses: actions/setup-python@v5
       with:
             python-version: '3.9'
