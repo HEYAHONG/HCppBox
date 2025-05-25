@@ -24,7 +24,7 @@ extern int hprintf(const char *fmt,...);
 int coff_entry()
 {
     coff_data.refcnt++;
-#if defined(_M_X64) || defined(__x86_64) || defined(__x86_64__)
+#if defined(_M_X64) || defined(__x86_64) || defined(__x86_64__) || defined(__aarch64__) || defined(__AARCH64EL__)
     if(hprintf!=0)
     {
         hprintf("helloworld coff!\r\n");
