@@ -17,6 +17,7 @@ extern "C"
 #include "hcoff/hcoff_common.h"
 #include "hcoff/hcoff_i386.h"
 #include "hcoff/hcoff_amd64.h"
+#include "hcoff/hcoff_aarch64.h"
 
 #ifdef __cplusplus
 }

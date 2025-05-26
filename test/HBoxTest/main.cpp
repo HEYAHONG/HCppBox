@@ -1539,6 +1539,10 @@ static int hruntime_test(int argc,const char *argv[])
                                         {
                                             type_name=(const char *)hcoff_amd64_section_relocation_info_get(&relocation)->name;
                                         }
+                                        if(hdr.f_magic==HCOFF_FILEHEADER_F_MAGIC_ARM64)
+                                        {
+                                            type_name=(const char *)hcoff_aarch64_section_relocation_info_get(&relocation)->name;
+                                        }
                                     }
                                     printf("hcoff section relocation:vaddr=%08X,symndx=%d,type=%s(%d)\r\n",(int)relocation.r_vaddr,(int)relocation.r_symndx,type_name,(int)relocation.r_type);
                                 }
@@ -1840,6 +1844,168 @@ static int hruntime_test(int argc,const char *argv[])
                         }
                     }
                     hcoff_amd64_relocatable_delete(obj);
+                }
+            }
+        }
+#endif
+#elif  defined(__aarch64__) || defined(__AARCH64EL__)
+#if defined(HDEFAULTS_OS_UNIX)
+        {
+
+            printf("hcoff:current arch=aarch64\r\n");
+            const char *coff_list[]=
+            {
+                "runtime/coff/helloworld.aarch64.obj",
+            };
+            for(size_t i=0; i<sizeof(coff_list)/sizeof(coff_list[0]); i++)
+            {
+                const char * RC_PATH=coff_list[i];
+                printf("hcoff:%s\r\n",RC_PATH);
+                const uint8_t * helloworld_obj=RCGetHandle(RC_PATH);
+                size_t helloworld_obj_size=RCGetSize(RC_PATH);
+                hcoff_file_input_t input_file= {0};
+                hcoff_file_input_init(&input_file,[](hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length) -> size_t
+                {
+                    size_t ret=0;
+                    if(input == NULL || input->usr==NULL || buffer == NULL )
+                    {
+                        return ret;
+                    }
+                    const uint8_t *data=(const uint8_t *)input->usr;
+                    memcpy(buffer,&data[address],buffer_length);
+                    ret=buffer_length;
+                    return ret;
+
+                },(void *)helloworld_obj);
+                const hcoff_aarch64_relocatable_t * obj=hcoff_aarch64_relocatable_new(&input_file,hruntime_symbol_find);
+                if(obj!=NULL)
+                {
+                    printf("hcoff:load ok\r\n");
+                    {
+                        //访问信息
+                        for(size_t i=0; i<obj->symbol_table_size; i++)
+                        {
+                            if(strcmp("coff_info",obj->symbol_table[i].symbol_name)==0 || strcmp("_coff_info",obj->symbol_table[i].symbol_name)==0 )
+                            {
+                                typedef struct
+                                {
+                                    const char *name;
+                                } coff_info_t;
+                                coff_info_t *info=(coff_info_t *)obj->symbol_table[i].symbol_addr;
+                                if(info!=NULL && info->name!=NULL)
+                                {
+                                    printf("hcoff: module name=%s\r\n",info->name);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    {
+                        //访问数据
+                        for(size_t i=0; i<obj->symbol_table_size; i++)
+                        {
+                            if(strcmp("coff_data",obj->symbol_table[i].symbol_name)==0 || strcmp("_coff_data",obj->symbol_table[i].symbol_name)==0 )
+                            {
+                                typedef struct
+                                {
+                                    int refcnt;
+                                } coff_data_t;
+                                coff_data_t *data=(coff_data_t *)obj->symbol_table[i].symbol_addr;
+                                if(data!=NULL )
+                                {
+                                    printf("hcoff: module refcnt=%d\r\n",data->refcnt);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    {
+                        //设置hprintf指针
+                        for(size_t i=0; i<obj->symbol_table_size; i++)
+                        {
+                            if(strcmp("_hprintf",obj->symbol_table[i].symbol_name)==0 || strcmp("hprintf",obj->symbol_table[i].symbol_name)==0 )
+                            {
+                                //设置函数指针
+                                typedef int (*hprintf_t)(const char *format,...);
+                                hprintf_t* data=(hprintf_t*)obj->symbol_table[i].symbol_addr;
+                                (*data)=(hprintf_t)hprintf;
+                                break;
+                            }
+                        }
+                    }
+                    {
+                        //进入
+                        for(size_t i=0; i<obj->symbol_table_size; i++)
+                        {
+                            if(strcmp("coff_entry",obj->symbol_table[i].symbol_name)==0 || strcmp("_coff_entry",obj->symbol_table[i].symbol_name)==0 )
+                            {
+                                typedef int (*coff_entry_t)();
+                                coff_entry_t entry=(coff_entry_t)obj->symbol_table[i].symbol_addr;
+                                if(entry!=NULL)
+                                {
+                                    printf("hcoff: module enter,ret=%d\r\n",(entry)());
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    {
+                        //读取数据
+                        for(size_t i=0; i<obj->symbol_table_size; i++)
+                        {
+                            if(strcmp("coff_data",obj->symbol_table[i].symbol_name)==0 || strcmp("_coff_data",obj->symbol_table[i].symbol_name)==0 )
+                            {
+                                typedef struct
+                                {
+                                    int refcnt;
+                                } coff_data_t;
+                                coff_data_t *data=(coff_data_t *)obj->symbol_table[i].symbol_addr;
+                                if(data!=NULL )
+                                {
+                                    printf("hcoff: module refcnt=%d\r\n",data->refcnt);
+                                }
+                                break;
+                            }
+                        }
+
+                    }
+                    {
+                        //退出
+                        for(size_t i=0; i<obj->symbol_table_size; i++)
+                        {
+                            if(strcmp("coff_exit",obj->symbol_table[i].symbol_name)==0 || strcmp("_coff_exit",obj->symbol_table[i].symbol_name)==0 )
+                            {
+                                typedef int (*coff_exit_t)();
+                                coff_exit_t module_exit=(coff_exit_t )obj->symbol_table[i].symbol_addr;
+                                if(module_exit!=NULL)
+                                {
+                                    printf("hcoff: module exit,ret=%d\r\n",module_exit());
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    {
+                        //读取数据
+                        for(size_t i=0; i<obj->symbol_table_size; i++)
+                        {
+                            if(strcmp("coff_data",obj->symbol_table[i].symbol_name)==0 || strcmp("_coff_data",obj->symbol_table[i].symbol_name)==0 )
+                            {
+                                typedef struct
+                                {
+                                    int refcnt;
+                                } coff_data_t;
+                                coff_data_t *data=(coff_data_t *)obj->symbol_table[i].symbol_addr;
+                                if(data!=NULL )
+                                {
+                                    printf("hcoff: module refcnt=%d\r\n",data->refcnt);
+                                }
+                                break;
+                            }
+                        }
+
+                    }
+                    hcoff_aarch64_relocatable_delete(obj);
                 }
             }
         }

@@ -11,3 +11,4 @@
 #include "hcoff/hcoff_common.c"
 #include "hcoff/hcoff_i386.c"
 #include "hcoff/hcoff_amd64.c"
+#include "hcoff/hcoff_aarch64.c"
