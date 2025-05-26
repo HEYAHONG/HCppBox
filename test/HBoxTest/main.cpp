@@ -1454,7 +1454,8 @@ static int hruntime_test(int argc,const char *argv[])
             "runtime/coff/helloworld.i386.msvc.obj",
             "runtime/coff/helloworld.x86_64.obj",
             "runtime/coff/helloworld.x86_64.msvc.obj",
-            "runtime/coff/helloworld.aarch64.obj"
+            "runtime/coff/helloworld.aarch64.obj",
+            "runtime/coff/helloworld.aarch64.msvc.obj"
         };
         for(size_t i=0; i<sizeof(coff_list)/sizeof(coff_list[0]); i++)
         {
@@ -1848,7 +1849,7 @@ static int hruntime_test(int argc,const char *argv[])
             }
         }
 #endif
-#elif  defined(__aarch64__) || defined(__AARCH64EL__)
+#elif defined(_M_ARM64) || defined(__aarch64__) || defined(__AARCH64EL__)
 #if defined(HDEFAULTS_OS_UNIX)
         {
 
@@ -1856,6 +1857,7 @@ static int hruntime_test(int argc,const char *argv[])
             const char *coff_list[]=
             {
                 "runtime/coff/helloworld.aarch64.obj",
+                "runtime/coff/helloworld.aarch64.msvc.obj"
             };
             for(size_t i=0; i<sizeof(coff_list)/sizeof(coff_list[0]); i++)
             {
