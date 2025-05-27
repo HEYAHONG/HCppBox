@@ -158,6 +158,19 @@ typedef const hruntime_symbol_t *(*hcoff_aarch64_external_symbol_find_t)(const c
 const hcoff_aarch64_relocatable_t *hcoff_aarch64_relocatable_new(hcoff_file_input_t *input_file,hcoff_aarch64_external_symbol_find_t extern_symbol);
 
 
+typedef const hruntime_symbol_t *(*hcoff_aarch64_external_symbol_find_with_usr_t)(const char *name,void *usr);
+
+/** \brief 创建可重定位对象
+ *
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \param extern_symbol hcoff_aarch64_external_symbol_find_with_usr_t 外部符号寻找回调
+ * \param usr void * 用户参数
+ * \return const hcoff_aarch64_relocatable_t* 可重定位对象指针,失败返回NULL
+ *
+ */
+const hcoff_aarch64_relocatable_t *hcoff_aarch64_relocatable_new_with_usr(hcoff_file_input_t *input_file,hcoff_aarch64_external_symbol_find_with_usr_t extern_symbol,void *usr);
+
+
 /** \brief 删除可重定位对象
  *
  * \param aarch64_relocatable const hcoff_aarch64_relocatable_t* 可重定位对象指针

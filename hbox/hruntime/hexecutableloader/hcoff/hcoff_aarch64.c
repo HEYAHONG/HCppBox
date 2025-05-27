@@ -733,7 +733,24 @@ size_t hcoff_aarch64_rw_section_size_get(hcoff_file_input_t *input_file)
     return ret;
 }
 
+static const hruntime_symbol_t *hcoff_aarch64_external_symbol_find_with_usr(const char *name,void *usr)
+{
+    if(usr!=NULL)
+    {
+        hcoff_aarch64_external_symbol_find_t extern_symbol=(hcoff_aarch64_external_symbol_find_t)usr;
+        if(extern_symbol!=NULL)
+        {
+            return extern_symbol(name);
+        }
+    }
+    return NULL;
+}
 const hcoff_aarch64_relocatable_t *hcoff_aarch64_relocatable_new(hcoff_file_input_t *input_file,hcoff_aarch64_external_symbol_find_t extern_symbol)
+{
+    return hcoff_aarch64_relocatable_new_with_usr(input_file,hcoff_aarch64_external_symbol_find_with_usr,extern_symbol);
+}
+
+const hcoff_aarch64_relocatable_t *hcoff_aarch64_relocatable_new_with_usr(hcoff_file_input_t *input_file,hcoff_aarch64_external_symbol_find_with_usr_t extern_symbol,void *usr)
 {
     if(input_file==NULL)
     {
@@ -927,11 +944,11 @@ const hcoff_aarch64_relocatable_t *hcoff_aarch64_relocatable_new(hcoff_file_inpu
                             hcoff_aarch64_relocatable_delete(ret);
                             return NULL;
                         }
-                        const hruntime_symbol_t *runtime_symbol=extern_symbol(name);
+                        const hruntime_symbol_t *runtime_symbol=extern_symbol(name,usr);
                         if(runtime_symbol==NULL)
                         {
                             //符号名称可能经过修饰
-                            runtime_symbol=extern_symbol(&name[1]);
+                            runtime_symbol=extern_symbol(&name[1],usr);
                         }
                         if(runtime_symbol!=NULL)
                         {
@@ -1107,11 +1124,11 @@ const hcoff_aarch64_relocatable_t *hcoff_aarch64_relocatable_new(hcoff_file_inpu
                             hcoff_aarch64_relocatable_delete(ret);
                             return NULL;
                         }
-                        const hruntime_symbol_t *runtime_symbol=extern_symbol(name);
+                        const hruntime_symbol_t *runtime_symbol=extern_symbol(name,usr);
                         if(runtime_symbol==NULL)
                         {
                             //符号名称可能经过修饰
-                            runtime_symbol=extern_symbol(&name[1]);
+                            runtime_symbol=extern_symbol(&name[1],usr);
                         }
                         if(runtime_symbol!=NULL)
                         {
@@ -1291,11 +1308,11 @@ const hcoff_aarch64_relocatable_t *hcoff_aarch64_relocatable_new(hcoff_file_inpu
                             hcoff_aarch64_relocatable_delete(ret);
                             return NULL;
                         }
-                        const hruntime_symbol_t *runtime_symbol=extern_symbol(name);
+                        const hruntime_symbol_t *runtime_symbol=extern_symbol(name,usr);
                         if(runtime_symbol==NULL)
                         {
                             //符号名称可能经过修饰
-                            runtime_symbol=extern_symbol(&name[1]);
+                            runtime_symbol=extern_symbol(&name[1],usr);
                         }
                         if(runtime_symbol!=NULL)
                         {
