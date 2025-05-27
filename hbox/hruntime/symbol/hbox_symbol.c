@@ -7310,6 +7310,10 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hdlclose),(uintptr_t)&hdlclose},
     {hdefaults_str(hdlsym),(uintptr_t)&hdlsym},
 ///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hdriverframework.c
+    {hdefaults_str(hdriverframework_driver_base_set),(uintptr_t)&hdriverframework_driver_base_set},
+    {hdefaults_str(hdriverframework_driver_base_getname),(uintptr_t)&hdriverframework_driver_base_getname},
+    {hdefaults_str(hdriverframework_driver_base_init),(uintptr_t)&hdriverframework_driver_base_init},
+    {hdefaults_str(hdriverframework_driver_base_deinit),(uintptr_t)&hdriverframework_driver_base_deinit},
     {hdefaults_str(hwatchdog_set_memmang_and_lock),(uintptr_t)&hwatchdog_set_memmang_and_lock},
     {hdefaults_str(hwatchdog_get_usr_ptr),(uintptr_t)&hwatchdog_get_usr_ptr},
     {hdefaults_str(hwatchdog_set_hardware_dog_feed),(uintptr_t)&hwatchdog_set_hardware_dog_feed},
