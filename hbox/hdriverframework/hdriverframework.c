@@ -47,3 +47,13 @@ int hdriverframework_driver_base_deinit(hdriverframework_driver_base_t *drv)
     return HDRIVERFRAMEWORK_EPERM;
 }
 
+const char ** hdriverframework_driver_base_get_of_compatible(hdriverframework_driver_base_t *drv)
+{
+    const char **ret=NULL;
+    if(drv!=NULL && drv->process!=NULL)
+    {
+        drv->process(drv,HDRIVERFRAMEWORK_OP_GET_OF_COMPATIBLE,&ret);
+    }
+    return ret;
+}
+

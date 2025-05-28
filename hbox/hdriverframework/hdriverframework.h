@@ -169,10 +169,13 @@ struct hdriverframework_driver_base
 
 enum
 {
-    HDRIVERFRAMEWORK_OP_GETNAME=0,                      /**< 获取驱动名称，其可变参数为const char ** */
-    HDRIVERFRAMEWORK_OP_INIT=1,                         /**< 初始化,无可变参数 */
-    HDRIVERFRAMEWORK_OP_DEINIT=2,                       /**< 反初始化，无可变参数,通常用于可卸载的驱动*/
-    HDRIVERFRAMEWORK_OP_DRIVER_BASE=0x10000,            /**< 驱动操作起始,由具体的驱动使用 */
+    HDRIVERFRAMEWORK_OP_GETNAME=0,                                              /**< 获取驱动名称，其可变参数为const char **,某些情况下，可通过名称加载对应驱动*/
+    HDRIVERFRAMEWORK_OP_INIT=1,                                                 /**< 初始化,无可变参数 */
+    HDRIVERFRAMEWORK_OP_PROBE=HDRIVERFRAMEWORK_OP_INIT,                         /**< 驱动探测，同HDRIVERFRAMEWORK_OP_INIT */
+    HDRIVERFRAMEWORK_OP_DEINIT=2,                                               /**< 反初始化，无可变参数,通常用于可卸载的驱动*/
+    HDRIVERFRAMEWORK_OP_REMOVE=HDRIVERFRAMEWORK_OP_DEINIT,                      /**< 驱动移除,同HDRIVERFRAMEWORK_OP_DEINIT */
+    HDRIVERFRAMEWORK_OP_GET_OF_COMPATIBLE=3,                                    /**< 获取设备树(Open Firmware Device Tree)的兼容字符串数据(必须以NULL结尾)，其可变参数为const char ***,在使用设备树的情况下,用于加载驱动 */
+    HDRIVERFRAMEWORK_OP_DRIVER_BASE=0x10000,                                    /**< 驱动操作起始,由具体的驱动使用 */
 };
 
 /** \brief 驱动设置回调函数
@@ -200,6 +203,7 @@ const char * hdriverframework_driver_base_getname(hdriverframework_driver_base_t
  *
  */
 int hdriverframework_driver_base_init(hdriverframework_driver_base_t *drv);
+#define hdriverframework_driver_base_probe hdriverframework_driver_base_init
 
 /** \brief 驱动反初始化
  *
@@ -208,6 +212,17 @@ int hdriverframework_driver_base_init(hdriverframework_driver_base_t *drv);
  *
  */
 int hdriverframework_driver_base_deinit(hdriverframework_driver_base_t *drv);
+#define hdriverframework_driver_base_remove hdriverframework_driver_base_deinit
+
+
+/** \brief 获取设备树兼容字符串数组(以NULL结尾)
+ *
+ * \param drv hdriverframework_driver_base_t* 驱动指针
+ * \return const char** 设备树兼容字符串数组(以NULL结尾)，失败返回NULL
+ *
+ */
+const char ** hdriverframework_driver_base_get_of_compatible(hdriverframework_driver_base_t *drv);
+
 
 #ifdef __cplusplus
 }
