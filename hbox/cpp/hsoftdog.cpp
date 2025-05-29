@@ -9,6 +9,13 @@
 #include "hsoftdog.h"
 #include "hruntime.h"
 
+enum
+{
+	HSOFTDOG_START = 1,
+};
+
 HSTACKLESSCOROUTINE_BLOCK_START(hsoftdog)
+hstacklesscoroutine_yield_with_label(HSOFTDOG_START);
 HWATCHDOG_FEED();
+hstacklesscoroutine_goto_label(HSOFTDOG_START);
 HSTACKLESSCOROUTINE_BLOCK_END(hsoftdog)
