@@ -8,7 +8,10 @@
  **************************************************************/
 #ifndef __HDRIVERFRAMEWORK_H__
 #define __HDRIVERFRAMEWORK_H__
-
+#include "stdint.h"
+#include "stdbool.h"
+#include "stdlib.h"
+#include "string.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -223,6 +226,14 @@ int hdriverframework_driver_base_deinit(hdriverframework_driver_base_t *drv);
  */
 const char ** hdriverframework_driver_base_get_of_compatible(hdriverframework_driver_base_t *drv);
 
+/** \brief 匹配设备树兼容字符串
+ *
+ * \param drv hdriverframework_driver_base_t* 驱动指针
+ * \param of_compatible const char* 待匹配的设备树兼容字符串
+ * \return bool 是否匹配
+ *
+ */
+bool hdriverframework_driver_base_match_of_compatible(hdriverframework_driver_base_t *drv,const char *of_compatible);
 
 #ifdef __cplusplus
 }

@@ -57,3 +57,21 @@ const char ** hdriverframework_driver_base_get_of_compatible(hdriverframework_dr
     return ret;
 }
 
+bool hdriverframework_driver_base_match_of_compatible(hdriverframework_driver_base_t *drv,const char *of_compatible_string)
+{
+    bool ret=false;
+    const char **of_compatible=hdriverframework_driver_base_get_of_compatible(drv);
+    if(of_compatible!=NULL && of_compatible_string!=NULL)
+    {
+        for(size_t i=0;of_compatible[i]!=NULL;i++)
+        {
+            if(0==strcmp(of_compatible_string,of_compatible[i]))
+            {
+                ret=true;
+                break;
+            }
+        }
+    }
+    return ret;
+}
+

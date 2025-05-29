@@ -59,6 +59,14 @@ int hdriverframework_driver_dummy_deinit(hdriverframework_driver_dummy_t *drv);
  */
 const char ** hdriverframework_driver_dummy_get_of_compatible(hdriverframework_driver_dummy_t *drv);
 
+/** \brief 匹配设备树兼容字符串
+ *
+ * \param drv hdriverframework_driver_dummy_t* 驱动指针
+ * \param of_compatible const char* 待匹配的设备树兼容字符串
+ * \return bool 是否匹配
+ *
+ */
+bool hdriverframework_driver_dummy_match_of_compatible(hdriverframework_driver_dummy_t *drv,const char *of_compatible);
 
 
 #ifdef __cplusplus

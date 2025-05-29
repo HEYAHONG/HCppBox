@@ -121,3 +121,13 @@ const char ** hdriverframework_driver_dummy_get_of_compatible(hdriverframework_d
     return hdriverframework_driver_base_get_of_compatible(&drv->base);
 }
 
+bool hdriverframework_driver_dummy_match_of_compatible(hdriverframework_driver_dummy_t *drv,const char *of_compatible)
+{
+    hdriverframework_driver_base_dummy_check(drv);
+    if(drv==NULL)
+    {
+        return false;
+    }
+    return hdriverframework_driver_base_match_of_compatible(&drv->base,of_compatible);
+}
+
