@@ -15,6 +15,7 @@ extern "C"
 #endif // __cplusplus
 
 #include "hdriverframework/hdriverframework.h"
+#include "hdriverframework/hdriverframework_dummy.h"
 #include "hdriverframework/hwatchdog/hwatchdog.h"
 
 #ifdef __cplusplus
