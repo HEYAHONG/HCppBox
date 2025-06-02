@@ -81,6 +81,15 @@ HDEFAULTS_USERCALL_DEFINE3(hmprotect,HDEFAULTS_SYSCALL_HMPROTECT,int,void *,addr
         {
             ret=0;
         }
+
+        if((prot&HMMAN_PROT_EXEC)!=0)
+        {
+
+            if(!FlushInstructionCache(GetCurrentProcess(),addr,len))
+            {
+                ret=-1;
+            }
+        }
     }
 #else
     //不支持mprotect

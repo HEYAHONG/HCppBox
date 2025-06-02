@@ -1567,11 +1567,9 @@ static int hruntime_test(int argc,const char *argv[])
             }
         }
 #if defined(_M_IX86) || defined(__i386__) || defined(i386) || defined(__i686__) || defined(i686)
-#if defined(HDEFAULTS_OS_UNIX)
+#if defined(HDEFAULTS_OS_UNIX) || defined(HDEFAULTS_OS_WINDOWS)
         {
             //i386架构下才支持测试加载i386可重定位对象
-            //默认支持i386的Linux，可使用交叉编译测试
-            //Windows下需要在出问题的语句打断点才能通过运行,原因未知
             printf("hcoff:current arch=i386\r\n");
             const char *coff_list[]=
             {
@@ -1699,11 +1697,9 @@ static int hruntime_test(int argc,const char *argv[])
         }
 #endif
 #elif defined(_M_X64) || defined(__x86_64) || defined(__x86_64__)
-#if defined(HDEFAULTS_OS_UNIX)
+#if defined(HDEFAULTS_OS_UNIX) || defined(HDEFAULTS_OS_WINDOWS)
         {
             //x86_64架构下才支持测试加载x86_64可重定位对象
-            //默认支持x86_64的Linux。
-            //Windows下支持在Cygwin/MSYS2 MSYS下测试。
             printf("hcoff:current arch=amd64\r\n");
             const char *coff_list[]=
             {
@@ -1777,7 +1773,7 @@ static int hruntime_test(int argc,const char *argv[])
                         /*
                          *  注意:在x64下，由于Windows与非Windows下的调用约定的差异,跨ABI调用函数会导致传参问题。因此外部函数调用的测试仅支持在Cygwin或者MSYS2 MSYS下测试
                          */
-#if defined(HDEFAULTS_OS_CYGWIN)
+#if defined(HDEFAULTS_OS_CYGWIN) || defined(HDEFAULTS_OS_WINDOWS)
                         for(size_t i=0; i<obj->symbol_table_size; i++)
                         {
                             if(strcmp("_hprintf",obj->symbol_table[i].symbol_name)==0 || strcmp("hprintf",obj->symbol_table[i].symbol_name)==0 )

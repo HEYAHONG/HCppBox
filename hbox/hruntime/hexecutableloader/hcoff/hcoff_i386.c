@@ -563,11 +563,11 @@ const hcoff_i386_relocatable_t *hcoff_i386_relocatable_new_with_usr(hcoff_file_i
         return NULL;
     }
     /*
-     * 第一次申请时均采用RW权限，写入完成后再采用其它权限
+     * 第一次申请时均采用RWX/RW权限，写入完成后再采用其它权限
      */
     if(ret->rx_sections_size != 0)
     {
-        ret->rx_sections_ptr=hmmap(NULL,ret->rx_sections_size,HMMAN_PROT_READ | HMMAN_PROT_WRITE,HMMAN_MAP_ANONYMOUS | HMMAN_MAP_SHARED,(-1),0);
+        ret->rx_sections_ptr=hmmap(NULL,ret->rx_sections_size,HMMAN_PROT_READ | HMMAN_PROT_WRITE | HMMAN_PROT_EXEC,HMMAN_MAP_ANONYMOUS | HMMAN_MAP_SHARED,(-1),0);
         if(ret->rx_sections_ptr==NULL)
         {
             hcoff_i386_relocatable_delete(ret);
@@ -576,7 +576,7 @@ const hcoff_i386_relocatable_t *hcoff_i386_relocatable_new_with_usr(hcoff_file_i
     }
     if(ret->ro_sections_size != 0)
     {
-        ret->ro_sections_ptr=hmmap(NULL,ret->ro_sections_size,HMMAN_PROT_READ | HMMAN_PROT_WRITE,HMMAN_MAP_ANONYMOUS | HMMAN_MAP_SHARED,(-1),0);
+        ret->ro_sections_ptr=hmmap(NULL,ret->ro_sections_size,HMMAN_PROT_READ | HMMAN_PROT_WRITE ,HMMAN_MAP_ANONYMOUS | HMMAN_MAP_SHARED,(-1),0);
         if(ret->ro_sections_ptr==NULL)
         {
             hcoff_i386_relocatable_delete(ret);
@@ -585,7 +585,7 @@ const hcoff_i386_relocatable_t *hcoff_i386_relocatable_new_with_usr(hcoff_file_i
     }
     if(ret->rw_sections_size != 0)
     {
-        ret->rw_sections_ptr=hmmap(NULL,ret->rw_sections_size,HMMAN_PROT_READ | HMMAN_PROT_WRITE,HMMAN_MAP_ANONYMOUS | HMMAN_MAP_SHARED,(-1),0);
+        ret->rw_sections_ptr=hmmap(NULL,ret->rw_sections_size,HMMAN_PROT_READ | HMMAN_PROT_WRITE ,HMMAN_MAP_ANONYMOUS | HMMAN_MAP_SHARED,(-1),0);
         if(ret->rw_sections_ptr==NULL)
         {
             hcoff_i386_relocatable_delete(ret);
