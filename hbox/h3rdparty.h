@@ -137,6 +137,21 @@ int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* f
 #define H3RDPARTY_SOFTFLOAT_HEADER "h3rdparty/3rdparty/softfp/softfloat.h"
 #endif
 
+/*
+ * 引入zlib库,用户需要手动引入相应头文件
+ */
+#ifdef  H3RDPARTY_USING_SYSTEM_ZLIB
+#ifndef H3RDPARTY_ZLIB_HEADER
+#define H3RDPARTY_ZLIB_HEADER "zlib.h"
+#endif
+#else
+#ifndef H3RDPARTY_ZLIB_HEADER
+#define H3RDPARTY_ZLIB_HEADER "h3rdparty/3rdparty/zlib/zlib.h"
+#endif
+#endif // H3RDPARTY_USING_SYSTEM_ZLIB
+
+
+
 #endif // __H3RDPARTY_H__
 
 
