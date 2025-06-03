@@ -18,6 +18,12 @@
 #include "unistd.h"
 #endif 
 
+#if defined(HDEFAULTS_OS_NONE)
+#define Z_SOLO 1
+#endif
+
+#include "stdarg.h"
+
 #ifndef  H3RDPARTY_USING_SYSTEM_ZLIB
 
 #include "3rdparty/zlib/inffast.c"
