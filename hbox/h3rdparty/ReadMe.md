@@ -69,3 +69,4 @@ nanopb_generator可通过以下方式获取：
 #include H3RDPARTY_ZLIB_HEADER
 ```
 
+注意:此库需要根据使用情况添加C语言文件(h3rdparty_zlib_*.c),某些C文件可能在某些场景下不能正常编译。

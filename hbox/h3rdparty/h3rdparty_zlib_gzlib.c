@@ -19,7 +19,9 @@
 #endif 
 
 #if defined(HDEFAULTS_OS_NONE)
+#ifndef Z_SOLO
 #define Z_SOLO 1
+#endif
 #endif
 
 #include "stdarg.h"

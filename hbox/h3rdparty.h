@@ -145,6 +145,9 @@ int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* f
 #define H3RDPARTY_ZLIB_HEADER "zlib.h"
 #endif
 #else
+#if defined(HDEFAULTS_OS_NONE)
+#define Z_SOLO 1
+#endif
 #ifndef H3RDPARTY_ZLIB_HEADER
 #define H3RDPARTY_ZLIB_HEADER "h3rdparty/3rdparty/zlib/zlib.h"
 #endif
