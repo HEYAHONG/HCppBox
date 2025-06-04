@@ -10,6 +10,7 @@
 #define __H3RDPARTY_H__
 
 #include "stdarg.h"
+#include "hdefaults.h"
 
 /*
  *  此模块引入第三方库
@@ -145,8 +146,12 @@ int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* f
 #define H3RDPARTY_ZLIB_HEADER "zlib.h"
 #endif
 #else
+#if defined(HDEFAULTS_LIBC_NEWLIB) || defined(HDEFAULTS_LIBC_PICOLIBC) || defined(HDEFAULTS_OS_UNIX) ||  defined(HDEFAULTS_OS_RTTHREAD) || defined(HDEFAULTS_OS_NUTTX)
+#include "unistd.h"
+#else
 #if defined(HDEFAULTS_OS_NONE)
 #define Z_SOLO 1
+#endif
 #endif
 #ifndef H3RDPARTY_ZLIB_HEADER
 #define H3RDPARTY_ZLIB_HEADER "h3rdparty/3rdparty/zlib/zlib.h"
