@@ -6,6 +6,7 @@
 #include "hbox.h"
 #include "hrc.h"
 #include "time.h"
+#include H3RDPARTY_ZLIB_HEADER
 static int hcompiler_test(int argc,const char *argv[]);
 static int hdefaults_test(int argc,const char *argv[]);
 static int heventloop_test(int argc,const char *argv[]);
@@ -2575,6 +2576,39 @@ static int h3rdparty_test(int argc,const char *argv[])
             }
         }
         printf("h3rdparty_test:nanopb end!\r\n");
+    }
+
+    {
+        const char * data="12346678901203349454558656767676976767677000000000000000000000000000000000000000000000000000000000sdefdefrfrgr";
+        uint8_t data_compress[256]= {0};
+        printf("h3rdparty_test:zlib compress test!\r\n");
+        bool is_compress_success=false;
+        unsigned long data_compress_length=sizeof(data_compress);
+        {
+            if(Z_OK==compress2(data_compress,&data_compress_length,(const uint8_t *)data,strlen(data),Z_BEST_COMPRESSION))
+            {
+                printf("h3rdparty_test:zlib compress success!data_compress_length=%d\r\n",(int)data_compress_length);
+                is_compress_success=true;
+            }
+        }
+        uint8_t data_uncompress[256]= {0};
+        unsigned long data_uncompress_length=sizeof(data_uncompress);
+        if(is_compress_success)
+        {
+            if(Z_OK==uncompress(data_uncompress,&data_uncompress_length,(const uint8_t *)data_compress,data_uncompress_length))
+            {
+                printf("h3rdparty_test:zlib uncompress success!data_uncompress_length=%d\r\n",(int)data_uncompress_length);
+            }
+        }
+
+        if(data_uncompress_length==strlen(data) && memcmp(data,data_uncompress,data_uncompress_length)==0)
+        {
+            printf("h3rdparty_test:zlib compress test OK!\r\n");
+        }
+        else
+        {
+            printf("h3rdparty_test:zlib compress test Failed!\r\n");
+        }
     }
 
     printf("h3rdparty test:end!\r\n");
