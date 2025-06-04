@@ -153,6 +153,10 @@ int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* f
 #define Z_SOLO 1
 #endif
 #endif
+/*
+ * 启用zlib前缀配置，防止与其它库冲突
+ */
+#define Z_PREFIX 1
 #ifndef H3RDPARTY_ZLIB_HEADER
 #define H3RDPARTY_ZLIB_HEADER "h3rdparty/3rdparty/zlib/zlib.h"
 #endif
