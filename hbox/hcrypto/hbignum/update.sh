@@ -65,7 +65,9 @@ do
     cp huint128.c huint$i.c
     sed -i "s/128/$i/g" huint$i.c
     echo "#include \"huint$i.h\"" >> huint.h
+    echo "#ifdef HUINT$i"         >> huint.c
     echo "#include \"huint$i.c\"" >> huint.c
+    echo "#endif"                 >> huint.c
 done
 
 popd
