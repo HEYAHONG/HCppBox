@@ -14,3 +14,11 @@
 - `helloworld.x86_64.msvc.obj`:MSVC X64环境下执行:`cl /c /utf-8 /Fohelloworld.x86_64.msvc.obj /nologo helloworld.c`
 - `helloworld.aarch64.msvc.obj`:MSVC arm64环境下执行:`cl /c /utf-8 /Fohelloworld.aarch64.msvc.obj /nologo helloworld.c`
 
+# 可重定位文件
+
+一般情况下,通过C源代码文件编译可直接获得可重定向文件。
+
+可重定向文件也可通过链接获得,通过`binutils`软件的`ld`工具使用`--relocatable`选项可链接多个对象文件至同一个可重定向文件。
+
+注意:应当使用交叉编译工具链的`ld`程序,如`x86_64-w64-mingw32-ld`(x86_64)、`i686-w64-mingw32-ld`(i386)。
+
