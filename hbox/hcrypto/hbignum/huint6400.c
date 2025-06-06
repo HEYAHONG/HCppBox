@@ -626,6 +626,16 @@ void huint6400_div(huint6400_t *state,huint6400_t *state1,huint6400_t *state2,hu
 
 }
 
+void huint6400_div_with_stack(huint6400_t *mod,huint6400_t *dst,const huint6400_t *src1,const huint6400_t *src2)
+{
+    huint6400_t state[3]= {0};
+    huint6400_div(&state[0],&state[1],&state[2],dst,src1,src2);
+    if(mod!=NULL)
+    {
+        huint6400_copy(mod,&state[0]);
+    }
+}
+
 void huint6400_power(huint6400_t *state,huint6400_t *state1,huint6400_t *state2,huint6400_t *dst,const huint6400_t *src1,const huint6400_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -663,6 +673,12 @@ void huint6400_power(huint6400_t *state,huint6400_t *state1,huint6400_t *state2,
         huint6400_copy(state,state2);
     }
 
+}
+
+void huint6400_power_with_stack(huint6400_t *dst,const huint6400_t *src1,const huint6400_t *src2)
+{
+    huint6400_t state[3]= {0};
+    huint6400_power(&state[0],&state[1],&state[2],dst,src1,src2);
 }
 
 void huint6400_power_mod(huint6400_t *state,huint6400_t *state1,huint6400_t *state2,huint6400_t *state3,huint6400_t *dst,const huint6400_t *src1,const huint6400_t *src2,const huint6400_t *src3)
@@ -708,4 +724,10 @@ void huint6400_power_mod(huint6400_t *state,huint6400_t *state1,huint6400_t *sta
         huint6400_div(state,state1,state2,state3,state,src3);
     }
 
+}
+
+void huint6400_power_mod_with_stack(huint6400_t *dst,const huint6400_t *src1,const huint6400_t *src2,const huint6400_t *src3)
+{
+    huint6400_t state[4]= {0};
+    huint6400_power_mod(&state[0],&state[1],&state[2],&state[3],dst,src1,src2,src3);
 }

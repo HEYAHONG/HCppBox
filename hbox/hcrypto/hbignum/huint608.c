@@ -626,6 +626,16 @@ void huint608_div(huint608_t *state,huint608_t *state1,huint608_t *state2,huint6
 
 }
 
+void huint608_div_with_stack(huint608_t *mod,huint608_t *dst,const huint608_t *src1,const huint608_t *src2)
+{
+    huint608_t state[3]= {0};
+    huint608_div(&state[0],&state[1],&state[2],dst,src1,src2);
+    if(mod!=NULL)
+    {
+        huint608_copy(mod,&state[0]);
+    }
+}
+
 void huint608_power(huint608_t *state,huint608_t *state1,huint608_t *state2,huint608_t *dst,const huint608_t *src1,const huint608_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -663,6 +673,12 @@ void huint608_power(huint608_t *state,huint608_t *state1,huint608_t *state2,huin
         huint608_copy(state,state2);
     }
 
+}
+
+void huint608_power_with_stack(huint608_t *dst,const huint608_t *src1,const huint608_t *src2)
+{
+    huint608_t state[3]= {0};
+    huint608_power(&state[0],&state[1],&state[2],dst,src1,src2);
 }
 
 void huint608_power_mod(huint608_t *state,huint608_t *state1,huint608_t *state2,huint608_t *state3,huint608_t *dst,const huint608_t *src1,const huint608_t *src2,const huint608_t *src3)
@@ -708,4 +724,10 @@ void huint608_power_mod(huint608_t *state,huint608_t *state1,huint608_t *state2,
         huint608_div(state,state1,state2,state3,state,src3);
     }
 
+}
+
+void huint608_power_mod_with_stack(huint608_t *dst,const huint608_t *src1,const huint608_t *src2,const huint608_t *src3)
+{
+    huint608_t state[4]= {0};
+    huint608_power_mod(&state[0],&state[1],&state[2],&state[3],dst,src1,src2,src3);
 }

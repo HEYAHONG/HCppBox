@@ -257,6 +257,16 @@ void huint5376_mul(huint5376_t *state,huint5376_t *dst,const huint5376_t *src1,c
  */
 void huint5376_div(huint5376_t *state,huint5376_t *state1,huint5376_t *state2,huint5376_t *dst,const huint5376_t *src1,const huint5376_t *src2);
 
+/** \brief 除(采用栈作为临时变量存储)
+ *
+ * \param mod huint5376_t* 状态值，存储余数。mod=src1%src2
+ * \param dst huint5376_t* 目标大数,dst=src1/src2
+ * \param src1 const huint5376_t* 源大数1
+ * \param src2 const huint5376_t* 源大数2
+ *
+ */
+void huint5376_div_with_stack(huint5376_t *mod,huint5376_t *dst,const huint5376_t *src1,const huint5376_t *src2);
+
 
 /** \brief 幂函数
  *
@@ -269,6 +279,16 @@ void huint5376_div(huint5376_t *state,huint5376_t *state1,huint5376_t *state2,hu
  *
  */
 void huint5376_power(huint5376_t *state,huint5376_t *state1,huint5376_t *state2,huint5376_t *dst,const huint5376_t *src1,const huint5376_t *src2);
+
+
+/** \brief 幂函数(采用栈作为临时变量存储)
+ *
+ * \param dst huint5376_t* 目标大数,dst=src1的src2次方
+ * \param src1 const huint5376_t* 源大数1
+ * \param src2 const huint5376_t* 源大数2
+ *
+ */
+void huint5376_power_with_stack(huint5376_t *dst,const huint5376_t *src1,const huint5376_t *src2);
 
 
 /** \brief 幂取模函数（常用于RSA等加密算法）
@@ -285,6 +305,15 @@ void huint5376_power(huint5376_t *state,huint5376_t *state1,huint5376_t *state2,
  */
 void huint5376_power_mod(huint5376_t *state,huint5376_t *state1,huint5376_t *state2,huint5376_t *state3,huint5376_t *dst,const huint5376_t *src1,const huint5376_t *src2,const huint5376_t *src3);
 
+/** \brief 幂取模函数（常用于RSA等加密算法,采用栈作为临时变量存储）
+ *
+ * \param dst huint5376_t* 目标大数,dst=src1的src2次方对src3取模
+ * \param src1 const huint5376_t* 源大数1
+ * \param src2 const huint5376_t* 源大数2
+ * \param src3 const huint5376_t* 源大数3
+ *
+ */
+void huint5376_power_mod_with_stack(huint5376_t *dst,const huint5376_t *src1,const huint5376_t *src2,const huint5376_t *src3);
 
 #ifdef __cplusplus
 }

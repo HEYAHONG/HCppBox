@@ -626,6 +626,16 @@ void huint3232_div(huint3232_t *state,huint3232_t *state1,huint3232_t *state2,hu
 
 }
 
+void huint3232_div_with_stack(huint3232_t *mod,huint3232_t *dst,const huint3232_t *src1,const huint3232_t *src2)
+{
+    huint3232_t state[3]= {0};
+    huint3232_div(&state[0],&state[1],&state[2],dst,src1,src2);
+    if(mod!=NULL)
+    {
+        huint3232_copy(mod,&state[0]);
+    }
+}
+
 void huint3232_power(huint3232_t *state,huint3232_t *state1,huint3232_t *state2,huint3232_t *dst,const huint3232_t *src1,const huint3232_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -663,6 +673,12 @@ void huint3232_power(huint3232_t *state,huint3232_t *state1,huint3232_t *state2,
         huint3232_copy(state,state2);
     }
 
+}
+
+void huint3232_power_with_stack(huint3232_t *dst,const huint3232_t *src1,const huint3232_t *src2)
+{
+    huint3232_t state[3]= {0};
+    huint3232_power(&state[0],&state[1],&state[2],dst,src1,src2);
 }
 
 void huint3232_power_mod(huint3232_t *state,huint3232_t *state1,huint3232_t *state2,huint3232_t *state3,huint3232_t *dst,const huint3232_t *src1,const huint3232_t *src2,const huint3232_t *src3)
@@ -708,4 +724,10 @@ void huint3232_power_mod(huint3232_t *state,huint3232_t *state1,huint3232_t *sta
         huint3232_div(state,state1,state2,state3,state,src3);
     }
 
+}
+
+void huint3232_power_mod_with_stack(huint3232_t *dst,const huint3232_t *src1,const huint3232_t *src2,const huint3232_t *src3)
+{
+    huint3232_t state[4]= {0};
+    huint3232_power_mod(&state[0],&state[1],&state[2],&state[3],dst,src1,src2,src3);
 }

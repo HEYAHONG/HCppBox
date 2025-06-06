@@ -626,6 +626,16 @@ void huint768_div(huint768_t *state,huint768_t *state1,huint768_t *state2,huint7
 
 }
 
+void huint768_div_with_stack(huint768_t *mod,huint768_t *dst,const huint768_t *src1,const huint768_t *src2)
+{
+    huint768_t state[3]= {0};
+    huint768_div(&state[0],&state[1],&state[2],dst,src1,src2);
+    if(mod!=NULL)
+    {
+        huint768_copy(mod,&state[0]);
+    }
+}
+
 void huint768_power(huint768_t *state,huint768_t *state1,huint768_t *state2,huint768_t *dst,const huint768_t *src1,const huint768_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -663,6 +673,12 @@ void huint768_power(huint768_t *state,huint768_t *state1,huint768_t *state2,huin
         huint768_copy(state,state2);
     }
 
+}
+
+void huint768_power_with_stack(huint768_t *dst,const huint768_t *src1,const huint768_t *src2)
+{
+    huint768_t state[3]= {0};
+    huint768_power(&state[0],&state[1],&state[2],dst,src1,src2);
 }
 
 void huint768_power_mod(huint768_t *state,huint768_t *state1,huint768_t *state2,huint768_t *state3,huint768_t *dst,const huint768_t *src1,const huint768_t *src2,const huint768_t *src3)
@@ -708,4 +724,10 @@ void huint768_power_mod(huint768_t *state,huint768_t *state1,huint768_t *state2,
         huint768_div(state,state1,state2,state3,state,src3);
     }
 
+}
+
+void huint768_power_mod_with_stack(huint768_t *dst,const huint768_t *src1,const huint768_t *src2,const huint768_t *src3)
+{
+    huint768_t state[4]= {0};
+    huint768_power_mod(&state[0],&state[1],&state[2],&state[3],dst,src1,src2,src3);
 }

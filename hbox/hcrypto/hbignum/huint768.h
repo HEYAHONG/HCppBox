@@ -257,6 +257,16 @@ void huint768_mul(huint768_t *state,huint768_t *dst,const huint768_t *src1,const
  */
 void huint768_div(huint768_t *state,huint768_t *state1,huint768_t *state2,huint768_t *dst,const huint768_t *src1,const huint768_t *src2);
 
+/** \brief 除(采用栈作为临时变量存储)
+ *
+ * \param mod huint768_t* 状态值，存储余数。mod=src1%src2
+ * \param dst huint768_t* 目标大数,dst=src1/src2
+ * \param src1 const huint768_t* 源大数1
+ * \param src2 const huint768_t* 源大数2
+ *
+ */
+void huint768_div_with_stack(huint768_t *mod,huint768_t *dst,const huint768_t *src1,const huint768_t *src2);
+
 
 /** \brief 幂函数
  *
@@ -269,6 +279,16 @@ void huint768_div(huint768_t *state,huint768_t *state1,huint768_t *state2,huint7
  *
  */
 void huint768_power(huint768_t *state,huint768_t *state1,huint768_t *state2,huint768_t *dst,const huint768_t *src1,const huint768_t *src2);
+
+
+/** \brief 幂函数(采用栈作为临时变量存储)
+ *
+ * \param dst huint768_t* 目标大数,dst=src1的src2次方
+ * \param src1 const huint768_t* 源大数1
+ * \param src2 const huint768_t* 源大数2
+ *
+ */
+void huint768_power_with_stack(huint768_t *dst,const huint768_t *src1,const huint768_t *src2);
 
 
 /** \brief 幂取模函数（常用于RSA等加密算法）
@@ -285,6 +305,15 @@ void huint768_power(huint768_t *state,huint768_t *state1,huint768_t *state2,huin
  */
 void huint768_power_mod(huint768_t *state,huint768_t *state1,huint768_t *state2,huint768_t *state3,huint768_t *dst,const huint768_t *src1,const huint768_t *src2,const huint768_t *src3);
 
+/** \brief 幂取模函数（常用于RSA等加密算法,采用栈作为临时变量存储）
+ *
+ * \param dst huint768_t* 目标大数,dst=src1的src2次方对src3取模
+ * \param src1 const huint768_t* 源大数1
+ * \param src2 const huint768_t* 源大数2
+ * \param src3 const huint768_t* 源大数3
+ *
+ */
+void huint768_power_mod_with_stack(huint768_t *dst,const huint768_t *src1,const huint768_t *src2,const huint768_t *src3);
 
 #ifdef __cplusplus
 }

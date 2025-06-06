@@ -626,6 +626,16 @@ void huint8032_div(huint8032_t *state,huint8032_t *state1,huint8032_t *state2,hu
 
 }
 
+void huint8032_div_with_stack(huint8032_t *mod,huint8032_t *dst,const huint8032_t *src1,const huint8032_t *src2)
+{
+    huint8032_t state[3]= {0};
+    huint8032_div(&state[0],&state[1],&state[2],dst,src1,src2);
+    if(mod!=NULL)
+    {
+        huint8032_copy(mod,&state[0]);
+    }
+}
+
 void huint8032_power(huint8032_t *state,huint8032_t *state1,huint8032_t *state2,huint8032_t *dst,const huint8032_t *src1,const huint8032_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -663,6 +673,12 @@ void huint8032_power(huint8032_t *state,huint8032_t *state1,huint8032_t *state2,
         huint8032_copy(state,state2);
     }
 
+}
+
+void huint8032_power_with_stack(huint8032_t *dst,const huint8032_t *src1,const huint8032_t *src2)
+{
+    huint8032_t state[3]= {0};
+    huint8032_power(&state[0],&state[1],&state[2],dst,src1,src2);
 }
 
 void huint8032_power_mod(huint8032_t *state,huint8032_t *state1,huint8032_t *state2,huint8032_t *state3,huint8032_t *dst,const huint8032_t *src1,const huint8032_t *src2,const huint8032_t *src3)
@@ -708,4 +724,10 @@ void huint8032_power_mod(huint8032_t *state,huint8032_t *state1,huint8032_t *sta
         huint8032_div(state,state1,state2,state3,state,src3);
     }
 
+}
+
+void huint8032_power_mod_with_stack(huint8032_t *dst,const huint8032_t *src1,const huint8032_t *src2,const huint8032_t *src3)
+{
+    huint8032_t state[4]= {0};
+    huint8032_power_mod(&state[0],&state[1],&state[2],&state[3],dst,src1,src2,src3);
 }

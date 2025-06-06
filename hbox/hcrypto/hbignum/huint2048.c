@@ -626,6 +626,16 @@ void huint2048_div(huint2048_t *state,huint2048_t *state1,huint2048_t *state2,hu
 
 }
 
+void huint2048_div_with_stack(huint2048_t *mod,huint2048_t *dst,const huint2048_t *src1,const huint2048_t *src2)
+{
+    huint2048_t state[3]= {0};
+    huint2048_div(&state[0],&state[1],&state[2],dst,src1,src2);
+    if(mod!=NULL)
+    {
+        huint2048_copy(mod,&state[0]);
+    }
+}
+
 void huint2048_power(huint2048_t *state,huint2048_t *state1,huint2048_t *state2,huint2048_t *dst,const huint2048_t *src1,const huint2048_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -663,6 +673,12 @@ void huint2048_power(huint2048_t *state,huint2048_t *state1,huint2048_t *state2,
         huint2048_copy(state,state2);
     }
 
+}
+
+void huint2048_power_with_stack(huint2048_t *dst,const huint2048_t *src1,const huint2048_t *src2)
+{
+    huint2048_t state[3]= {0};
+    huint2048_power(&state[0],&state[1],&state[2],dst,src1,src2);
 }
 
 void huint2048_power_mod(huint2048_t *state,huint2048_t *state1,huint2048_t *state2,huint2048_t *state3,huint2048_t *dst,const huint2048_t *src1,const huint2048_t *src2,const huint2048_t *src3)
@@ -708,4 +724,10 @@ void huint2048_power_mod(huint2048_t *state,huint2048_t *state1,huint2048_t *sta
         huint2048_div(state,state1,state2,state3,state,src3);
     }
 
+}
+
+void huint2048_power_mod_with_stack(huint2048_t *dst,const huint2048_t *src1,const huint2048_t *src2,const huint2048_t *src3)
+{
+    huint2048_t state[4]= {0};
+    huint2048_power_mod(&state[0],&state[1],&state[2],&state[3],dst,src1,src2,src3);
 }

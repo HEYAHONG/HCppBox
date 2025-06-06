@@ -257,6 +257,16 @@ void huint8224_mul(huint8224_t *state,huint8224_t *dst,const huint8224_t *src1,c
  */
 void huint8224_div(huint8224_t *state,huint8224_t *state1,huint8224_t *state2,huint8224_t *dst,const huint8224_t *src1,const huint8224_t *src2);
 
+/** \brief 除(采用栈作为临时变量存储)
+ *
+ * \param mod huint8224_t* 状态值，存储余数。mod=src1%src2
+ * \param dst huint8224_t* 目标大数,dst=src1/src2
+ * \param src1 const huint8224_t* 源大数1
+ * \param src2 const huint8224_t* 源大数2
+ *
+ */
+void huint8224_div_with_stack(huint8224_t *mod,huint8224_t *dst,const huint8224_t *src1,const huint8224_t *src2);
+
 
 /** \brief 幂函数
  *
@@ -269,6 +279,16 @@ void huint8224_div(huint8224_t *state,huint8224_t *state1,huint8224_t *state2,hu
  *
  */
 void huint8224_power(huint8224_t *state,huint8224_t *state1,huint8224_t *state2,huint8224_t *dst,const huint8224_t *src1,const huint8224_t *src2);
+
+
+/** \brief 幂函数(采用栈作为临时变量存储)
+ *
+ * \param dst huint8224_t* 目标大数,dst=src1的src2次方
+ * \param src1 const huint8224_t* 源大数1
+ * \param src2 const huint8224_t* 源大数2
+ *
+ */
+void huint8224_power_with_stack(huint8224_t *dst,const huint8224_t *src1,const huint8224_t *src2);
 
 
 /** \brief 幂取模函数（常用于RSA等加密算法）
@@ -285,6 +305,15 @@ void huint8224_power(huint8224_t *state,huint8224_t *state1,huint8224_t *state2,
  */
 void huint8224_power_mod(huint8224_t *state,huint8224_t *state1,huint8224_t *state2,huint8224_t *state3,huint8224_t *dst,const huint8224_t *src1,const huint8224_t *src2,const huint8224_t *src3);
 
+/** \brief 幂取模函数（常用于RSA等加密算法,采用栈作为临时变量存储）
+ *
+ * \param dst huint8224_t* 目标大数,dst=src1的src2次方对src3取模
+ * \param src1 const huint8224_t* 源大数1
+ * \param src2 const huint8224_t* 源大数2
+ * \param src3 const huint8224_t* 源大数3
+ *
+ */
+void huint8224_power_mod_with_stack(huint8224_t *dst,const huint8224_t *src1,const huint8224_t *src2,const huint8224_t *src3);
 
 #ifdef __cplusplus
 }

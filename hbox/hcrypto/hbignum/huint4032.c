@@ -626,6 +626,16 @@ void huint4032_div(huint4032_t *state,huint4032_t *state1,huint4032_t *state2,hu
 
 }
 
+void huint4032_div_with_stack(huint4032_t *mod,huint4032_t *dst,const huint4032_t *src1,const huint4032_t *src2)
+{
+    huint4032_t state[3]= {0};
+    huint4032_div(&state[0],&state[1],&state[2],dst,src1,src2);
+    if(mod!=NULL)
+    {
+        huint4032_copy(mod,&state[0]);
+    }
+}
+
 void huint4032_power(huint4032_t *state,huint4032_t *state1,huint4032_t *state2,huint4032_t *dst,const huint4032_t *src1,const huint4032_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -663,6 +673,12 @@ void huint4032_power(huint4032_t *state,huint4032_t *state1,huint4032_t *state2,
         huint4032_copy(state,state2);
     }
 
+}
+
+void huint4032_power_with_stack(huint4032_t *dst,const huint4032_t *src1,const huint4032_t *src2)
+{
+    huint4032_t state[3]= {0};
+    huint4032_power(&state[0],&state[1],&state[2],dst,src1,src2);
 }
 
 void huint4032_power_mod(huint4032_t *state,huint4032_t *state1,huint4032_t *state2,huint4032_t *state3,huint4032_t *dst,const huint4032_t *src1,const huint4032_t *src2,const huint4032_t *src3)
@@ -708,4 +724,10 @@ void huint4032_power_mod(huint4032_t *state,huint4032_t *state1,huint4032_t *sta
         huint4032_div(state,state1,state2,state3,state,src3);
     }
 
+}
+
+void huint4032_power_mod_with_stack(huint4032_t *dst,const huint4032_t *src1,const huint4032_t *src2,const huint4032_t *src3)
+{
+    huint4032_t state[4]= {0};
+    huint4032_power_mod(&state[0],&state[1],&state[2],&state[3],dst,src1,src2,src3);
 }

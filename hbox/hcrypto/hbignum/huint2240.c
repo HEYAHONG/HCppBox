@@ -626,6 +626,16 @@ void huint2240_div(huint2240_t *state,huint2240_t *state1,huint2240_t *state2,hu
 
 }
 
+void huint2240_div_with_stack(huint2240_t *mod,huint2240_t *dst,const huint2240_t *src1,const huint2240_t *src2)
+{
+    huint2240_t state[3]= {0};
+    huint2240_div(&state[0],&state[1],&state[2],dst,src1,src2);
+    if(mod!=NULL)
+    {
+        huint2240_copy(mod,&state[0]);
+    }
+}
+
 void huint2240_power(huint2240_t *state,huint2240_t *state1,huint2240_t *state2,huint2240_t *dst,const huint2240_t *src1,const huint2240_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -663,6 +673,12 @@ void huint2240_power(huint2240_t *state,huint2240_t *state1,huint2240_t *state2,
         huint2240_copy(state,state2);
     }
 
+}
+
+void huint2240_power_with_stack(huint2240_t *dst,const huint2240_t *src1,const huint2240_t *src2)
+{
+    huint2240_t state[3]= {0};
+    huint2240_power(&state[0],&state[1],&state[2],dst,src1,src2);
 }
 
 void huint2240_power_mod(huint2240_t *state,huint2240_t *state1,huint2240_t *state2,huint2240_t *state3,huint2240_t *dst,const huint2240_t *src1,const huint2240_t *src2,const huint2240_t *src3)
@@ -708,4 +724,10 @@ void huint2240_power_mod(huint2240_t *state,huint2240_t *state1,huint2240_t *sta
         huint2240_div(state,state1,state2,state3,state,src3);
     }
 
+}
+
+void huint2240_power_mod_with_stack(huint2240_t *dst,const huint2240_t *src1,const huint2240_t *src2,const huint2240_t *src3)
+{
+    huint2240_t state[4]= {0};
+    huint2240_power_mod(&state[0],&state[1],&state[2],&state[3],dst,src1,src2,src3);
 }
