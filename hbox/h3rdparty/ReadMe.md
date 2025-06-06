@@ -19,6 +19,7 @@
 | `H3RDPARTY_USING_SYSTEM_PAHO_MQTT_EMBEDDED_C_PACKET` | 使用系统`paho.mqtt.embedded-c`库 | 某些环境内置`paho.mqtt.embedded-c`库，可使用此宏定义防止冲突 |
 |           `H3RDPARTY_USING_SYSTEM_SOFTFP`            |        使用系统`softfp`库        |        某些环境下函数可能冲突，可使用此宏定义防止冲突        |
 |            `H3RDPARTY_USING_SYSTEM_ZLIB`             |           使用系统zlib           |      链接到系统的zlib(动态库)时,可使用此宏定义防止冲突       |
+|             `H3RDPARTY_USING_SYSTEM_LZ4`             |           使用系统lz4            |       链接到系统的lz4(动态库)时,可使用此宏定义防止冲突       |
 
 # nanopb
 
@@ -61,7 +62,7 @@ nanopb_generator可通过以下方式获取：
 
 # zlib
 
-压缩库。
+zlib压缩库。
 
 若要使用相应库功能，请使用以下代码：
 
@@ -70,3 +71,17 @@ nanopb_generator可通过以下方式获取：
 ```
 
 注意:此库需要根据使用情况添加C语言文件(h3rdparty_zlib_*.c),某些C文件可能在某些场景下不能正常编译。
+
+# lz4
+
+lz4压缩库。
+
+若要使用相应库功能，请使用以下代码：
+
+```c++
+#include H3RDPARTY_LZ4_HEADER
+#include H3RDPARTY_LZ4HC_HEADER
+```
+
+注意:此库需要根据使用情况添加C语言文件(h3rdparty_lz4_*.c),某些C文件可能在某些场景下不能正常编译。
+

@@ -163,6 +163,24 @@ int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* f
 #endif // H3RDPARTY_USING_SYSTEM_ZLIB
 
 
+/*
+ * 引入lz4库,用户需要手动引入相应头文件
+ */
+#ifdef  H3RDPARTY_USING_SYSTEM_LZ4
+#ifndef H3RDPARTY_LZ4_HEADER
+#define H3RDPARTY_LZ4_HEADER "lz4.h"
+#endif
+#ifndef H3RDPARTY_LZ4HC_HEADER
+#define H3RDPARTY_LZ4HC_HEADER "lz4hc.h"
+#endif
+#else
+#ifndef H3RDPARTY_LZ4_HEADER
+#define H3RDPARTY_LZ4_HEADER "h3rdparty/3rdparty/lz4/lz4.h"
+#endif
+#ifndef H3RDPARTY_LZ4HC_HEADER
+#define H3RDPARTY_LZ4HC_HEADER "h3rdparty/3rdparty/lz4/lz4hc.h"
+#endif
+#endif
 
 #endif // __H3RDPARTY_H__
 

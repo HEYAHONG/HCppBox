@@ -7,6 +7,8 @@
 #include "hrc.h"
 #include "time.h"
 #include H3RDPARTY_ZLIB_HEADER
+#include H3RDPARTY_LZ4_HEADER
+#include H3RDPARTY_LZ4HC_HEADER
 static int hcompiler_test(int argc,const char *argv[]);
 static int hdefaults_test(int argc,const char *argv[]);
 static int heventloop_test(int argc,const char *argv[]);
@@ -2609,6 +2611,37 @@ static int h3rdparty_test(int argc,const char *argv[])
         {
             printf("h3rdparty_test:zlib compress test Failed!\r\n");
         }
+        memset(data_compress,0,sizeof(data_compress));
+        memset(data_uncompress,0,sizeof(data_uncompress));
+
+        //测试LZ4
+        is_compress_success=false;
+        data_compress_length=sizeof(data_compress);
+        data_uncompress_length=sizeof(data_uncompress);
+        {
+            if(0!=(data_compress_length=LZ4_compress_default((const char *)data,(char *)data_compress,strlen(data),data_compress_length)))
+            {
+                printf("h3rdparty_test:lz4 compress success!data_compress_length=%d\r\n",(int)data_compress_length);
+                is_compress_success=true;
+            }
+        }
+        if(is_compress_success)
+        {
+            if(0!=(data_uncompress_length=LZ4_decompress_safe((const char *)data_compress,(char *)data_uncompress,data_compress_length,data_uncompress_length)))
+            {
+                printf("h3rdparty_test:lz4 uncompress success!data_compress_length=%d\r\n",(int)data_uncompress_length);
+                is_compress_success=true;
+            }
+        }
+        if(data_uncompress_length==strlen(data) && memcmp(data,data_uncompress,data_uncompress_length)==0)
+        {
+            printf("h3rdparty_test:lz4 compress test OK!\r\n");
+        }
+        else
+        {
+            printf("h3rdparty_test:lz4 compress test Failed!\r\n");
+        }
+
     }
 
     printf("h3rdparty test:end!\r\n");
