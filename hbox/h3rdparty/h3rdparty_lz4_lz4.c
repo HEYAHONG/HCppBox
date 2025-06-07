@@ -17,6 +17,15 @@
 
 #include "stdarg.h"
 
+/*
+ * 修复armcc下的警告
+ */
+#ifdef __ARMCC_VERSION
+#ifdef __GNUC__
+#undef __GNUC__
+#endif // __GNUC__
+#endif // __ARMCC_VERSION
+
 #ifndef  H3RDPARTY_USING_SYSTEM_LZ4
 
 #include "3rdparty/lz4/lz4.c"
