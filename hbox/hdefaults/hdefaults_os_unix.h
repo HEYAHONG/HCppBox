@@ -11,6 +11,8 @@
 #include "hdefaults_common.h"
 //在unix上常使用pthread库
 #include "pthread.h"
+//unix标准头文件
+#include "unistd.h"
 
 /*
  * 定义默认的堆大小，在使用hmemoryheap默认函数分配内存时生效
