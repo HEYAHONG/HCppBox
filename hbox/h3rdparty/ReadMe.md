@@ -9,6 +9,8 @@
 - [nanopb](https://github.com/nanopb/nanopb.git)：嵌入式系统Protocol Buffers。
 - [paho.mqtt.embedded-c](https://github.com/eclipse-paho/paho.mqtt.embedded-c)：嵌入式MQTT C/C++客户端。
 - [softfp](https://bellard.org/softfp/)：软件浮点库。
+- [zlib](https://github.com/madler/zlib):zlib压缩库
+- [lz4](https://github.com/lz4/lz4):lz4压缩库
 
  提供的配置宏定义如下：
 
