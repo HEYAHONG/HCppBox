@@ -16,6 +16,7 @@ extern "C"
 
 #include "hexecutableloader/hintelhex.h"
 #include "hexecutableloader/hcoff.h"
+#include "hexecutableloader/helf.h"
 
 #ifdef __cplusplus
 }

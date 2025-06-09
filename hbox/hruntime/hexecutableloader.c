@@ -10,5 +10,6 @@
 
 #include "hexecutableloader/hintelhex.c"
 #include "hexecutableloader/hcoff.c"
+#include "hexecutableloader/helf.c"
 
 
