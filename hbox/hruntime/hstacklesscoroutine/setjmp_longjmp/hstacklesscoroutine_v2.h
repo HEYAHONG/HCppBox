@@ -263,6 +263,12 @@ void hstacklesscoroutine2_await(hstacklesscoroutine2_scheduler_t * sch,hstackles
 #define  HSTACKLESSCOROUTINE2_BLOCK_GOTO(SCH,CCB_NAME,N)
 #define  HSTACKLESSCOROUTINE2_BLOCK_END(CCB_NAME)
 
+/*
+ * 兼容代码,无作用
+ */
+int __hstacklesscoroutine2_core_value_get(hstacklesscoroutine2_ccb_t *ccb);
+void __hstacklesscoroutine2_core_value_set(hstacklesscoroutine2_ccb_t *ccb,int core_value);
+
 #else
 /*
  * 非裸机模式下，协程下一次进入时在协程块中将保存的点执行

@@ -490,4 +490,16 @@ void __hstacklesscoroutine2_core_value_set(hstacklesscoroutine2_ccb_t *ccb,int c
     }
 }
 
+#else
+
+int __hstacklesscoroutine2_core_value_get(hstacklesscoroutine2_ccb_t *ccb)
+{
+    return 0;
+}
+
+void __hstacklesscoroutine2_core_value_set(hstacklesscoroutine2_ccb_t *ccb,int core_value)
+{
+
+}
+
 #endif // HSTACKLESSCOROUTINE2_BARE_MACHINE
