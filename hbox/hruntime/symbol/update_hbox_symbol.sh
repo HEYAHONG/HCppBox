@@ -79,9 +79,21 @@ do
     FILE_PATH=`realpath --relative-base="${HBOX_ROOT}" ${i}`
     echo "//${FILE_PATH}" >> ${filename}
     gcc -c -DHRUNTIME_SYMBOL_SCAN -I${script_dir}/../../cpp  -I${script_dir}/../../ $i -o $i.o
-    for symbol in `objdump -t $i.o | grep -v "\.local" | grep -v "*UND*" | grep -v "*ABS*" | grep -v "__" | grep -v "usercall" | awk '{if( $2 == "g") { print $0}}' | awk '{ print $6 }'`
+    for symbol in `objdump -t $i.o | grep -v "\.local" | grep -v "*UND*" | grep -v "*ABS*" |  awk '{if( $2 == "g") { print $0}}' | awk '{ print $6 }'`
     do
-       echo "{hdefaults_str(${symbol}),(uintptr_t)&${symbol}}," >> ${filename}
+       cat << EOF > testsymbol.c
+#include "hbox.h"
+void * testsymbol(void)
+{
+	return &${symbol};
+}
+EOF
+       gcc -c testsymbol.c -I${script_dir}/../../ -I${script_dir}/../../cpp/  -o testsymbol.o 2>/dev/null >/dev/null
+       if [ "$?" -eq 0 ]
+       then
+           echo "{hdefaults_str(${symbol}),(uintptr_t)&${symbol}}," >> ${filename}
+       fi
+       rm testsymbol.*
     done
     rm $i.o
 done

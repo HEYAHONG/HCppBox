@@ -607,6 +607,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hpoly1305_finish),(uintptr_t)&hpoly1305_finish},
 //hdefaults.c
     {hdefaults_str(hdefaults_syscall_function_find),(uintptr_t)&hdefaults_syscall_function_find},
+    {hdefaults_str(__hdefaults_usercall_return_check),(uintptr_t)&__hdefaults_usercall_return_check},
     {hdefaults_str(hdefaults_tick_get),(uintptr_t)&hdefaults_tick_get},
     {hdefaults_str(hdefaults_malloc),(uintptr_t)&hdefaults_malloc},
     {hdefaults_str(hdefaults_free),(uintptr_t)&hdefaults_free},
@@ -911,6 +912,8 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hstacklesscoroutine2_delay),(uintptr_t)&hstacklesscoroutine2_delay},
     {hdefaults_str(hstacklesscoroutine_awaiter2_init),(uintptr_t)&hstacklesscoroutine_awaiter2_init},
     {hdefaults_str(hstacklesscoroutine2_await),(uintptr_t)&hstacklesscoroutine2_await},
+    {hdefaults_str(__hstacklesscoroutine2_core_value_get),(uintptr_t)&__hstacklesscoroutine2_core_value_get},
+    {hdefaults_str(__hstacklesscoroutine2_core_value_set),(uintptr_t)&__hstacklesscoroutine2_core_value_set},
     {hdefaults_str(hintelhex_common_buffer_init),(uintptr_t)&hintelhex_common_buffer_init},
     {hdefaults_str(hintelhex_reader_init),(uintptr_t)&hintelhex_reader_init},
     {hdefaults_str(hintelhex_reader_input),(uintptr_t)&hintelhex_reader_input},
