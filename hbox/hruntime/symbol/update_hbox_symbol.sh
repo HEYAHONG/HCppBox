@@ -35,6 +35,8 @@ CheckTool gcc
 [ $? -eq 0 ] || exit;
 CheckTool objdump
 [ $? -eq 0 ] || exit;
+CheckTool realpath
+[ $? -eq 0 ] || exit;
 
 #获取当前目录
 slef_path=
@@ -70,10 +72,12 @@ echo "static const hruntime_symbol_t hruntime_hbox_symbol[]=" >>  ${filename}
 echo "{" >>  ${filename}
 
 #扫描hbox目录
+HBOX_ROOT=`realpath ${script_dir}/../../`
 for i in `ls ${script_dir}/../../*.c`
 do
     echo $i
-    echo "//$i" >> ${filename}
+    FILE_PATH=`realpath --relative-base="${HBOX_ROOT}" ${i}`
+    echo "//${FILE_PATH}" >> ${filename}
     gcc -c -DHRUNTIME_SYMBOL_SCAN -I${script_dir}/../../cpp  -I${script_dir}/../../ $i -o $i.o
     for symbol in `objdump -t $i.o | grep -v "\.local" | grep -v "*UND*" | grep -v "*ABS*" | grep -v "__" | grep -v "usercall" | awk '{if( $2 == "g") { print $0}}' | awk '{ print $6 }'`
     do

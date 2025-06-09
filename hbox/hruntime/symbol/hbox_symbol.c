@@ -1,9 +1,9 @@
 #include "hbox.h"
 static const hruntime_symbol_t hruntime_hbox_symbol[]=
 {
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../h3rdparty.c
+//h3rdparty.c
     {hdefaults_str(h3rdparty_init),(uintptr_t)&h3rdparty_init},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hcompiler.c
+//hcompiler.c
     {hdefaults_str(hcompiler_get_stdc_version),(uintptr_t)&hcompiler_get_stdc_version},
     {hdefaults_str(hcompiler_get_date),(uintptr_t)&hcompiler_get_date},
     {hdefaults_str(hcompiler_get_time),(uintptr_t)&hcompiler_get_time},
@@ -13,7 +13,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hcompiler_get_time_hour),(uintptr_t)&hcompiler_get_time_hour},
     {hdefaults_str(hcompiler_get_time_minute),(uintptr_t)&hcompiler_get_time_minute},
     {hdefaults_str(hcompiler_get_time_second),(uintptr_t)&hcompiler_get_time_second},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hcrypto.c
+//hcrypto.c
     {hdefaults_str(huint128_load),(uintptr_t)&huint128_load},
     {hdefaults_str(huint128_load_be),(uintptr_t)&huint128_load_be},
     {hdefaults_str(huint128_load_uint32),(uintptr_t)&huint128_load_uint32},
@@ -605,7 +605,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hpoly1305_starts),(uintptr_t)&hpoly1305_starts},
     {hdefaults_str(hpoly1305_update),(uintptr_t)&hpoly1305_update},
     {hdefaults_str(hpoly1305_finish),(uintptr_t)&hpoly1305_finish},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hdefaults.c
+//hdefaults.c
     {hdefaults_str(hdefaults_syscall_function_find),(uintptr_t)&hdefaults_syscall_function_find},
     {hdefaults_str(hdefaults_tick_get),(uintptr_t)&hdefaults_tick_get},
     {hdefaults_str(hdefaults_malloc),(uintptr_t)&hdefaults_malloc},
@@ -631,7 +631,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hdlopen),(uintptr_t)&hdlopen},
     {hdefaults_str(hdlclose),(uintptr_t)&hdlclose},
     {hdefaults_str(hdlsym),(uintptr_t)&hdlsym},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hdriverframework.c
+//hdriverframework.c
     {hdefaults_str(hdriverframework_driver_base_set),(uintptr_t)&hdriverframework_driver_base_set},
     {hdefaults_str(hdriverframework_driver_base_getname),(uintptr_t)&hdriverframework_driver_base_getname},
     {hdefaults_str(hdriverframework_driver_base_init),(uintptr_t)&hdriverframework_driver_base_init},
@@ -653,7 +653,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hwatchdog_softdog_new),(uintptr_t)&hwatchdog_softdog_new},
     {hdefaults_str(hwatchdog_softdog_feed),(uintptr_t)&hwatchdog_softdog_feed},
     {hdefaults_str(hwatchdog_cleanup),(uintptr_t)&hwatchdog_cleanup},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hevent.c
+//hevent.c
     {hdefaults_str(heventloop_with_internal_heap_min_size),(uintptr_t)&heventloop_with_internal_heap_min_size},
     {hdefaults_str(heventloop_with_internal_heap_init),(uintptr_t)&heventloop_with_internal_heap_init},
     {hdefaults_str(heventloop_new_with_memmang_and_lock),(uintptr_t)&heventloop_new_with_memmang_and_lock},
@@ -699,7 +699,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(heventchain_uninstall_hook),(uintptr_t)&heventchain_uninstall_hook},
     {hdefaults_str(heventchain_get_chain_from_table),(uintptr_t)&heventchain_get_chain_from_table},
     {hdefaults_str(heventchain_set_chain_to_table),(uintptr_t)&heventchain_set_chain_to_table},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hgui.c
+//hgui.c
     {hdefaults_str(hgui_gui_malloc),(uintptr_t)&hgui_gui_malloc},
     {hdefaults_str(hgui_gui_default_malloc),(uintptr_t)&hgui_gui_default_malloc},
     {hdefaults_str(hgui_gui_malloc_set),(uintptr_t)&hgui_gui_malloc_set},
@@ -733,7 +733,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hgui_scene1_screen_base_enter),(uintptr_t)&hgui_scene1_screen_base_enter},
     {hdefaults_str(hgui_scene1_screen_base_leave),(uintptr_t)&hgui_scene1_screen_base_leave},
     {hdefaults_str(hgui_scene1_screen_base_update),(uintptr_t)&hgui_scene1_screen_base_update},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hlocale.c
+//hlocale.c
     {hdefaults_str(hlocale_locale_get),(uintptr_t)&hlocale_locale_get},
     {hdefaults_str(hlocale_charset_is_utf8),(uintptr_t)&hlocale_charset_is_utf8},
     {hdefaults_str(hlocale_charset_is_gb2312),(uintptr_t)&hlocale_charset_is_gb2312},
@@ -753,7 +753,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hgb2312_gb2312_string_length),(uintptr_t)&hgb2312_gb2312_string_length},
     {hdefaults_str(hgb2312_string_to_unicode),(uintptr_t)&hgb2312_string_to_unicode},
     {hdefaults_str(hgb2312_string_from_unicode),(uintptr_t)&hgb2312_string_from_unicode},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hmemory.c
+//hmemory.c
     {hdefaults_str(hmemoryheap_pool_format),(uintptr_t)&hmemoryheap_pool_format},
     {hdefaults_str(hmemoryheap_pool_format_with_default_lock),(uintptr_t)&hmemoryheap_pool_format_with_default_lock},
     {hdefaults_str(hmemoryheap_pool_get_usr_ptr),(uintptr_t)&hmemoryheap_pool_get_usr_ptr},
@@ -835,7 +835,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hdoublylinkedlist_add_front),(uintptr_t)&hdoublylinkedlist_add_front},
     {hdefaults_str(hdoublylinkedlist_add_back),(uintptr_t)&hdoublylinkedlist_add_back},
     {hdefaults_str(hdoublylinkedlist_remove),(uintptr_t)&hdoublylinkedlist_remove},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hnet.c
+//hnet.c
     {hdefaults_str(modbus_rtu_adu_check_crc),(uintptr_t)&modbus_rtu_adu_check_crc},
     {hdefaults_str(modbus_rtu_adu_append_crc),(uintptr_t)&modbus_rtu_adu_append_crc},
     {hdefaults_str(modbus_data_get_uint16_t),(uintptr_t)&modbus_data_get_uint16_t},
@@ -877,7 +877,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(modbus_tcp_gateway_server_context_default),(uintptr_t)&modbus_tcp_gateway_server_context_default},
     {hdefaults_str(modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_context_default),(uintptr_t)&modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_context_default},
     {hdefaults_str(modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_parse_input),(uintptr_t)&modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_parse_input},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hruntime.c
+//hruntime.c
     {hdefaults_str(hruntime_init_lowlevel),(uintptr_t)&hruntime_init_lowlevel},
     {hdefaults_str(hruntime_init),(uintptr_t)&hruntime_init},
     {hdefaults_str(hruntime_loop),(uintptr_t)&hruntime_loop},
@@ -985,7 +985,16 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hcoff_namespace_relocatable_delete),(uintptr_t)&hcoff_namespace_relocatable_delete},
     {hdefaults_str(hcoff_namespace_new),(uintptr_t)&hcoff_namespace_new},
     {hdefaults_str(hcoff_namespace_delete),(uintptr_t)&hcoff_namespace_delete},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hshell.c
+    {hdefaults_str(helf_is_elf),(uintptr_t)&helf_is_elf},
+    {hdefaults_str(helf_elfclass_get),(uintptr_t)&helf_elfclass_get},
+    {hdefaults_str(helf_elfdata_get),(uintptr_t)&helf_elfdata_get},
+    {hdefaults_str(helf_elfversion_get),(uintptr_t)&helf_elfversion_get},
+    {hdefaults_str(helf_elfosabi_get),(uintptr_t)&helf_elfosabi_get},
+    {hdefaults_str(helf_elfabiversion_get),(uintptr_t)&helf_elfabiversion_get},
+    {hdefaults_str(helf_file_input_init),(uintptr_t)&helf_file_input_init},
+    {hdefaults_str(helf_file_input_read),(uintptr_t)&helf_file_input_read},
+    {hdefaults_str(helf_file_input_is_big_endian),(uintptr_t)&helf_file_input_is_big_endian},
+//hshell.c
     {hdefaults_str(hshell_execute),(uintptr_t)&hshell_execute},
     {hdefaults_str(hshell_context_printf),(uintptr_t)&hshell_context_printf},
     {hdefaults_str(hshell_subcontext_exit_from_sub),(uintptr_t)&hshell_subcontext_exit_from_sub},
@@ -1012,7 +1021,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hshell_subcontext_enter),(uintptr_t)&hshell_subcontext_enter},
     {hdefaults_str(hshell_subcontext_exit),(uintptr_t)&hshell_subcontext_exit},
     {hdefaults_str(hshell_context_get_from_main_argv),(uintptr_t)&hshell_context_get_from_main_argv},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../hsimulator.c
+//hsimulator.c
     {hdefaults_str(hs_common_serial_8250_init),(uintptr_t)&hs_common_serial_8250_init},
     {hdefaults_str(hs_common_serial_8250_bus_write),(uintptr_t)&hs_common_serial_8250_bus_write},
     {hdefaults_str(hs_common_serial_8250_bus_read),(uintptr_t)&hs_common_serial_8250_bus_read},
@@ -1169,7 +1178,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hs_risc_v_core_rv32_io),(uintptr_t)&hs_risc_v_core_rv32_io},
     {hdefaults_str(hs_risc_v_core_rv32_sets_get),(uintptr_t)&hs_risc_v_core_rv32_sets_get},
     {hdefaults_str(hs_risc_v_core_rv32_sets_disable_set),(uintptr_t)&hs_risc_v_core_rv32_sets_disable_set},
-///home/hyh/HCppBox/HCppBox/hbox/hruntime/symbol/../../huuid.c
+//huuid.c
     {hdefaults_str(huuid_null_uuid),(uintptr_t)&huuid_null_uuid},
     {hdefaults_str(huuid_clear),(uintptr_t)&huuid_clear},
     {hdefaults_str(huuid_compare),(uintptr_t)&huuid_compare},
