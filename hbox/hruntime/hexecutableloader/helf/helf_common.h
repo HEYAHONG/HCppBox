@@ -210,6 +210,45 @@ struct helf_elf32_file_header
  */
 bool helf_file_input_32_bits_header_get(helf_file_input_t *input_file,helf_elf32_file_header_t *header);
 
+typedef struct helf_elf32_program_header helf_elf32_program_header_t;
+struct helf_elf32_program_header
+{
+    uint32_t	p_type;		    /* Identifies program segment type */
+    uint32_t	p_offset;		/* Segment file offset */
+    uint32_t	p_vaddr;		/* Segment virtual address */
+    uint32_t	p_paddr;		/* Segment physical address */
+    uint32_t	p_filesz;		/* Segment size in file */
+    uint32_t	p_memsz;		/* Segment size in memory */
+    uint32_t	p_flags;		/* Segment flags */
+    uint32_t	p_align;		/* Segment alignment, file & memory */
+};
+
+typedef struct helf_elf32_section_header helf_elf32_section_header_t;
+struct helf_elf32_section_header
+{
+    uint32_t	sh_name;		    /* Section name, index in string tbl */
+    uint32_t	sh_type;		    /* Type of section */
+    uint32_t	sh_flags;		    /* Miscellaneous section attributes */
+    uint32_t	sh_addr;		    /* Section virtual addr at execution */
+    uint32_t	sh_offset;		    /* Section file offset */
+    uint32_t	sh_size;		    /* Size of section in bytes */
+    uint32_t	sh_link;		    /* Index of another section */
+    uint32_t	sh_info;		    /* Additional section information */
+    uint32_t	sh_addralign;	    /* Section alignment */
+    uint32_t	sh_entsize;		    /* Entry size if section holds table */
+};
+
+typedef struct helf_elf32_symbol_header helf_elf32_symbol_header_t;
+struct helf_elf32_symbol_header
+{
+    uint32_t  st_name;                /* Symbol name (string tbl index) */
+    uint32_t  st_value;               /* Symbol value */
+    uint32_t  st_size;                /* Symbol size */
+    uint8_t   st_info;                /* Symbol type and binding */
+    uint8_t   st_other;               /* Symbol visibility */
+    uint16_t  st_shndx;               /* Section index */
+};
+
 /** \brief ELF文件是否为64位
  *
  * \param input helf_file_input_t* 输入文件
@@ -235,6 +274,45 @@ struct helf_elf64_file_header
     uint16_t        e_shentsize;        /* Section header table entry size */
     uint16_t        e_shnum;            /* Section header table entry count */
     uint16_t        e_shstrndx;         /* Section header string table index */
+};
+
+typedef struct helf_elf64_program_header helf_elf64_program_header_t;
+struct helf_elf64_program_header
+{
+    uint32_t	p_type;		    /* Identifies program segment type */
+    uint32_t	p_flags;		/* Segment flags */
+    uint64_t	p_offset;		/* Segment file offset */
+    uint64_t	p_vaddr;		/* Segment virtual address */
+    uint64_t	p_paddr;		/* Segment physical address */
+    uint64_t	p_filesz;		/* Segment size in file */
+    uint64_t	p_memsz;		/* Segment size in memory */
+    uint64_t	p_align;		/* Segment alignment, file & memory */
+};
+
+typedef struct helf_elf64_section_header helf_elf64_section_header_t;
+struct helf_elf64_section_header
+{
+    uint32_t	sh_name;		/* Section name, index in string tbl */
+    uint32_t	sh_type;		/* Type of section */
+    uint64_t	sh_flags;		/* Miscellaneous section attributes */
+    uint64_t	sh_addr;		/* Section virtual addr at execution */
+    uint64_t	sh_offset;		/* Section file offset */
+    uint64_t	sh_size;		/* Size of section in bytes */
+    uint32_t	sh_link;		/* Index of another section */
+    uint32_t	sh_info;		/* Additional section information */
+    uint64_t	sh_addralign;	/* Section alignment */
+    uint64_t	sh_entsize;		/* Entry size if section holds table */
+};
+
+typedef struct helf_elf64_symbol_header helf_elf64_symbol_header_t;
+struct helf_elf64_symbol_header
+{
+    uint32_t st_name;                 /* Symbol name (string tbl index) */
+    uint8_t st_info;                  /* Symbol type and binding */
+    uint8_t st_other;                 /* Symbol visibility */
+    uint16_t st_shndx;                /* Section index */
+    uint64_t st_value;                /* Symbol value */
+    uint64_t st_size;                 /* Symbol size */
 };
 
 /** \brief ELF读取64位头
