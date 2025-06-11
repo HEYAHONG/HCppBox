@@ -8,6 +8,13 @@
  **************************************************************/
 #ifndef __HDEFAULTS_LIBC_NEWLIB_H__
 #define __HDEFAULTS_LIBC_NEWLIB_H__
+#include "stdlib.h"
+#include "stdint.h"
 
+#ifndef __RTTHREAD__
+#ifndef ssize_t
+typedef intptr_t ssize_t;
+#endif // ssize_t
+#endif // __RTTHREAD__
 
 #endif
