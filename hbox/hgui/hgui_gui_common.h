@@ -13,30 +13,13 @@
 #include "string.h"
 #include "stdlib.h"
 #include "wchar.h"
-#ifdef __RTTHREAD__
-#include "rtthread.h"
-#endif
+#include "hdefaults.h"
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
 
-#if defined(_MSC_VER)
 
-#include <BaseTsd.h>
-#ifndef ssize_t
-typedef SSIZE_T ssize_t;
-#endif
-
-#else
-
-#ifndef __RTTHREAD__
-#ifndef ssize_t
-typedef intptr_t ssize_t;
-#endif // ssize_t
-#endif // __RTTHREAD__
-
-#endif
 
 /** \brief GUI内存分配
  *
