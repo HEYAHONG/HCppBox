@@ -14,8 +14,16 @@
 #define free   hfree
 #define calloc hcalloc
 
+
+#if !defined(HDEFAULTS_LIBC_MSVC)
+
 //文件描述符相关函数
+#ifdef close
+#undef close
+#endif
 #define close hclose
+
+#endif
 
 #include "stdarg.h"
 
