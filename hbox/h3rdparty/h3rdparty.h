@@ -149,9 +149,7 @@ int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* f
 #if defined(HDEFAULTS_LIBC_NEWLIB) || defined(HDEFAULTS_LIBC_PICOLIBC) || defined(HDEFAULTS_OS_UNIX) ||  defined(HDEFAULTS_OS_RTTHREAD) || defined(HDEFAULTS_OS_NUTTX)
 #include "unistd.h"
 #else
-#if defined(HDEFAULTS_OS_NONE)
-#define Z_SOLO 1
-#endif
+
 #endif
 /*
  * 启用zlib前缀配置，防止与其它库冲突

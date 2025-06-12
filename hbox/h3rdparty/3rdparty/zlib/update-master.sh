@@ -70,4 +70,6 @@ then
 		cp "zlib_template_c" "../../h3rdparty_zlib_${c_file}"
 		sed -i "s/zlib_filename/${c_file}/g"  "../..//h3rdparty_zlib_${c_file}"
 	done
+    sed -i "s/<fcntl.h>/\"fcntl.h\"/g" *.h
+    sed -i "s/<sys\/types.h>/\"sys\/types.h\"/g" *.h
 fi
