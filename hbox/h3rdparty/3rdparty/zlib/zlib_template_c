@@ -15,7 +15,7 @@
 #define calloc hcalloc
 
 
-#if !defined(HDEFAULTS_LIBC_MSVC)
+#if !defined(HDEFAULTS_LIBC_MSVC) && !defined(HDEFAULTS_LIBC_MINGW)
 
 //文件描述符相关函数
 #ifdef close
