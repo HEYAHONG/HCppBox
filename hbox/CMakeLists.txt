@@ -43,6 +43,12 @@ if(HAVE_UNISTD_H)
 target_compile_definitions(HBox PUBLIC  HAVE_UNISTD_H=1)
 endif()
 
+#查找fcntl.h
+check_include_file(fcntl.h HAVE_FCNTL_H)
+if(HAVE_FCNTL_H)
+target_compile_definitions(HBox PUBLIC  HAVE_FCNTL_H=1)
+endif()
+
 #添加dotfontscan工具构建
 add_custom_target(dotfontscan_tool 	${CMAKE_COMMAND} -E make_directory dotfontscan && ${CMAKE_COMMAND}  -S ${CMAKE_CURRENT_SOURCE_DIR}/hgui/tools/dotfontscan/ -B dotfontscan && ${CMAKE_COMMAND} --build dotfontscan 
 									WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/

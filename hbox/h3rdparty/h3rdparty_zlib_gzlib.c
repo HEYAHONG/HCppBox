@@ -38,6 +38,10 @@
 #undef lseek64
 #endif
 #define lseek64 hlseek64
+#ifdef open
+#undef open
+#endif
+#define open hopen
 
 #endif
 
