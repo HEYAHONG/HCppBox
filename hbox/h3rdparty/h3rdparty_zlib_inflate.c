@@ -30,6 +30,10 @@
 #undef write
 #endif
 #define write hwrite
+#ifdef lseek
+#undef lseek
+#endif
+#define lseek hlseek
 
 #endif
 

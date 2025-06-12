@@ -19,6 +19,7 @@
 #include "wrapper/hclose.c"
 #include "wrapper/hread.c"
 #include "wrapper/hwrite.c"
+#include "wrapper/hlseek.c"
 
 
 #ifndef HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
@@ -33,6 +34,7 @@
 #include "implementation/hclose.c"
 #include "implementation/hread.c"
 #include "implementation/hwrite.c"
+#include "implementation/hlseek.c"
 
 #endif // HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
 
@@ -76,6 +78,10 @@
 #ifdef HDEFAULTS_SYSCALL_NO_HWRITE
 #undef HDEFAULTS_SYSCALL_HWRITE
 #endif // HDEFAULTS_SYSCALL_NO_HWRITE
+
+#ifdef HDEFAULTS_SYSCALL_NO_HLSEEK
+#undef HDEFAULTS_SYSCALL_HLSEEK
+#endif // HDEFAULTS_SYSCALL_NO_HLSEEK
 
 hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
 {
@@ -150,6 +156,13 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
     case HDEFAULTS_SYSCALL_HWRITE:
     {
         ret=__hdefaults_usercall_hwrite;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HLSEEK
+    case HDEFAULTS_SYSCALL_HLSEEK:
+    {
+        ret=__hdefaults_usercall_hlseek;
     }
     break;
 #endif
