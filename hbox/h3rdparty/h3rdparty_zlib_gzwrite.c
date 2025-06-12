@@ -34,6 +34,10 @@
 #undef lseek
 #endif
 #define lseek hlseek
+#ifdef lseek64
+#undef lseek64
+#endif
+#define lseek64 hlseek64
 
 #endif
 

@@ -43,6 +43,11 @@ typedef int64_t hlseek_off_t;
  */
 hlseek_off_t hlseek(int fd,hlseek_off_t offset,int whence);
 
+/*
+ * 64位版本同lseek
+ */
+#define hlseek64 hlseek
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
