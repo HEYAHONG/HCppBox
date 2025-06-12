@@ -7,7 +7,6 @@
  * License:   MIT
  **************************************************************/
 #include "hdefaults.h"
-#include "hmman.h"
 
 #if    defined(HDEFAULTS_OS_LINUX_SYSCALL32_read)
 #define HDEFAULTS_SYSCALL_HREAD  HDEFAULTS_OS_LINUX_SYSCALL32_read

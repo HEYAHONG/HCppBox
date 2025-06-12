@@ -18,6 +18,7 @@
 #include "wrapper/hmprotect.c"
 #include "wrapper/hclose.c"
 #include "wrapper/hread.c"
+#include "wrapper/hwrite.c"
 
 
 #ifndef HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
@@ -31,6 +32,7 @@
 #include "implementation/hmprotect.c"
 #include "implementation/hclose.c"
 #include "implementation/hread.c"
+#include "implementation/hwrite.c"
 
 #endif // HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
 
@@ -70,6 +72,10 @@
 #ifdef HDEFAULTS_SYSCALL_NO_HREAD
 #undef HDEFAULTS_SYSCALL_HREAD
 #endif // HDEFAULTS_SYSCALL_NO_HREAD
+
+#ifdef HDEFAULTS_SYSCALL_NO_HWRITE
+#undef HDEFAULTS_SYSCALL_HWRITE
+#endif // HDEFAULTS_SYSCALL_NO_HWRITE
 
 hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
 {
@@ -137,6 +143,13 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
     case HDEFAULTS_SYSCALL_HREAD:
     {
         ret=__hdefaults_usercall_hread;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HWRITE
+    case HDEFAULTS_SYSCALL_HWRITE:
+    {
+        ret=__hdefaults_usercall_hwrite;
     }
     break;
 #endif

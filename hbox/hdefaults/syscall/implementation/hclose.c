@@ -7,7 +7,6 @@
  * License:   MIT
  **************************************************************/
 #include "hdefaults.h"
-#include "hmman.h"
 
 #if    defined(HDEFAULTS_OS_LINUX_SYSCALL32_close)
 #define HDEFAULTS_SYSCALL_HCLOSE  HDEFAULTS_OS_LINUX_SYSCALL32_close

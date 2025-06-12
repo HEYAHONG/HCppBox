@@ -26,6 +26,10 @@
 #undef read
 #endif
 #define read hread
+#ifdef write
+#undef write
+#endif
+#define write hwrite
 
 #endif
 

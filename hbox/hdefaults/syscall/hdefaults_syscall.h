@@ -35,6 +35,7 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number);
 #include "wrapper/hmprotect.h"
 #include "wrapper/hclose.h"
 #include "wrapper/hread.h"
+#include "wrapper/hwrite.h"
 
 #ifdef __cplusplus
 }
