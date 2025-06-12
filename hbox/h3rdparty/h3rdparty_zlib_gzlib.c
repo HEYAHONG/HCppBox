@@ -14,6 +14,8 @@
 #define free   hfree
 #define calloc hcalloc
 
+//文件描述符相关函数
+#define close hclose
 
 #include "stdarg.h"
 
