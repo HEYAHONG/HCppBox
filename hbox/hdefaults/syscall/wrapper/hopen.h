@@ -20,9 +20,11 @@ extern "C"
 #if defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)
 #include "unistd.h"
 #endif
-#if defined(HDEFAULTS_OS_UNIX) || defined(HAVE_FCNTL_H)
+#if defined(HDEFAULTS_OS_UNIX) || defined(_UCRT)|| defined(HAVE_FCNTL_H)
 #include "fcntl.h"
 #endif
+
+
 
 #ifndef O_RDONLY
 #define O_RDONLY         00

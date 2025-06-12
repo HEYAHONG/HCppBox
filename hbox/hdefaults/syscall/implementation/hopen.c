@@ -31,6 +31,9 @@
 #elif defined(HDEFAULTS_OS_WINDOWS)
 #include "windows.h"
 #endif
+#if defined(HDEFAULTS_OS_UNIX) || defined(_UCRT)|| defined(HAVE_FCNTL_H)
+#include "fcntl.h"
+#endif
 
 #if defined(HOPEN)
 extern int HOPEN(const char *filename,int oflag,...);
