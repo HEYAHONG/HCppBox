@@ -22,6 +22,10 @@
 #undef close
 #endif
 #define close hclose
+#ifdef read
+#undef read
+#endif
+#define read hread
 
 #endif
 
