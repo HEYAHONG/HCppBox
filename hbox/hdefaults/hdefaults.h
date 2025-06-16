@@ -77,6 +77,27 @@
 #define HDEFAULTS_ARCH_RISCV32 1
 #endif
 #endif
+#elif defined(__wasm) || defined(__wasm__)
+#include "hdefaults_arch_wasm.h"
+#ifndef HDEFAULTS_ARCH_WASM
+#define HDEFAULTS_ARCH_WASM 1
+#endif
+/*
+ * wasm默认情况下使用wasm32
+ */
+#if defined(__wasm32) || defined(__wasm32__)
+#ifndef HDEFAULTS_ARCH_WASM32
+#define HDEFAULTS_ARCH_WASM32 1
+#endif
+#endif
+/*
+ * wasm当指定MEMORY64=1时使用wasm64
+ */
+#if defined(__wasm64) || defined(__wasm64__)
+#ifndef HDEFAULTS_ARCH_WASM64
+#define HDEFAULTS_ARCH_WASM64 1
+#endif
+#endif
 #endif
 
 
