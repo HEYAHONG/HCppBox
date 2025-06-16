@@ -41,6 +41,9 @@
 |   `HDEFAULTS_ARCH_RISCV`   | 架构为RISCV                      |                                                              |
 |  `HDEFAULTS_ARCH_RISCV32`  | 架构为RISCV(32位)                | 通常也会定义`HDEFAULTS_ARCH_RISCV`                           |
 |  `HDEFAULTS_ARCH_RISCV64`  | 架构为RISCV(64位)                | 通常也会定义`HDEFAULTS_ARCH_RISCV`                           |
+|   `HDEFAULTS_ARCH_WASM`    | 架构为WASM                       |                                                              |
+|  `HDEFAULTS_ARCH_WASM32`   | 架构为WASM(32位)                 | 通常也会定义`HDEFAULTS_ARCH_WASM`                            |
+|  `HDEFAULTS_ARCH_WASM64`   | 架构为WASM(64位)                 | 通常也会定义`HDEFAULTS_ARCH_WASM`                            |
 |  `HDEFAULTS_OS_RTTHREAD`   | 处于RT-Thread中                  |                                                              |
 |    `HDEFAULTS_OS_NUTTX`    | 处于NuttX中                      |                                                              |
 |   `HDEFAULTS_OS_WINDOWS`   | 处于Windows中                    |                                                              |
