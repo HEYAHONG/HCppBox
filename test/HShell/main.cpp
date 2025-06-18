@@ -3,6 +3,8 @@
 #include <thread>
 #include <string>
 #include <vector>
+#include H3RDPARTY_LIBQRENCODE_HEADER
+
 #ifdef __unix__
 #include <termios.h>
 #include <unistd.h>
@@ -44,7 +46,7 @@ static int command_time_main(int argc,const char *argv[])
     hshell_printf(hshell_ctx,"%s",asctime(localtime(&time_now)));
     return 0;
 };
- extern "C" int command_simmcs51_main(int argc,const char *argv[]);
+extern "C" int command_simmcs51_main(int argc,const char *argv[]);
 static hshell_command_t commands[]=
 {
     {
@@ -255,6 +257,54 @@ static int invoke_command(int argc, const char* argv[])
     return ret;
 }
 
+
+static void show_banner()
+{
+    std::string banner;
+    {
+        QRcode *qr=QRcode_encodeString8bit("http://hyhsystem.cn",0,QR_ECLEVEL_M);
+        if(qr!=NULL)
+        {
+            for(size_t i=0; i<qr->width; i++)
+            {
+                for(size_t j=0; j<qr->width; j++)
+                {
+                    if((qr->data[i*qr->width+j]&0x01)!=0)
+                    {
+                        if(hlocale_charset_is_utf8())
+                        {
+                            banner+="⬛";
+                        }
+                        else
+                        {
+                            banner+=" ";
+                        }
+                    }
+                    else
+                    {
+                        if(hlocale_charset_is_utf8())
+                        {
+                            banner+="⬜";
+                        }
+                        else
+                        {
+                            banner+="*";
+                        }
+                    }
+                }
+                banner+="\r\n";
+            }
+            banner+="\r\n";
+            QRcode_free(qr);
+        }
+        banner+="https://hyhsystem.cn\r\n";
+    }
+    if(!banner.empty())
+    {
+        hshell_printf(NULL,banner.c_str());
+    }
+}
+
 int main(int argc,const char *argv[])
 {
     //关闭输出缓冲
@@ -273,6 +323,7 @@ int main(int argc,const char *argv[])
         api.invoke_command=invoke_command;
         hshell_external_api_set(NULL,api);
     }
+    show_banner();
     while(hshell_loop(NULL)==0)
     {
         std::this_thread::yield();
