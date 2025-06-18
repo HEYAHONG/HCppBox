@@ -41,6 +41,22 @@
 #define VERSION "4.1.1"
 #endif
 
+#ifndef HAVE_STRDUP
+#define HAVE_STRDUP 1
+#endif
+
+static char *qrencode_strdup(const char *s)
+{
+	size_t len = strlen(s) + 1;
+	void *newstring = malloc(len);
+	if(newstring == NULL) return NULL;
+	return (char *)memcpy(newstring, s, len);
+}
+#ifdef strdup
+#undef strdup
+#endif
+#define strdup qrencode_strdup
+
 #ifndef  H3RDPARTY_USING_SYSTEM_LIBQRENCODE
 
 #include "3rdparty/libqrencode/mmask.c"
