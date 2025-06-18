@@ -11,7 +11,7 @@
 - [softfp](https://bellard.org/softfp/)：软件浮点库。
 - [zlib](https://github.com/madler/zlib):zlib压缩库
 - [lz4](https://github.com/lz4/lz4):lz4压缩库
-- libqrencode:二维码编码库
+- [libqrencode](https://github.com/fukuchi/libqrencode.git):二维码编码库
 
  提供的配置宏定义如下：
 
