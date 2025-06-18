@@ -6,6 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+#include "hcompiler.h"
 #include "hdefaults.h"
 #include "h3rdparty.h"
 
@@ -45,6 +46,7 @@
 #define HAVE_STRDUP 1
 #endif
 
+__USED
 static char *qrencode_strdup(const char *s)
 {
 	size_t len = strlen(s) + 1;
