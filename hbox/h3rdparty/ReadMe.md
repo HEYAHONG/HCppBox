@@ -11,6 +11,7 @@
 - [softfp](https://bellard.org/softfp/)：软件浮点库。
 - [zlib](https://github.com/madler/zlib):zlib压缩库
 - [lz4](https://github.com/lz4/lz4):lz4压缩库
+- libqrencode:二维码编码库
 
  提供的配置宏定义如下：
 
@@ -22,6 +23,7 @@
 |           `H3RDPARTY_USING_SYSTEM_SOFTFP`            |        使用系统`softfp`库        |        某些环境下函数可能冲突，可使用此宏定义防止冲突        |
 |            `H3RDPARTY_USING_SYSTEM_ZLIB`             |           使用系统zlib           |      链接到系统的zlib(动态库)时,可使用此宏定义防止冲突       |
 |             `H3RDPARTY_USING_SYSTEM_LZ4`             |           使用系统lz4            |       链接到系统的lz4(动态库)时,可使用此宏定义防止冲突       |
+|         `H3RDPARTY_USING_SYSTEM_LIBQRENCODE`         |       使用系统libqrencode        |   链接到系统的libqrencode(动态库)时,可使用此宏定义防止冲突   |
 
 # nanopb
 
@@ -86,4 +88,16 @@ lz4压缩库。
 ```
 
 注意:此库需要根据使用情况添加C语言文件(h3rdparty_lz4_*.c),某些C文件可能在某些场景下不能正常编译。
+
+# libqrencode
+
+二维码编码库。
+
+若要使用相应库功能，请使用以下代码：
+
+```c++
+#include H3RDPARTY_LIBQRENCODE_HEADER
+```
+
+注意:此库需要根据使用情况添加C语言文件(h3rdparty_libqrencode_*.c),某些C文件可能在某些场景下不能正常编译。
 

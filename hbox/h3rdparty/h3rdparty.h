@@ -180,6 +180,20 @@ int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* f
 #endif
 #endif
 
+
+/*
+ * 引入qrencode库,用户需要手动引入相应头文件
+ */
+#ifdef  H3RDPARTY_USING_SYSTEM_LIBQRENCODE
+#ifndef H3RDPARTY_LIBQRENCODE_HEADER
+#define H3RDPARTY_LIBQRENCODE_HEADER "qrencode.h"
+#endif
+#else
+#ifndef H3RDPARTY_LIBQRENCODE_HEADER
+#define H3RDPARTY_LIBQRENCODE_HEADER "h3rdparty/3rdparty/libqrencode/qrencode.h"
+#endif
+#endif
+
 #endif // __H3RDPARTY_H__
 
 
