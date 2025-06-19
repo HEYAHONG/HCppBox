@@ -7,6 +7,8 @@
 #include <thread>
 #include <chrono>
 
+#include H3RDPARTY_LIBQRENCODE_HEADER
+
 static const size_t w=128;//宽
 static const size_t h=64;//高
 static const size_t w_bytes=w/8+((w%8)?1:0);
@@ -135,9 +137,154 @@ static void monochromscreen_init()
  * 屏幕
  */
 
-//主屏幕(1)
+
 hdefaults_tick_t main_screen_tick=hdefaults_tick_get();
 static  int main_screen_key_count=0;
+//二维码屏幕
+static  const hgui_scene1_screen_base_t qrcode_screen=
+{
+    //进入屏幕
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app)
+    {
+        main_screen_tick=hdefaults_tick_get();
+    },
+    //离开屏幕
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app)
+    {
+
+    },
+    //更新屏幕
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app)
+    {
+        if((hdefaults_tick_get()-main_screen_tick)>500)
+        {
+            main_screen_tick=hdefaults_tick_get();
+            monochromscreen_screen_clear();
+            {
+                //将上1/8与下1/8像素设置为置位
+                for(size_t i=0; i<h; i++)
+                {
+                    for(size_t j=0; j<w; j++)
+                    {
+                        if(i<h/8 || i>=(h-h/8))
+                        {
+                            monochromescreen_set_pixel(j,i,true);
+                        }
+                    }
+                }
+            }
+            {
+                auto draw_pixel=[](const hgui_gui_dotfont_t * dotfont,size_t x,size_t y,bool point,void *usr)->bool
+                {
+                    (void)dotfont;
+                    (void)usr;
+                    if((x<w) && (y<h))
+                    {
+                        monochromescreen_set_pixel(x,y,!point);
+                    }
+                    return true;
+                };
+                {
+                    //显示标题
+                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,"QRcode",(w-6*6)/2,0,w,draw_pixel,NULL);
+                }
+                {
+                    //显示内容
+                    auto draw_pixel=[](const hgui_gui_dotfont_t * dotfont,size_t x,size_t y,bool point,void *usr)->bool
+                    {
+                        (void)dotfont;
+                        (void)usr;
+                        if((x<w) && (y<h))
+                        {
+                            monochromescreen_set_pixel(x,y,point);
+                        }
+                        return true;
+                    };
+                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,"https://hyhsystem.cn",(w-6*20)/2,6*h/8-4,w,draw_pixel,NULL);
+                    {
+                        QRcode *qr=QRcode_encodeString8bit("http://hyhsystem.cn",0,QR_ECLEVEL_M);
+                        if(qr!=NULL)
+                        {
+                            for(size_t i=0; i<qr->width; i++)
+                            {
+                                for(size_t j=0; j<qr->width; j++)
+                                {
+                                    if((qr->data[i*qr->width+j]&0x01)!=0)
+                                    {
+                                        monochromescreen_set_pixel((w-qr->width)/2+i,h/8+4+(4*h/8-qr->width)/2+j,true);
+                                    }
+                                    else
+                                    {
+                                        monochromescreen_set_pixel((w-qr->width)/2+i,h/8+4+(4*h/8-qr->width)/2+j,false);
+                                    }
+                                }
+                            }
+                            QRcode_free(qr);
+                        }
+                    }
+                }
+                {
+                    //显示时间
+                    time_t now=time(NULL);
+                    struct tm tm_now=*localtime(&now);
+                    std::string  asctime_str{asctime(&tm_now)};
+                    asctime_str=asctime_str.substr(0,20);
+                    hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,asctime_str.c_str(),4,(h-h/8),w,draw_pixel,NULL);
+                }
+            }
+            hgui_scene1_app_need_refresh(app);
+        }
+    },
+    //事件处理
+    [](hgui_scene1_screen_base_t *screen,const hgui_scene1_app_t *app,uint8_t type,void *eventparam,size_t eventparam_length,void *usr) -> bool
+    {
+        {
+            hgui_gui_event_key_t key;
+            if(hgui_gui_event_key_get(&key,type,eventparam,eventparam_length,usr)!=NULL)
+            {
+                //按键事件
+                if(key.key_press_or_release==1)
+                {
+                    //按键按下
+                    switch(key.key_value)
+                    {
+                    case HGUI_GUI_EVENT_KEY_VALUE_w:
+                    case HGUI_GUI_EVENT_KEY_VALUE_UP:
+                    {
+
+                    }
+                    break;
+                    case HGUI_GUI_EVENT_KEY_VALUE_s:
+                    case HGUI_GUI_EVENT_KEY_VALUE_DOWN:
+                    {
+
+                    }
+                    break;
+                    case HGUI_GUI_EVENT_KEY_VALUE_a:
+                    case HGUI_GUI_EVENT_KEY_VALUE_LEFT:
+                    {
+                        //左键
+                        //退出当前界面
+                        hgui_scene1_app_screen_stack_pop(&g_hgui_scene1_app);
+                    }
+                    break;
+                    default:
+                    {
+
+                    }
+                    break;
+                    }
+                }
+
+                hgui_scene1_app_need_refresh(&g_hgui_scene1_app);
+            }
+        }
+        return true;
+    },
+    NULL
+};
+
+//主屏幕(1)
 static  const hgui_scene1_screen_base_t main1_screen=
 {
     //进入屏幕
@@ -204,7 +351,7 @@ static  const hgui_scene1_screen_base_t main1_screen=
                             hgui_gui_dotfont_show_unicode_string((const hgui_gui_dotfont_t *)&font,L"点阵屏中文",0,h/8,w,draw_pixel,NULL);
                         }
                         //空两行
-                        sprintf(str,"\n\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\nhit LEFT(a)",main_screen_key_count);
+                        sprintf(str,"\n\nkey_count=%d\r\nhit UP(w) or DOWN(s)\r\nhit LEFT(a)/RIGHT(d)",main_screen_key_count);
                         hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,str,0,h/8+4,w,draw_pixel,NULL);
                     }
                 }
@@ -253,6 +400,13 @@ static  const hgui_scene1_screen_base_t main1_screen=
                         //左键
                         //退出当前界面
                         hgui_scene1_app_screen_stack_pop(&g_hgui_scene1_app);
+                    }
+                    break;
+                    case HGUI_GUI_EVENT_KEY_VALUE_RIGHT:
+                    {
+                        //右键
+                        //进入二维码屏幕
+                        hgui_scene1_app_screen_stack_push(&g_hgui_scene1_app,(hgui_scene1_screen_base_t *)&qrcode_screen);
                     }
                     break;
                     default:
