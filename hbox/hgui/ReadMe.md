@@ -182,4 +182,4 @@ XPM可使用[GIMP](https://www.gimp.org/)从其它图像格式导出。
 
 工具主要指在主机上运行的工具,通常需要单独编译。
 
-见[tools](tools)目录。
+见[tools](../../htools/hgui_tools)目录。

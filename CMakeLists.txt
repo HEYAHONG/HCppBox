@@ -9,6 +9,8 @@ add_subdirectory(hcppbox)
 
 add_subdirectory(hrc)
 
+add_subdirectory(htools)
+
 set_target_properties(HCppBox
 			PROPERTIES HCPPBOX_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 			)
