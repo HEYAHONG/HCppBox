@@ -49,7 +49,7 @@ HDEFAULTS_USERCALL_DEFINE3(hgetrandom,HDEFAULTS_SYSCALL_HGETRANDOM,hgetrandom_ss
             //使用当前时间作为随机数种子
             hgettimeofday_timeval_t tv= {0};
             hgettimeofday(&tv,NULL);
-            if(tv.tv_usec!=0 && tv.tv_sec!=0)
+            if((tv.tv_usec+tv.tv_sec)!=0)
             {
                 srand(tv.tv_sec+tv.tv_usec);
                 is_random_init=true;
