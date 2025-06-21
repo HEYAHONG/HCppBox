@@ -8,11 +8,11 @@
  **************************************************************/
 #include "hexit.h"
 #include "hdefaults.h"
+#include "stdlib.h"
 
 #ifdef HEXIT
 extern void HEXIT(int exit_code);
 #endif // HEXIT
-extern void exit(int exit_code);
 
 void hexit(int exit_code)
 {

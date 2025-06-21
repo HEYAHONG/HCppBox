@@ -8,11 +8,11 @@
  **************************************************************/
 #include "habort.h"
 #include "hdefaults.h"
+#include "stdlib.h"
 
 #ifdef HABORT
 extern void HABORT(void);
 #endif // HABORT
-extern void abort(void);
 
 void habort(void)
 {
