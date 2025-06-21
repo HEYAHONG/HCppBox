@@ -2,7 +2,7 @@
  * Name:      h3rdparty_argtable3.c
  * Purpose:   引入第三方源代码文件
  * Author:    HYH (hyhsystem.cn)
- * Created:   2025-06-06
+ * Created:   2025-06-21
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
@@ -15,9 +15,12 @@
 #define calloc hcalloc
 #define realloc hrealloc
 
+#if !defined(HDEFAULTS_LIBC_MSVC)
+
 //定义打印函数
 #define vsnprintf hvsnprintf
 
+#endif
 
 //定义环境变量相关函数
 #define getenv hgetenv
