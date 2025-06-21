@@ -12,7 +12,7 @@
 #ifdef HPUTCHAR
 extern int HPUTCHAR(int ch);
 #endif // HPUTCHAR
-extern int putchar(int ch);
+
 
 int hputchar(int ch)
 {

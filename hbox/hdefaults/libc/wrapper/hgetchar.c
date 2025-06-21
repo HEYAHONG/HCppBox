@@ -12,7 +12,7 @@
 #ifdef HGETCHAR
 extern int HGETCHAR(void);
 #endif // HGETCHAR
-extern int getchar(void);
+
 
 int hgetchar(void)
 {
