@@ -19,6 +19,9 @@
 
 //定义打印函数
 #define printf hprintf
+#ifdef vsnprintf
+#undef vsnprintf
+#endif
 #define vsnprintf hvsnprintf
 #define puts hputs
 #define fputs hfputs
