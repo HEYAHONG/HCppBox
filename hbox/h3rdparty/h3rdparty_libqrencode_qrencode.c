@@ -66,7 +66,9 @@ static char *qrencode_strdup(const char *s)
 #ifdef __GNUC__
 #undef __GNUC__
 #endif // __GNUC__
+#ifndef __clang__
 #pragma diag_suppress 186
+#endif
 #endif // __ARMCC_VERSION
 
 #ifndef  H3RDPARTY_USING_SYSTEM_LIBQRENCODE
