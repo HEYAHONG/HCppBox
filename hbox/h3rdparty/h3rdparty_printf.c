@@ -67,6 +67,9 @@ void _putchar(char c)
 
 
 #include "3rdparty/printf/printf.h"
+
+#define _vsnprintf hbox_vsnprintf
+
 #include "3rdparty/printf/printf.c"
 
 int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* format, va_list va)
