@@ -35,6 +35,16 @@
 
 #define ARG_REPLACE_GETOPT 1
 
+/*
+ * 修复armcc下的警告
+ */
+#ifdef __ARMCC_VERSION
+#ifdef __GNUC__
+#undef __GNUC__
+#endif // __GNUC__
+#endif // __ARMCC_VERSION
+
+
 #ifndef  H3RDPARTY_USING_SYSTEM_ARGTABLE3
 
 #include "3rdparty/argtable3/arg_int.c"
