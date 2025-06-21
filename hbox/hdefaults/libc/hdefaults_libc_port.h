@@ -21,6 +21,8 @@ extern "C"
 #include "wrapper/hfree.h"
 #include "wrapper/hcalloc.h"
 #include "wrapper/hrealloc.h"
+#include "wrapper/habort.h"
+#include "wrapper/hexit.h"
 
 #ifdef __cplusplus
 }

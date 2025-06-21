@@ -20,7 +20,12 @@
 //定义打印函数
 #define vsnprintf hvsnprintf
 
+//定义退出函数
+#define abort habort
+#define exit hexit
+
 #endif
+
 
 //定义环境变量相关函数
 #define getenv hgetenv

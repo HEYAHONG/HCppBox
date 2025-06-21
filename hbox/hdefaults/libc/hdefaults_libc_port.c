@@ -15,4 +15,6 @@
 #include "wrapper/hfree.c"
 #include "wrapper/hcalloc.c"
 #include "wrapper/hrealloc.c"
+#include "wrapper/habort.c"
+#include "wrapper/hexit.c"
 
