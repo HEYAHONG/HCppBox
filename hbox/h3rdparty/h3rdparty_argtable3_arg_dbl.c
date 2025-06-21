@@ -18,7 +18,11 @@
 #if !defined(HDEFAULTS_LIBC_MSVC)
 
 //定义打印函数
+#define printf hprintf
 #define vsnprintf hvsnprintf
+#define puts hputs
+#define fputs hfputs
+#define vfprintf hvfprintf
 
 //定义退出函数
 #define abort habort
