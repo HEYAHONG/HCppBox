@@ -8,6 +8,13 @@
  **************************************************************/
 #include "hshell_context.h"
 
+#ifdef putchar
+#undef putchar
+#endif
+
+#ifdef getchar
+#undef getchar
+#endif
 
 extern int hgetchar(void);
 extern int hputchar(int ch);
