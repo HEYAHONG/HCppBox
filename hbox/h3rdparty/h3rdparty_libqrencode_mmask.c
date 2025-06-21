@@ -59,6 +59,16 @@ static char *qrencode_strdup(const char *s)
 #endif
 #define strdup qrencode_strdup
 
+/*
+ * 修复armcc下的警告
+ */
+#ifdef __ARMCC_VERSION
+#ifdef __GNUC__
+#undef __GNUC__
+#endif // __GNUC__
+#pragma diag_suppress 186
+#endif // __ARMCC_VERSION
+
 #ifndef  H3RDPARTY_USING_SYSTEM_LIBQRENCODE
 
 #include "3rdparty/libqrencode/mmask.c"
