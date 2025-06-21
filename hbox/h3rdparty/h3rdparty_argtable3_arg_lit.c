@@ -42,6 +42,8 @@
 #ifdef __GNUC__
 #undef __GNUC__
 #endif // __GNUC__
+//关闭某些警告
+#pragma diag_suppress 111
 #endif // __ARMCC_VERSION
 
 
