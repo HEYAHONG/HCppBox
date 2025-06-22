@@ -64,7 +64,7 @@ fi
 if [ -f "${script_dir}/lz4/lib/LICENSE" ]
 then
 	rsync -rl --progress  "${script_dir}/lz4/lib/LICENSE" "${script_dir}/"
-	rsync -rl --progress  --include="lz4.*" --include="lz4hc.*" --exclude="*" "${script_dir}/lz4/lib/" "${script_dir}/"
+	rsync -rl --progress  --include="*.h" --include="*.c" --exclude="*" "${script_dir}/lz4/lib/" "${script_dir}/"
 	for c_file in `ls *.c`
 	do
 		cp "lz4_template_c" "../../h3rdparty_lz4_${c_file}"

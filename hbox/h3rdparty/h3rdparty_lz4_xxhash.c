@@ -42,7 +42,7 @@
 
 #ifndef  H3RDPARTY_USING_SYSTEM_LZ4
 
-#include "3rdparty/lz4/lz4hc.c"
+#include "3rdparty/lz4/xxhash.c"
 
 #endif // H3RDPARTY_USING_SYSTEM_LZ4
 

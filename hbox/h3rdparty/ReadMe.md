@@ -87,6 +87,8 @@ lz4压缩库。
 ```c++
 #include H3RDPARTY_LZ4_HEADER
 #include H3RDPARTY_LZ4HC_HEADER
+#include H3RDPARTY_LZ4FRAME_HEADER
+#include H3RDPARTY_LZ4FILE_HEADER
 ```
 
 注意:此库需要根据使用情况添加C语言文件(h3rdparty_lz4_*.c),某些C文件可能在某些场景下不能正常编译。

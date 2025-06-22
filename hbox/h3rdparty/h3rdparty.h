@@ -171,12 +171,24 @@ int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* f
 #ifndef H3RDPARTY_LZ4HC_HEADER
 #define H3RDPARTY_LZ4HC_HEADER "lz4hc.h"
 #endif
+#ifndef H3RDPARTY_LZ4FRAME_HEADER
+#define H3RDPARTY_LZ4FRAME_HEADER "lz4frame.h"
+#endif
+#ifndef H3RDPARTY_LZ4FILE_HEADER
+#define H3RDPARTY_LZ4FILE_HEADER "lz4file.h"
+#endif
 #else
 #ifndef H3RDPARTY_LZ4_HEADER
 #define H3RDPARTY_LZ4_HEADER "h3rdparty/3rdparty/lz4/lz4.h"
 #endif
 #ifndef H3RDPARTY_LZ4HC_HEADER
 #define H3RDPARTY_LZ4HC_HEADER "h3rdparty/3rdparty/lz4/lz4hc.h"
+#endif
+#ifndef H3RDPARTY_LZ4FRAME_HEADER
+#define H3RDPARTY_LZ4FRAME_HEADER "h3rdparty/3rdparty/lz4/lz4frame.h"
+#endif
+#ifndef H3RDPARTY_LZ4FILE_HEADER
+#define H3RDPARTY_LZ4FILE_HEADER "h3rdparty/3rdparty/lz4/lz4file.h"
 #endif
 #endif
 
