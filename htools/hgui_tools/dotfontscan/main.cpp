@@ -166,6 +166,7 @@ std::string font_file_path(get_system_root()+"/Fonts/simsun.ttc");
 //默认使用 文泉驿 字体,debian系统(最新版)使用sudo apt-get install fonts-wqy-zenhei安装后即可使用
 std::string font_file_path("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc");
 #endif
+
 static int cmd_font(int argc,const char *argv[])
 {
     for(int i=0; i<argc; i++)
@@ -375,6 +376,31 @@ static void process_input_file()
 
 static void checkout_fontfile()
 {
+    {
+        //检测默认字体的有效性
+        FILE *fp=NULL;
+        if((fp=fopen(font_file_path.c_str(),"r"))==NULL)
+        {
+            std::string font_file_path_list[]=
+            {
+                "/usr/share/fonts/noto/NotoSansCJK-Regular.ttc",//Cygwin noto 字体
+                "/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc",//ubuntu noto字体，使用sudo apt-get install fonts-noto-cjk安装
+            };
+            for(size_t i=0;i<sizeof(font_file_path_list)/sizeof(font_file_path_list[0]);i++)
+            {
+                font_file_path=font_file_path_list[i];
+                if((fp=fopen(font_file_path.c_str(),"r"))!=NULL)
+                {
+                    fclose(fp);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            fclose(fp);
+        }
+    }
     FT_Face face=NULL;
     if(FT_New_Face(g_ft_lib, font_file_path.c_str(), 0, &face))
     {
