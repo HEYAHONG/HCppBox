@@ -8,6 +8,14 @@
  **************************************************************/
 #include "hdefaults_libc_port.h"
 
+/*
+ * 默认优化级别为0
+ */
+#ifndef HDEFAULTS_LIBC_OPTIMIZE_LEVEL
+#define HDEFAULTS_LIBC_OPTIMIZE_LEVEL     0
+#endif // HDEFAULTS_LIBC_OPTIMIZE_LEVEL
+
+
 #include "wrapper/hputchar.c"
 #include "wrapper/hgetchar.c"
 #include "wrapper/hgetenv.c"

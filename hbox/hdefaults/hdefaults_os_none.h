@@ -20,4 +20,13 @@
  */
 #include "syscall/hdefaults_os_none_syscall.h"
 
+
+/*
+ * 默认优化级别
+ */
+#ifndef HDEFAULTS_LIBC_OPTIMIZE_LEVEL
+#define HDEFAULTS_LIBC_OPTIMIZE_LEVEL     1
+#endif // HDEFAULTS_LIBC_OPTIMIZE_LEVEL
+
+
 #endif

@@ -18,6 +18,13 @@ int hfputs( const char* str, FILE* stream)
 {
 #if defined(HFPUTS)
     return HFPUTS(str,stream);
+#elif (HDEFAULTS_LIBC_OPTIMIZE_LEVEL) > 0
+    if(str!=NULL)
+    {
+        size_t len=strlen(str);
+        return fwrite(str,1,len,stream);
+    }
+    return -1;
 #else
     return fputs(str,stream);
 #endif
