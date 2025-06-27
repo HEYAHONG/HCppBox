@@ -13,6 +13,7 @@
 #include H3RDPARTY_LZ4FILE_HEADER
 #include H3RDPARTY_LIBQRENCODE_HEADER
 #include H3RDPARTY_ARGTABLE3_HEADER
+#include H3RDPARTY_TLSF_HEADER
 
 static int hcompiler_test(int argc,const char *argv[]);
 static int hdefaults_test(int argc,const char *argv[]);

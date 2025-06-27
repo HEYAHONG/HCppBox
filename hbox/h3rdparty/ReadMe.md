@@ -13,6 +13,7 @@
 - [lz4](https://github.com/lz4/lz4):lz4压缩库
 - [libqrencode](https://github.com/fukuchi/libqrencode.git):二维码编码库
 - [argtable3](https://github.com/argtable/argtable3.git):命令行解析工具
+- [tlsf](https://github.com/mattconte/tlsf.git):TLSF 内存分配算法实现
 
  提供的配置宏定义如下：
 
@@ -26,6 +27,7 @@
 |             `H3RDPARTY_USING_SYSTEM_LZ4`             |           使用系统lz4            |       链接到系统的lz4(动态库)时,可使用此宏定义防止冲突       |
 |         `H3RDPARTY_USING_SYSTEM_LIBQRENCODE`         |       使用系统libqrencode        |   链接到系统的libqrencode(动态库)时,可使用此宏定义防止冲突   |
 |          `H3RDPARTY_USING_SYSTEM_ARGTABLE3`          |        使用系统argtable3         |    链接到系统的argtable3(动态库)时,可使用此宏定义防止冲突    |
+|            `H3RDPARTY_USING_SYSTEM_TLSF`             |           使用系统tlsf           |          链接到系统的tlsf时,可使用此宏定义防止冲突           |
 
 # nanopb
 
@@ -116,3 +118,15 @@ lz4压缩库。
 ```
 
 注意:此库需要根据使用情况添加C语言文件(h3rdparty_argtable3_*.c),某些C文件可能在某些场景下不能正常编译。
+
+# tlsf
+
+TLSF内存分配算法实现。
+
+若要使用相应库功能，请使用以下代码：
+
+```c++
+#include H3RDPARTY_TLSF_HEADER
+```
+
+注意:此库需要根据使用情况添加C语言文件(h3rdparty_tlsf_*.c),某些C文件可能在某些场景下不能正常编译。
