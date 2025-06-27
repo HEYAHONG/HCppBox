@@ -22,7 +22,7 @@ int hfputs( const char* str, FILE* stream)
     if(str!=NULL)
     {
         size_t len=strlen(str);
-        return fwrite(str,1,len,stream);
+        return (fwrite(str,1,len,stream)!=len)?-1:0;
     }
     return -1;
 #else

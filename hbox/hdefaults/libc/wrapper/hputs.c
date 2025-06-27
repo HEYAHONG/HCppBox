@@ -23,7 +23,10 @@ int hputs( const char* str)
     {
         while((*str)!='\0')
         {
-            hputchar(*(uint8_t *)str);
+            if(hputchar(*(uint8_t *)str) < 0)
+            {
+                return -1;
+            }
             str++;
         }
     }
