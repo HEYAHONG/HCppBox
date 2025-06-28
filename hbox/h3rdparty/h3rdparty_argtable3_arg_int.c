@@ -33,6 +33,17 @@
 
 #endif
 
+
+#ifdef _GETOPT_H_
+#undef _GETOPT_H_
+#endif
+#ifdef _GETOPT_DECLARED
+#undef _GETOPT_DECLARED
+#endif
+#ifdef _OPTRESET_DECLARED
+#undef _OPTRESET_DECLARED
+#endif
+
 #ifdef  optarg
 #undef  optarg
 #endif
