@@ -14,7 +14,7 @@ extern "C"
 {
 #endif // __cplusplus
 
-
+#include "hmemory/hsoftwarevirtualmemory.h"
 #include "hmemory/hmemoryheap.h"
 #include "hmemory/hobject.h"
 #include "hmemory/hringbuf.h"
