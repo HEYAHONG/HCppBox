@@ -16,6 +16,8 @@ extern "C"
 {
 #endif // __cplusplus
 
+
+struct hsoftwarevirtualmemory_map_item;
 typedef struct hsoftwarevirtualmemory_map_item hsoftwarevirtualmemory_map_item_t;
 
 /** \brief 软件虚拟内存读
@@ -41,7 +43,6 @@ typedef size_t (*hsoftwarevirtualmemory_read_callback_t)(const hsoftwarevirtualm
 typedef size_t (*hsoftwarevirtualmemory_write_callback_t)(const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,const uint8_t *data,size_t length);
 
 
-typedef struct hsoftwarevirtualmemory_map_item hsoftwarevirtualmemory_map_item_t;
 struct hsoftwarevirtualmemory_map_item
 {
     uintptr_t  map_address;
