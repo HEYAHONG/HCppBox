@@ -8,12 +8,50 @@
  **************************************************************/
 #include "hsoftwarevirtualmemory.h"
 
+static size_t hsoftwarevirtualmemory_default_read(const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,uint8_t *data,size_t length)
+{
+    (void)map_item;
+    if(data==NULL)
+    {
+        return 0;
+    }
+    for(size_t i=0; i<length; i++)
+    {
+        data[i]=(*((const volatile uint8_t *)(address+i)));
+    }
+    return length;
+};
+
+static size_t hsoftwarevirtualmemory_default_write(const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,const uint8_t *data,size_t length)
+{
+    (void)map_item;
+    if(data==NULL)
+    {
+        return 0;
+    }
+    for(size_t i=0; i<length; i++)
+    {
+        (*((volatile uint8_t *)(address+i)))=data[i];
+    }
+    return length;
+};
+
+
+static const hsoftwarevirtualmemory_map_item_t hsoftwarevirtualmemory_default_map_table[]=
+{
+    {0,0,hsoftwarevirtualmemory_default_read,hsoftwarevirtualmemory_default_write,NULL}
+};
+
 size_t hsoftwarevirtualmemory_read(const hsoftwarevirtualmemory_map_item_t *map_table,uintptr_t address,uint8_t *data,size_t length)
 {
     size_t ret=0;
-    if(map_table==NULL || length == 0)
+    if(length == 0)
     {
         return ret;
+    }
+    if(map_table==NULL)
+    {
+        map_table=hsoftwarevirtualmemory_default_map_table;
     }
     const hsoftwarevirtualmemory_map_item_t * map_table_start=map_table;
     while(true)
@@ -51,9 +89,13 @@ size_t hsoftwarevirtualmemory_read(const hsoftwarevirtualmemory_map_item_t *map_
 size_t hsoftwarevirtualmemory_write(const hsoftwarevirtualmemory_map_item_t *map_table,uintptr_t address,const uint8_t *data,size_t length)
 {
     size_t ret=0;
-    if(map_table==NULL || length == 0)
+    if(length == 0)
     {
         return ret;
+    }
+    if(map_table==NULL)
+    {
+        map_table=hsoftwarevirtualmemory_default_map_table;
     }
     const hsoftwarevirtualmemory_map_item_t * map_table_start=map_table;
     while(true)
