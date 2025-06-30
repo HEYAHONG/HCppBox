@@ -232,6 +232,19 @@ int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* f
 #endif
 #endif
 
+/*
+ * 引入libfdt库,用户需要手动引入相应头文件
+ */
+#ifdef  H3RDPARTY_USING_SYSTEM_LIBFDT
+#ifndef H3RDPARTY_LIBFDT_HEADER
+#define H3RDPARTY_LIBFDT_HEADER "libfdt.h"
+#endif
+#else
+#ifndef H3RDPARTY_LIBFDT_HEADER
+#define H3RDPARTY_LIBFDT_HEADER "h3rdparty/3rdparty/libfdt/libfdt.h"
+#endif
+#endif
+
 #endif // __H3RDPARTY_H__
 
 
