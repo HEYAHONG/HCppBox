@@ -75,3 +75,23 @@ bool hdriverframework_driver_base_match_of_compatible(hdriverframework_driver_ba
     return ret;
 }
 
+size_t hdriverframework_driver_base_vm_read(hdriverframework_driver_base_t *drv,const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,uint8_t *data,size_t length)
+{
+    size_t ret=0;
+    if(drv!=NULL && drv->process!=NULL)
+    {
+        drv->process(drv,HDRIVERFRAMEWORK_OP_VM_READ,&ret,map_item,address,data,length);
+    }
+    return ret;
+}
+
+size_t hdriverframework_driver_base_vm_write(hdriverframework_driver_base_t *drv,const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,const uint8_t *data,size_t length)
+{
+     size_t ret=0;
+    if(drv!=NULL && drv->process!=NULL)
+    {
+        drv->process(drv,HDRIVERFRAMEWORK_OP_VM_WRITE,&ret,map_item,address,data,length);
+    }
+    return ret;
+}
+

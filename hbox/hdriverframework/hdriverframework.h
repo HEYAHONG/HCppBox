@@ -12,6 +12,7 @@
 #include "stdbool.h"
 #include "stdlib.h"
 #include "string.h"
+#include "hmemory.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -178,6 +179,8 @@ enum
     HDRIVERFRAMEWORK_OP_DEINIT=2,                                               /**< 反初始化，无可变参数,通常用于可卸载的驱动*/
     HDRIVERFRAMEWORK_OP_REMOVE=HDRIVERFRAMEWORK_OP_DEINIT,                      /**< 驱动移除,同HDRIVERFRAMEWORK_OP_DEINIT */
     HDRIVERFRAMEWORK_OP_GET_OF_COMPATIBLE=3,                                    /**< 获取设备树(Open Firmware Device Tree)的兼容字符串数据(必须以NULL结尾)，其可变参数为const char ***,在使用设备树的情况下,用于加载驱动 */
+    HDRIVERFRAMEWORK_OP_VM_READ=4,                                              /**< 虚拟内存读,相关参数见hsoftwarevirtualmemory,当驱动有可映射至虚拟内存的可编址资源时，可使用此操作 */
+    HDRIVERFRAMEWORK_OP_VM_WRITE=5,                                             /**< 虚拟内存写,相关参数见hsoftwarevirtualmemory,当驱动有可映射至虚拟内存的可编址资源时，可使用此操作 */
     HDRIVERFRAMEWORK_OP_DRIVER_BASE=0x10000,                                    /**< 驱动操作起始,由具体的驱动使用 */
 };
 
@@ -234,6 +237,32 @@ const char ** hdriverframework_driver_base_get_of_compatible(hdriverframework_dr
  *
  */
 bool hdriverframework_driver_base_match_of_compatible(hdriverframework_driver_base_t *drv,const char *of_compatible);
+
+
+/** \brief 虚拟内存读
+ *
+ * \param drv hdriverframework_driver_base_t* 驱动指针
+ * \param map_item const hsoftwarevirtualmemory_map_item_t* 虚拟内存的映射表项
+ * \param address uintptr_t 虚拟内存地址
+ * \param data uint8_t* 读取缓冲地址
+ * \param length size_t 读取缓冲长度
+ * \return size_t 已读取的大小
+ *
+ */
+size_t hdriverframework_driver_base_vm_read(hdriverframework_driver_base_t *drv,const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,uint8_t *data,size_t length);
+
+/** \brief 虚拟内存写
+ *
+ * \param drv hdriverframework_driver_base_t* 驱动指针
+ * \param map_item const hsoftwarevirtualmemory_map_item_t* 虚拟内存的映射表项
+ * \param address uintptr_t 虚拟内存地址
+ * \param data const uint8_t* 写入缓冲地址
+ * \param length size_t 写入缓冲长度
+ * \return size_t 已写入的大小
+ *
+ */
+size_t hdriverframework_driver_base_vm_write(hdriverframework_driver_base_t *drv,const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,const uint8_t *data,size_t length);
+
 
 #ifdef __cplusplus
 }

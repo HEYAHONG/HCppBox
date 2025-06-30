@@ -60,6 +60,40 @@ static int hdriverframework_driver_base_dummy_process(hdriverframework_driver_ba
         }
     }
     break;
+    case HDRIVERFRAMEWORK_OP_VM_READ:
+    {
+        size_t *ret_ptr=va_arg(va,size_t *);
+        const hsoftwarevirtualmemory_map_item_t *map_item=va_arg(va,const hsoftwarevirtualmemory_map_item_t *);
+        uintptr_t address=va_arg(va,uintptr_t);
+        uint8_t *data=va_arg(va,uint8_t *);
+        size_t length=va_arg(va,size_t);
+        if(ret_ptr!=NULL && map_item!=NULL && address >= map_item->map_address && (address+length) <= (map_item->map_address+map_item->map_size) && data != NULL)
+        {
+            /*
+             * 此处处理读取请求，不支持需要返回0
+             */
+            (*ret_ptr)=0;
+            ret=HDRIVERFRAMEWORK_EOK;
+        }
+    }
+    break;
+    case HDRIVERFRAMEWORK_OP_VM_WRITE:
+    {
+        size_t *ret_ptr=va_arg(va,size_t *);
+        const hsoftwarevirtualmemory_map_item_t *map_item=va_arg(va,const hsoftwarevirtualmemory_map_item_t *);
+        uintptr_t address=va_arg(va,uintptr_t);
+        const uint8_t *data=va_arg(va,const uint8_t *);
+        size_t length=va_arg(va,size_t);
+        if(ret_ptr!=NULL && map_item!=NULL && address >= map_item->map_address && (address+length) <= (map_item->map_address+map_item->map_size) && data != NULL)
+        {
+            /*
+             * 此处处理读取请求，不支持需要返回0
+             */
+            (*ret_ptr)=0;
+            ret=HDRIVERFRAMEWORK_EOK;
+        }
+    }
+    break;
     default:
     {
 
@@ -129,5 +163,26 @@ bool hdriverframework_driver_dummy_match_of_compatible(hdriverframework_driver_d
         return false;
     }
     return hdriverframework_driver_base_match_of_compatible(&drv->base,of_compatible);
+}
+
+size_t hdriverframework_driver_dummy_vm_read(hdriverframework_driver_dummy_t *drv,const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,uint8_t *data,size_t length)
+{
+    hdriverframework_driver_base_dummy_check(drv);
+    if(drv==NULL)
+    {
+        return 0;
+    }
+    return hdriverframework_driver_base_vm_read(&drv->base,map_item,address,data,length);
+}
+
+
+size_t hdriverframework_driver_dummy_vm_write(hdriverframework_driver_dummy_t *drv,const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,const uint8_t *data,size_t length)
+{
+    hdriverframework_driver_base_dummy_check(drv);
+    if(drv==NULL)
+    {
+        return 0;
+    }
+    return hdriverframework_driver_base_vm_write(&drv->base,map_item,address,data,length);
 }
 
