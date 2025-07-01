@@ -6,6 +6,12 @@
 #include <thread>
 #include <chrono>
 
+extern "C"
+{
+    extern const hgui_gui_rawimage_t hrawimage_input;
+    extern const hgui_gui_rawimage_t hrawimage_input_gray;
+}
+
 static const size_t w=320;
 static const size_t h=240;
 static uint32_t VRAM[w][h]= {0};
@@ -142,6 +148,69 @@ int main()
                     return true;
                 };
                 hgui_gui_xpm_draw_color(hgui_gui_xpm_xpm_xpm,(w-header.width)/2,(h-header.height)/2,draw_pixel,NULL);
+                hgui_driver_fill_rectangle(NULL, 0, 0, w, h, pixel);
+            }
+            if(i==1200)
+            {
+
+                printf("rawimage:width=%d,height=%d,cpp=%d\r\n",(int)hrawimage_input.width,(int)hrawimage_input.height,(int)hrawimage_input.cpp);
+                for (size_t i = 0; i < w; i++)
+                {
+                    for (size_t j = 0; j < h; j++)
+                    {
+                        VRAM[i][j] = 0x00000000;
+                    }
+                }
+                auto draw_pixel=[](const hgui_gui_rawimage_t *rawimage,size_t x,size_t y,const uint8_t *color,void *usr)
+                {
+                    if(rawimage==NULL)
+                    {
+                        return false;
+                    }
+                    if(rawimage->cpp==3)
+                    {
+                        VRAM[x][y]=(0xFF000000 | (color[0] * 0x10000 + color[1] * 0x100 +color[2] * 0x01) );
+                    }
+                    else
+                    {
+                        VRAM[x][y]=(0xFF000000 | (color[0] * 0x10000 + color[0] * 0x100 +color[0] * 0x1) );
+                    }
+
+                    return true;
+                };
+
+                hgui_gui_rawimage_draw_color(&hrawimage_input,(w-hrawimage_input.width)/2,(h-hrawimage_input.height)/2,draw_pixel,NULL);
+                hgui_driver_fill_rectangle(NULL, 0, 0, w, h, pixel);
+            }
+            if(i==1800)
+            {
+                printf("rawimage_gray:width=%d,height=%d,cpp=%d\r\n",(int)hrawimage_input_gray.width,(int)hrawimage_input_gray.height,(int)hrawimage_input_gray.cpp);
+                for (size_t i = 0; i < w; i++)
+                {
+                    for (size_t j = 0; j < h; j++)
+                    {
+                        VRAM[i][j] = 0x00000000;
+                    }
+                }
+                auto draw_pixel=[](const hgui_gui_rawimage_t *rawimage,size_t x,size_t y,const uint8_t *color,void *usr)
+                {
+                    if(rawimage==NULL)
+                    {
+                        return false;
+                    }
+                    if(rawimage->cpp==3)
+                    {
+                        VRAM[x][y]=(0xFF000000 | (color[0] * 0x10000 + color[1] * 0x100 +color[2] * 0x1) );
+                    }
+                    else
+                    {
+                        VRAM[x][y]=(0xFF000000 | (color[0] * 0x10000 + color[0] * 0x100 +color[0] * 0x1) );
+                    }
+
+                    return true;
+                };
+
+                hgui_gui_rawimage_draw_color(&hrawimage_input_gray,(w-hrawimage_input_gray.width)/2,(h-hrawimage_input_gray.height)/2,draw_pixel,NULL);
                 hgui_driver_fill_rectangle(NULL, 0, 0, w, h, pixel);
             }
         }

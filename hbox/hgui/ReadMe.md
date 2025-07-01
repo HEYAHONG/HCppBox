@@ -140,7 +140,7 @@
 
 额外的构建目标：
 
-- `dotfontscan_tool`:若采用CMake编译，则可尝试使用`dotfontscan_tool`目标构建[dotfontscan](tools/dotfontscan)工具来生成点阵字体。
+- `dotfontscan_tool`:若采用CMake编译，则可尝试使用`dotfontscan_tool`目标构建[dotfontscan](../../htools/hgui_tools/dotfontscan)工具来生成点阵字体。
 
 ## xpm
 
@@ -156,6 +156,21 @@ XPM可使用[GIMP](https://www.gimp.org/)从其它图像格式导出。
 
 - [hgui_gui_xpm.c](hgui_gui_xpm.c) 
 - [hgui_gui_xpm.h](hgui_gui_xpm.h) 
+
+## rawimage
+
+原始图像显示。
+
+原始图像是将图像像素数据直接存储在C代码数组中的图像，占用空间一般较大。
+
+文件:
+
+- [hgui_gui_rawimage.c](hgui_gui_rawimage.c) 
+- [hgui_gui_rawimage.h](hgui_gui_rawimage.h) 
+
+额外的构建目标：
+
+- `imageresourcegenerate_tool`:若采用CMake编译，则可尝试使用`imageresourcegenerate_tool`目标构建[imageresourcegenerate](../../htools/hgui_tools/imageresourcegenerate)工具来生成图像资源。
 
 ## event
 

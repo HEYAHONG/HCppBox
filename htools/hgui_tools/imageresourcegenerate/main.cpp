@@ -91,14 +91,15 @@ static std::string file_extname(std::string path)
 #include<opencv2/opencv.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/core/utils/logger.hpp>
-typedef cv::Vec3b BGR888_Pixel;
+cv::Mat image;
+cv::Mat grayimage;
 static void load_image()
 {
     //关闭日志显示
     cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_SILENT);
 
     //读取图像(BGR格式)
-    cv::Mat image=cv::imread(input_file_name,cv::IMREAD_COLOR);
+    image=cv::imread(input_file_name,cv::IMREAD_COLOR);
     if(image.empty())
     {
         std::string err_string=input_file_name+" load error!\r\n";
@@ -127,7 +128,7 @@ static void load_image()
     std::string color_image_output_name=file_basename(input_file_name)+"_"+std::to_string(image.cols)+"_"+std::to_string(image.rows)+file_extname(input_file_name);
     cv::imwrite(color_image_output_name,image);
 
-    cv::Mat grayimage;
+
     cv::cvtColor(image, grayimage, cv::COLOR_BGR2GRAY);
 
     //输出灰度文件
@@ -137,6 +138,106 @@ static void load_image()
 
 }
 
+#include <fstream>
+typedef cv::Vec3b BGR888_Pixel;
+void generate_c_source(void)
+{
+    if(image.empty()||grayimage.empty())
+    {
+        return;
+    }
+
+    std::string output_file_path=file_basename(input_file_name)+"_hrawimage.c";
+    std::string output_var_base=file_basename(input_file_name);
+    if(output_var_base.find("/") !=std::string::npos)
+    {
+        output_var_base=output_var_base.substr(output_var_base.find("/")+1);
+    }
+    if(output_var_base.find("\\") !=std::string::npos)
+    {
+        output_var_base=output_var_base.substr(output_var_base.find("\\")+1);
+    }
+    for(auto it=output_var_base.begin(); it!=output_var_base.end(); it++)
+    {
+        if(!(('0' <= (*it) && '9' >= (*it)) || ('a' <= (*it) && 'z' >= (*it)) || ('A' <= (*it) && 'Z' >= (*it))))
+        {
+            (*it)='_';
+        }
+    }
+    hprintf("rawimage path=%s,var=%s\r\n",output_file_path.c_str(),output_var_base.c_str());
+    std::fstream outfile;
+    outfile.open(output_file_path.c_str(),std::ios::out);
+    if(outfile.is_open())
+    {
+        outfile << "#include \"hgui.h\""<<std::endl;
+
+
+        {
+            outfile << "const uint8_t " << "hrawimage_" << output_var_base << "_data[]=" << std::endl;
+            outfile << "{" << std::endl;
+            uint8_t *data=new uint8_t[image.cols *image.rows*3];
+            image.forEach<BGR888_Pixel>([&](BGR888_Pixel &p,const int *pos)
+            {
+                data[0+(pos[1]+pos[0]*image.cols)*3]=p[2];
+                data[1+(pos[1]+pos[0]*image.cols)*3]=p[1];
+                data[2+(pos[1]+pos[0]*image.cols)*3]=p[0];
+            });
+            for(size_t i=0; i<image.cols *image.rows*3; i++)
+            {
+                outfile << std::to_string(data[i]) << ",";
+                if(i>0 && i%40==0)
+                {
+                    outfile<< std::endl;
+                }
+            }
+            delete []data;
+            outfile << "0" << std::endl;
+            outfile << "};" << std::endl;
+
+            outfile << "const hgui_gui_rawimage_t " << "hrawimage_" << output_var_base << "=" << std::endl;
+            outfile << "{" << std::endl;
+            outfile << std::to_string(image.cols) << "," << std::to_string(image.rows) << "," << "3" << "," << "hrawimage_" << output_var_base << "_data" << std::endl;
+            outfile << "};" << std::endl;
+        }
+
+        {
+            outfile << "const uint8_t " << "hrawimage_" << output_var_base << "_gray" << "_data[]=" << std::endl;
+            outfile << "{" << std::endl;
+            uint8_t *data=new uint8_t[grayimage.cols *grayimage.rows];
+            grayimage.forEach<uint8_t>([&](uint8_t &p,const int *pos)
+            {
+                data[0+pos[1]+pos[0]*grayimage.cols]=p;
+            });
+            for(size_t i=0; i<grayimage.cols *grayimage.rows; i++)
+            {
+                outfile << std::to_string(data[i]) << ",";
+                if(i>0 && i%40==0)
+                {
+                    outfile<< std::endl;
+                }
+            }
+            delete []data;
+            outfile << "0" << std::endl;
+            outfile << "};" << std::endl;
+
+            outfile << "const hgui_gui_rawimage_t " << "hrawimage_" << output_var_base << "_gray" << "=" << std::endl;
+            outfile << "{" << std::endl;
+            outfile << std::to_string(grayimage.cols) << "," << std::to_string(grayimage.rows) << "," << "1" << "," << "hrawimage_" << output_var_base  << "_gray" << "_data" << std::endl;
+            outfile << "};" << std::endl;
+        }
+
+        outfile.close();
+    }
+
+    {
+        //整理代码
+        std::string astyle_cmd=std::string("astyle -n ")+output_file_path;
+        system(astyle_cmd.c_str());
+    }
+
+}
+
+
 int main(int argc,char *argv[])
 {
     show_banner();
@@ -144,6 +245,8 @@ int main(int argc,char *argv[])
     check_args(argc,argv);
 
     load_image();
+
+    generate_c_source();
 
     return 0;
 }

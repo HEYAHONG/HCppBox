@@ -17,6 +17,7 @@
 #include "hgui/hgui_gui_event.c"
 #include "hgui/hgui_gui_pixel.c"
 #include "hgui/hgui_gui_xpm.c"
+#include "hgui/hgui_gui_rawimage.c"
 
 /*
  * 场景1
