@@ -213,6 +213,12 @@ int main()
                 hgui_gui_rawimage_draw_color(&hrawimage_input_gray,(w-hrawimage_input_gray.width)/2,(h-hrawimage_input_gray.height)/2,draw_pixel,NULL);
                 hgui_driver_fill_rectangle(NULL, 0, 0, w, h, pixel);
             }
+
+            if (i == 3000)
+            {
+                //重新开始
+                i = 150;
+            }
         }
     }
 
