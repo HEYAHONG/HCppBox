@@ -76,6 +76,13 @@ int main()
             }
             if(i==200)
             {
+                for (size_t i = 0; i < w; i++)
+                {
+                    for (size_t j = 0; j < h; j++)
+                    {
+                        VRAM[i][j] = 0xFF0000FF;
+                    }
+                }
                 auto draw_pixel=[](const hgui_gui_dotfont_t * dotfont,size_t x,size_t y,bool point,void *usr)->bool
                 {
                     (void)dotfont;
