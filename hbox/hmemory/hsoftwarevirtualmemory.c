@@ -42,6 +42,8 @@ static const hsoftwarevirtualmemory_map_item_t hsoftwarevirtualmemory_default_ma
     {0,0,hsoftwarevirtualmemory_default_read,hsoftwarevirtualmemory_default_write,NULL}
 };
 
+const hsoftwarevirtualmemory_map_item_t * hsoftwarevirtualmemory_global_map_table=NULL;
+
 size_t hsoftwarevirtualmemory_read(const hsoftwarevirtualmemory_map_item_t *map_table,uintptr_t address,uint8_t *data,size_t length)
 {
     size_t ret=0;
@@ -51,7 +53,14 @@ size_t hsoftwarevirtualmemory_read(const hsoftwarevirtualmemory_map_item_t *map_
     }
     if(map_table==NULL)
     {
-        map_table=hsoftwarevirtualmemory_default_map_table;
+        if(hsoftwarevirtualmemory_global_map_table!=NULL)
+        {
+            map_table=hsoftwarevirtualmemory_global_map_table;
+        }
+        else
+        {
+            map_table=hsoftwarevirtualmemory_default_map_table;
+        }
     }
     const hsoftwarevirtualmemory_map_item_t * map_table_start=map_table;
     while(true)
@@ -95,7 +104,14 @@ size_t hsoftwarevirtualmemory_write(const hsoftwarevirtualmemory_map_item_t *map
     }
     if(map_table==NULL)
     {
-        map_table=hsoftwarevirtualmemory_default_map_table;
+        if(hsoftwarevirtualmemory_global_map_table!=NULL)
+        {
+            map_table=hsoftwarevirtualmemory_global_map_table;
+        }
+        else
+        {
+            map_table=hsoftwarevirtualmemory_default_map_table;
+        }
     }
     const hsoftwarevirtualmemory_map_item_t * map_table_start=map_table;
     while(true)

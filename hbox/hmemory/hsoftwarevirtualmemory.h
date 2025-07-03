@@ -74,6 +74,11 @@ size_t hsoftwarevirtualmemory_read(const hsoftwarevirtualmemory_map_item_t *map_
  */
 size_t hsoftwarevirtualmemory_write(const hsoftwarevirtualmemory_map_item_t *map_table,uintptr_t address,const uint8_t *data,size_t length);
 
+/*
+ * 全局映射表(默认为NULL，当被设置后，若读写的参数中映射表为NULL，则使用此映射表)
+ */
+extern const hsoftwarevirtualmemory_map_item_t * hsoftwarevirtualmemory_global_map_table;
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
