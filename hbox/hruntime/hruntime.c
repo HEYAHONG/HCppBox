@@ -72,6 +72,17 @@ void hruntime_loop()
         }
     }
 
+#if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETTIMEOFDAY) && !defined(HGETTIMEOFDAY)
+    /*
+     * 调用一次hgettimeofday检查内部变量是否溢出
+     */
+    {
+        hgettimeofday_timeval_t tv;
+        hgettimeofday_timezone_t tz;
+        hgettimeofday(&tv,&tz);
+    }
+#endif
+
 }
 
 void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t array_size)
