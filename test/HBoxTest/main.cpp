@@ -25,6 +25,7 @@ static int hwatchdog_test(int argc,const char *argv[]);
 static int hmemoryheap_test(int argc,const char *argv[]);
 static int hobject_test(int argc,const char *argv[]);
 static int hringbuf_test(int argc,const char *argv[]);
+static int hmemory_test(int argc,const char *argv[]);
 static int hlocale_test(int argc,const char *argv[]);
 static int hruntime_test(int argc,const char *argv[]);
 static int hsimulator_test(int argc,const char *argv[]);
@@ -43,6 +44,7 @@ static int (*test_cb[])(int,const char *[])=
     hmemoryheap_test,
     hobject_test,
     hringbuf_test,
+    hmemory_test,
     hlocale_test,
     hruntime_test,
     hsimulator_test,
@@ -1316,6 +1318,39 @@ static int hringbuf_test(int argc,const char *argv[])
     }
     return 0;
 }
+
+static int hmemory_test(int argc,const char *argv[])
+{
+    {
+        uint8_t buffer[256]= {0};
+        hsoftwarevirtualmemory_ringbuf_t ring=hsoftwarevirtualmemory_ringbuf_get(NULL,(uintptr_t)buffer,sizeof(buffer));
+        {
+            uint8_t buff[256]= {0};
+            printf("hsoftwarevirtualmemory_ringbuf_test:test 1\r\n");
+            hsoftwarevirtualmemory_ringbuf_input(ring,(uint8_t *)"Hello",strlen("Hello"));
+            hsoftwarevirtualmemory_ringbuf_output_no_clear(ring,buff,sizeof(buff));
+            printf("hsoftwarevirtualmemory_ringbuf_test(no_clear):%s\r\n",buff);
+            hsoftwarevirtualmemory_ringbuf_output(ring,buff,sizeof(buff));
+            printf("hsoftwarevirtualmemory_ringbuf_test:%s\r\n",buff);
+            hsoftwarevirtualmemory_ringbuf_input(ring,(uint8_t *)"ringbuf",strlen("ringbuf"));
+            hsoftwarevirtualmemory_ringbuf_output_no_clear(ring,buff,sizeof(buff));
+            printf("hsoftwarevirtualmemory_ringbuf_test(no_clear):%s\r\n",buff);
+            hsoftwarevirtualmemory_ringbuf_output(ring,buff,sizeof(buff));
+            printf("hsoftwarevirtualmemory_ringbuf_test:%s\r\n",buff);
+        }
+        {
+            uint8_t buff[256]= {0};
+            printf("hsoftwarevirtualmemory_ringbuf_test:test 2\r\n");
+            hsoftwarevirtualmemory_ringbuf_input(ring,(uint8_t *)"Hello",strlen("Hello"));
+            hsoftwarevirtualmemory_ringbuf_input(ring,(uint8_t *)" ",strlen(" "));
+            hsoftwarevirtualmemory_ringbuf_input(ring,(uint8_t *)"ringbuf",strlen("ringbuf"));
+            hsoftwarevirtualmemory_ringbuf_output(ring,buff,sizeof(buff));
+            printf("hsoftwarevirtualmemory_ringbuf_test:%s\r\n",buff);
+        }
+    }
+    return 0;
+}
+
 
 static int hlocale_test(int argc,const char *argv[])
 {
