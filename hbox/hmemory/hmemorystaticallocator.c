@@ -792,3 +792,18 @@ void hmemorystaticallocator_free_anonymous_object(const hmemorystaticallocator_i
     }
 }
 
+
+static const hmemorystaticallocator_item_t hmemorystaticallocator_memory_cache_table[]=
+{
+    {0          ,1   ,16,NULL,0},
+    {16         ,2   ,8 ,NULL,0},
+    {32         ,4   ,8 ,NULL,0},
+    {64         ,8   ,8 ,NULL,0},
+    {128        ,16  ,8 ,NULL,0},
+    {256        ,32  ,8 ,NULL,0},
+    {512        ,64  ,8 ,NULL,0},
+    {1024       ,128 ,8 ,NULL,0},
+    {2048       ,256 ,8 ,NULL,0},
+    {4096       ,0   ,0 ,NULL,0}                              /**< 分配表结束 */
+};
+const hmemorystaticallocator_item_t * const hmemorystaticallocator_cache_table=hmemorystaticallocator_memory_cache_table;

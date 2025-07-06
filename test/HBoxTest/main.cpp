@@ -1348,6 +1348,10 @@ static int hmemory_test(int argc,const char *argv[])
             printf("hsoftwarevirtualmemory_ringbuf_test:%s\r\n",buff);
         }
     }
+
+    {
+        printf("hmemorystaticallocator: cache alloc len=%d,bitmap=%d\r\n",(int)hmemorystaticallocator_get_table_alloc_size(hmemorystaticallocator_cache_table),(int)hmemorystaticallocator_get_table_bitmap_size(hmemorystaticallocator_cache_table));
+    }
     return 0;
 }
 

@@ -206,6 +206,11 @@ void * hmemorystaticallocator_alloc_anonymous_object(const hmemorystaticallocato
  */
 void hmemorystaticallocator_free_anonymous_object(const hmemorystaticallocator_item_t * table,const hmemorystaticallocator_bitmap_t *bitmap,size_t object_size,void *base_address,void *address);
 
+/*
+ * 使用4K大小的内存用作缓存的分配表，可分配1、2、4、8、16、32、64、128、256字节空间，可用于快速分配空间
+ * 注意：需要额外的10字节空间用作位图标记已分配的空间
+ */
+extern const hmemorystaticallocator_item_t * const hmemorystaticallocator_cache_table;
 
 #ifdef __cplusplus
 }
