@@ -694,7 +694,7 @@ void * hmemorystaticallocator_alloc_anonymous_object(const hmemorystaticallocato
 
         if(current_item->name==NULL && object_size==obj_size)
         {
-            //成功匹配名称
+            //成功匹配大小
             if((current_item->flags&(HMEMORYSTATICALLOCATOR_FLAGS_NO_ALLOC))==0)
             {
                 //匹配到允许分配的项
@@ -765,7 +765,7 @@ void hmemorystaticallocator_free_anonymous_object(const hmemorystaticallocator_i
 
         if(current_item->name==NULL && object_size==obj_size)
         {
-            //成功匹配名称
+            //成功匹配大小
             if((current_item->flags&(HMEMORYSTATICALLOCATOR_FLAGS_NO_ALLOC))==0)
             {
                 //匹配到允许分配的项
