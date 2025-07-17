@@ -23,12 +23,35 @@ extern "C"
  */
 void hcpprt_init(void);
 
+/** \brief 初始化是否完成
+ *
+ * \return bool
+ *
+ */
+bool hcpprt_init_done(void);
+
 
 /** \brief hcpprt循环，用户需要较低优先级的任务或者空闲任务中周期性调用此函数以保证内部状态得到正确更新。
  *
  *
  */
 void hcpprt_loop(void);
+
+/** \brief hcpprt循环开始
+ *
+ * \return bool 是否开始
+ *
+ */
+bool hcpprt_loop_begin(void);
+
+
+/** \brief hcpprt循环是否结束
+ *
+ * \return bool 是否结束
+ *
+ */
+bool hcpprt_loop_end(void);
+
 
 #ifdef __cplusplus
 }

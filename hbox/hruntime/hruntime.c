@@ -117,10 +117,13 @@ bool hruntime_init_done(void)
 
 void hruntime_loop()
 {
-    if(hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_LOOP_END))
+    if(!hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_INIT_DONE))
     {
-        hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_END);
+        hruntime_init();
     }
+
+
+    hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_END);
     hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN);
 
 #ifdef HRUNTIME_USING_LOOP_SECTION
@@ -160,10 +163,8 @@ void hruntime_loop()
     }
 #endif
 
-    if(hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN))
-    {
-        hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN);
-    }
+
+    hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN);
     hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_END);
 
 }

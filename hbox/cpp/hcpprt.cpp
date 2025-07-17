@@ -13,32 +13,66 @@
 #include "hevent.h"
 #include "hruntime.h"
 
+enum
+{
+    HCPPRT_INTERNAL_FLAG_CTOR_INIT_DONE=0,
+    HCPPRT_INTERNAL_FLAG_INIT_DONE,
+    HCPPRT_INTERNAL_FLAG_LOOP_BEGIN,
+    HCPPRT_INTERNAL_FLAG_LOOP_END,
+    HCPPRT_INTERNAL_FLAG_END
+};
+
+static uint8_t hcpprt_internal_flag[(((size_t)HCPPRT_INTERNAL_FLAG_END)+7)/8]= {0};
+
+static void hcpprt_internal_flag_set(size_t flag)
+{
+    size_t flag_byte=flag/8;
+    size_t flag_bit=flag%8;
+    if(flag_byte < sizeof(hcpprt_internal_flag))
+    {
+        hcpprt_internal_flag[flag_byte] |= (1 << flag_bit);
+    }
+}
+
+static void hcpprt_internal_flag_clear(size_t flag)
+{
+    size_t flag_byte=flag/8;
+    size_t flag_bit=flag%8;
+    if(flag_byte < sizeof(hcpprt_internal_flag))
+    {
+        hcpprt_internal_flag[flag_byte] &= (~(1 << flag_bit));
+    }
+}
+
+static bool hcpprt_internal_flag_is_set(size_t flag)
+{
+    bool ret=false;
+    size_t flag_byte=flag/8;
+    size_t flag_bit=flag%8;
+    if(flag_byte < sizeof(hcpprt_internal_flag))
+    {
+        ret=(0!=(hcpprt_internal_flag[flag_byte] & (1 << flag_bit)));
+    }
+    return ret;
+}
 
 /*
 通过此类判断构造函数是否被执行。
 */
 static class ctors_state
 {
-    int state;
-    int GetMagicNumber()
-    {
-        return 0x5A5AAA55;
-    }
 public:
-    ctors_state():state(0)
+    ctors_state()
     {
-        state=GetMagicNumber();
+        hcpprt_internal_flag_set(HCPPRT_INTERNAL_FLAG_CTOR_INIT_DONE);
     }
     ~ctors_state()
     {
-
+        hcpprt_internal_flag_clear(HCPPRT_INTERNAL_FLAG_CTOR_INIT_DONE);
     }
     bool IsOk()
     {
-        /*
-        当未构造时，内存数据一般不为魔数
-        */
-        return state==GetMagicNumber();
+        return hcpprt_internal_flag_is_set(HCPPRT_INTERNAL_FLAG_CTOR_INIT_DONE);
     }
 } g_ctors_state;
 
@@ -89,6 +123,11 @@ static void ctors_execute()
 
 void hcpprt_init()
 {
+    if(hcpprt_internal_flag_is_set(HCPPRT_INTERNAL_FLAG_INIT_DONE))
+    {
+        return;
+    }
+
     /*
      * C语言组件初始化(底层部分)
      */
@@ -129,18 +168,49 @@ void hcpprt_init()
      * C语言组件初始化
      */
     hruntime_init();
+
+    /*
+     * 设置执行标志
+     */
+    hcpprt_internal_flag_set(HCPPRT_INTERNAL_FLAG_INIT_DONE);
+}
+
+bool hcpprt_init_done()
+{
+    return hcpprt_internal_flag_is_set(HCPPRT_INTERNAL_FLAG_INIT_DONE);
 }
 
 HSTACKLESSCOROUTINE_DECLARE_COROUTINE(hsoftdog);
 void hcpprt_loop(void)
 {
+    //若未初始化则执行初始化
+    if(!hcpprt_internal_flag_is_set(HCPPRT_INTERNAL_FLAG_INIT_DONE))
+    {
+        hcpprt_init();
+    }
+
+    hcpprt_internal_flag_clear(HCPPRT_INTERNAL_FLAG_LOOP_END);
+    hcpprt_internal_flag_set(HCPPRT_INTERNAL_FLAG_LOOP_BEGIN);
+
     //hsoftdog组件
     HSTACKLESSCOROUTINE_ENTRY(hsoftdog);
 
     //C语言组件循环
     hruntime_loop();
+
+    hcpprt_internal_flag_clear(HCPPRT_INTERNAL_FLAG_LOOP_BEGIN);
+    hcpprt_internal_flag_set(HCPPRT_INTERNAL_FLAG_LOOP_END);
 }
 
+bool hcpprt_loop_begin(void)
+{
+    return hcpprt_internal_flag_is_set(HCPPRT_INTERNAL_FLAG_LOOP_BEGIN);
+}
+
+bool hcpprt_loop_end(void)
+{
+    return hcpprt_internal_flag_is_set(HCPPRT_INTERNAL_FLAG_LOOP_END);
+}
 
 #ifndef HCPPRT_NO_NEW_AND_DELETE_OVERRIDE
 
