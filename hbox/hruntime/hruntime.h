@@ -24,6 +24,12 @@ extern "C"
  */
 void hruntime_init_lowlevel(void);
 
+/** \brief hruntime初始化(底层)是否完成。
+ *
+ * \return bool 是否完成
+ *
+ */
+bool hruntime_init_lowlevel_done(void);
 
 /** \brief hruntime初始化
  * 一般由hcpprt组件使用，当不能使用C++时，需要在空闲任务或者优先级较低的任务中调用。
@@ -31,11 +37,33 @@ void hruntime_init_lowlevel(void);
  */
 void hruntime_init(void);
 
+/** \brief hruntime初始化是否完成。
+ *
+ * \return bool 是否完成
+ *
+ */
+bool hruntime_init_done(void);
+
 /** \brief hruntime循环
  * 一般由hcpprt组件使用，当不能使用C++时，需要在空闲任务或者优先级较低的任务中周期性调用。
  *
  */
 void hruntime_loop(void);
+
+/** \brief hruntime循环是否开始
+ *
+ * \return bool 是否开始,若结束标志也为假则表示从未进入 hruntime循环
+ *
+ */
+bool hruntime_loop_begin(void);
+
+/** \brief hruntime循环是否结束
+ *
+ * \return bool 是否结束
+ *
+ */
+bool hruntime_loop_end(void);
+
 
 /*
  * 运行时函数(用于初始化或者循环中使用)

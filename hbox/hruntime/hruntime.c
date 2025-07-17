@@ -13,18 +13,82 @@
 #include "stdint.h"
 #include "stdlib.h"
 
+enum
+{
+    HRUNTIME_INTERNAL_FLAG_LOWLEVEL_INIT_DONE=0,
+    HRUNTIME_INTERNAL_FLAG_INIT_DONE,
+    HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN,
+    HRUNTIME_INTERNAL_FLAG_LOOP_END,
+    HRUNTIME_INTERNAL_FLAG_END
+};
+
+static uint8_t hruntime_internal_flag[(((size_t)HRUNTIME_INTERNAL_FLAG_END)+7)/8]= {0};
+
+static void hruntime_internal_flag_set(size_t flag)
+{
+    size_t flag_byte=flag/8;
+    size_t flag_bit=flag%8;
+    if(flag_byte < sizeof(hruntime_internal_flag))
+    {
+        hruntime_internal_flag[flag_byte] |= (1 << flag_bit);
+    }
+}
+
+static void hruntime_internal_flag_clear(size_t flag)
+{
+    size_t flag_byte=flag/8;
+    size_t flag_bit=flag%8;
+    if(flag_byte < sizeof(hruntime_internal_flag))
+    {
+        hruntime_internal_flag[flag_byte] &= (~(1 << flag_bit));
+    }
+}
+
+static bool hruntime_internal_flag_is_set(size_t flag)
+{
+    bool ret=false;
+    size_t flag_byte=flag/8;
+    size_t flag_bit=flag%8;
+    if(flag_byte < sizeof(hruntime_internal_flag))
+    {
+        ret=(0!=(hruntime_internal_flag[flag_byte] & (1 << flag_bit)));
+    }
+    return ret;
+}
+
 
 void hruntime_init_lowlevel()
 {
+    if(hruntime_init_lowlevel_done())
+    {
+        return;
+    }
+
     /*
      * 初始化第三方库
      */
     h3rdparty_init();
+
+    //标记初始化完成
+    hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOWLEVEL_INIT_DONE);
 }
 
+bool hruntime_init_lowlevel_done(void)
+{
+    return hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_LOWLEVEL_INIT_DONE);
+}
 
 void hruntime_init()
 {
+    if(!hruntime_init_lowlevel_done())
+    {
+        hruntime_init_lowlevel();
+    }
+
+    if(hruntime_init_done())
+    {
+        return;
+    }
 
 #ifdef HRUNTIME_USING_INIT_SECTION
     HRUNTIME_INIT_INVOKE();
@@ -41,10 +105,23 @@ void hruntime_init()
         }
     }
 
+    //标记初始化完成
+    hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_INIT_DONE);
+
+}
+
+bool hruntime_init_done(void)
+{
+    return hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_INIT_DONE);
 }
 
 void hruntime_loop()
 {
+    if(hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_LOOP_END))
+    {
+        hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_END);
+    }
+    hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN);
 
 #ifdef HRUNTIME_USING_LOOP_SECTION
     HRUNTIME_LOOP_INVOKE();
@@ -83,6 +160,22 @@ void hruntime_loop()
     }
 #endif
 
+    if(hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN))
+    {
+        hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN);
+    }
+    hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_END);
+
+}
+
+bool hruntime_loop_begin(void)
+{
+    return hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN);
+}
+
+bool hruntime_loop_end(void)
+{
+    return hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_LOOP_END);
 }
 
 void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t array_size)
