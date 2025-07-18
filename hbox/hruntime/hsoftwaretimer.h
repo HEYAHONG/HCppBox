@@ -66,6 +66,7 @@ enum
     HSOFTWARETIMER_FLAG_INIT            =   (1UL << (0)),   /**< 定时器是否初始化 */
     HSOFTWARETIMER_FLAG_START           =   (1UL << (1)),   /**< 定时器是否启动 */
     HSOFTWARETIMER_FLAG_PERIODIC        =   (1UL << (2)),   /**< 定时器是否是周期性的 */
+    HSOFTWARETIMER_FLAG_DELETE          =   (1UL << (3)),   /**< 定时器是否被删除（用户不应再使用具有此标志的定时器） */
 };
 
 /** \brief 检查定时器标志

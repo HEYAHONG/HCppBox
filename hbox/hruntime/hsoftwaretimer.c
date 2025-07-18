@@ -68,6 +68,35 @@ void hsoftwaretimer_mainloop(void)
     hsoftwaretimer_default_timer_init();
     hdefaults_tick_t current_tick=hdefaults_tick_get();
     hsoftwaretimer_lock();
+    {
+        //删除已被删除的定时器
+        bool all_delete_timer_gc=false;
+        while(!all_delete_timer_gc)
+        {
+            all_delete_timer_gc=true;
+            hsoftwaretimer_timer_t *timer=NULL;
+            HDOUBLYLINKEDLIST_FOREACH(&hsoftwaretimer_default_timer.node,timer_node)
+            {
+               timer=(hsoftwaretimer_timer_t *)GET_STRUCT_PTR_BY_MEMBER_PTR(timer_node,hsoftwaretimer_timer_t,node);
+               if(hsoftwaretimer_timer_check_flags(timer,HSOFTWARETIMER_FLAG_DELETE))
+               {
+                   all_delete_timer_gc=false;
+                   break;
+               }
+            }
+            if(!all_delete_timer_gc)
+            {
+                if(timer!=NULL && timer!=&hsoftwaretimer_default_timer)
+                {
+                    /*
+                     * 从定时器链表中移除
+                     */
+                    hdoublylinkedlist_remove(&timer->node);
+                    hfree(timer);
+                }
+            }
+        }
+    }
     HDOUBLYLINKEDLIST_FOREACH(&hsoftwaretimer_default_timer.node,timer_node)
     {
         hsoftwaretimer_timer_t *timer=(hsoftwaretimer_timer_t *)GET_STRUCT_PTR_BY_MEMBER_PTR(timer_node,hsoftwaretimer_timer_t,node);
@@ -231,13 +260,10 @@ void hsoftwaretimer_timer_delete(hsoftwaretimer_timer_t * timer)
         return;
     }
 
+    hsoftwaretimer_timer_stop(timer);
     hsoftwaretimer_lock();
-    /*
-     * 从定时器链表中移除
-     */
-    hdoublylinkedlist_remove(&timer->node);
+    timer->flags|=HSOFTWARETIMER_FLAG_DELETE;
     hsoftwaretimer_unlock();
 
-    hfree(timer);
 }
 
