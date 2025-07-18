@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hruntime.h"
+#include "hsoftwaretimer.h"
 #include "h3rdparty.h"
 #include "hevent.h"
 #include "stdbool.h"
@@ -151,6 +152,11 @@ void hruntime_loop()
             heventloop_process_event(loop_workqueue);
         }
     }
+
+    /*
+     * 定时器循环
+     */
+    hsoftwaretimer_loop_hruntime();
 
 #if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETTIMEOFDAY) && !defined(HGETTIMEOFDAY)
     /*
