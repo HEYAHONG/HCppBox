@@ -404,3 +404,42 @@ void heventslots_set_slots_to_table(int id,heventslots_t *slots)
     hdefaults_get_api_table()->mutex_unlock(NULL);
 }
 
+uint32_t heventslots_register_system_init_slot(void *slot_usr,void (*slot)(void *,void *),void (*onfree)(void *))
+{
+    uint32_t ret=0;
+    heventslots_t *eventslots=heventslots_get_slots_from_table(HEVENTSLOTS_SYSTEM_SLOTS_INIT);
+    if(eventslots!=NULL)
+    {
+        ret=heventslots_register_slot(eventslots,slot_usr,slot,onfree);
+    }
+    return ret;
+}
+
+void heventslots_unregister_system_init_slot(uint32_t id)
+{
+    heventslots_t *eventslots=heventslots_get_slots_from_table(HEVENTSLOTS_SYSTEM_SLOTS_INIT);
+    if(eventslots!=NULL)
+    {
+        heventslots_unregister_slot(eventslots,id);
+    }
+}
+
+uint32_t heventslots_register_system_loop_slot(void *slot_usr,void (*slot)(void *,void *),void (*onfree)(void *))
+{
+    uint32_t ret=0;
+    heventslots_t *eventslots=heventslots_get_slots_from_table(HEVENTSLOTS_SYSTEM_SLOTS_LOOP);
+    if(eventslots!=NULL)
+    {
+        ret=heventslots_register_slot(eventslots,slot_usr,slot,onfree);
+    }
+    return ret;
+}
+
+void heventslots_unregister_system_loop_slot(uint32_t id)
+{
+    heventslots_t *eventslots=heventslots_get_slots_from_table(HEVENTSLOTS_SYSTEM_SLOTS_LOOP);
+    if(eventslots!=NULL)
+    {
+        heventslots_unregister_slot(eventslots,id);
+    }
+}

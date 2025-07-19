@@ -183,6 +183,46 @@ heventslots_t *heventslots_get_slots_from_table(int id);
 void heventslots_set_slots_to_table(int id,heventslots_t *slots);
 
 
+/** \brief 注册系统初始化槽函数,系统初始化时底层已初始化完成，当底层初始化需要将工作转移至初始化完成后运行时可使用初始化槽
+ *
+ * \param slot_usr void*槽中的用户参数
+ * \param slot 槽函数,第一个参数为信号,第二个参数为用户参数。
+ * \param onfree 槽释放回调,第一个参数为用户参数。
+ * \return uint32_t 注册id,为0表示失败
+ *
+ */
+
+uint32_t heventslots_register_system_init_slot(void *slot_usr,void (*slot)(void *,void *),void (*onfree)(void *));
+
+
+/** \brief 取消槽系统初始化函数注册
+ *
+ * \param id uint32_t 注册id,由注册时返回
+ *
+ */
+void heventslots_unregister_system_init_slot(uint32_t id);
+
+
+/** \brief 注册系统循环槽函数,系统循环槽可用于动态管理系统循环中运行的任务
+ *
+ * \param slot_usr void*槽中的用户参数
+ * \param slot 槽函数,第一个参数为信号,第二个参数为用户参数。
+ * \param onfree 槽释放回调,第一个参数为用户参数。
+ * \return uint32_t 注册id,为0表示失败
+ *
+ */
+
+uint32_t heventslots_register_system_loop_slot(void *slot_usr,void (*slot)(void *,void *),void (*onfree)(void *));
+
+
+/** \brief 取消槽系统循环函数注册
+ *
+ * \param id uint32_t 注册id,由注册时返回
+ *
+ */
+void heventslots_unregister_system_loop_slot(uint32_t id);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

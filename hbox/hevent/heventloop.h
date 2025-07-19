@@ -208,6 +208,16 @@ heventloop_t *heventloop_get_loop_from_table(int id);
  */
 void heventloop_set_loop_to_table(int id,heventloop_t *loop);
 
+/** \brief 向工作队列添加事件，即将工作转移到另外的线程处理
+ *
+ * \param  event_usr void* 事件中的用户参数
+ * \param  event_process 事件处理,第一个参数为用户参数,第二个参数为heventloop_t指针。
+ * \param  event_onfree  事件释放回调,第一个参数为用户参数,第二个参数为heventloop_t指针。通常用于释放用户参数。
+ * \return bool 是否添加成功,当内存不足或者到达最大事件数时将添加失败。
+ *
+ */
+bool heventloop_workqueue_add_event(void *event_usr,void(*event_process)(void *),void(*event_onfree)(void *));
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

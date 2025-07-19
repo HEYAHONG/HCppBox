@@ -450,3 +450,14 @@ void heventloop_set_loop_to_table(int id,heventloop_t *loop)
     hdefaults_get_api_table()->mutex_unlock(NULL);
 }
 
+bool heventloop_workqueue_add_event(void *event_usr,void(*event_process)(void *),void(*event_onfree)(void *))
+{
+    bool ret=false;
+    heventloop_t *eventloop=heventloop_get_loop_from_table(HEVENTLOOP_SYSTEM_LOOP_WORKQUEUE);
+    if(eventloop!=NULL)
+    {
+        ret=heventloop_add_event(eventloop,event_usr,event_process,event_onfree);
+    }
+    return ret;
+}
+
