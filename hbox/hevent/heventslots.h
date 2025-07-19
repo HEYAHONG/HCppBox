@@ -203,6 +203,13 @@ uint32_t heventslots_register_system_init_slot(void *slot_usr,void (*slot)(void 
 void heventslots_unregister_system_init_slot(uint32_t id);
 
 
+/** \brief 清理系统初始化槽,可用于释放部分内存
+ *
+ *
+ */
+void heventslots_system_init_cleanup(void);
+
+
 /** \brief 注册系统循环槽函数,系统循环槽可用于动态管理系统循环中运行的任务
  *
  * \param slot_usr void*槽中的用户参数
