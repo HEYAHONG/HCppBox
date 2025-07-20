@@ -454,6 +454,11 @@ bool heventloop_workqueue_add_event(void *event_usr,void(*event_process)(void *)
 {
     bool ret=false;
     heventloop_t *eventloop=heventloop_get_loop_from_table(HEVENTLOOP_SYSTEM_LOOP_WORKQUEUE);
+    if(eventloop==NULL)
+    {
+        heventloop_set_loop_to_table(HEVENTLOOP_SYSTEM_LOOP_WORKQUEUE,NULL);
+    }
+    eventloop=heventloop_get_loop_from_table(HEVENTLOOP_SYSTEM_LOOP_WORKQUEUE);
     if(eventloop!=NULL)
     {
         ret=heventloop_add_event(eventloop,event_usr,event_process,event_onfree);
