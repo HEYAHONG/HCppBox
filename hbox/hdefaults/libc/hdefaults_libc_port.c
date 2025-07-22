@@ -32,4 +32,5 @@
 #include "wrapper/hfread.c"
 #include "wrapper/hfwrite.c"
 #include "wrapper/htime.c"
+#include "wrapper/hclock.c"
 
