@@ -23,12 +23,12 @@ extern "C"
 void *HCPPGuiInit(void);
 
 
-
+#if defined(HDEFAULTS_OS_WINDOWS) && !defined(HCPPGUI_NO_GUI)
 #ifdef main
 //windows下,SDL库会重新定义main为SDL_main,在此处取消定义
 #undef main
 #endif // main
-
+#endif
 
 
 #ifdef __cplusplus

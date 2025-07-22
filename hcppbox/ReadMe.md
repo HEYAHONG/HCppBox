@@ -68,8 +68,8 @@
 
 ### 文件列表
 
-- HCPPObjectPool.cpp  
-- HCPPObjectPool.h
+- [HCPPObjectPool.cpp](HCPPObjectPool.cpp)  
+- [HCPPObjectPool.h](HCPPObjectPool.h)
 
 ## HCPPThread
 
@@ -77,8 +77,8 @@
 
 ### 文件列表
 
-- HCPPThread.cpp
-- HCPPThread.h
+- [HCPPThread.cpp](HCPPThread.cpp)
+- [HCPPThread.h](HCPPThread.h)
 
 ## HCPPTimer
 
@@ -86,8 +86,8 @@
 
 ### 文件列表
 
-- HCPPTimer.cpp
-- HCPPTimer.h
+- [HCPPTimer.cpp](HCPPTimer.cpp)
+- [HCPPTimer.h](HCPPTimer.h)
 
 ##  HCPPSocket
 
@@ -95,10 +95,10 @@
 
 ### 文件列表
 
-- HCPPSocket.cpp
-- HCPPSocketCygwinHelper.cpp
+- [HCPPSocket.cpp](HCPPSocket.cpp)
+- [HCPPSocketCygwinHelper.cpp](HCPPSocketCygwinHelper.cpp)
 
-- HCPPSocket.h
+- [HCPPSocket.h](HCPPSocket.h)
 
 ## HCPPInit
 
@@ -106,8 +106,8 @@
 
 ### 文件列表
 
-- HCPPInit.cpp
-- HCPPInit.h
+- [HCPPInit.cpp](HCPPInit.cpp)
+- [HCPPInit.h](HCPPInit.h)
 
 ## HCPPGui
 
@@ -119,5 +119,13 @@
 
 ### 文件列表
 
-- HCPPGui.cpp
-- HCPPGui.h
+- [HCPPGui.cpp](HCPPGui.cpp)
+- [HCPPGui.h](HCPPGui.h)
+
+### 宏定义
+
+可外部配置的宏定义如下:
+
+| 宏定义           | 说明                  | 备注                                                 |
+| ---------------- | --------------------- | ---------------------------------------------------- |
+| `HCPPGUI_NO_GUI` | 默认不使用HCPPGui组件 | 推荐在不使用HCPPGui时(尤其是使用其它GUI框架时)定义。 |
