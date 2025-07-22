@@ -31,4 +31,5 @@
 #include "wrapper/hferror.c"
 #include "wrapper/hfread.c"
 #include "wrapper/hfwrite.c"
+#include "wrapper/htime.c"
 
