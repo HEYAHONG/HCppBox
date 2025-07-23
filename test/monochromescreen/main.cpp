@@ -402,6 +402,7 @@ static  const hgui_scene1_screen_base_t main1_screen=
                         hgui_scene1_app_screen_stack_pop(&g_hgui_scene1_app);
                     }
                     break;
+                    case HGUI_GUI_EVENT_KEY_VALUE_d:
                     case HGUI_GUI_EVENT_KEY_VALUE_RIGHT:
                     {
                         //右键
