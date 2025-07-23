@@ -9,7 +9,7 @@
 
 #include "hcompiler.h"
 #include "hdefaults.h"
-
+#include "time.h"
 
 #ifdef __RTTHREAD__
 #include "rtthread.h"
@@ -56,6 +56,13 @@ static hdefaults_tick_t do_hdefaults_tick_get(void)
 #elif defined(HDEFAULTS_OS_WINDOWS)
     return GetTickCount();
 #elif defined(HDEFAULTS_OS_UNIX)
+#if defined(CLOCK_MONOTONIC)
+    {
+        struct timespec ts={0};
+        clock_gettime(CLOCK_MONOTONIC,&ts);
+        return ts.tv_sec*1000ULL+ts.tv_nsec/1000000ULL;
+    }
+#else
     {
         hdefaults_tick_t ret=0;
         struct timeval tv= {0};
@@ -65,8 +72,9 @@ static hdefaults_tick_t do_hdefaults_tick_get(void)
         ret+=tv.tv_usec/1000;
         return ret;
     }
+#endif
 #else
-    return 0;//默认永远返回0
+    return 1000ULL*clock()/(CLOCKS_PER_SEC);
 #endif // HDEFAULTS_TICK_GET
 }
 

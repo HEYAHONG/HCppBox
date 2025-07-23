@@ -19,11 +19,7 @@ clock_t hclock(void)
 #if defined(HCLOCK)
     return HCLOCK();
 #elif HDEFAULTS_LIBC_OPTIMIZE_LEVEL > 0
-    {
-        hgettimeofday_timeval_t tv= {0};
-        hgettimeofday(&tv,NULL);
-        return tv.tv_sec*CLOCKS_PER_SEC+tv.tv_usec/(1000000/CLOCKS_PER_SEC);
-    }
+    return ((uint64_t)hdefaults_tick_get())*CLOCKS_PER_SEC/1000;
 #else
     return clock();
 #endif
