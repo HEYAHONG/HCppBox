@@ -27,3 +27,14 @@ else()
 message(STATUS "Disable imageresourcegenerate_tool!" )
 endif()
 
+find_package(wxWidgets 3.2.0 QUIET)
+if(WXWIDGETS_FOUND)
+#添加hguitools工具构建
+add_custom_target(hguitools_tool  ${CMAKE_COMMAND} -E make_directory hguitools && ${CMAKE_COMMAND}  -S ${CMAKE_CURRENT_SOURCE_DIR}/hguitools/ -B hguitools && ${CMAKE_COMMAND} --build hguitools
+                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+                                    USES_TERMINAL)
+add_dependencies(hgui_tools hguitools_tool)
+message(STATUS "Enable hguitools_tool!" )
+else()
+message(STATUS "Disable hguitools_tool!" )
+endif()

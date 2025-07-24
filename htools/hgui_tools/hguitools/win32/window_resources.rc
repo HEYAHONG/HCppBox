@@ -1,0 +1,35 @@
+
+#ifdef __GNUC__
+1  24    "window_resources.manifest"
+#endif
+MAINICON ICON "window_resources.ico"
+
+#include "Version.h"
+
+#define VERSIONINT  PROJECT_MAJOR_VERSION,PROJECT_MINOR_VERSION,PROJECT_REVISION_VERSION,PROJECT_BUILD_VERSION
+#define VERSIONSTR  PROJECT_VERSION_STR
+
+1 VERSIONINFO
+    FILEVERSION     VERSIONINT
+    PRODUCTVERSION  VERSIONINT
+    BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "何亚红"
+            VALUE "FileDescription", "hguitools "
+            VALUE "FileVersion", VERSIONSTR
+            VALUE "InternalName", "hguitools By HYH"
+            VALUE "LegalCopyright", "Copyright hyhsystem.cn"
+            VALUE "OriginalFilename", "hguitools.exe"
+            VALUE "ProductName", "hguitools BY 何亚红"
+            VALUE "ProductVersion", VERSIONSTR
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 2052, 1200
+    END
+END
+
