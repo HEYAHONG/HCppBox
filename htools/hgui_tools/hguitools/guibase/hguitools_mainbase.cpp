@@ -71,6 +71,9 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	maingSizer->Add( mainauinotebook, 1, wxEXPAND | wxALL, 5 );
 
 
+	maingSizer->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
 	mainpanel->SetSizer( maingSizer );
 	mainpanel->Layout();
 	maingSizer->Fit( mainpanel );
