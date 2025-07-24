@@ -20,6 +20,7 @@ enum
     HRUNTIME_INTERNAL_FLAG_INIT_DONE,
     HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN,
     HRUNTIME_INTERNAL_FLAG_LOOP_END,
+    HRUNTIME_INTERNAL_FLAG_LOOP_DISABLE_SOFTWARETIMER,
     HRUNTIME_INTERNAL_FLAG_END
 };
 
@@ -156,7 +157,10 @@ void hruntime_loop()
     /*
      * 定时器循环
      */
-    hsoftwaretimer_loop_hruntime();
+    if(!hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_LOOP_DISABLE_SOFTWARETIMER))
+    {
+        hsoftwaretimer_loop_hruntime();
+    }
 
 #if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETTIMEOFDAY) && !defined(HGETTIMEOFDAY)
     /*
@@ -183,6 +187,18 @@ bool hruntime_loop_begin(void)
 bool hruntime_loop_end(void)
 {
     return hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_LOOP_END);
+}
+
+void hruntime_loop_enable_softwaretimer(bool enable)
+{
+    if(enable)
+    {
+        hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_DISABLE_SOFTWARETIMER);
+    }
+    else
+    {
+        hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_DISABLE_SOFTWARETIMER);
+    }
 }
 
 void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t array_size)

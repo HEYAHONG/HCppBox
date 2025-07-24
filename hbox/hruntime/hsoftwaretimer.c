@@ -77,12 +77,12 @@ void hsoftwaretimer_mainloop(void)
             hsoftwaretimer_timer_t *timer=NULL;
             HDOUBLYLINKEDLIST_FOREACH(&hsoftwaretimer_default_timer.node,timer_node)
             {
-               timer=(hsoftwaretimer_timer_t *)GET_STRUCT_PTR_BY_MEMBER_PTR(timer_node,hsoftwaretimer_timer_t,node);
-               if(hsoftwaretimer_timer_check_flags(timer,HSOFTWARETIMER_FLAG_DELETE))
-               {
-                   all_delete_timer_gc=false;
-                   break;
-               }
+                timer=(hsoftwaretimer_timer_t *)GET_STRUCT_PTR_BY_MEMBER_PTR(timer_node,hsoftwaretimer_timer_t,node);
+                if(hsoftwaretimer_timer_check_flags(timer,HSOFTWARETIMER_FLAG_DELETE))
+                {
+                    all_delete_timer_gc=false;
+                    break;
+                }
             }
             if(!all_delete_timer_gc)
             {

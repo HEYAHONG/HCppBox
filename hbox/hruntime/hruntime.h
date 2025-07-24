@@ -65,6 +65,13 @@ bool hruntime_loop_begin(void);
 bool hruntime_loop_end(void);
 
 
+/** \brief hruntime启用软件定时器,注意：此函数应当在初始化时调用，运行过程中尽量不要使用
+ *
+ * \param enable bool 是否启用
+ *
+ */
+void hruntime_loop_enable_softwaretimer(bool enable);
+
 /*
  * 运行时函数(用于初始化或者循环中使用)
  */
