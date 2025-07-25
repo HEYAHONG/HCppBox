@@ -14,6 +14,7 @@
 #include "hguitoolsMain.h"
 #include "common_wxwidgets.h"
 #include "Version.h"
+#include <wx/fontutil.h>
 #include <wx/log.h>
 #include <wx/filedlg.h>
 #include <wx/file.h>
@@ -34,7 +35,7 @@ hguitoolsFrame::hguitoolsFrame(wxFrame *frame)
     {
         //设置日志窗口
         wxFont font=m_textCtrl_log->GetFont();
-        m_textCtrl_log->SetFont(*wxTheFontList->FindOrCreateFont(1,wxFONTFAMILY_TELETYPE,font.GetStyle(),font.GetWeight()));
+        m_textCtrl_log->SetFont(*wxTheFontList->FindOrCreateFont(font.GetNativeFontInfo()->GetPointSize(),wxFONTFAMILY_TELETYPE,font.GetStyle(),font.GetWeight()));
         wxLogTextCtrl *logger=new wxLogTextCtrl(m_textCtrl_log);
         wxLog *oldlog=wxLog::SetActiveTarget(logger);
         if(oldlog!=NULL)
@@ -45,8 +46,8 @@ hguitoolsFrame::hguitoolsFrame(wxFrame *frame)
     {
         //设定dotfontscan窗口
         wxFont font=dotfontscan_scintilla_c_source->GetFont();
-        dotfontscan_scintilla_c_source->SetFont(*wxTheFontList->FindOrCreateFont(1,wxFONTFAMILY_TELETYPE,font.GetStyle(),font.GetWeight()));
-        dotfontscan_scintilla_c_source->StyleSetFont(0,*wxTheFontList->FindOrCreateFont(1,wxFONTFAMILY_TELETYPE,font.GetStyle(),font.GetWeight()));
+        dotfontscan_scintilla_c_source->SetFont(*wxTheFontList->FindOrCreateFont(font.GetNativeFontInfo()->GetPointSize(),wxFONTFAMILY_TELETYPE,font.GetStyle(),font.GetWeight()));
+        dotfontscan_scintilla_c_source->StyleSetFont(0,*wxTheFontList->FindOrCreateFont(font.GetNativeFontInfo()->GetPointSize(),wxFONTFAMILY_TELETYPE,font.GetStyle(),font.GetWeight()));
     }
     hcppbox_init();
     {
@@ -156,7 +157,7 @@ void hguitoolsFrame::dotdontscan_start_OnButtonClick( wxCommandEvent& event )
             }
             wxImage image;
             {
-                wxBitmap bmp(w*10,h*10);
+                wxBitmap bmp(1000,1000);
                 {
                     wxMemoryDC dc(bmp);
                     dc.SetFont(font);
