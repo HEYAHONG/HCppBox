@@ -1,4 +1,5 @@
 #include "common_wxwidgets.h"
+#include <wx/image.h>
 #include "thread"
 #include <atomic>
 #include <chrono>
@@ -33,6 +34,8 @@ void hcppbox_init(void)
         std::thread hcppbox_thread(hcppbox_thread_entry);
         hcppbox_thread.detach();
     }
+
+    wxInitAllImageHandlers();
 }
 
 void hcppbox_deinit(void)

@@ -25,6 +25,7 @@
 #include <wx/sizer.h>
 #include <wx/button.h>
 #include <wx/panel.h>
+#include <wx/stc/stc.h>
 #include <wx/aui/auibook.h>
 #include <wx/textctrl.h>
 #include <wx/timer.h>
@@ -54,9 +55,11 @@ class mainframe : public wxFrame
 		wxPanel* mainpanel;
 		wxAuiNotebook* mainauinotebook;
 		wxPanel* dotfontscanpanel;
+		wxPanel* dotfontscan_panel_op;
 		wxStaticText* m_staticText1;
 		wxFontPickerCtrl* m_fontPicker_dotfontscan;
 		wxButton* m_button_start;
+		wxStyledTextCtrl* dotfontscan_scintilla_c_source;
 		wxPanel* logspanel;
 		wxAuiNotebook* logsauinotebook;
 		wxPanel* logsmainpanel;
