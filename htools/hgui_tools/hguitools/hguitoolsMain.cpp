@@ -264,6 +264,29 @@ void hguitoolsFrame::dotdontscan_start_OnButtonClick( wxCommandEvent& event )
     dotfontscan_scintilla_c_source->SetText(outputdata);
 }
 
+class bitmap_preview:public imageresourcegenerate_dialog_preview
+{
+private:
+    static bitmap_preview *oldptr;
+public:
+    bitmap_preview( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxCAPTION|wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX ):imageresourcegenerate_dialog_preview(parent,id,title,pos,size,style)
+    {
+        if(oldptr!=NULL)
+        {
+            oldptr->Destroy();
+        }
+        oldptr=this;
+    }
+    virtual ~bitmap_preview()
+    {
+        if(oldptr==this)
+        {
+            oldptr=NULL;
+        }
+    }
+};
+bitmap_preview *bitmap_preview::oldptr=NULL;
+
 void hguitoolsFrame::imageresourcegenerate_load_OnButtonClick( wxCommandEvent& event )
 {
     wxFileDialog SourceFileDialog(this, wxT("选择加载的图片"),wxT(""), wxT(""),wxT("*"), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
@@ -282,16 +305,11 @@ void hguitoolsFrame::imageresourcegenerate_load_OnButtonClick( wxCommandEvent& e
     int w=image.GetWidth();
     int h=image.GetHeight();
     wxLogMessage(wxT("图片大小：%dX%d "),(int)w,(int)h);
-    static imageresourcegenerate_dialog_preview *bitmap_preview=NULL;
-    if(bitmap_preview!=NULL)
-    {
-        bitmap_preview->Destroy();
-    }
-    bitmap_preview=new imageresourcegenerate_dialog_preview(this,wxID_ANY,SourceFileDialog.GetPath(),wxDefaultPosition,wxSize((w>300?w:300)+20,(h>300?h:300)+20));
-    bitmap_preview->SetSize(wxSize(wxSize((w>300?w:300)+20,(h>300?h:300)+40)));
-    bitmap_preview->imageresourcegenerate_bitmap_preview->SetBitmap(image);
-    bitmap_preview->Layout();
-    bitmap_preview->Show();
+    bitmap_preview *bitmap=new bitmap_preview(this,wxID_ANY,SourceFileDialog.GetPath(),wxDefaultPosition,wxSize((w>300?w:300)+20,(h>300?h:300)+20));
+    bitmap->SetSize(wxSize(wxSize((w>300?w:300)+20,(h>300?h:300)+40)));
+    bitmap->imageresourcegenerate_bitmap_preview->SetBitmap(image);
+    bitmap->Layout();
+    bitmap->Show();
     std::string outputdata;
     {
         std::string output_var_base="custom";
