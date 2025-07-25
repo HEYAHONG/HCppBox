@@ -21,6 +21,20 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_statusBar->SetMinSize( wxSize( -1,20 ) );
 
 	m_menubar = new wxMenuBar( 0 );
+	m_menu_file = new wxMenu();
+	wxMenuItem* m_menu_file_quit;
+	m_menu_file_quit = new wxMenuItem( m_menu_file, ID_MENU_FILE_QUIT, wxString( _("退出") ) + wxT('\t') + wxT("Ctrl + Q"), wxEmptyString, wxITEM_NORMAL );
+	m_menu_file->Append( m_menu_file_quit );
+
+	m_menubar->Append( m_menu_file, _("文件") );
+
+	m_menu_help = new wxMenu();
+	wxMenuItem* m_menu_help_about;
+	m_menu_help_about = new wxMenuItem( m_menu_help, ID_MENU_HELP_ABOUT, wxString( _("关于") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menu_help->Append( m_menu_help_about );
+
+	m_menubar->Append( m_menu_help, _("帮助") );
+
 	this->SetMenuBar( m_menubar );
 
 	mainpanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
@@ -113,6 +127,8 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	this->Centre( wxBOTH );
 
 	// Connect Events
+	m_menu_file->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnQuit ), this, m_menu_file_quit->GetId());
+	m_menu_help->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnAbout ), this, m_menu_help_about->GetId());
 	m_fontPicker_dotfontscan->Connect( wxEVT_COMMAND_FONTPICKER_CHANGED, wxFontPickerEventHandler( mainframe::dotfontscan_OnFontChanged ), NULL, this );
 	m_button_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::dotdontscan_start_OnButtonClick ), NULL, this );
 	this->Connect( m_timer_ms.GetId(), wxEVT_TIMER, wxTimerEventHandler( mainframe::OnMSTimer ) );

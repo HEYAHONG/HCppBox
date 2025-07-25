@@ -16,14 +16,14 @@
 #include <wx/colour.h>
 #include <wx/settings.h>
 #include <wx/string.h>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#include <wx/icon.h>
 #include <wx/menu.h>
 #include <wx/stattext.h>
 #include <wx/fontpicker.h>
 #include <wx/sizer.h>
 #include <wx/button.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/icon.h>
 #include <wx/panel.h>
 #include <wx/aui/auibook.h>
 #include <wx/textctrl.h>
@@ -41,8 +41,16 @@ class mainframe : public wxFrame
 	private:
 
 	protected:
+		enum
+		{
+			ID_MENU_FILE_QUIT = 6000,
+			ID_MENU_HELP_ABOUT,
+		};
+
 		wxStatusBar* m_statusBar;
 		wxMenuBar* m_menubar;
+		wxMenu* m_menu_file;
+		wxMenu* m_menu_help;
 		wxPanel* mainpanel;
 		wxAuiNotebook* mainauinotebook;
 		wxPanel* dotfontscanpanel;
@@ -56,6 +64,8 @@ class mainframe : public wxFrame
 		wxTimer m_timer_ms;
 
 		// Virtual event handlers, override them in your derived class
+		virtual void OnQuit( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		virtual void dotfontscan_OnFontChanged( wxFontPickerEvent& event ) { event.Skip(); }
 		virtual void dotdontscan_start_OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMSTimer( wxTimerEvent& event ) { event.Skip(); }

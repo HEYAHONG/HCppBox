@@ -13,9 +13,11 @@
 
 #include "hguitoolsMain.h"
 #include "common_wxwidgets.h"
+#include "Version.h"
 #include <wx/log.h>
 #include <wx/filedlg.h>
 #include <wx/file.h>
+#include <wx/msgdlg.h>
 #include <set>
 
 hguitoolsFrame::hguitoolsFrame(wxFrame *frame)
@@ -58,7 +60,7 @@ void hguitoolsFrame::OnQuit(wxCommandEvent &event)
 
 void hguitoolsFrame::OnAbout(wxCommandEvent &event)
 {
-
+    wxMessageBox(wxString(wxT("hguitools ")+wxString(PROJECT_VERSION_STR)+wxT(" BY HEYAHONG")),wxT(" 关于"));
 }
 
 void hguitoolsFrame::dotfontscan_OnFontChanged( wxFontPickerEvent& event )
