@@ -18,11 +18,13 @@
 #include <wx/filedlg.h>
 #include <wx/file.h>
 #include <wx/msgdlg.h>
+#include "hguitools.xpm"
 #include <set>
 
 hguitoolsFrame::hguitoolsFrame(wxFrame *frame)
     : mainframe(frame)
 {
+    SetIcon(wxIcon(hguitools_xpm));
     wxLog::EnableLogging(true);
     {
         //设置日志窗口
