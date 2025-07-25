@@ -125,7 +125,63 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	dotfontscanpanel->SetSizer( dotfontscanbSizer );
 	dotfontscanpanel->Layout();
 	dotfontscanbSizer->Fit( dotfontscanpanel );
-	mainauinotebook->AddPage( dotfontscanpanel, _("dotfontscan"), false, wxNullBitmap );
+	mainauinotebook->AddPage( dotfontscanpanel, _("dotfontscan"), true, wxNullBitmap );
+	imageresourcegeneratepanel = new wxPanel( mainauinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* imageresourcegeneratebSizer;
+	imageresourcegeneratebSizer = new wxBoxSizer( wxVERTICAL );
+
+	wxBoxSizer* imageresourcegenerate_preview_bSizer;
+	imageresourcegenerate_preview_bSizer = new wxBoxSizer( wxHORIZONTAL );
+
+	imageresourcegenerate_scintilla_c_source = new wxStyledTextCtrl( imageresourcegeneratepanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, wxEmptyString );
+	imageresourcegenerate_scintilla_c_source->SetUseTabs( true );
+	imageresourcegenerate_scintilla_c_source->SetTabWidth( 4 );
+	imageresourcegenerate_scintilla_c_source->SetIndent( 4 );
+	imageresourcegenerate_scintilla_c_source->SetTabIndents( true );
+	imageresourcegenerate_scintilla_c_source->SetBackSpaceUnIndents( true );
+	imageresourcegenerate_scintilla_c_source->SetViewEOL( false );
+	imageresourcegenerate_scintilla_c_source->SetViewWhiteSpace( false );
+	imageresourcegenerate_scintilla_c_source->SetMarginWidth( 2, 0 );
+	imageresourcegenerate_scintilla_c_source->SetIndentationGuides( true );
+	imageresourcegenerate_scintilla_c_source->SetReadOnly( false );
+	imageresourcegenerate_scintilla_c_source->SetMarginType( 1, wxSTC_MARGIN_SYMBOL );
+	imageresourcegenerate_scintilla_c_source->SetMarginMask( 1, wxSTC_MASK_FOLDERS );
+	imageresourcegenerate_scintilla_c_source->SetMarginWidth( 1, 16);
+	imageresourcegenerate_scintilla_c_source->SetMarginSensitive( 1, true );
+	imageresourcegenerate_scintilla_c_source->SetProperty( wxT("fold"), wxT("1") );
+	imageresourcegenerate_scintilla_c_source->SetFoldFlags( wxSTC_FOLDFLAG_LINEBEFORE_CONTRACTED | wxSTC_FOLDFLAG_LINEAFTER_CONTRACTED );
+	imageresourcegenerate_scintilla_c_source->SetMarginType( 0, wxSTC_MARGIN_NUMBER );
+	imageresourcegenerate_scintilla_c_source->SetMarginWidth( 0, imageresourcegenerate_scintilla_c_source->TextWidth( wxSTC_STYLE_LINENUMBER, wxT("_99999") ) );
+	imageresourcegenerate_scintilla_c_source->MarkerDefine( wxSTC_MARKNUM_FOLDER, wxSTC_MARK_BOXPLUS );
+	imageresourcegenerate_scintilla_c_source->MarkerSetBackground( wxSTC_MARKNUM_FOLDER, wxColour( wxT("BLACK") ) );
+	imageresourcegenerate_scintilla_c_source->MarkerSetForeground( wxSTC_MARKNUM_FOLDER, wxColour( wxT("WHITE") ) );
+	imageresourcegenerate_scintilla_c_source->MarkerDefine( wxSTC_MARKNUM_FOLDEROPEN, wxSTC_MARK_BOXMINUS );
+	imageresourcegenerate_scintilla_c_source->MarkerSetBackground( wxSTC_MARKNUM_FOLDEROPEN, wxColour( wxT("BLACK") ) );
+	imageresourcegenerate_scintilla_c_source->MarkerSetForeground( wxSTC_MARKNUM_FOLDEROPEN, wxColour( wxT("WHITE") ) );
+	imageresourcegenerate_scintilla_c_source->MarkerDefine( wxSTC_MARKNUM_FOLDERSUB, wxSTC_MARK_EMPTY );
+	imageresourcegenerate_scintilla_c_source->MarkerDefine( wxSTC_MARKNUM_FOLDEREND, wxSTC_MARK_BOXPLUS );
+	imageresourcegenerate_scintilla_c_source->MarkerSetBackground( wxSTC_MARKNUM_FOLDEREND, wxColour( wxT("BLACK") ) );
+	imageresourcegenerate_scintilla_c_source->MarkerSetForeground( wxSTC_MARKNUM_FOLDEREND, wxColour( wxT("WHITE") ) );
+	imageresourcegenerate_scintilla_c_source->MarkerDefine( wxSTC_MARKNUM_FOLDEROPENMID, wxSTC_MARK_BOXMINUS );
+	imageresourcegenerate_scintilla_c_source->MarkerSetBackground( wxSTC_MARKNUM_FOLDEROPENMID, wxColour( wxT("BLACK") ) );
+	imageresourcegenerate_scintilla_c_source->MarkerSetForeground( wxSTC_MARKNUM_FOLDEROPENMID, wxColour( wxT("WHITE") ) );
+	imageresourcegenerate_scintilla_c_source->MarkerDefine( wxSTC_MARKNUM_FOLDERMIDTAIL, wxSTC_MARK_EMPTY );
+	imageresourcegenerate_scintilla_c_source->MarkerDefine( wxSTC_MARKNUM_FOLDERTAIL, wxSTC_MARK_EMPTY );
+	imageresourcegenerate_scintilla_c_source->SetSelBackground( true, wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
+	imageresourcegenerate_scintilla_c_source->SetSelForeground( true, wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHTTEXT ) );
+	imageresourcegenerate_preview_bSizer->Add( imageresourcegenerate_scintilla_c_source, 1, wxEXPAND | wxALL, 5 );
+
+
+	imageresourcegeneratebSizer->Add( imageresourcegenerate_preview_bSizer, 1, wxEXPAND, 5 );
+
+	imageresourcegenerate_button_load = new wxButton( imageresourcegeneratepanel, wxID_ANY, _("加载"), wxDefaultPosition, wxDefaultSize, 0 );
+	imageresourcegeneratebSizer->Add( imageresourcegenerate_button_load, 0, wxALL, 5 );
+
+
+	imageresourcegeneratepanel->SetSizer( imageresourcegeneratebSizer );
+	imageresourcegeneratepanel->Layout();
+	imageresourcegeneratebSizer->Fit( imageresourcegeneratepanel );
+	mainauinotebook->AddPage( imageresourcegeneratepanel, _("imageresourcegenerate"), false, wxNullBitmap );
 
 	maingSizer->Add( mainauinotebook, 1, wxEXPAND | wxALL, 5 );
 
@@ -148,7 +204,7 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	logsmaingSizer = new wxGridSizer( 0, 1, 0, 0 );
 
 	m_textCtrl_log = new wxTextCtrl( logsmainpanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxTE_AUTO_URL|wxTE_MULTILINE|wxTE_READONLY );
-	logsmaingSizer->Add( m_textCtrl_log, 0, wxALL|wxEXPAND, 5 );
+	logsmaingSizer->Add( m_textCtrl_log, 1, wxALL|wxEXPAND, 5 );
 
 
 	logsmainpanel->SetSizer( logsmaingSizer );
@@ -174,6 +230,7 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_menu_help->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnAbout ), this, m_menu_help_about->GetId());
 	m_fontPicker_dotfontscan->Connect( wxEVT_COMMAND_FONTPICKER_CHANGED, wxFontPickerEventHandler( mainframe::dotfontscan_OnFontChanged ), NULL, this );
 	m_button_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::dotdontscan_start_OnButtonClick ), NULL, this );
+	imageresourcegenerate_button_load->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::imageresourcegenerate_load_OnButtonClick ), NULL, this );
 	this->Connect( m_timer_ms.GetId(), wxEVT_TIMER, wxTimerEventHandler( mainframe::OnMSTimer ) );
 }
 
@@ -182,8 +239,31 @@ mainframe::~mainframe()
 	// Disconnect Events
 	m_fontPicker_dotfontscan->Disconnect( wxEVT_COMMAND_FONTPICKER_CHANGED, wxFontPickerEventHandler( mainframe::dotfontscan_OnFontChanged ), NULL, this );
 	m_button_start->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::dotdontscan_start_OnButtonClick ), NULL, this );
+	imageresourcegenerate_button_load->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::imageresourcegenerate_load_OnButtonClick ), NULL, this );
 	this->Disconnect( m_timer_ms.GetId(), wxEVT_TIMER, wxTimerEventHandler( mainframe::OnMSTimer ) );
 
 	m_mgr.UnInit();
 
+}
+
+imageresourcegenerate_dialog_preview::imageresourcegenerate_dialog_preview( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	wxBoxSizer* imageresourcegenerate_bSizer_preview;
+	imageresourcegenerate_bSizer_preview = new wxBoxSizer( wxVERTICAL );
+
+	imageresourcegenerate_bitmap_preview = new wxStaticBitmap( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
+	imageresourcegenerate_bSizer_preview->Add( imageresourcegenerate_bitmap_preview, 0, wxALL, 5 );
+
+
+	this->SetSizer( imageresourcegenerate_bSizer_preview );
+	this->Layout();
+	imageresourcegenerate_bSizer_preview->Fit( this );
+
+	this->Centre( wxBOTH );
+}
+
+imageresourcegenerate_dialog_preview::~imageresourcegenerate_dialog_preview()
+{
 }

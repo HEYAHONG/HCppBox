@@ -17,6 +17,7 @@
 #include <wx/fontutil.h>
 #include <wx/log.h>
 #include <wx/filedlg.h>
+#include <wx/statbmp.h>
 #include <wx/file.h>
 #include <wx/msgdlg.h>
 #include <wx/mstream.h>
@@ -261,6 +262,74 @@ void hguitoolsFrame::dotdontscan_start_OnButtonClick( wxCommandEvent& event )
         outputdata=stream.str();
     }
     dotfontscan_scintilla_c_source->SetText(outputdata);
+}
+
+void hguitoolsFrame::imageresourcegenerate_load_OnButtonClick( wxCommandEvent& event )
+{
+    wxFileDialog SourceFileDialog(this, wxT("选择加载的图片"),wxT(""), wxT(""),wxT("*"), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+    if(SourceFileDialog.ShowModal() == wxID_CANCEL)
+    {
+        wxLogMessage(wxT("已取消操作！"));
+        return;
+    }
+    wxLogMessage(wxT("准备打开文件 %s"),SourceFileDialog.GetPath());
+    wxImage image;
+    if(!image.LoadFile(SourceFileDialog.GetPath()))
+    {
+        wxLogMessage(wxT("图片读取失败！"));
+        return;
+    }
+    int w=image.GetWidth();
+    int h=image.GetHeight();
+    wxLogMessage(wxT("图片大小：%dX%d "),(int)w,(int)h);
+    static imageresourcegenerate_dialog_preview *bitmap_preview=NULL;
+    if(bitmap_preview!=NULL)
+    {
+        bitmap_preview->Destroy();
+    }
+    bitmap_preview=new imageresourcegenerate_dialog_preview(this,wxID_ANY,SourceFileDialog.GetPath(),wxDefaultPosition,wxSize(w,h));
+    bitmap_preview->imageresourcegenerate_bitmap_preview->SetBitmap(image);
+    bitmap_preview->Layout();
+    bitmap_preview->Show();
+    std::string outputdata;
+    {
+        std::string output_var_base="custom";
+        std::stringstream stream;
+        stream << "#include \"hgui.h\""<<std::endl;
+        {
+            stream << "const uint8_t " << "hrawimage_" << output_var_base << "_data[]=" << std::endl;
+            stream << "{" << std::endl;
+            uint8_t *data=new uint8_t[w*h*3];
+            for(size_t i=0; i<h; i++)
+            {
+                for(size_t j=0; j<w; j++)
+                {
+                    data[(i*w+j)*3+0]=image.GetRed(j,i);
+                    data[(i*w+j)*3+1]=image.GetGreen(j,i);
+                    data[(i*w+j)*3+2]=image.GetBlue(j,i);
+                }
+            }
+            for(size_t i=0; i<w *h*3; i++)
+            {
+                stream << std::to_string(data[i]) << ",";
+                if(i>0 && i%40==0)
+                {
+                    stream<< std::endl;
+                }
+            }
+            delete []data;
+            stream << "0" << std::endl;
+            stream << "};" << std::endl;
+
+            stream << "const hgui_gui_rawimage_t " << "hrawimage_" << output_var_base << "=" << std::endl;
+            stream << "{" << std::endl;
+            stream << std::to_string(w) << "," << std::to_string(h) << "," << "3" << "," << "hrawimage_" << output_var_base << "_data" << std::endl;
+            stream << "};" << std::endl;
+        }
+
+        outputdata=stream.str();
+    }
+    imageresourcegenerate_scintilla_c_source->SetText(wxString(outputdata.c_str()));
 }
 
 void hguitoolsFrame::OnMSTimer( wxTimerEvent& event )

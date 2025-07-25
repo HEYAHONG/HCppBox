@@ -24,6 +24,7 @@ public:
 protected:
     virtual void dotfontscan_OnFontChanged( wxFontPickerEvent& event );
     virtual void dotdontscan_start_OnButtonClick( wxCommandEvent& event );
+    virtual void imageresourcegenerate_load_OnButtonClick( wxCommandEvent& event );
     virtual void OnMSTimer( wxTimerEvent& event );
 private:
     virtual void OnClose(wxCloseEvent& event);

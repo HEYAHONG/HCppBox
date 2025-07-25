@@ -31,6 +31,8 @@
 #include <wx/timer.h>
 #include <wx/frame.h>
 #include <wx/aui/aui.h>
+#include <wx/statbmp.h>
+#include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -60,6 +62,9 @@ class mainframe : public wxFrame
 		wxFontPickerCtrl* m_fontPicker_dotfontscan;
 		wxButton* m_button_start;
 		wxStyledTextCtrl* dotfontscan_scintilla_c_source;
+		wxPanel* imageresourcegeneratepanel;
+		wxStyledTextCtrl* imageresourcegenerate_scintilla_c_source;
+		wxButton* imageresourcegenerate_button_load;
 		wxPanel* logspanel;
 		wxAuiNotebook* logsauinotebook;
 		wxPanel* logsmainpanel;
@@ -71,6 +76,7 @@ class mainframe : public wxFrame
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		virtual void dotfontscan_OnFontChanged( wxFontPickerEvent& event ) { event.Skip(); }
 		virtual void dotdontscan_start_OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void imageresourcegenerate_load_OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMSTimer( wxTimerEvent& event ) { event.Skip(); }
 
 
@@ -80,6 +86,24 @@ class mainframe : public wxFrame
 		wxAuiManager m_mgr;
 
 		~mainframe();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class imageresourcegenerate_dialog_preview
+///////////////////////////////////////////////////////////////////////////////
+class imageresourcegenerate_dialog_preview : public wxDialog
+{
+	private:
+
+	protected:
+
+	public:
+		wxStaticBitmap* imageresourcegenerate_bitmap_preview;
+
+		imageresourcegenerate_dialog_preview( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxCAPTION|wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX );
+
+		~imageresourcegenerate_dialog_preview();
 
 };
 
