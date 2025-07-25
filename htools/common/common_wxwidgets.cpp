@@ -1,6 +1,7 @@
 #include "common_wxwidgets.h"
 #include "thread"
 #include <atomic>
+#include <chrono>
 
 static std::atomic_bool hcppbox_thread_flag=true;
 static void hcppbox_thread_entry(void)
@@ -8,7 +9,7 @@ static void hcppbox_thread_entry(void)
     while(hcppbox_thread_flag)
     {
         hcpprt_loop();
-        std::this_thread::yield();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
     hcppbox_thread_flag=true;
