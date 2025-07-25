@@ -287,10 +287,8 @@ void hguitoolsFrame::imageresourcegenerate_load_OnButtonClick( wxCommandEvent& e
     {
         bitmap_preview->Destroy();
     }
-    bitmap_preview=new imageresourcegenerate_dialog_preview(this,wxID_ANY,SourceFileDialog.GetPath(),wxDefaultPosition,wxSize(w,h));
-#if defined(HDEFAULTS_OS_WINDOWS)
-    bitmap_preview->SetSize(wxSize(w,h));
-#endif
+    bitmap_preview=new imageresourcegenerate_dialog_preview(this,wxID_ANY,SourceFileDialog.GetPath(),wxDefaultPosition,wxSize((w>300?w:300)+20,(h>300?h:300)+20));
+    bitmap_preview->SetSize(wxSize(wxSize((w>300?w:300)+20,(h>300?h:300)+40)));
     bitmap_preview->imageresourcegenerate_bitmap_preview->SetBitmap(image);
     bitmap_preview->Layout();
     bitmap_preview->Show();

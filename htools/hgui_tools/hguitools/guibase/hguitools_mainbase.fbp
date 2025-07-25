@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <wxFormBuilder_Project>
   <FileVersion major="1" minor="18"/>
-  <object class="Project" expanded="true">
+  <object class="Project" expanded="false">
     <property name="code_generation">C++</property>
     <property name="cpp_class_decoration"></property>
     <property name="cpp_disconnect_events">1</property>
@@ -1204,7 +1204,7 @@
         <property name="permission">none</property>
         <object class="sizeritem" expanded="false">
           <property name="border">5</property>
-          <property name="flag">wxALL</property>
+          <property name="flag">wxALIGN_CENTER_HORIZONTAL|wxALL</property>
           <property name="proportion">0</property>
           <object class="wxStaticBitmap" expanded="false">
             <property name="BottomDockable">1</property>

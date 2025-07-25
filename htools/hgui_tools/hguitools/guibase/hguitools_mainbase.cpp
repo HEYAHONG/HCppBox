@@ -254,7 +254,7 @@ imageresourcegenerate_dialog_preview::imageresourcegenerate_dialog_preview( wxWi
 	imageresourcegenerate_bSizer_preview = new wxBoxSizer( wxVERTICAL );
 
 	imageresourcegenerate_bitmap_preview = new wxStaticBitmap( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
-	imageresourcegenerate_bSizer_preview->Add( imageresourcegenerate_bitmap_preview, 0, wxALL, 5 );
+	imageresourcegenerate_bSizer_preview->Add( imageresourcegenerate_bitmap_preview, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
 
 	this->SetSizer( imageresourcegenerate_bSizer_preview );
