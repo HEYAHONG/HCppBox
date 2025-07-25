@@ -8,3 +8,4 @@
 
 - [dotfontscan](dotfontscan):扫描UTF-8文件并根据其中的字符生成GUI所使用的字体。
 - [imageresourcegenerate](imageresourcegenerate):使用现有图片资源生成C语言文件(存储原始图像信息)。
+- [hguitools](hguitools):hgui组件GUI版本辅助工具。
