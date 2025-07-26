@@ -35,6 +35,8 @@ void hcppbox_init(void)
         hcppbox_thread.detach();
     }
 
+    HCPPInit();
+
     wxInitAllImageHandlers();
 }
 
