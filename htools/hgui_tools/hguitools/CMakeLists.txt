@@ -64,7 +64,8 @@ endif()
 include(${wxWidgets_USE_FILE})
 target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
 
-
+#设定HCppBox使用纯C++
+set(HCPPBOX_USE_PURE_CPLUSPLUS ON)
 
 #设定HRC文件系统目录为fs
 set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fs/)

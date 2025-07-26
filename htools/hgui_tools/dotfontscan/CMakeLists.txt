@@ -11,6 +11,10 @@ add_executable(${PROJECT_NAME}  ${C_CXX_FILES})
 #添加线程库
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME}  ${CMAKE_THREAD_LIBS_INIT})
+
+#设定HCppBox使用纯C++
+set(HCPPBOX_USE_PURE_CPLUSPLUS ON)
+
 #设定HRC文件系统目录为fs
 set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fs/)
 #添加3rdparty/HCppBox
