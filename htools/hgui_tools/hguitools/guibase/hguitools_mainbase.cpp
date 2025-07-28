@@ -74,6 +74,9 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_button_start = new wxButton( dotfontscan_panel_op, wxID_ANY, _("开始"), wxDefaultPosition, wxDefaultSize, 0 );
 	dotfontscanbuttonbSizer->Add( m_button_start, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
+	m_button_save = new wxButton( dotfontscan_panel_op, wxID_ANY, _("保存"), wxDefaultPosition, wxDefaultSize, 0 );
+	dotfontscanbuttonbSizer->Add( m_button_save, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
 
 	dotfontscan_panel_op_bSizer->Add( dotfontscanbuttonbSizer, 1, wxEXPAND, 5 );
 
@@ -174,8 +177,17 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 
 	imageresourcegeneratebSizer->Add( imageresourcegenerate_preview_bSizer, 1, wxEXPAND, 5 );
 
+	wxBoxSizer* imageresourcegenerate_op_bSizer;
+	imageresourcegenerate_op_bSizer = new wxBoxSizer( wxHORIZONTAL );
+
 	imageresourcegenerate_button_load = new wxButton( imageresourcegeneratepanel, wxID_ANY, _("加载"), wxDefaultPosition, wxDefaultSize, 0 );
-	imageresourcegeneratebSizer->Add( imageresourcegenerate_button_load, 0, wxALL, 5 );
+	imageresourcegenerate_op_bSizer->Add( imageresourcegenerate_button_load, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	imageresourcegenerate_button_save = new wxButton( imageresourcegeneratepanel, wxID_ANY, _("保存"), wxDefaultPosition, wxDefaultSize, 0 );
+	imageresourcegenerate_op_bSizer->Add( imageresourcegenerate_button_save, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+
+	imageresourcegeneratebSizer->Add( imageresourcegenerate_op_bSizer, 0, 0, 5 );
 
 
 	imageresourcegeneratepanel->SetSizer( imageresourcegeneratebSizer );
@@ -230,7 +242,9 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_menu_help->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnAbout ), this, m_menu_help_about->GetId());
 	m_fontPicker_dotfontscan->Connect( wxEVT_COMMAND_FONTPICKER_CHANGED, wxFontPickerEventHandler( mainframe::dotfontscan_OnFontChanged ), NULL, this );
 	m_button_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::dotdontscan_start_OnButtonClick ), NULL, this );
+	m_button_save->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::dotdontscan_save_OnButtonClick ), NULL, this );
 	imageresourcegenerate_button_load->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::imageresourcegenerate_load_OnButtonClick ), NULL, this );
+	imageresourcegenerate_button_save->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::imageresourcegenerate_save_OnButtonClick ), NULL, this );
 	this->Connect( m_timer_ms.GetId(), wxEVT_TIMER, wxTimerEventHandler( mainframe::OnMSTimer ) );
 }
 
@@ -239,7 +253,9 @@ mainframe::~mainframe()
 	// Disconnect Events
 	m_fontPicker_dotfontscan->Disconnect( wxEVT_COMMAND_FONTPICKER_CHANGED, wxFontPickerEventHandler( mainframe::dotfontscan_OnFontChanged ), NULL, this );
 	m_button_start->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::dotdontscan_start_OnButtonClick ), NULL, this );
+	m_button_save->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::dotdontscan_save_OnButtonClick ), NULL, this );
 	imageresourcegenerate_button_load->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::imageresourcegenerate_load_OnButtonClick ), NULL, this );
+	imageresourcegenerate_button_save->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( mainframe::imageresourcegenerate_save_OnButtonClick ), NULL, this );
 	this->Disconnect( m_timer_ms.GetId(), wxEVT_TIMER, wxTimerEventHandler( mainframe::OnMSTimer ) );
 
 	m_mgr.UnInit();

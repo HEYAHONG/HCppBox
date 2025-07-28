@@ -264,6 +264,33 @@ void hguitoolsFrame::dotdontscan_start_OnButtonClick( wxCommandEvent& event )
     dotfontscan_scintilla_c_source->SetText(outputdata);
 }
 
+
+void hguitoolsFrame::dotdontscan_save_OnButtonClick( wxCommandEvent& event )
+{
+    wxString data=dotfontscan_scintilla_c_source->GetText();
+    if(data.IsEmpty())
+    {
+        wxLogMessage(_T("无内容！"));
+        return;
+    }
+    wxFileDialog DestFileDialog(this, wxT("选择待扫描的文件"),wxT(""), wxT(""),wxT("*.c"), wxFD_SAVE);
+    if(DestFileDialog.ShowModal()==wxID_CANCEL)
+    {
+        wxLogMessage(_T("取消操作！"));
+        return;
+    }
+    wxLogMessage(_T("准备保存文件: %s"),DestFileDialog.GetPath());
+    wxFile file;
+    file.Open(DestFileDialog.GetPath(),wxFile::write);
+    if(!file.IsOpened())
+    {
+        wxLogMessage(_T("打开文件失败！"));
+        return;
+    }
+    file.Write(data);
+    file.Close();
+}
+
 class bitmap_preview:public imageresourcegenerate_dialog_preview
 {
 private:
@@ -384,6 +411,32 @@ void hguitoolsFrame::imageresourcegenerate_load_OnButtonClick( wxCommandEvent& e
         outputdata+=stream.str();
     }
     imageresourcegenerate_scintilla_c_source->SetText(wxString(outputdata.c_str()));
+}
+
+void hguitoolsFrame::imageresourcegenerate_save_OnButtonClick( wxCommandEvent& event )
+{
+    wxString data=imageresourcegenerate_scintilla_c_source->GetText();
+    if(data.IsEmpty())
+    {
+        wxLogMessage(_T("无内容！"));
+        return;
+    }
+    wxFileDialog DestFileDialog(this, wxT("选择待扫描的文件"),wxT(""), wxT(""),wxT("*.c"), wxFD_SAVE);
+    if(DestFileDialog.ShowModal()==wxID_CANCEL)
+    {
+        wxLogMessage(_T("取消操作！"));
+        return;
+    }
+    wxLogMessage(_T("准备保存文件: %s"),DestFileDialog.GetPath());
+    wxFile file;
+    file.Open(DestFileDialog.GetPath(),wxFile::write);
+    if(!file.IsOpened())
+    {
+        wxLogMessage(_T("打开文件失败！"));
+        return;
+    }
+    file.Write(data);
+    file.Close();
 }
 
 void hguitoolsFrame::OnMSTimer( wxTimerEvent& event )

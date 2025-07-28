@@ -61,10 +61,12 @@ class mainframe : public wxFrame
 		wxStaticText* m_staticText1;
 		wxFontPickerCtrl* m_fontPicker_dotfontscan;
 		wxButton* m_button_start;
+		wxButton* m_button_save;
 		wxStyledTextCtrl* dotfontscan_scintilla_c_source;
 		wxPanel* imageresourcegeneratepanel;
 		wxStyledTextCtrl* imageresourcegenerate_scintilla_c_source;
 		wxButton* imageresourcegenerate_button_load;
+		wxButton* imageresourcegenerate_button_save;
 		wxPanel* logspanel;
 		wxAuiNotebook* logsauinotebook;
 		wxPanel* logsmainpanel;
@@ -76,7 +78,9 @@ class mainframe : public wxFrame
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		virtual void dotfontscan_OnFontChanged( wxFontPickerEvent& event ) { event.Skip(); }
 		virtual void dotdontscan_start_OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void dotdontscan_save_OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void imageresourcegenerate_load_OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void imageresourcegenerate_save_OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMSTimer( wxTimerEvent& event ) { event.Skip(); }
 
 
