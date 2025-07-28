@@ -27,6 +27,7 @@
 #include "wrapper/hexit.c"
 #include "wrapper/hfputs.c"
 #include "wrapper/hvfprintf.c"
+#include "wrapper/hfprintf.c"
 #include "wrapper/hputs.c"
 #include "wrapper/hferror.c"
 #include "wrapper/hfread.c"
