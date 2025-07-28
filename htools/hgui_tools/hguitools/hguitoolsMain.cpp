@@ -346,7 +346,42 @@ void hguitoolsFrame::imageresourcegenerate_load_OnButtonClick( wxCommandEvent& e
             stream << "};" << std::endl;
         }
 
-        outputdata=stream.str();
+        outputdata+=stream.str();
+    }
+    {
+        std::string output_var_base="custom_gray";
+        std::stringstream stream;
+        {
+            stream << "const uint8_t " << "hrawimage_" << output_var_base << "_data[]=" << std::endl;
+            stream << "{" << std::endl;
+            uint8_t *data=new uint8_t[w*h];
+            for(size_t i=0; i<h; i++)
+            {
+                for(size_t j=0; j<w; j++)
+                {
+                    //灰度公式:0.299R + 0.587G + 0.114B
+                    data[(i*w+j)+0]=0.299*image.GetRed(j,i)+0.587*image.GetGreen(j,i)+0.114*0.299*image.GetBlue(j,i);
+                }
+            }
+            for(size_t i=0; i<w *h; i++)
+            {
+                stream << std::to_string(data[i]) << ",";
+                if(i>0 && i%40==0)
+                {
+                    stream<< std::endl;
+                }
+            }
+            delete []data;
+            stream << "0" << std::endl;
+            stream << "};" << std::endl;
+
+            stream << "const hgui_gui_rawimage_t " << "hrawimage_" << output_var_base << "=" << std::endl;
+            stream << "{" << std::endl;
+            stream << std::to_string(w) << "," << std::to_string(h) << "," << "1" << "," << "hrawimage_" << output_var_base << "_data" << std::endl;
+            stream << "};" << std::endl;
+        }
+
+        outputdata+=stream.str();
     }
     imageresourcegenerate_scintilla_c_source->SetText(wxString(outputdata.c_str()));
 }
