@@ -14,6 +14,11 @@
 #include "hmemory/hmemoryheap.c"
 
 /*
+ * hash
+ */
+#include "hmemory/hmemoryhash.c"
+
+/*
  * 环形缓冲区
  */
 #include "hmemory/hringbuf.c"
