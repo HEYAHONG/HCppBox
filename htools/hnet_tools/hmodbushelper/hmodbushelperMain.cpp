@@ -75,10 +75,9 @@ void hmodbushelperFrame::OnActivate( wxActivateEvent& event )
         wxWebView* browser=wxWebView::New();
         if(browser!=NULL)
         {
-            browser->Create(m_main_auinotebook,wxNewId());
-            browser->EnableHistory(false);
             browser->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new wxWebViewFSHandler("memory")));
-            browser->LoadURL(_T("memory:index.htm"));
+            browser->Create(m_main_auinotebook,wxNewId(),_T("memory:index.htm"));
+            browser->EnableHistory(false);
             m_main_auinotebook->AddPage(browser,_T("主页"),true);
         }
 
