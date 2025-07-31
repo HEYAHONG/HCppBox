@@ -51,6 +51,7 @@ else()
 endif()
 target_link_libraries(${PROJECT_NAME} ${MAIN_LIBS})
 
+include(FindPkgConfig)
 
 #添加线程库
 FIND_PACKAGE(Threads REQUIRED)
@@ -64,6 +65,10 @@ endif()
 include(${wxWidgets_USE_FILE})
 target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
 
+#添加libserialport
+pkg_check_modules(LIBSERIALPORT REQUIRED IMPORTED_TARGET libserialport)
+target_link_libraries(${PROJECT_NAME}  PkgConfig::LIBSERIALPORT)
+
 #设定HCppBox使用纯C++
 set(HCPPBOX_USE_PURE_CPLUSPLUS ON)
 
@@ -74,4 +79,5 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../  HCppBox EXCLUDE_FROM_ALL
 #启用HCppBox、HRC
 hcppbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})
+
 
