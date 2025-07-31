@@ -12,12 +12,16 @@
 #endif
 
 #include "hmodbushelperMain.h"
+#include "modbussessiontcpclientgui.h"
 #include <wx/fontutil.h>
 #include <wx/log.h>
 #include <wx/filedlg.h>
 #include <wx/statbmp.h>
 #include <wx/file.h>
 #include <wx/msgdlg.h>
+#include <wx/webview.h>
+#include <wx/webviewfshandler.h>
+#include <wx/fs_mem.h>
 #include "hmodbushelper.xpm"
 
 
@@ -45,11 +49,40 @@ hmodbushelperFrame::hmodbushelperFrame(wxFrame *frame): mainframe(frame),log(NUL
             wxLogMessage(wxT("\r\n%s\r\n初始化完成!"),banner);
         }
     }
+
+    {
+        //添加欢迎页数据
+        wxFileSystem::AddHandler(new wxMemoryFSHandler);
+        RCEnum([](const unsigned char *Name,size_t NameLength,const unsigned char *Resource,size_t ResourceLength)
+        {
+            wxMemoryFSHandler::AddFile(std::string((const char *)Name,NameLength).c_str(),Resource,ResourceLength);
+        });
+    }
 }
 
 hmodbushelperFrame::~hmodbushelperFrame()
 {
     hcppbox_deinit();
+}
+
+void hmodbushelperFrame::OnActivate( wxActivateEvent& event )
+{
+    if(m_main_auinotebook->GetPageCount() <=0 )
+    {
+        /*
+         * 当首页无内容时,添加页面
+         */
+        wxWebView* browser=wxWebView::New();
+        if(browser!=NULL)
+        {
+            browser->Create(m_main_auinotebook,wxNewId());
+            browser->EnableHistory(false);
+            browser->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new wxWebViewFSHandler("memory")));
+            browser->LoadURL(_T("memory:index.htm"));
+            m_main_auinotebook->AddPage(browser,_T("主页"),true);
+        }
+
+    }
 }
 
 void hmodbushelperFrame::OnClose(wxCloseEvent &event)
@@ -80,7 +113,13 @@ void hmodbushelperFrame::OnMenuSelection_Menu_Logdialog( wxCommandEvent& event )
     }
 }
 
- void hmodbushelperFrame::OnMSTimer( wxTimerEvent& event )
- {
-     hcppbox_softwaretimer_isr();
- }
+void hmodbushelperFrame::OnMenuSelection_New_Modbus_Session_TCP_Client( wxCommandEvent& event )
+{
+    ModbusSessionTCPClientGui *session=new ModbusSessionTCPClientGui(this);
+    m_main_auinotebook->AddPage(session,_T("Modbus TCP Client"),true);
+}
+
+void hmodbushelperFrame::OnMSTimer( wxTimerEvent& event )
+{
+    hcppbox_softwaretimer_isr();
+}

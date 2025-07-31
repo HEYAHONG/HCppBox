@@ -25,11 +25,13 @@ public:
     hmodbushelperFrame(wxFrame *frame);
     ~hmodbushelperFrame();
 private:
+    virtual void OnActivate( wxActivateEvent& event );
     virtual void OnClose(wxCloseEvent& event);
     virtual void OnQuit(wxCommandEvent& event);
     virtual void OnAbout(wxCommandEvent& event);
     virtual void OnMenuSelection_Menu_Quit( wxCommandEvent& event );
     virtual void OnMenuSelection_Menu_Logdialog( wxCommandEvent& event );
+    virtual void OnMenuSelection_New_Modbus_Session_TCP_Client( wxCommandEvent& event );
     virtual void OnMSTimer( wxTimerEvent& event );
     logdialog *log;
 };
