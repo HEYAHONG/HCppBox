@@ -58,7 +58,7 @@ FIND_PACKAGE(Threads REQUIRED)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  ${CMAKE_THREAD_LIBS_INIT})
 
 if(WIN32)
-	find_package(wxWidgets 3.2.0 REQUIRED core base adv aui stc webview html gl richtext )
+	find_package(wxWidgets 3.2.0 REQUIRED core base adv aui stc webview net html gl richtext )
 else()
 	find_package(wxWidgets 3.2.0 REQUIRED all)
 endif()
