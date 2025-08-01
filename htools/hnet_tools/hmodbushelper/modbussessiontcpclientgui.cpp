@@ -202,7 +202,7 @@ void ModbusSessionTCPClientGui::OnButtonClick_Connect_DisConnect( wxCommandEvent
             }
         }
 
-        LocalLog(_T("连接 %s:%d！"),addr_str.c_str(),(int)port);
+        LocalLog(wxString(_T("连接 "))+wxString::FromUTF8(addr_str.c_str())+_T(":%d!"),(int)port);
 
         bool connect_success=false;
         if(!connect_success)
@@ -273,7 +273,7 @@ void ModbusSessionTCPClientGui::OnModbusWrite(const uint8_t *adu,size_t adu_leng
     }
     char data_string[MODBUS_TCP_MAX_ADU_LENGTH*2+1]= {0};
     hbase16_encode_with_null_terminator(data_string,sizeof(data_string),adu,adu_length);
-    LocalLog(_T("发送:%s"),data_string);
+    LocalLog(wxString(_T("发送:"))+wxString::FromUTF8(data_string));
 }
 
 void ModbusSessionTCPClientGui::OnModbusRead(const uint8_t *buffer,size_t buffer_length)
@@ -284,7 +284,7 @@ void ModbusSessionTCPClientGui::OnModbusRead(const uint8_t *buffer,size_t buffer
     }
     char data_string[MODBUS_TCP_MAX_ADU_LENGTH*2+1]= {0};
     hbase16_encode_with_null_terminator(data_string,sizeof(data_string),buffer,buffer_length);
-    LocalLog(_T("接收:%s"),data_string);
+    LocalLog(wxString(_T("接收:"))+wxString::FromUTF8(data_string));
 }
 
 void ModbusSessionTCPClientGui::UpdateState()
