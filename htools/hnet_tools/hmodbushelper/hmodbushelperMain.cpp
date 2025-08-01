@@ -116,7 +116,7 @@ void hmodbushelperFrame::OnMenuSelection_Menu_Logdialog( wxCommandEvent& event )
 void hmodbushelperFrame::OnMenuSelection_New_Modbus_Session_TCP_Client( wxCommandEvent& event )
 {
     ModbusSessionTCPClientGui *session=new ModbusSessionTCPClientGui(this);
-    m_main_auinotebook->AddPage(session,_T("Modbus TCP Client"),true);
+    m_main_auinotebook->AddPage(session,_T("Modbus TCP 客户端"),true);
 }
 
 void hmodbushelperFrame::OnMSTimer( wxTimerEvent& event )

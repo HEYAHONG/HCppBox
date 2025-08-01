@@ -91,13 +91,88 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	bSizer3 = new wxBoxSizer( wxVERTICAL );
 
 	m_auinotebook_tcp_client = new wxAuiNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_NB_SCROLL_BUTTONS|wxAUI_NB_TAB_MOVE|wxAUI_NB_TAB_SPLIT|wxAUI_NB_TOP );
+	m_panel_coils = new wxPanel( m_auinotebook_tcp_client, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer5;
+	bSizer5 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_grid_coils = new wxGrid( m_panel_coils, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+
+	// Grid
+	m_grid_coils->CreateGrid( 65536, 1 );
+	m_grid_coils->EnableEditing( true );
+	m_grid_coils->EnableGridLines( true );
+	m_grid_coils->EnableDragGridSize( false );
+	m_grid_coils->SetMargins( 0, 0 );
+
+	// Columns
+	m_grid_coils->EnableDragColMove( false );
+	m_grid_coils->EnableDragColSize( true );
+	m_grid_coils->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Rows
+	m_grid_coils->EnableDragRowSize( true );
+	m_grid_coils->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Label Appearance
+
+	// Cell Defaults
+	m_grid_coils->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	bSizer5->Add( m_grid_coils, 0, wxALL|wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer6;
+	bSizer6 = new wxBoxSizer( wxVERTICAL );
+
+	m_textCtrl_coils_log = new wxTextCtrl( m_panel_coils, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
+	bSizer6->Add( m_textCtrl_coils_log, 1, wxALL|wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer7;
+	bSizer7 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText1 = new wxStaticText( m_panel_coils, wxID_ANY, _("起始地址："), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText1->Wrap( -1 );
+	bSizer7->Add( m_staticText1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_textCtrl_coils_addr_base = new wxTextCtrl( m_panel_coils, wxID_ANY, _("0"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl_coils_addr_base->SetMinSize( wxSize( 60,-1 ) );
+
+	bSizer7->Add( m_textCtrl_coils_addr_base, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_staticText2 = new wxStaticText( m_panel_coils, wxID_ANY, _("长度："), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText2->Wrap( -1 );
+	bSizer7->Add( m_staticText2, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_textCtrl_coils_addr_length = new wxTextCtrl( m_panel_coils, wxID_ANY, _("1"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl_coils_addr_length->SetMinSize( wxSize( 40,-1 ) );
+
+	bSizer7->Add( m_textCtrl_coils_addr_length, 0, wxALL, 5 );
+
+	m_button_coils_read = new wxButton( m_panel_coils, wxID_ANY, _(" 读取"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer7->Add( m_button_coils_read, 0, wxALL, 5 );
+
+	m_button_coils_write = new wxButton( m_panel_coils, wxID_ANY, _("写入"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer7->Add( m_button_coils_write, 0, wxALL, 5 );
+
+	m_button_coils_write_single = new wxButton( m_panel_coils, wxID_ANY, _("单个写入"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer7->Add( m_button_coils_write_single, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+
+	bSizer6->Add( bSizer7, 0, 0, 5 );
+
+
+	bSizer5->Add( bSizer6, 1, wxEXPAND, 5 );
+
+
+	m_panel_coils->SetSizer( bSizer5 );
+	m_panel_coils->Layout();
+	bSizer5->Fit( m_panel_coils );
+	m_auinotebook_tcp_client->AddPage( m_panel_coils, _("线圈"), false, wxNullBitmap );
 
 	bSizer3->Add( m_auinotebook_tcp_client, 1, wxEXPAND | wxALL, 5 );
 
 	wxBoxSizer* bSizer4;
 	bSizer4 = new wxBoxSizer( wxHORIZONTAL );
 
-	m_textCtrl_ip = new wxTextCtrl( this, wxID_ANY, _("localhost:9000"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl_ip = new wxTextCtrl( this, wxID_ANY, _("localhost:502"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_textCtrl_ip->SetMinSize( wxSize( 300,-1 ) );
 
 	bSizer4->Add( m_textCtrl_ip, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
@@ -111,6 +186,14 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 
 	this->SetSizer( bSizer3 );
 	this->Layout();
+
+	// Connect Events
+	this->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler( modbussessiontcpclientbase::OnSetFocus ) );
+	m_grid_coils->Connect( wxEVT_GRID_CELL_CHANGED, wxGridEventHandler( modbussessiontcpclientbase::OnGridCellChange_Modbus_Coils ), NULL, this );
+	m_button_coils_read->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Coils_Read ), NULL, this );
+	m_button_coils_write->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Coils_Write ), NULL, this );
+	m_button_coils_write_single->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Coils_Write_Single ), NULL, this );
+	m_button_connect_disconnect->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Connect_DisConnect ), NULL, this );
 }
 
 modbussessiontcpclientbase::~modbussessiontcpclientbase()

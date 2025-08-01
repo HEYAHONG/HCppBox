@@ -26,7 +26,9 @@
 #include <wx/panel.h>
 #include <wx/frame.h>
 #include <wx/aui/aui.h>
+#include <wx/grid.h>
 #include <wx/textctrl.h>
+#include <wx/stattext.h>
 #include <wx/button.h>
 #include <wx/dialog.h>
 
@@ -77,12 +79,31 @@ class modbussessiontcpclientbase : public wxPanel
 
 	protected:
 		wxAuiNotebook* m_auinotebook_tcp_client;
+		wxPanel* m_panel_coils;
+		wxGrid* m_grid_coils;
+		wxTextCtrl* m_textCtrl_coils_log;
+		wxStaticText* m_staticText1;
+		wxTextCtrl* m_textCtrl_coils_addr_base;
+		wxStaticText* m_staticText2;
+		wxTextCtrl* m_textCtrl_coils_addr_length;
+		wxButton* m_button_coils_read;
+		wxButton* m_button_coils_write;
+		wxButton* m_button_coils_write_single;
 		wxTextCtrl* m_textCtrl_ip;
 		wxButton* m_button_connect_disconnect;
 
+		// Virtual event handlers, override them in your derived class
+		virtual void OnSetFocus( wxFocusEvent& event ) { event.Skip(); }
+		virtual void OnGridCellChange_Modbus_Coils( wxGridEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_Coils_Read( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_Coils_Write( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_Coils_Write_Single( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_Connect_DisConnect( wxCommandEvent& event ) { event.Skip(); }
+
+
 	public:
 
-		modbussessiontcpclientbase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
+		modbussessiontcpclientbase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 750,500 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
 
 		~modbussessiontcpclientbase();
 
