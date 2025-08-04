@@ -38,6 +38,8 @@ ModbusSessionTCPClientGui::ModbusSessionTCPClientGui(wxWindow* parent, wxWindowI
         {
             m_grid_holding_registers->SetCellEditor(i,0,new wxGridCellNumberEditor(0,0xFFFF));
             m_grid_holding_registers->SetCellRenderer(i,0,new wxGridCellNumberRenderer());
+            m_grid_holding_registers->SetCellAlignment(i,0,wxALIGN_CENTER,wxALIGN_CENTER);
+            m_grid_holding_registers->SetCellOverflow(i,0,true);
             m_grid_holding_registers->SetRowLabelValue(i,std::to_string(i).c_str());
             m_grid_holding_registers->SetRowLabelAlignment(wxALIGN_LEFT,wxALIGN_CENTER);
         }
@@ -50,6 +52,8 @@ ModbusSessionTCPClientGui::ModbusSessionTCPClientGui(wxWindow* parent, wxWindowI
         {
             m_grid_input_registers->SetCellEditor(i,0,new wxGridCellNumberEditor(0,0xFFFF));
             m_grid_input_registers->SetCellRenderer(i,0,new wxGridCellNumberRenderer());
+            m_grid_input_registers->SetCellAlignment(i,0,wxALIGN_CENTER,wxALIGN_CENTER);
+            m_grid_input_registers->SetCellOverflow(i,0,true);
             m_grid_input_registers->SetRowLabelValue(i,std::to_string(i).c_str());
             m_grid_input_registers->SetRowLabelAlignment(wxALIGN_LEFT,wxALIGN_CENTER);
         }
