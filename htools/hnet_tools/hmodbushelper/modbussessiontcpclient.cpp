@@ -122,6 +122,94 @@ bool ModbusSessionTCPClient::ModbusReadDiscreteInput(uint16_t addr,size_t length
     return modbus_tcp_client_request_gateway(&io,MODBUS_FC_READ_DISCRETE_INPUTS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx));
 }
 
+bool ModbusSessionTCPClient::ModbusReadHoldingRegisters(uint16_t addr,size_t length)
+{
+    modbus_io_interface_t io=GetModbusIoInterface();
+    modbus_io_interface_context_read_holding_registers_t ctx=modbus_io_interface_context_read_holding_registers_default();
+    ctx.usr=this;
+    ctx.quantity_of_registers=length;
+    ctx.starting_address=addr;
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        if(ctx==NULL || ctx->usr==NULL)
+        {
+            return;
+        }
+        ModbusSessionTCPClient &client=*(ModbusSessionTCPClient *)ctx->usr;
+        client.OnModbusException(function_code,exception_code);
+    };
+    ctx.on_read_holding_registers=[](modbus_io_interface_context_read_holding_registers_t *ctx,modbus_data_address_t addr,modbus_data_register_t value)
+    {
+        if(ctx==NULL || ctx->usr==NULL)
+        {
+            return;
+        }
+        ModbusSessionTCPClient &client=*(ModbusSessionTCPClient *)ctx->usr;
+        std::lock_guard<std::recursive_mutex> lock(*client.m_lock);
+        client.m_holding_registers[addr]=value;
+    };
+    return modbus_tcp_client_request_gateway(&io,MODBUS_FC_READ_HOLDING_REGISTERS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx));
+}
+
+bool ModbusSessionTCPClient::ModbusWriteHoldingRegisters(uint16_t addr,size_t length)
+{
+    modbus_io_interface_t io=GetModbusIoInterface();
+    modbus_io_interface_context_write_multiple_registers_t ctx=modbus_io_interface_context_write_multiple_registers_default();
+    ctx.usr=this;
+    ctx.starting_address=addr;
+    ctx.quantity_of_output=length;
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        if(ctx==NULL || ctx->usr==NULL)
+        {
+            return;
+        }
+        ModbusSessionTCPClient &client=*(ModbusSessionTCPClient *)ctx->usr;
+        client.OnModbusException(function_code,exception_code);
+    };
+    ctx.register_value=[](modbus_io_interface_context_write_multiple_registers_t *ctx,modbus_data_address_t addr,modbus_data_register_t *value)
+    {
+        if(ctx==NULL || ctx->usr==NULL || value==NULL)
+        {
+            return;
+        }
+        ModbusSessionTCPClient &client=*(ModbusSessionTCPClient *)ctx->usr;
+        std::lock_guard<std::recursive_mutex> lock(*client.m_lock);
+        (*value)=client.m_holding_registers[addr];
+    };
+    ctx.on_write_multiple_registers=[](modbus_io_interface_context_write_multiple_registers_t *ctx,modbus_data_address_t addr,modbus_data_register_t length)
+    {
+
+    };
+    return modbus_tcp_client_request_gateway(&io,MODBUS_FC_WRITE_MULTIPLE_REGISTERS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx));
+}
+
+bool ModbusSessionTCPClient::ModbusWriteSingleHoldingRegister(uint16_t addr)
+{
+    modbus_io_interface_t io=GetModbusIoInterface();
+    modbus_io_interface_context_write_single_register_t ctx=modbus_io_interface_context_write_single_register_default();
+    ctx.usr=this;
+    ctx.output_address=addr;
+    {
+        std::lock_guard<std::recursive_mutex> lock(*m_lock);
+        ctx.output_value=m_holding_registers[addr];
+    }
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        if(ctx==NULL || ctx->usr==NULL)
+        {
+            return;
+        }
+        ModbusSessionTCPClient &client=*(ModbusSessionTCPClient *)ctx->usr;
+        client.OnModbusException(function_code,exception_code);
+    };
+    ctx.on_write_single_register=[](modbus_io_interface_context_write_single_register_t *ctx,modbus_data_address_t addr,modbus_data_register_t value)
+    {
+
+    };
+    return modbus_tcp_client_request_gateway(&io,MODBUS_FC_WRITE_SINGLE_REGISTER,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx));
+}
+
 void ModbusSessionTCPClient::OnModbusException(uint8_t function_code,uint8_t exception_code)
 {
 

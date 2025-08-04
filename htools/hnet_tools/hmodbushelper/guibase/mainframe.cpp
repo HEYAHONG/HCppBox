@@ -137,7 +137,7 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 
 	bSizer7->Add( m_textCtrl_coils_addr_base, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
-	m_staticText2 = new wxStaticText( m_panel_coils, wxID_ANY, _("长度："), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText2 = new wxStaticText( m_panel_coils, wxID_ANY, _("数量："), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText2->Wrap( -1 );
 	bSizer7->Add( m_staticText2, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
@@ -235,6 +235,82 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	m_panel_discrete_input->Layout();
 	bSizer8->Fit( m_panel_discrete_input );
 	m_auinotebook_tcp_client->AddPage( m_panel_discrete_input, _("离散输入"), false, wxNullBitmap );
+	m_panel_holding_registers = new wxPanel( m_auinotebook_tcp_client, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer11;
+	bSizer11 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_grid_holding_registers = new wxGrid( m_panel_holding_registers, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+
+	// Grid
+	m_grid_holding_registers->CreateGrid( 65536, 1 );
+	m_grid_holding_registers->EnableEditing( true );
+	m_grid_holding_registers->EnableGridLines( true );
+	m_grid_holding_registers->EnableDragGridSize( false );
+	m_grid_holding_registers->SetMargins( 0, 0 );
+
+	// Columns
+	m_grid_holding_registers->SetColSize( 0, 120 );
+	m_grid_holding_registers->EnableDragColMove( false );
+	m_grid_holding_registers->EnableDragColSize( true );
+	m_grid_holding_registers->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Rows
+	m_grid_holding_registers->EnableDragRowSize( true );
+	m_grid_holding_registers->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Label Appearance
+
+	// Cell Defaults
+	m_grid_holding_registers->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	bSizer11->Add( m_grid_holding_registers, 0, wxALL|wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer12;
+	bSizer12 = new wxBoxSizer( wxVERTICAL );
+
+	m_textCtrl_holding_registers_log = new wxTextCtrl( m_panel_holding_registers, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
+	bSizer12->Add( m_textCtrl_holding_registers_log, 1, wxALL|wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer13;
+	bSizer13 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText5 = new wxStaticText( m_panel_holding_registers, wxID_ANY, _("起始地址："), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText5->Wrap( -1 );
+	bSizer13->Add( m_staticText5, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_textCtrl_holding_registers_addr_base = new wxTextCtrl( m_panel_holding_registers, wxID_ANY, _("0"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl_holding_registers_addr_base->SetMinSize( wxSize( 60,-1 ) );
+
+	bSizer13->Add( m_textCtrl_holding_registers_addr_base, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_staticText6 = new wxStaticText( m_panel_holding_registers, wxID_ANY, _("数量："), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText6->Wrap( -1 );
+	bSizer13->Add( m_staticText6, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_textCtrl_holding_registers_addr_length = new wxTextCtrl( m_panel_holding_registers, wxID_ANY, _("1"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl_holding_registers_addr_length->SetMinSize( wxSize( 40,-1 ) );
+
+	bSizer13->Add( m_textCtrl_holding_registers_addr_length, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_button_holding_registers_read = new wxButton( m_panel_holding_registers, wxID_ANY, _("读取"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer13->Add( m_button_holding_registers_read, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_button_holding_registers_write = new wxButton( m_panel_holding_registers, wxID_ANY, _("写入"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer13->Add( m_button_holding_registers_write, 0, wxALL, 5 );
+
+	m_button_holding_registers_write_single = new wxButton( m_panel_holding_registers, wxID_ANY, _("单个写入"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer13->Add( m_button_holding_registers_write_single, 0, wxALL, 5 );
+
+
+	bSizer12->Add( bSizer13, 0, 0, 5 );
+
+
+	bSizer11->Add( bSizer12, 1, wxEXPAND, 5 );
+
+
+	m_panel_holding_registers->SetSizer( bSizer11 );
+	m_panel_holding_registers->Layout();
+	bSizer11->Fit( m_panel_holding_registers );
+	m_auinotebook_tcp_client->AddPage( m_panel_holding_registers, _("保持寄存器"), false, wxNullBitmap );
 
 	bSizer3->Add( m_auinotebook_tcp_client, 1, wxEXPAND | wxALL, 5 );
 
@@ -263,6 +339,10 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	m_button_coils_write->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Coils_Write ), NULL, this );
 	m_button_coils_write_single->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Coils_Write_Single ), NULL, this );
 	m_button_discrete_input_read->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Discrete_Input_Read ), NULL, this );
+	m_grid_holding_registers->Connect( wxEVT_GRID_CELL_CHANGED, wxGridEventHandler( modbussessiontcpclientbase::OnGridCellChange_Modbus_Holding_Registers ), NULL, this );
+	m_button_holding_registers_read->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Holding_Registers_Read ), NULL, this );
+	m_button_holding_registers_write->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Holding_Registers_Write ), NULL, this );
+	m_button_holding_registers_write_single->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Holding_Registers_Write_Single ), NULL, this );
 	m_button_connect_disconnect->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Connect_DisConnect ), NULL, this );
 }
 

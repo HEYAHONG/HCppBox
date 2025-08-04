@@ -31,6 +31,18 @@ ModbusSessionTCPClientGui::ModbusSessionTCPClientGui(wxWindow* parent, wxWindowI
         m_grid_discrete_input->EnableEditing(false);
     }
 
+    {
+        //初始化保持寄存器表格
+        m_grid_holding_registers->SetColLabelValue(0,_T("寄存器值"));
+        for(size_t i=0; i<m_grid_holding_registers->GetNumberRows(); i++)
+        {
+            m_grid_holding_registers->SetCellEditor(i,0,new wxGridCellNumberEditor(0,0xFFFF));
+            m_grid_holding_registers->SetCellRenderer(i,0,new wxGridCellNumberRenderer());
+            m_grid_holding_registers->SetRowLabelValue(i,std::to_string(i).c_str());
+            m_grid_holding_registers->SetRowLabelAlignment(wxALIGN_LEFT,wxALIGN_CENTER);
+        }
+    }
+
 
 }
 
@@ -243,6 +255,155 @@ void ModbusSessionTCPClientGui::OnButtonClick_Discrete_Input_Read( wxCommandEven
     UpdateModbusDiscreteInput();
 }
 
+void ModbusSessionTCPClientGui::OnButtonClick_Holding_Registers_Read( wxCommandEvent& event )
+{
+    if(!ModbusSessionTCPClient::IsConnected())
+    {
+        wxMessageBox(_T("未连接服务器"),_T("错误"));
+        return;
+    }
+    uint16_t addr=0;
+    {
+        wxString addr_string=m_textCtrl_holding_registers_addr_base->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if(num < 0x10000)
+            {
+                isValid=true;
+                addr=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("地址错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+    size_t   length=0;
+    {
+        wxString addr_string=m_textCtrl_holding_registers_addr_length->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if((addr+num < 0x10000) && num <= MODBUS_MAX_READ_REGISTERS && num > 0)
+            {
+                isValid=true;
+                length=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("长度错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+
+    LocalLog(_T("准备读取保持寄存器addr=%d,length=%d"),(int)addr,(int)length);
+
+    if(!ModbusReadHoldingRegisters(addr,length))
+    {
+        wxMessageBox(_T("读取失败"),_T("错误"));
+    }
+
+    UpdateModbusHoldingRegisters();
+
+}
+
+void ModbusSessionTCPClientGui::OnButtonClick_Holding_Registers_Write( wxCommandEvent& event )
+{
+    if(!ModbusSessionTCPClient::IsConnected())
+    {
+        wxMessageBox(_T("未连接服务器"),_T("错误"));
+        return;
+    }
+    uint16_t addr=0;
+    {
+        wxString addr_string=m_textCtrl_holding_registers_addr_base->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if(num < 0x10000 )
+            {
+                isValid=true;
+                addr=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("地址错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+    size_t   length=0;
+    {
+        wxString addr_string=m_textCtrl_holding_registers_addr_length->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if((addr+num < 0x10000) && num <= MODBUS_MAX_WRITE_REGISTERS && num > 0)
+            {
+                isValid=true;
+                length=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("长度错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+
+    LocalLog(_T("准备写入保持寄存器addr=%d,length=%d"),(int)addr,(int)length);
+
+    if(!ModbusWriteHoldingRegisters(addr,length))
+    {
+        wxMessageBox(_T("写入失败"),_T("错误"));
+    }
+
+}
+
+void ModbusSessionTCPClientGui::OnButtonClick_Holding_Registers_Write_Single( wxCommandEvent& event )
+{
+    if(!ModbusSessionTCPClient::IsConnected())
+    {
+        wxMessageBox(_T("未连接服务器"),_T("错误"));
+        return;
+    }
+    uint16_t addr=0;
+    {
+        wxString addr_string=m_textCtrl_holding_registers_addr_base->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if(num < 0x10000 )
+            {
+                isValid=true;
+                addr=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("地址错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+
+    LocalLog(_T("准备写入单个保持寄存器addr=%d"),(int)addr);
+
+    if(!ModbusWriteSingleHoldingRegister(addr))
+    {
+        wxMessageBox(_T("写入失败"),_T("错误"));
+    }
+
+}
+
+
 void ModbusSessionTCPClientGui::OnButtonClick_Connect_DisConnect( wxCommandEvent& event )
 {
     if(ModbusSessionTCPClient::IsConnected())
@@ -329,6 +490,23 @@ void ModbusSessionTCPClientGui::OnGridCellChange_Modbus_Coils( wxGridEvent& even
     }
 }
 
+void ModbusSessionTCPClientGui::OnGridCellChange_Modbus_Holding_Registers( wxGridEvent& event )
+{
+    if(event.GetRow() >=0 && event.GetRow() < 0x10000 && event.GetCol() ==0)
+    {
+        wxString val_string=m_grid_holding_registers->GetCellValue(event.GetRow(),event.GetCol());
+        unsigned int val=0;
+        val_string.ToUInt(&val);
+        {
+            /*
+             * 设置进数据映射
+             */
+            std::lock_guard<std::recursive_mutex> lock(*m_lock);
+            m_holding_registers[event.GetRow()]=val;
+        }
+    }
+}
+
 void ModbusSessionTCPClientGui::OnModbusException(uint8_t function_code,uint8_t exception_code)
 {
     LocalLog(_T("异常%d(功能%d)"),(int)exception_code,(int)function_code);
@@ -389,6 +567,15 @@ void ModbusSessionTCPClientGui::UpdateModbusDiscreteInput()
     }
 }
 
+void ModbusSessionTCPClientGui::UpdateModbusHoldingRegisters()
+{
+    std::lock_guard<std::recursive_mutex> lock(*m_lock);
+    for(auto it=m_holding_registers.begin(); it!=m_holding_registers.end(); it++)
+    {
+        m_grid_holding_registers->SetCellValue((int)it->first,0,std::to_string((int)it->second));
+    }
+}
+
 void ModbusSessionTCPClientGui::LocalLog(wxString format,...)
 {
     va_list va;
@@ -397,6 +584,7 @@ void ModbusSessionTCPClientGui::LocalLog(wxString format,...)
     va_end(va);
     m_textCtrl_coils_log->AppendText(msg+_T("\n"));
     m_textCtrl_discrete_input_log->AppendText(msg+_T("\n"));
+    m_textCtrl_holding_registers_log->AppendText(msg+_T("\n"));
     wxLogMessage(_T("Modbus TCP客户端 %p %s"),this,msg);
 }
 

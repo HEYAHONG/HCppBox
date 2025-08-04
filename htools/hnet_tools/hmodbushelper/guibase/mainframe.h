@@ -97,6 +97,16 @@ class modbussessiontcpclientbase : public wxPanel
 		wxStaticText* m_staticText4;
 		wxTextCtrl* m_textCtrl_discrete_input_addr_length;
 		wxButton* m_button_discrete_input_read;
+		wxPanel* m_panel_holding_registers;
+		wxGrid* m_grid_holding_registers;
+		wxTextCtrl* m_textCtrl_holding_registers_log;
+		wxStaticText* m_staticText5;
+		wxTextCtrl* m_textCtrl_holding_registers_addr_base;
+		wxStaticText* m_staticText6;
+		wxTextCtrl* m_textCtrl_holding_registers_addr_length;
+		wxButton* m_button_holding_registers_read;
+		wxButton* m_button_holding_registers_write;
+		wxButton* m_button_holding_registers_write_single;
 		wxTextCtrl* m_textCtrl_ip;
 		wxButton* m_button_connect_disconnect;
 
@@ -107,6 +117,10 @@ class modbussessiontcpclientbase : public wxPanel
 		virtual void OnButtonClick_Coils_Write( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_Coils_Write_Single( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_Discrete_Input_Read( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnGridCellChange_Modbus_Holding_Registers( wxGridEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_Holding_Registers_Read( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_Holding_Registers_Write( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_Holding_Registers_Write_Single( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_Connect_DisConnect( wxCommandEvent& event ) { event.Skip(); }
 
 

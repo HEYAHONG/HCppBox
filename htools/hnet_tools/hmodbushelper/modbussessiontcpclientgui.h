@@ -16,8 +16,12 @@ protected:
     virtual void OnButtonClick_Coils_Write( wxCommandEvent& event );
     virtual void OnButtonClick_Coils_Write_Single( wxCommandEvent& event );
     virtual void OnButtonClick_Discrete_Input_Read( wxCommandEvent& event );
+    virtual void OnButtonClick_Holding_Registers_Read( wxCommandEvent& event );
+    virtual void OnButtonClick_Holding_Registers_Write( wxCommandEvent& event );
+    virtual void OnButtonClick_Holding_Registers_Write_Single( wxCommandEvent& event );
     virtual void OnButtonClick_Connect_DisConnect( wxCommandEvent& event );
     virtual void OnGridCellChange_Modbus_Coils( wxGridEvent& event );
+    virtual void OnGridCellChange_Modbus_Holding_Registers( wxGridEvent& event );
     virtual void OnModbusException(uint8_t function_code,uint8_t exception_code);
     virtual void OnModbusWrite(const uint8_t *adu,size_t adu_length);
     virtual void OnModbusRead(const uint8_t *buffer,size_t buffer_length);
@@ -26,6 +30,7 @@ private:
     void UpdateState();
     void UpdateModbusCoils();
     void UpdateModbusDiscreteInput();
+    void UpdateModbusHoldingRegisters();
     void LocalLog(wxString format,...);
 };
 
