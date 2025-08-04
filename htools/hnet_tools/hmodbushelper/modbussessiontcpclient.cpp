@@ -93,6 +93,35 @@ bool ModbusSessionTCPClient::ModbusWriteSingleCoil(uint16_t addr)
     return modbus_tcp_client_request_gateway(&io,MODBUS_FC_WRITE_SINGLE_COIL,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx));
 }
 
+bool ModbusSessionTCPClient::ModbusReadDiscreteInput(uint16_t addr,size_t length)
+{
+    modbus_io_interface_t io=GetModbusIoInterface();
+    modbus_io_interface_context_read_discrete_inputs_t ctx=modbus_io_interface_context_read_discrete_inputs_default();
+    ctx.usr=this;
+    ctx.quantity_of_inputs=length;
+    ctx.starting_address=addr;
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        if(ctx==NULL || ctx->usr==NULL)
+        {
+            return;
+        }
+        ModbusSessionTCPClient &client=*(ModbusSessionTCPClient *)ctx->usr;
+        client.OnModbusException(function_code,exception_code);
+    };
+    ctx.on_read_discrete_inputs=[](modbus_io_interface_context_read_discrete_inputs_t *ctx,modbus_data_address_t addr,bool value)
+    {
+        if(ctx==NULL || ctx->usr==NULL)
+        {
+            return;
+        }
+        ModbusSessionTCPClient &client=*(ModbusSessionTCPClient *)ctx->usr;
+        std::lock_guard<std::recursive_mutex> lock(*client.m_lock);
+        client.m_discrete_inputs[addr]=value;
+    };
+    return modbus_tcp_client_request_gateway(&io,MODBUS_FC_READ_DISCRETE_INPUTS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx));
+}
+
 void ModbusSessionTCPClient::OnModbusException(uint8_t function_code,uint8_t exception_code)
 {
 

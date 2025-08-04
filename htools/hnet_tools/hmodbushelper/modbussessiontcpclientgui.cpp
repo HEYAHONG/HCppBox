@@ -18,6 +18,20 @@ ModbusSessionTCPClientGui::ModbusSessionTCPClientGui(wxWindow* parent, wxWindowI
         }
     }
 
+    {
+        //初始化离散输入表格
+        m_grid_discrete_input->SetColLabelValue(0,_T("离散输入值"));
+        for(size_t i=0; i<m_grid_discrete_input->GetNumberRows(); i++)
+        {
+            m_grid_discrete_input->SetCellEditor(i,0,new wxGridCellBoolEditor());
+            m_grid_discrete_input->SetCellRenderer(i,0,new wxGridCellBoolRenderer());
+            m_grid_discrete_input->SetRowLabelValue(i,std::to_string(i).c_str());
+            m_grid_discrete_input->SetRowLabelAlignment(wxALIGN_LEFT,wxALIGN_CENTER);
+        }
+        m_grid_discrete_input->EnableEditing(false);
+    }
+
+
 }
 
 void ModbusSessionTCPClientGui::OnSetFocus( wxFocusEvent& event )
@@ -173,6 +187,62 @@ void ModbusSessionTCPClientGui::OnButtonClick_Coils_Write_Single( wxCommandEvent
 
 }
 
+void ModbusSessionTCPClientGui::OnButtonClick_Discrete_Input_Read( wxCommandEvent& event )
+{
+    if(!ModbusSessionTCPClient::IsConnected())
+    {
+        wxMessageBox(_T("未连接服务器"),_T("错误"));
+        return;
+    }
+    uint16_t addr=0;
+    {
+        wxString addr_string=m_textCtrl_discrete_input_addr_base->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if(num < 0x10000)
+            {
+                isValid=true;
+                addr=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("地址错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+    size_t   length=0;
+    {
+        wxString addr_string=m_textCtrl_discrete_input_addr_length->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if((addr+num < 0x10000) && num <= MODBUS_MAX_READ_BITS && num > 0)
+            {
+                isValid=true;
+                length=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("长度错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+
+    LocalLog(_T("准备读取离散输入addr=%d,length=%d"),(int)addr,(int)length);
+
+    if(!ModbusReadDiscreteInput(addr,length))
+    {
+        wxMessageBox(_T("读取失败"),_T("错误"));
+    }
+
+    UpdateModbusDiscreteInput();
+}
+
 void ModbusSessionTCPClientGui::OnButtonClick_Connect_DisConnect( wxCommandEvent& event )
 {
     if(ModbusSessionTCPClient::IsConnected())
@@ -310,6 +380,15 @@ void ModbusSessionTCPClientGui::UpdateModbusCoils()
     }
 }
 
+void ModbusSessionTCPClientGui::UpdateModbusDiscreteInput()
+{
+    std::lock_guard<std::recursive_mutex> lock(*m_lock);
+    for(auto it=m_discrete_inputs.begin(); it!=m_discrete_inputs.end(); it++)
+    {
+        m_grid_discrete_input->SetCellValue((int)it->first,0,it->second?_T("1"):_T(""));
+    }
+}
+
 void ModbusSessionTCPClientGui::LocalLog(wxString format,...)
 {
     va_list va;
@@ -317,6 +396,7 @@ void ModbusSessionTCPClientGui::LocalLog(wxString format,...)
     wxString msg=wxString::FormatV(format,va);
     va_end(va);
     m_textCtrl_coils_log->AppendText(msg+_T("\n"));
+    m_textCtrl_discrete_input_log->AppendText(msg+_T("\n"));
     wxLogMessage(_T("Modbus TCP客户端 %p %s"),this,msg);
 }
 

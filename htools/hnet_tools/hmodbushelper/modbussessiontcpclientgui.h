@@ -15,6 +15,7 @@ protected:
     virtual void OnButtonClick_Coils_Read( wxCommandEvent& event );
     virtual void OnButtonClick_Coils_Write( wxCommandEvent& event );
     virtual void OnButtonClick_Coils_Write_Single( wxCommandEvent& event );
+    virtual void OnButtonClick_Discrete_Input_Read( wxCommandEvent& event );
     virtual void OnButtonClick_Connect_DisConnect( wxCommandEvent& event );
     virtual void OnGridCellChange_Modbus_Coils( wxGridEvent& event );
     virtual void OnModbusException(uint8_t function_code,uint8_t exception_code);
@@ -24,6 +25,7 @@ protected:
 private:
     void UpdateState();
     void UpdateModbusCoils();
+    void UpdateModbusDiscreteInput();
     void LocalLog(wxString format,...);
 };
 

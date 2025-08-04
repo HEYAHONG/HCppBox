@@ -15,6 +15,7 @@ public:
     bool ModbusReadCoils(uint16_t addr,size_t length);
     bool ModbusWriteCoils(uint16_t addr,size_t length);
     bool ModbusWriteSingleCoil(uint16_t addr);
+    bool ModbusReadDiscreteInput(uint16_t addr,size_t length);
 
 protected:
     virtual void OnModbusException(uint8_t function_code,uint8_t exception_code);

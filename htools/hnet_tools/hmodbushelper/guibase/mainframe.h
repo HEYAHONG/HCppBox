@@ -89,6 +89,14 @@ class modbussessiontcpclientbase : public wxPanel
 		wxButton* m_button_coils_read;
 		wxButton* m_button_coils_write;
 		wxButton* m_button_coils_write_single;
+		wxPanel* m_panel_discrete_input;
+		wxGrid* m_grid_discrete_input;
+		wxTextCtrl* m_textCtrl_discrete_input_log;
+		wxStaticText* m_staticText3;
+		wxTextCtrl* m_textCtrl_discrete_input_addr_base;
+		wxStaticText* m_staticText4;
+		wxTextCtrl* m_textCtrl_discrete_input_addr_length;
+		wxButton* m_button_discrete_input_read;
 		wxTextCtrl* m_textCtrl_ip;
 		wxButton* m_button_connect_disconnect;
 
@@ -98,6 +106,7 @@ class modbussessiontcpclientbase : public wxPanel
 		virtual void OnButtonClick_Coils_Read( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_Coils_Write( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_Coils_Write_Single( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_Discrete_Input_Read( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_Connect_DisConnect( wxCommandEvent& event ) { event.Skip(); }
 
 
