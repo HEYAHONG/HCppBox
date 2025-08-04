@@ -251,7 +251,7 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	// Columns
 	m_grid_holding_registers->SetColSize( 0, 120 );
 	m_grid_holding_registers->EnableDragColMove( false );
-	m_grid_holding_registers->EnableDragColSize( true );
+	m_grid_holding_registers->EnableDragColSize( false );
 	m_grid_holding_registers->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
 	// Rows
@@ -261,7 +261,7 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	// Label Appearance
 
 	// Cell Defaults
-	m_grid_holding_registers->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	m_grid_holding_registers->SetDefaultCellAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 	bSizer11->Add( m_grid_holding_registers, 0, wxALL|wxEXPAND, 5 );
 
 	wxBoxSizer* bSizer12;
@@ -327,7 +327,7 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	// Columns
 	m_grid_input_registers->SetColSize( 0, 120 );
 	m_grid_input_registers->EnableDragColMove( false );
-	m_grid_input_registers->EnableDragColSize( true );
+	m_grid_input_registers->EnableDragColSize( false );
 	m_grid_input_registers->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
 	// Rows
@@ -337,7 +337,7 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	// Label Appearance
 
 	// Cell Defaults
-	m_grid_input_registers->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	m_grid_input_registers->SetDefaultCellAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 	bSizer14->Add( m_grid_input_registers, 0, wxALL|wxEXPAND, 5 );
 
 	wxBoxSizer* bSizer15;
