@@ -19,6 +19,7 @@ public:
     bool ModbusReadHoldingRegisters(uint16_t addr,size_t length);
     bool ModbusWriteHoldingRegisters(uint16_t addr,size_t length);
     bool ModbusWriteSingleHoldingRegister(uint16_t addr);
+    bool ModbusReadInputRegisters(uint16_t addr,size_t length);
 
 protected:
     virtual void OnModbusException(uint8_t function_code,uint8_t exception_code);

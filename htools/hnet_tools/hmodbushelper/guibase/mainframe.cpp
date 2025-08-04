@@ -311,6 +311,76 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	m_panel_holding_registers->Layout();
 	bSizer11->Fit( m_panel_holding_registers );
 	m_auinotebook_tcp_client->AddPage( m_panel_holding_registers, _("保持寄存器"), false, wxNullBitmap );
+	m_panel_input_registers = new wxPanel( m_auinotebook_tcp_client, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer14;
+	bSizer14 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_grid_input_registers = new wxGrid( m_panel_input_registers, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+
+	// Grid
+	m_grid_input_registers->CreateGrid( 65535, 1 );
+	m_grid_input_registers->EnableEditing( true );
+	m_grid_input_registers->EnableGridLines( true );
+	m_grid_input_registers->EnableDragGridSize( false );
+	m_grid_input_registers->SetMargins( 0, 0 );
+
+	// Columns
+	m_grid_input_registers->SetColSize( 0, 120 );
+	m_grid_input_registers->EnableDragColMove( false );
+	m_grid_input_registers->EnableDragColSize( true );
+	m_grid_input_registers->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Rows
+	m_grid_input_registers->EnableDragRowSize( true );
+	m_grid_input_registers->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Label Appearance
+
+	// Cell Defaults
+	m_grid_input_registers->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	bSizer14->Add( m_grid_input_registers, 0, wxALL|wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer15;
+	bSizer15 = new wxBoxSizer( wxVERTICAL );
+
+	m_textCtrl_input_registers_log = new wxTextCtrl( m_panel_input_registers, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
+	bSizer15->Add( m_textCtrl_input_registers_log, 1, wxALL|wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer16;
+	bSizer16 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText7 = new wxStaticText( m_panel_input_registers, wxID_ANY, _("起始地址："), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText7->Wrap( -1 );
+	bSizer16->Add( m_staticText7, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_textCtrl_input_registers_addr_base = new wxTextCtrl( m_panel_input_registers, wxID_ANY, _("0"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl_input_registers_addr_base->SetMinSize( wxSize( 60,-1 ) );
+
+	bSizer16->Add( m_textCtrl_input_registers_addr_base, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_staticText8 = new wxStaticText( m_panel_input_registers, wxID_ANY, _("数量:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText8->Wrap( -1 );
+	bSizer16->Add( m_staticText8, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_textCtrl_input_registers_addr_length = new wxTextCtrl( m_panel_input_registers, wxID_ANY, _("1"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl_input_registers_addr_length->SetMinSize( wxSize( 40,-1 ) );
+
+	bSizer16->Add( m_textCtrl_input_registers_addr_length, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_button_input_registers_read = new wxButton( m_panel_input_registers, wxID_ANY, _("读取"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer16->Add( m_button_input_registers_read, 0, wxALL, 5 );
+
+
+	bSizer15->Add( bSizer16, 0, 0, 5 );
+
+
+	bSizer14->Add( bSizer15, 1, wxEXPAND, 5 );
+
+
+	m_panel_input_registers->SetSizer( bSizer14 );
+	m_panel_input_registers->Layout();
+	bSizer14->Fit( m_panel_input_registers );
+	m_auinotebook_tcp_client->AddPage( m_panel_input_registers, _("输入寄存器"), false, wxNullBitmap );
 
 	bSizer3->Add( m_auinotebook_tcp_client, 1, wxEXPAND | wxALL, 5 );
 
@@ -343,6 +413,7 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	m_button_holding_registers_read->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Holding_Registers_Read ), NULL, this );
 	m_button_holding_registers_write->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Holding_Registers_Write ), NULL, this );
 	m_button_holding_registers_write_single->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Holding_Registers_Write_Single ), NULL, this );
+	m_button_input_registers_read->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Input_Registers_Read ), NULL, this );
 	m_button_connect_disconnect->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpclientbase::OnButtonClick_Connect_DisConnect ), NULL, this );
 }
 
