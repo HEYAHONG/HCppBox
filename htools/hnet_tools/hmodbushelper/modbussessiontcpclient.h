@@ -18,7 +18,9 @@ public:
     bool ModbusReadDiscreteInput(uint16_t addr,size_t length);
     bool ModbusReadHoldingRegisters(uint16_t addr,size_t length);
     bool ModbusWriteHoldingRegisters(uint16_t addr,size_t length);
+    bool ModbusReadWriteHoldingRegisters(uint16_t r_addr,size_t r_length,uint16_t w_addr,size_t w_length);
     bool ModbusWriteSingleHoldingRegister(uint16_t addr);
+    bool ModbusMaskWriteHoldingRegister(uint16_t addr,uint16_t and_mask,uint16_t or_mask);
     bool ModbusReadInputRegisters(uint16_t addr,size_t length);
 
 protected:

@@ -19,6 +19,8 @@ protected:
     virtual void OnButtonClick_Holding_Registers_Read( wxCommandEvent& event );
     virtual void OnButtonClick_Holding_Registers_Write( wxCommandEvent& event );
     virtual void OnButtonClick_Holding_Registers_Write_Single( wxCommandEvent& event );
+    virtual void OnButtonClick_Holding_Registers_Mask_Write( wxCommandEvent& event );
+    virtual void OnButtonClick_Holding_Registers_Read_Write( wxCommandEvent& event );
     virtual void OnButtonClick_Input_Registers_Read( wxCommandEvent& event );
     virtual void OnButtonClick_Connect_DisConnect( wxCommandEvent& event );
     virtual void OnGridCellChange_Modbus_Coils( wxGridEvent& event );

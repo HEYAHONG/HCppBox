@@ -202,6 +202,50 @@ bool ModbusSessionTCPClient::ModbusWriteHoldingRegisters(uint16_t addr,size_t le
     return modbus_tcp_client_request_gateway(&io,MODBUS_FC_WRITE_MULTIPLE_REGISTERS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx));
 }
 
+bool ModbusSessionTCPClient::ModbusReadWriteHoldingRegisters(uint16_t r_addr,size_t r_length,uint16_t w_addr,size_t w_length)
+{
+    modbus_io_interface_t io=GetModbusIoInterface();
+    modbus_io_interface_context_read_write_multiple_registers_t ctx=modbus_io_interface_context_read_write_multiple_registers_default();
+    ctx.usr=this;
+    ctx.read_starting_address=r_addr;
+    ctx.quantity_to_read=r_length;
+    ctx.write_starting_address=w_addr;
+    ctx.quantity_to_write=w_length;
+    ctx.base.usr=this;
+    ctx.base.Tid=GetModbusTid();
+    ctx.base.slave_addr=GetModbusSlaveAddr();
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        if(ctx==NULL || ctx->usr==NULL)
+        {
+            return;
+        }
+        ModbusSessionTCPClient &client=*(ModbusSessionTCPClient *)ctx->usr;
+        client.OnModbusException(function_code,exception_code);
+    };
+    ctx.write_register_value=[](modbus_io_interface_context_read_write_multiple_registers_t *ctx,modbus_data_address_t addr,modbus_data_register_t *value)
+    {
+        if(ctx==NULL || ctx->usr==NULL || value==NULL)
+        {
+            return;
+        }
+        ModbusSessionTCPClient &client=*(ModbusSessionTCPClient *)ctx->usr;
+        std::lock_guard<std::recursive_mutex> lock(*client.m_lock);
+        (*value)=client.m_holding_registers[addr];
+    };
+    ctx.on_read_multiple_registers=[](modbus_io_interface_context_read_write_multiple_registers_t *ctx,modbus_data_address_t addr,modbus_data_register_t value)
+    {
+        if(ctx==NULL || ctx->usr==NULL)
+        {
+            return;
+        }
+        ModbusSessionTCPClient &client=*(ModbusSessionTCPClient *)ctx->usr;
+        std::lock_guard<std::recursive_mutex> lock(*client.m_lock);
+        client.m_holding_registers[addr]=value;
+    };
+    return modbus_tcp_client_request_gateway(&io,MODBUS_FC_WRITE_AND_READ_REGISTERS,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx));
+}
+
 bool ModbusSessionTCPClient::ModbusWriteSingleHoldingRegister(uint16_t addr)
 {
     modbus_io_interface_t io=GetModbusIoInterface();
@@ -229,6 +273,33 @@ bool ModbusSessionTCPClient::ModbusWriteSingleHoldingRegister(uint16_t addr)
 
     };
     return modbus_tcp_client_request_gateway(&io,MODBUS_FC_WRITE_SINGLE_REGISTER,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx));
+}
+
+bool ModbusSessionTCPClient::ModbusMaskWriteHoldingRegister(uint16_t addr,uint16_t and_mask,uint16_t or_mask)
+{
+    modbus_io_interface_t io=GetModbusIoInterface();
+    modbus_io_interface_context_mask_write_register_t ctx=modbus_io_interface_context_mask_write_register_default();
+    ctx.usr=this;
+    ctx.reference_address=addr;
+    ctx.and_mask=and_mask;
+    ctx.or_mask=or_mask;
+    ctx.base.usr=this;
+    ctx.base.Tid=GetModbusTid();
+    ctx.base.slave_addr=GetModbusSlaveAddr();
+    ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
+    {
+        if(ctx==NULL || ctx->usr==NULL)
+        {
+            return;
+        }
+        ModbusSessionTCPClient &client=*(ModbusSessionTCPClient *)ctx->usr;
+        client.OnModbusException(function_code,exception_code);
+    };
+    ctx.on_mask_write_register=[](modbus_io_interface_context_mask_write_register_t *ctx,modbus_data_address_t addr,modbus_data_register_t and_mask,modbus_data_register_t or_mask)
+    {
+
+    };
+    return modbus_tcp_client_request_gateway(&io,MODBUS_FC_MASK_WRITE_REGISTER,(modbus_io_interface_context_base_t *)&ctx,sizeof(ctx));
 }
 
 bool ModbusSessionTCPClient::ModbusReadInputRegisters(uint16_t addr,size_t length)

@@ -420,6 +420,153 @@ void ModbusSessionTCPClientGui::OnButtonClick_Holding_Registers_Write_Single( wx
 
 }
 
+void ModbusSessionTCPClientGui::OnButtonClick_Holding_Registers_Mask_Write( wxCommandEvent& event )
+{
+    if(!ModbusSessionTCPClient::IsConnected())
+    {
+        wxMessageBox(_T("未连接服务器"),_T("错误"));
+        return;
+    }
+    uint16_t addr=0;
+    {
+        wxString addr_string=m_textCtrl_holding_registers_mask_write_addr->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if(num < 0x10000 )
+            {
+                isValid=true;
+                addr=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("地址错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+
+    uint16_t and_mask=0;
+    {
+        unsigned int num=0;
+        m_textCtrl_holding_registers_mask_write_and_mask->GetValue().ToUInt(&num);
+        and_mask=num;
+    }
+
+    uint16_t or_mask=0;
+    {
+        unsigned int num=0;
+        m_textCtrl_holding_registers_mask_write_or_mask->GetValue().ToUInt(&num);
+        or_mask=num;
+    }
+
+    LocalLog(_T("准备掩码写入保持寄存器addr=%d,and_mask=%d,or_mask=%d"),(int)addr,(int)and_mask,(int)or_mask);
+
+    if(!ModbusMaskWriteHoldingRegister(addr,and_mask,or_mask))
+    {
+        wxMessageBox(_T("写入失败"),_T("错误"));
+    }
+}
+
+void ModbusSessionTCPClientGui::OnButtonClick_Holding_Registers_Read_Write( wxCommandEvent& event )
+{
+    if(!ModbusSessionTCPClient::IsConnected())
+    {
+        wxMessageBox(_T("未连接服务器"),_T("错误"));
+        return;
+    }
+    uint16_t r_addr=0;
+    {
+        wxString addr_string=m_textCtrl_holding_registers_read_write_read_addr_base->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if(num < 0x10000 )
+            {
+                isValid=true;
+                r_addr=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("读地址错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+
+    size_t   r_length=0;
+    {
+        wxString addr_string=m_textCtrl_holding_registers_read_write_read_addr_length->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if((r_addr+num < 0x10000) && num <= MODBUS_MAX_WR_READ_REGISTERS && num > 0)
+            {
+                isValid=true;
+                r_length=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("读长度错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+
+
+    uint16_t w_addr=0;
+    {
+        wxString addr_string=m_textCtrl_holding_registers_read_write_write_addr_base->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if(num < 0x10000 )
+            {
+                isValid=true;
+                w_addr=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("写地址错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+
+    size_t   w_length=0;
+    {
+        wxString addr_string=m_textCtrl_holding_registers_read_write_write_addr_length->GetValue();
+        unsigned int num=0;
+        bool isValid=false;
+        if(addr_string.ToUInt(&num))
+        {
+            if((w_addr+num < 0x10000) && num <= MODBUS_MAX_WR_WRITE_REGISTERS && num > 0)
+            {
+                isValid=true;
+                w_length=num;
+            }
+        }
+        if(!isValid)
+        {
+            wxMessageBox(_T("读长度错误或者超范围"),_T("错误"));
+            return;
+        }
+    }
+
+    LocalLog(_T("准备写入并读取保持寄存器r_addr=%d,length=%d,w_addr=%d,length=%d"),(int)r_addr,(int)r_length,(int)w_addr,(int)w_length);
+
+    if(!ModbusReadWriteHoldingRegisters(r_addr,r_length,w_addr,w_length))
+    {
+        wxMessageBox(_T("读写失败"),_T("错误"));
+    }
+
+    UpdateModbusHoldingRegisters();
+}
+
 void ModbusSessionTCPClientGui::OnButtonClick_Input_Registers_Read( wxCommandEvent& event )
 {
     if(!ModbusSessionTCPClient::IsConnected())

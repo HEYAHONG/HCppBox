@@ -108,6 +108,22 @@ class modbussessiontcpclientbase : public wxPanel
 		wxButton* m_button_holding_registers_read;
 		wxButton* m_button_holding_registers_write;
 		wxButton* m_button_holding_registers_write_single;
+		wxStaticText* m_staticText11;
+		wxTextCtrl* m_textCtrl_holding_registers_read_write_read_addr_base;
+		wxStaticText* m_staticText12;
+		wxTextCtrl* m_textCtrl_holding_registers_read_write_read_addr_length;
+		wxStaticText* m_staticText13;
+		wxTextCtrl* m_textCtrl_holding_registers_read_write_write_addr_base;
+		wxStaticText* m_staticText14;
+		wxTextCtrl* m_textCtrl_holding_registers_read_write_write_addr_length;
+		wxButton* m_button_holding_registers_read_write;
+		wxStaticText* m_staticText17;
+		wxTextCtrl* m_textCtrl_holding_registers_mask_write_addr;
+		wxStaticText* m_staticText15;
+		wxTextCtrl* m_textCtrl_holding_registers_mask_write_and_mask;
+		wxStaticText* m_staticText16;
+		wxTextCtrl* m_textCtrl_holding_registers_mask_write_or_mask;
+		wxButton* m_button_holding_registers_mask_write;
 		wxPanel* m_panel_input_registers;
 		wxGrid* m_grid_input_registers;
 		wxTextCtrl* m_textCtrl_input_registers_log;
@@ -135,6 +151,8 @@ class modbussessiontcpclientbase : public wxPanel
 		virtual void OnButtonClick_Holding_Registers_Read( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_Holding_Registers_Write( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_Holding_Registers_Write_Single( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_Holding_Registers_Read_Write( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_Holding_Registers_Mask_Write( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_Input_Registers_Read( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_Connect_DisConnect( wxCommandEvent& event ) { event.Skip(); }
 
