@@ -395,6 +395,28 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	m_button_connect_disconnect = new wxButton( this, wxID_ANY, _("连接"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer4->Add( m_button_connect_disconnect, 0, wxALL, 5 );
 
+	m_staticText9 = new wxStaticText( this, wxID_ANY, _("从机地址:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText9->Wrap( -1 );
+	bSizer4->Add( m_staticText9, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_textCtrl_salve_addr = new wxTextCtrl( this, wxID_ANY, _("1"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl_salve_addr->SetMinSize( wxSize( 40,-1 ) );
+
+	bSizer4->Add( m_textCtrl_salve_addr, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_staticText_tid = new wxStaticText( this, wxID_ANY, _("Tid:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_tid->Wrap( -1 );
+	bSizer4->Add( m_staticText_tid, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_textCtrl_Tid = new wxTextCtrl( this, wxID_ANY, _("0"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl_Tid->SetMinSize( wxSize( 60,-1 ) );
+
+	bSizer4->Add( m_textCtrl_Tid, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_checkBox_Tid_Inc = new wxCheckBox( this, wxID_ANY, _("Tid自增"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBox_Tid_Inc->SetValue(true);
+	bSizer4->Add( m_checkBox_Tid_Inc, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
 
 	bSizer3->Add( bSizer4, 0, 0, 5 );
 

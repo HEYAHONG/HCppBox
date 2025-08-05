@@ -30,6 +30,7 @@
 #include <wx/textctrl.h>
 #include <wx/stattext.h>
 #include <wx/button.h>
+#include <wx/checkbox.h>
 #include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -117,6 +118,11 @@ class modbussessiontcpclientbase : public wxPanel
 		wxButton* m_button_input_registers_read;
 		wxTextCtrl* m_textCtrl_ip;
 		wxButton* m_button_connect_disconnect;
+		wxStaticText* m_staticText9;
+		wxTextCtrl* m_textCtrl_salve_addr;
+		wxStaticText* m_staticText_tid;
+		wxTextCtrl* m_textCtrl_Tid;
+		wxCheckBox* m_checkBox_Tid_Inc;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnSetFocus( wxFocusEvent& event ) { event.Skip(); }

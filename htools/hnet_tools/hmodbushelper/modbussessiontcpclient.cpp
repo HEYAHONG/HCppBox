@@ -12,6 +12,9 @@ bool ModbusSessionTCPClient::ModbusReadCoils(uint16_t addr,size_t length)
     ctx.usr=this;
     ctx.quantity_of_coils=length;
     ctx.starting_address=addr;
+    ctx.base.usr=this;
+    ctx.base.Tid=GetModbusTid();
+    ctx.base.slave_addr=GetModbusSlaveAddr();
     ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
     {
         if(ctx==NULL || ctx->usr==NULL)
@@ -41,6 +44,9 @@ bool ModbusSessionTCPClient::ModbusWriteCoils(uint16_t addr,size_t length)
     ctx.usr=this;
     ctx.starting_address=addr;
     ctx.quantity_of_output=length;
+    ctx.base.usr=this;
+    ctx.base.Tid=GetModbusTid();
+    ctx.base.slave_addr=GetModbusSlaveAddr();
     ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
     {
         if(ctx==NULL || ctx->usr==NULL)
@@ -77,6 +83,9 @@ bool ModbusSessionTCPClient::ModbusWriteSingleCoil(uint16_t addr)
         std::lock_guard<std::recursive_mutex> lock(*m_lock);
         ctx.output_value=m_coils[addr];
     }
+    ctx.base.usr=this;
+    ctx.base.Tid=GetModbusTid();
+    ctx.base.slave_addr=GetModbusSlaveAddr();
     ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
     {
         if(ctx==NULL || ctx->usr==NULL)
@@ -100,6 +109,9 @@ bool ModbusSessionTCPClient::ModbusReadDiscreteInput(uint16_t addr,size_t length
     ctx.usr=this;
     ctx.quantity_of_inputs=length;
     ctx.starting_address=addr;
+    ctx.base.usr=this;
+    ctx.base.Tid=GetModbusTid();
+    ctx.base.slave_addr=GetModbusSlaveAddr();
     ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
     {
         if(ctx==NULL || ctx->usr==NULL)
@@ -128,7 +140,10 @@ bool ModbusSessionTCPClient::ModbusReadHoldingRegisters(uint16_t addr,size_t len
     modbus_io_interface_context_read_holding_registers_t ctx=modbus_io_interface_context_read_holding_registers_default();
     ctx.usr=this;
     ctx.quantity_of_registers=length;
+    ctx.base.usr=this;
     ctx.starting_address=addr;
+    ctx.base.Tid=GetModbusTid();
+    ctx.base.slave_addr=GetModbusSlaveAddr();
     ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
     {
         if(ctx==NULL || ctx->usr==NULL)
@@ -158,6 +173,9 @@ bool ModbusSessionTCPClient::ModbusWriteHoldingRegisters(uint16_t addr,size_t le
     ctx.usr=this;
     ctx.starting_address=addr;
     ctx.quantity_of_output=length;
+    ctx.base.usr=this;
+    ctx.base.Tid=GetModbusTid();
+    ctx.base.slave_addr=GetModbusSlaveAddr();
     ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
     {
         if(ctx==NULL || ctx->usr==NULL)
@@ -194,6 +212,9 @@ bool ModbusSessionTCPClient::ModbusWriteSingleHoldingRegister(uint16_t addr)
         std::lock_guard<std::recursive_mutex> lock(*m_lock);
         ctx.output_value=m_holding_registers[addr];
     }
+    ctx.base.usr=this;
+    ctx.base.Tid=GetModbusTid();
+    ctx.base.slave_addr=GetModbusSlaveAddr();
     ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
     {
         if(ctx==NULL || ctx->usr==NULL)
@@ -217,6 +238,9 @@ bool ModbusSessionTCPClient::ModbusReadInputRegisters(uint16_t addr,size_t lengt
     ctx.usr=this;
     ctx.quantity_of_registers=length;
     ctx.starting_address=addr;
+    ctx.base.usr=this;
+    ctx.base.Tid=GetModbusTid();
+    ctx.base.slave_addr=GetModbusSlaveAddr();
     ctx.base.on_exception=[](modbus_io_interface_context_base_t *ctx,uint8_t function_code,uint8_t exception_code)
     {
         if(ctx==NULL || ctx->usr==NULL)
@@ -258,6 +282,16 @@ modbus_io_interface_t ModbusSessionTCPClient::GetModbusIoInterface()
 {
     modbus_io_interface_t io= {this,modbus_io_send,modbus_io_recv};
     return io;
+}
+
+uint8_t  ModbusSessionTCPClient::GetModbusSlaveAddr()
+{
+    return 1;
+}
+
+uint16_t ModbusSessionTCPClient::GetModbusTid()
+{
+    return 0;
 }
 
 size_t ModbusSessionTCPClient::modbus_io_send(modbus_io_interface_t *io,const uint8_t *adu,size_t adu_length)

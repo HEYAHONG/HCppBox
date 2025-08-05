@@ -26,6 +26,8 @@ protected:
     virtual void OnModbusException(uint8_t function_code,uint8_t exception_code);
     virtual void OnModbusWrite(const uint8_t *adu,size_t adu_length);
     virtual void OnModbusRead(const uint8_t *buffer,size_t buffer_length);
+    virtual uint8_t  GetModbusSlaveAddr();
+    virtual uint16_t GetModbusTid();
 
 private:
     void UpdateState();

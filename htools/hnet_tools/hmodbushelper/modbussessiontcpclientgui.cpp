@@ -608,6 +608,23 @@ void ModbusSessionTCPClientGui::OnModbusRead(const uint8_t *buffer,size_t buffer
     LocalLog(wxString(_T("接收:"))+wxString::FromUTF8(data_string));
 }
 
+uint8_t  ModbusSessionTCPClientGui::GetModbusSlaveAddr()
+{
+    unsigned int num=1;
+    m_textCtrl_salve_addr->GetValue().ToUInt(&num);
+    return num;
+}
+uint16_t ModbusSessionTCPClientGui::GetModbusTid()
+{
+    unsigned int num=0;
+    m_textCtrl_Tid->GetValue().ToUInt(&num);
+    if(m_checkBox_Tid_Inc->IsChecked())
+    {
+        m_textCtrl_Tid->SetValue(wxString::FromUTF8(std::to_string((num+1)&0xFFFF).c_str()));
+    }
+    return num;
+}
+
 void ModbusSessionTCPClientGui::UpdateState()
 {
     if(ModbusSessionTCPClient::IsConnected())

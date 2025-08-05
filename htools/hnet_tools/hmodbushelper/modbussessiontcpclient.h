@@ -26,6 +26,8 @@ protected:
     virtual void OnModbusWrite(const uint8_t *adu,size_t adu_length);
     virtual void OnModbusRead(const uint8_t *buffer,size_t buffer_length);
     modbus_io_interface_t GetModbusIoInterface();
+    virtual uint8_t  GetModbusSlaveAddr();
+    virtual uint16_t GetModbusTid();
 
 private:
     static size_t modbus_io_send(modbus_io_interface_t *io,const uint8_t *adu,size_t adu_length);
