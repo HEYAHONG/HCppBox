@@ -28,6 +28,7 @@
 #include <wx/aui/aui.h>
 #include <wx/grid.h>
 #include <wx/textctrl.h>
+#include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/button.h>
 #include <wx/checkbox.h>
@@ -83,6 +84,7 @@ class modbussessiontcpclientbase : public wxPanel
 		wxPanel* m_panel_coils;
 		wxGrid* m_grid_coils;
 		wxTextCtrl* m_textCtrl_coils_log;
+		wxStaticLine* m_staticline10;
 		wxStaticText* m_staticText1;
 		wxTextCtrl* m_textCtrl_coils_addr_base;
 		wxStaticText* m_staticText2;
@@ -90,17 +92,21 @@ class modbussessiontcpclientbase : public wxPanel
 		wxButton* m_button_coils_read;
 		wxButton* m_button_coils_write;
 		wxButton* m_button_coils_write_single;
+		wxStaticLine* m_staticline11;
 		wxPanel* m_panel_discrete_input;
 		wxGrid* m_grid_discrete_input;
 		wxTextCtrl* m_textCtrl_discrete_input_log;
+		wxStaticLine* m_staticline8;
 		wxStaticText* m_staticText3;
 		wxTextCtrl* m_textCtrl_discrete_input_addr_base;
 		wxStaticText* m_staticText4;
 		wxTextCtrl* m_textCtrl_discrete_input_addr_length;
 		wxButton* m_button_discrete_input_read;
+		wxStaticLine* m_staticline9;
 		wxPanel* m_panel_holding_registers;
 		wxGrid* m_grid_holding_registers;
 		wxTextCtrl* m_textCtrl_holding_registers_log;
+		wxStaticLine* m_staticline5;
 		wxStaticText* m_staticText5;
 		wxTextCtrl* m_textCtrl_holding_registers_addr_base;
 		wxStaticText* m_staticText6;
@@ -108,6 +114,7 @@ class modbussessiontcpclientbase : public wxPanel
 		wxButton* m_button_holding_registers_read;
 		wxButton* m_button_holding_registers_write;
 		wxButton* m_button_holding_registers_write_single;
+		wxStaticLine* m_staticline2;
 		wxStaticText* m_staticText11;
 		wxTextCtrl* m_textCtrl_holding_registers_read_write_read_addr_base;
 		wxStaticText* m_staticText12;
@@ -117,6 +124,7 @@ class modbussessiontcpclientbase : public wxPanel
 		wxStaticText* m_staticText14;
 		wxTextCtrl* m_textCtrl_holding_registers_read_write_write_addr_length;
 		wxButton* m_button_holding_registers_read_write;
+		wxStaticLine* m_staticline3;
 		wxStaticText* m_staticText17;
 		wxTextCtrl* m_textCtrl_holding_registers_mask_write_addr;
 		wxStaticText* m_staticText15;
@@ -124,14 +132,17 @@ class modbussessiontcpclientbase : public wxPanel
 		wxStaticText* m_staticText16;
 		wxTextCtrl* m_textCtrl_holding_registers_mask_write_or_mask;
 		wxButton* m_button_holding_registers_mask_write;
+		wxStaticLine* m_staticline4;
 		wxPanel* m_panel_input_registers;
 		wxGrid* m_grid_input_registers;
 		wxTextCtrl* m_textCtrl_input_registers_log;
+		wxStaticLine* m_staticline6;
 		wxStaticText* m_staticText7;
 		wxTextCtrl* m_textCtrl_input_registers_addr_base;
 		wxStaticText* m_staticText8;
 		wxTextCtrl* m_textCtrl_input_registers_addr_length;
 		wxButton* m_button_input_registers_read;
+		wxStaticLine* m_staticline7;
 		wxTextCtrl* m_textCtrl_ip;
 		wxButton* m_button_connect_disconnect;
 		wxStaticText* m_staticText9;

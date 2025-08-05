@@ -125,6 +125,9 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	m_textCtrl_coils_log = new wxTextCtrl( m_panel_coils, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
 	bSizer6->Add( m_textCtrl_coils_log, 1, wxALL|wxEXPAND, 5 );
 
+	m_staticline10 = new wxStaticLine( m_panel_coils, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer6->Add( m_staticline10, 0, wxEXPAND | wxALL, 5 );
+
 	wxBoxSizer* bSizer7;
 	bSizer7 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -157,6 +160,9 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 
 
 	bSizer6->Add( bSizer7, 0, 0, 5 );
+
+	m_staticline11 = new wxStaticLine( m_panel_coils, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer6->Add( m_staticline11, 0, wxEXPAND | wxALL, 5 );
 
 
 	bSizer5->Add( bSizer6, 1, wxEXPAND, 5 );
@@ -200,6 +206,9 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	m_textCtrl_discrete_input_log = new wxTextCtrl( m_panel_discrete_input, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
 	bSizer9->Add( m_textCtrl_discrete_input_log, 1, wxALL|wxEXPAND, 5 );
 
+	m_staticline8 = new wxStaticLine( m_panel_discrete_input, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer9->Add( m_staticline8, 0, wxEXPAND | wxALL, 5 );
+
 	wxBoxSizer* bSizer10;
 	bSizer10 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -226,6 +235,9 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 
 
 	bSizer9->Add( bSizer10, 0, 0, 5 );
+
+	m_staticline9 = new wxStaticLine( m_panel_discrete_input, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer9->Add( m_staticline9, 0, wxEXPAND | wxALL, 5 );
 
 
 	bSizer8->Add( bSizer9, 1, wxEXPAND, 5 );
@@ -270,6 +282,9 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	m_textCtrl_holding_registers_log = new wxTextCtrl( m_panel_holding_registers, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
 	bSizer12->Add( m_textCtrl_holding_registers_log, 1, wxALL|wxEXPAND, 5 );
 
+	m_staticline5 = new wxStaticLine( m_panel_holding_registers, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer12->Add( m_staticline5, 0, wxEXPAND | wxALL, 5 );
+
 	wxBoxSizer* bSizer13;
 	bSizer13 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -302,6 +317,9 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 
 
 	bSizer12->Add( bSizer13, 0, 0, 5 );
+
+	m_staticline2 = new wxStaticLine( m_panel_holding_registers, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer12->Add( m_staticline2, 0, wxEXPAND | wxALL, 5 );
 
 	wxBoxSizer* bSizer17;
 	bSizer17 = new wxBoxSizer( wxHORIZONTAL );
@@ -348,6 +366,9 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 
 	bSizer12->Add( bSizer17, 0, 0, 5 );
 
+	m_staticline3 = new wxStaticLine( m_panel_holding_registers, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer12->Add( m_staticline3, 0, wxEXPAND | wxALL, 5 );
+
 	wxBoxSizer* bSizer18;
 	bSizer18 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -383,6 +404,9 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 
 
 	bSizer12->Add( bSizer18, 0, 0, 5 );
+
+	m_staticline4 = new wxStaticLine( m_panel_holding_registers, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer12->Add( m_staticline4, 0, wxEXPAND | wxALL, 5 );
 
 
 	bSizer11->Add( bSizer12, 1, wxEXPAND, 5 );
@@ -427,6 +451,9 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 	m_textCtrl_input_registers_log = new wxTextCtrl( m_panel_input_registers, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
 	bSizer15->Add( m_textCtrl_input_registers_log, 1, wxALL|wxEXPAND, 5 );
 
+	m_staticline6 = new wxStaticLine( m_panel_input_registers, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer15->Add( m_staticline6, 0, wxEXPAND | wxALL, 5 );
+
 	wxBoxSizer* bSizer16;
 	bSizer16 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -453,6 +480,9 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 
 
 	bSizer15->Add( bSizer16, 0, 0, 5 );
+
+	m_staticline7 = new wxStaticLine( m_panel_input_registers, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer15->Add( m_staticline7, 0, wxEXPAND | wxALL, 5 );
 
 
 	bSizer14->Add( bSizer15, 1, wxEXPAND, 5 );
