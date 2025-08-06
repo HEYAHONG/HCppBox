@@ -18,7 +18,18 @@ const char *hlocale_locale_get(void)
         static char locale_codepage[11+1]= {0};
         if(locale_codepage[0]=='\0')
         {
-            int codepage=GetACP();
+            /*
+             * Windows下可使用SetConsoleOutputCP设置控制台输出代码页,SetConsoleCP控制台输入代码页
+             */
+            int codepage=GetConsoleOutputCP();
+            if(codepage==0)
+            {
+                codepage=GetConsoleCP();
+            }
+            if(codepage==0)
+            {
+                codepage=GetACP();
+            }
             hsprintf(locale_codepage,"CP%d",codepage);
         }
         locale=locale_codepage;
