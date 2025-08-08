@@ -41,6 +41,10 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_mainframe_menubar->Append( m_menu_session, _("会话") );
 
 	m_menu_help = new wxMenu();
+	wxMenuItem* m_menuItem_Modbus_Protocol;
+	m_menuItem_Modbus_Protocol = new wxMenuItem( m_menu_help, wxID_ANY, wxString( _("Modbus应用协议") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menu_help->Append( m_menuItem_Modbus_Protocol );
+
 	wxMenuItem* m_menuItem_Help_About;
 	m_menuItem_Help_About = new wxMenuItem( m_menu_help, wxID_ANY, wxString( _("关于") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menu_help->Append( m_menuItem_Help_About );
@@ -75,6 +79,7 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_menu_file->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_Menu_Quit ), this, m_menuItem_quit->GetId());
 	m_menu_log->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_Menu_Logdialog ), this, m_menuItem_logdialog->GetId());
 	m_menu_session->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_New_Modbus_Session_TCP_Client ), this, m_menuItem_new_modbussession_tcp_client->GetId());
+	m_menu_help->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_Modbus_Protocol ), this, m_menuItem_Modbus_Protocol->GetId());
 	m_menu_help->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnAbout ), this, m_menuItem_Help_About->GetId());
 	this->Connect( m_ms_timer.GetId(), wxEVT_TIMER, wxTimerEventHandler( mainframe::OnMSTimer ) );
 }

@@ -119,6 +119,11 @@ void hmodbushelperFrame::OnMenuSelection_New_Modbus_Session_TCP_Client( wxComman
     m_main_auinotebook->AddPage(session,_T("Modbus TCP 客户端"),true);
 }
 
+void hmodbushelperFrame::OnMenuSelection_Modbus_Protocol( wxCommandEvent& event )
+{
+    wxLaunchDefaultBrowser(_T("https://modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf"));
+}
+
 void hmodbushelperFrame::OnMSTimer( wxTimerEvent& event )
 {
     hcppbox_softwaretimer_isr();

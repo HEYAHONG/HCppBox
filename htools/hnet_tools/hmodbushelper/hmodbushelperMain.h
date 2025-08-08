@@ -32,6 +32,7 @@ private:
     virtual void OnMenuSelection_Menu_Quit( wxCommandEvent& event );
     virtual void OnMenuSelection_Menu_Logdialog( wxCommandEvent& event );
     virtual void OnMenuSelection_New_Modbus_Session_TCP_Client( wxCommandEvent& event );
+    virtual void OnMenuSelection_Modbus_Protocol( wxCommandEvent& event );
     virtual void OnMSTimer( wxTimerEvent& event );
     logdialog *log;
 };

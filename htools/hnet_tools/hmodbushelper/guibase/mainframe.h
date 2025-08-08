@@ -59,6 +59,7 @@ class mainframe : public wxFrame
 		virtual void OnMenuSelection_Menu_Quit( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMenuSelection_Menu_Logdialog( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMenuSelection_New_Modbus_Session_TCP_Client( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMenuSelection_Modbus_Protocol( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMSTimer( wxTimerEvent& event ) { event.Skip(); }
 
