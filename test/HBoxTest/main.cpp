@@ -4486,6 +4486,37 @@ static int hcrypto_test(int argc,const char *argv[])
         }
     }
 
+    {
+        printf("hcrypto ecdsa256: start!\r\n");
+        hecdsa256_hash_t hash={0};
+        //使用随机数填充hash
+        hgetrandom(hash,sizeof(hecdsa256_hash_t),0);
+        struct
+        {
+            hecdsa256_public_key_t pub_key;
+            hecdsa256_private_key_t pri_key;
+            hecdsa256_signature_t signature;
+        } ecdsa_test_sign[2]={0};
+        for(size_t i=0;i<sizeof(ecdsa_test_sign)/sizeof(ecdsa_test_sign[0]);i++)
+        {
+            printf("hcrypto ecdsa256: keygen %i!\r\n",(int)i);
+            hecdsa256_keygen(NULL,ecdsa_test_sign[i].pub_key,ecdsa_test_sign[i].pri_key);
+            printf("hcrypto ecdsa256: sign %i!\r\n",(int)i);
+            hecdsa256_sign(NULL,ecdsa_test_sign[i].pri_key,hash,ecdsa_test_sign[i].signature);
+            printf("hcrypto ecdsa256: verify %i!\r\n",(int)i);
+            if(hecdsa256_verify(NULL,ecdsa_test_sign[i].pub_key,hash,ecdsa_test_sign[i].signature))
+            {
+                printf("hcrypto ecdsa256: test %d ok!\r\n",(int)i);
+            }
+            else
+            {
+                printf("hcrypto ecdsa256: test %d failed!\r\n",(int)i);
+            }
+        }
+        printf("hcrypto ecdsa256: verify 1 using signature 0 ret=%d\r\n",hecdsa256_verify(NULL,ecdsa_test_sign[1].pub_key,hash,ecdsa_test_sign[0].signature));
+        printf("hcrypto ecdsa256: end!\r\n");
+    }
+
     return 0;
 }
 

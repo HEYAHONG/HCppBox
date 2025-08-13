@@ -108,3 +108,13 @@
 - [hpoly1305.h](hpoly1305.h)
 - [hpoly1305.c](hpoly1305.c)
 
+# 数字签名
+
+## ECDSA
+
+注意：本组件只实现了某些常用位数的版本(如256位)，本组件需要哈希运算的结果作为输入值，不包含哈希过程。
+
+- [hecdsa.h](hecdsa.h)
+- [hecdsa.c](hecdsa.c)
+- [hecdsa](hecdsa)
+
