@@ -20,6 +20,12 @@ const hecdsa256_curve_t hecdsa256_curve_secp256r1=
         0xFFFFFFFFFFFFFFFFull, 0x00000000FFFFFFFFull, 0x0000000000000000ull, 0xFFFFFFFF00000001ull
     },
     /*
+     * a的相反数
+     */
+    {
+        0x0000000000000003ull, 0x00000000000000000ull, 0x0000000000000000ull, 0x000000000000000ull
+    },
+    /*
      * b,低位在前
      */
     {
@@ -689,7 +695,6 @@ static void hecdsa256_mod_sqrt(const hecdsa256_curve_t *curve,uint64_t * a)
 
 static void hecdsa256_ecc_point_decompress(const hecdsa256_curve_t *curve,struct hecdsa256_point_t * point, const uint8_t * compressed)
 {
-    uint64_t _3[HECDSA256_NUM_DIGITS] = { 3 };
 
     if(curve==NULL)
     {
@@ -698,7 +703,7 @@ static void hecdsa256_ecc_point_decompress(const hecdsa256_curve_t *curve,struct
 
     hecdsa256_ecc_bytes2native(point->x, compressed + 1);
     hecdsa256_vli_modSquare_fast(curve,point->y, point->x);
-    hecdsa256_vli_modsub(point->y, point->y, _3, curve->p);
+    hecdsa256_vli_modsub(point->y, point->y, curve->a_inv, curve->p);
     hecdsa256_vli_modMult_fast(curve,point->y, point->y, point->x);
     hecdsa256_vli_modadd(point->y, point->y, curve->b, curve->p);
     hecdsa256_mod_sqrt(curve,point->y);

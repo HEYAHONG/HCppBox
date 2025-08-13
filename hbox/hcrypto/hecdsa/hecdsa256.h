@@ -32,7 +32,8 @@ typedef uint8_t hecdsa256_signature_t[HECDSA256_SIGNATURE_SIZE];
 typedef struct hecdsa256_curve  hecdsa256_curve_t;
 struct hecdsa256_curve
 {
-    uint64_t p[HECDSA256_BYTES/sizeof(uint64_t)];/**< 注意:a由此参数计算 */
+    uint64_t p[HECDSA256_BYTES/sizeof(uint64_t)];
+    uint64_t a_inv[HECDSA256_BYTES/sizeof(uint64_t)];/**< a的相反数 */
     uint64_t b[HECDSA256_BYTES/sizeof(uint64_t)];
     uint64_t n[HECDSA256_BYTES/sizeof(uint64_t)];
     uint64_t x[HECDSA256_BYTES/sizeof(uint64_t)];
