@@ -16,28 +16,30 @@ extern "C"
 {
 #endif // __cplusplus
 
-#define HECDSA256_BYTES				        (32)
-#define HECDSA256_SHARED_KEY_SIZE	        (HECDSA256_BYTES)
-#define HECDSA256_PRIVATE_KEY_SIZE	        (HECDSA256_BYTES)
-#define HECDSA256_PUBLIC_KEY_SIZE	        (HECDSA256_BYTES + 1)
-#define HECDSA256_SIGNATURE_SIZE		    (HECDSA256_BYTES * 2)
+#define HECDSA256_BYTES                                 (32)
+#define HECDSA256_SHARED_KEY_SIZE                       (HECDSA256_BYTES)
+#define HECDSA256_PRIVATE_KEY_SIZE                      (HECDSA256_BYTES)
+#define HECDSA256_PUBLIC_KEY_SIZE                       (HECDSA256_BYTES + 1)
+#define HECDSA256_PUBLIC_DECOMPRESS_KEY_SIZE            (HECDSA256_BYTES * 2)
+#define HECDSA256_SIGNATURE_SIZE                        (HECDSA256_BYTES * 2)
 
 typedef uint8_t hecdsa256_hash_t[HECDSA256_BYTES];                 /**< 哈希类型，通常采用SHA256 */
 typedef uint8_t hecdsa256_shared_key_t[HECDSA256_SHARED_KEY_SIZE];
 typedef uint8_t hecdsa256_private_key_t[HECDSA256_PRIVATE_KEY_SIZE];
 typedef uint8_t hecdsa256_public_key_t[HECDSA256_PUBLIC_KEY_SIZE];
+typedef uint8_t hecdsa256_public_decompress_key_t[HECDSA256_PUBLIC_DECOMPRESS_KEY_SIZE];
 typedef uint8_t hecdsa256_signature_t[HECDSA256_SIGNATURE_SIZE];
 
 
 typedef struct hecdsa256_curve  hecdsa256_curve_t;
 struct hecdsa256_curve
 {
-    uint64_t p[HECDSA256_BYTES/sizeof(uint64_t)];
-    uint64_t a_inv[HECDSA256_BYTES/sizeof(uint64_t)];/**< a的相反数 */
-    uint64_t b[HECDSA256_BYTES/sizeof(uint64_t)];
-    uint64_t n[HECDSA256_BYTES/sizeof(uint64_t)];
-    uint64_t x[HECDSA256_BYTES/sizeof(uint64_t)];
-    uint64_t y[HECDSA256_BYTES/sizeof(uint64_t)];
+    uint64_t p[HECDSA256_BYTES/sizeof(uint64_t)];           /**< p为大素数 */
+    uint64_t a_inv[HECDSA256_BYTES/sizeof(uint64_t)];       /**< a的相反数,a为公式y*y=x*x*x + a*x +b 中的系数 */
+    uint64_t b[HECDSA256_BYTES/sizeof(uint64_t)];           /**< b, a为公式y*y=x*x*x + a*x +b 中的系数 */
+    uint64_t n[HECDSA256_BYTES/sizeof(uint64_t)];           /**< n,n为阶数,私钥的最大值 */
+    uint64_t x[HECDSA256_BYTES/sizeof(uint64_t)];           /**< G点x坐标 */
+    uint64_t y[HECDSA256_BYTES/sizeof(uint64_t)];           /**< G点y坐标 */
 };
 
 extern const hecdsa256_curve_t hecdsa256_curve_secp256r1;
@@ -54,6 +56,7 @@ extern const hecdsa256_curve_t hecdsa256_curve_secp256r1;
  */
 int hecdsa256_ecdh256_keygen(const hecdsa256_curve_t *curve,const hecdsa256_public_key_t public_key, const hecdsa256_private_key_t private_key, hecdsa256_shared_key_t shared_key);
 
+
 /** \brief 生成ecdsa256密钥对
  *
  * \param curve const hecdsa256_curve_t* 曲线参数
@@ -63,6 +66,16 @@ int hecdsa256_ecdh256_keygen(const hecdsa256_curve_t *curve,const hecdsa256_publ
  *
  */
 int hecdsa256_keygen(const hecdsa256_curve_t *curve,hecdsa256_public_key_t public_key, hecdsa256_private_key_t private_key);
+
+/** \brief ecdsa256解压公钥
+ *
+ * \param curve const hecdsa256_curve_t* 曲线参数
+ * \param public_key const hecdsa256_public_key_t 公钥
+ * \param public_key_decompress hecdsa256_public_decompress_key_t 解压后的公钥
+ * \return int 是否解压
+ *
+ */
+int hecdsa256_public_key_decompress(const hecdsa256_curve_t *curve,const hecdsa256_public_key_t public_key,hecdsa256_public_decompress_key_t public_key_decompress);
 
 /** \brief 签名ecdsa256
  *

@@ -8,8 +8,8 @@
  **************************************************************/
 #include "hecdsa256.h"
 
-#define HECDSA256_NUM_DIGITS	    (HECDSA256_BYTES / sizeof(uint64_t))
-#define HECDSA256_MAX_RETRY			(16)
+#define HECDSA256_NUM_DIGITS        (HECDSA256_BYTES / sizeof(uint64_t))
+#define HECDSA256_MAX_RETRY         (16)
 
 const hecdsa256_curve_t hecdsa256_curve_secp256r1=
 {
@@ -779,6 +779,7 @@ int hecdsa256_ecdh256_keygen(const hecdsa256_curve_t *curve,const hecdsa256_publ
     return !hecdsa256_eccpoint_iszero(&product);
 }
 
+
 int hecdsa256_keygen(const hecdsa256_curve_t *curve,hecdsa256_public_key_t public_key, hecdsa256_private_key_t private_key)
 {
     uint64_t lprivate[HECDSA256_NUM_DIGITS];
@@ -807,6 +808,20 @@ int hecdsa256_keygen(const hecdsa256_curve_t *curve,hecdsa256_public_key_t publi
     hecdsa256_ecc_native2bytes(private_key, lprivate);
     hecdsa256_ecc_native2bytes(public_key + 1, lpublic.x);
     public_key[0] = 2 + (lpublic.y[0] & 0x01);
+
+    return 1;
+}
+
+int hecdsa256_public_key_decompress(const hecdsa256_curve_t *curve,const hecdsa256_public_key_t public_key,hecdsa256_public_decompress_key_t public_key_decompress)
+{
+    struct hecdsa256_point_t lpublic;
+    if(curve==NULL)
+    {
+        curve=&hecdsa256_curve_secp256r1;
+    }
+    hecdsa256_ecc_point_decompress(curve,&lpublic, public_key);
+    hecdsa256_ecc_native2bytes(public_key_decompress, lpublic.x);
+    hecdsa256_ecc_native2bytes(public_key_decompress+sizeof(lpublic.x), lpublic.y);
 
     return 1;
 }
