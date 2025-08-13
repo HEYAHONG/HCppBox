@@ -11,7 +11,7 @@
 
 #include "wrapper/hgettimeofday.c"
 #include "wrapper/hsettimeofday.c"
-#include "wrapper/hgetrandmon.c"
+#include "wrapper/hgetrandom.c"
 #include "wrapper/hmmap.c"
 #include "wrapper/hmsync.c"
 #include "wrapper/hmunmap.c"
