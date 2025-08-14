@@ -30,6 +30,7 @@ set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS}\
     -nostdlib++\
     -T${CMAKE_CURRENT_SOURCE_DIR}/../rom.ld\
     -Wl,--gc-sections \
+    -Wl,--no-relax   \
     -Wl,-Map,${PROJECT_NAME}.map\
 ")
 endif()
@@ -59,6 +60,7 @@ set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS}\
     -nostdlib++\
     -T${CMAKE_CURRENT_SOURCE_DIR}/../rom.ld\
     -Wl,--gc-sections \
+    -Wl,--no-relax   \
     -Wl,-Map,${PROJECT_NAME}.map\
 ")
 endif()
