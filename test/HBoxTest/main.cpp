@@ -4514,6 +4514,10 @@ static int hcrypto_test(int argc,const char *argv[])
             }
         }
         printf("hcrypto ecdsa256: verify 1 using signature 0 ret=%d\r\n",hecdsa256_verify(NULL,ecdsa_test_sign[1].pub_key,hash,ecdsa_test_sign[0].signature));
+        hecdsa256_shared_key_t shared_key[2]={0};
+        hecdsa256_ecdh256_keygen(NULL,ecdsa_test_sign[0].pub_key,ecdsa_test_sign[1].pri_key,shared_key[0]);
+        hecdsa256_ecdh256_keygen(NULL,ecdsa_test_sign[1].pub_key,ecdsa_test_sign[0].pri_key,shared_key[1]);
+        printf("hcrypto ecdsa256: shared_key %s\r\n",memcmp(shared_key[0],shared_key[1],sizeof(hecdsa256_shared_key_t))==0?"ok":"failed");
         printf("hcrypto ecdsa256: end!\r\n");
     }
 

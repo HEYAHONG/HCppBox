@@ -49,7 +49,7 @@ extern const hecdsa256_curve_t hecdsa256_curve_secp256r1;
  *
  * \param curve const hecdsa256_curve_t* 曲线参数
  * \param public_key const hecdsa256_public_key_t 公钥
- * \param private_key const hecdsa256_private_key_t 私钥
+ * \param private_key const hecdsa256_private_key_t 私钥,注意：此处的私钥并非公钥对应的私钥，而是对方的公钥与自己的私钥
  * \param shared_key hecdsa256_shared_key_t 共享密钥
  * \return int 是否生成
  *
