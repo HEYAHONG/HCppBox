@@ -69,11 +69,11 @@ struct hecdsa256_point_t
 
 static int hecdsa256_get_random_number(uint64_t * vli)
 {
+#ifndef HECDSA256_RAND
+    hgetrandom(vli,sizeof(uint64_t) * HECDSA256_NUM_DIGITS,0);
+#else
     uint64_t v;
     int i;
-#ifndef HECDSA256_RAND
-    hgetrandom(vli,sizeof(uint64_t),0);
-#else
     for(i = 0; i < HECDSA256_NUM_DIGITS; i++)
     {
         v = (uint64_t)(HECDSA256_RAND() & 0xffff) << 0;
