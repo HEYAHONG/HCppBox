@@ -620,7 +620,7 @@ modbussessiontcpgatewaysimulatorbase::modbussessiontcpgatewaysimulatorbase( wxWi
 	m_staticText19->Wrap( -1 );
 	bSizer22->Add( m_staticText19, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
-	wxString m_choice_portChoices[] = { _("65502"), _("64502"), _("63502"), _("62502"), _("61502"), _("60502"), _("59502"), _("58502"), _("57502"), _("56502"), _("55502"), _("54502"), _("53502"), _("52502"), _("51502"), _("50502"), _("502"), wxEmptyString, wxEmptyString, wxEmptyString };
+	wxString m_choice_portChoices[] = { _("64502"), _("63502"), _("62502"), _("61502"), _("60502"), _("59502"), _("58502"), _("57502"), _("56502"), _("55502"), _("54502"), _("53502"), _("52502"), _("51502"), _("50502"), _("502"), wxEmptyString, wxEmptyString, wxEmptyString };
 	int m_choice_portNChoices = sizeof( m_choice_portChoices ) / sizeof( wxString );
 	m_choice_port = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choice_portNChoices, m_choice_portChoices, 0 );
 	m_choice_port->SetSelection( 16 );
