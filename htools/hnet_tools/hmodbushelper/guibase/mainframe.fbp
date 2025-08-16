@@ -170,7 +170,7 @@
             <property name="help"></property>
             <property name="id">wxID_ANY</property>
             <property name="kind">wxITEM_NORMAL</property>
-            <property name="label">新建Modbus TCP客户端(模拟器)</property>
+            <property name="label">新建Modbus TCP网关(模拟器)</property>
             <property name="name">m_menuItem_new_modbussession_tcp_gateway_simulator</property>
             <property name="permission">none</property>
             <property name="shortcut"></property>

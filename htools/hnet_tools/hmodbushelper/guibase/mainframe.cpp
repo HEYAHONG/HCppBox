@@ -39,7 +39,7 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_menu_session->Append( m_menuItem_new_modbussession_tcp_client );
 
 	wxMenuItem* m_menuItem_new_modbussession_tcp_gateway_simulator;
-	m_menuItem_new_modbussession_tcp_gateway_simulator = new wxMenuItem( m_menu_session, wxID_ANY, wxString( _("新建Modbus TCP客户端(模拟器)") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuItem_new_modbussession_tcp_gateway_simulator = new wxMenuItem( m_menu_session, wxID_ANY, wxString( _("新建Modbus TCP网关(模拟器)") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menu_session->Append( m_menuItem_new_modbussession_tcp_gateway_simulator );
 
 	m_mainframe_menubar->Append( m_menu_session, _("会话") );
