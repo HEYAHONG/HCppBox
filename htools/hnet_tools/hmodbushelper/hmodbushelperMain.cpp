@@ -13,6 +13,7 @@
 
 #include "hmodbushelperMain.h"
 #include "modbussessiontcpclientgui.h"
+#include "modbussessiontcpgatewaysimulatorgui.h"
 #include <wx/fontutil.h>
 #include <wx/log.h>
 #include <wx/filedlg.h>
@@ -23,7 +24,6 @@
 #include <wx/webviewfshandler.h>
 #include <wx/fs_mem.h>
 #include "hmodbushelper.xpm"
-
 
 
 hmodbushelperFrame::hmodbushelperFrame(wxFrame *frame): mainframe(frame),log(NULL)
@@ -117,6 +117,12 @@ void hmodbushelperFrame::OnMenuSelection_New_Modbus_Session_TCP_Client( wxComman
 {
     ModbusSessionTCPClientGui *session=new ModbusSessionTCPClientGui(this);
     m_main_auinotebook->AddPage(session,_T("Modbus TCP 客户端"),true);
+}
+
+void hmodbushelperFrame::OnMenuSelection_New_Modbus_Session_TCP_Gateway_Simulator( wxCommandEvent& event )
+{
+    ModbusSessionTCPGatewaySimulatorGui *session=new ModbusSessionTCPGatewaySimulatorGui(this);
+    m_main_auinotebook->AddPage(session,_T("Modbus TCP 网关(模拟器)"),true);
 }
 
 void hmodbushelperFrame::OnMenuSelection_Modbus_Protocol( wxCommandEvent& event )

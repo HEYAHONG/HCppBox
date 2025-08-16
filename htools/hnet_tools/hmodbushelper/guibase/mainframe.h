@@ -32,6 +32,7 @@
 #include <wx/stattext.h>
 #include <wx/button.h>
 #include <wx/checkbox.h>
+#include <wx/choice.h>
 #include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -59,6 +60,7 @@ class mainframe : public wxFrame
 		virtual void OnMenuSelection_Menu_Quit( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMenuSelection_Menu_Logdialog( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMenuSelection_New_Modbus_Session_TCP_Client( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMenuSelection_New_Modbus_Session_TCP_Gateway_Simulator( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMenuSelection_Modbus_Protocol( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMSTimer( wxTimerEvent& event ) { event.Skip(); }
@@ -174,6 +176,40 @@ class modbussessiontcpclientbase : public wxPanel
 		modbussessiontcpclientbase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 750,500 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
 
 		~modbussessiontcpclientbase();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class modbussessiontcpgatewaysimulatorbase
+///////////////////////////////////////////////////////////////////////////////
+class modbussessiontcpgatewaysimulatorbase : public wxPanel
+{
+	private:
+
+	protected:
+		wxGrid* m_grid_simulator_data;
+		wxStaticText* m_staticText21;
+		wxCheckBox* m_checkBox_localhost;
+		wxStaticText* m_staticText19;
+		wxChoice* m_choice_port;
+		wxStaticText* m_staticText18;
+		wxButton* m_button_ipv4_gateway_start_stop;
+		wxStaticText* m_staticText20;
+		wxButton* m_button_ipv6_gateway_start_stop;
+		wxTimer m_timer_simulator_update;
+
+		// Virtual event handlers, override them in your derived class
+		virtual void OnGridCellChange_Simulator_Data( wxGridEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_IPV4_Gateway_Start_Stop( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_IPV6_Gateway_Start_Stop( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTimer_Simulator_Update( wxTimerEvent& event ) { event.Skip(); }
+
+
+	public:
+
+		modbussessiontcpgatewaysimulatorbase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 750,500 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
+
+		~modbussessiontcpgatewaysimulatorbase();
 
 };
 

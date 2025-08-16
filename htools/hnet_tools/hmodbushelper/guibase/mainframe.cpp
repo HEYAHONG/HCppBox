@@ -38,6 +38,10 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_menuItem_new_modbussession_tcp_client = new wxMenuItem( m_menu_session, wxID_ANY, wxString( _("新建Modbus TCP客户端") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menu_session->Append( m_menuItem_new_modbussession_tcp_client );
 
+	wxMenuItem* m_menuItem_new_modbussession_tcp_gateway_simulator;
+	m_menuItem_new_modbussession_tcp_gateway_simulator = new wxMenuItem( m_menu_session, wxID_ANY, wxString( _("新建Modbus TCP客户端(模拟器)") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menu_session->Append( m_menuItem_new_modbussession_tcp_gateway_simulator );
+
 	m_mainframe_menubar->Append( m_menu_session, _("会话") );
 
 	m_menu_help = new wxMenu();
@@ -79,6 +83,7 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_menu_file->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_Menu_Quit ), this, m_menuItem_quit->GetId());
 	m_menu_log->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_Menu_Logdialog ), this, m_menuItem_logdialog->GetId());
 	m_menu_session->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_New_Modbus_Session_TCP_Client ), this, m_menuItem_new_modbussession_tcp_client->GetId());
+	m_menu_session->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_New_Modbus_Session_TCP_Gateway_Simulator ), this, m_menuItem_new_modbussession_tcp_gateway_simulator->GetId());
 	m_menu_help->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_Modbus_Protocol ), this, m_menuItem_Modbus_Protocol->GetId());
 	m_menu_help->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnAbout ), this, m_menuItem_Help_About->GetId());
 	this->Connect( m_ms_timer.GetId(), wxEVT_TIMER, wxTimerEventHandler( mainframe::OnMSTimer ) );
@@ -558,6 +563,116 @@ modbussessiontcpclientbase::modbussessiontcpclientbase( wxWindow* parent, wxWind
 }
 
 modbussessiontcpclientbase::~modbussessiontcpclientbase()
+{
+}
+
+modbussessiontcpgatewaysimulatorbase::modbussessiontcpgatewaysimulatorbase( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name ) : wxPanel( parent, id, pos, size, style, name )
+{
+	wxBoxSizer* bSizer19;
+	bSizer19 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_grid_simulator_data = new wxGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+
+	// Grid
+	m_grid_simulator_data->CreateGrid( 65536, 4 );
+	m_grid_simulator_data->EnableEditing( true );
+	m_grid_simulator_data->EnableGridLines( true );
+	m_grid_simulator_data->EnableDragGridSize( true );
+	m_grid_simulator_data->SetMargins( 0, 0 );
+
+	// Columns
+	m_grid_simulator_data->EnableDragColMove( false );
+	m_grid_simulator_data->EnableDragColSize( true );
+	m_grid_simulator_data->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Rows
+	m_grid_simulator_data->EnableDragRowSize( true );
+	m_grid_simulator_data->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Label Appearance
+
+	// Cell Defaults
+	m_grid_simulator_data->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	bSizer19->Add( m_grid_simulator_data, 1, wxALL|wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer20;
+	bSizer20 = new wxBoxSizer( wxVERTICAL );
+
+	bSizer20->SetMinSize( wxSize( 150,-1 ) );
+	wxBoxSizer* bSizer24;
+	bSizer24 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText21 = new wxStaticText( this, wxID_ANY, _("仅本地："), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText21->Wrap( -1 );
+	bSizer24->Add( m_staticText21, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_checkBox_localhost = new wxCheckBox( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBox_localhost->SetValue(true);
+	bSizer24->Add( m_checkBox_localhost, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+
+	bSizer20->Add( bSizer24, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer22;
+	bSizer22 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText19 = new wxStaticText( this, wxID_ANY, _("端口:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText19->Wrap( -1 );
+	bSizer22->Add( m_staticText19, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	wxString m_choice_portChoices[] = { _("65502"), _("64502"), _("63502"), _("62502"), _("61502"), _("60502"), _("59502"), _("58502"), _("57502"), _("56502"), _("55502"), _("54502"), _("53502"), _("52502"), _("51502"), _("50502"), _("502"), wxEmptyString, wxEmptyString, wxEmptyString };
+	int m_choice_portNChoices = sizeof( m_choice_portChoices ) / sizeof( wxString );
+	m_choice_port = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choice_portNChoices, m_choice_portChoices, 0 );
+	m_choice_port->SetSelection( 16 );
+	bSizer22->Add( m_choice_port, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer20->Add( bSizer22, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer21;
+	bSizer21 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText18 = new wxStaticText( this, wxID_ANY, _("IPV4:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText18->Wrap( -1 );
+	bSizer21->Add( m_staticText18, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_button_ipv4_gateway_start_stop = new wxButton( this, wxID_ANY, _("启动"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer21->Add( m_button_ipv4_gateway_start_stop, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer20->Add( bSizer21, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer23;
+	bSizer23 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText20 = new wxStaticText( this, wxID_ANY, _("IPV6:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText20->Wrap( -1 );
+	bSizer23->Add( m_staticText20, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_button_ipv6_gateway_start_stop = new wxButton( this, wxID_ANY, _("启动"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer23->Add( m_button_ipv6_gateway_start_stop, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer20->Add( bSizer23, 1, wxEXPAND, 5 );
+
+
+	bSizer19->Add( bSizer20, 0, 0, 5 );
+
+
+	this->SetSizer( bSizer19 );
+	this->Layout();
+	m_timer_simulator_update.SetOwner( this, m_timer_simulator_update.GetId() );
+	m_timer_simulator_update.Start( 50 );
+
+
+	// Connect Events
+	m_grid_simulator_data->Connect( wxEVT_GRID_CELL_CHANGED, wxGridEventHandler( modbussessiontcpgatewaysimulatorbase::OnGridCellChange_Simulator_Data ), NULL, this );
+	m_button_ipv4_gateway_start_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpgatewaysimulatorbase::OnButtonClick_IPV4_Gateway_Start_Stop ), NULL, this );
+	m_button_ipv6_gateway_start_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpgatewaysimulatorbase::OnButtonClick_IPV6_Gateway_Start_Stop ), NULL, this );
+	this->Connect( m_timer_simulator_update.GetId(), wxEVT_TIMER, wxTimerEventHandler( modbussessiontcpgatewaysimulatorbase::OnTimer_Simulator_Update ) );
+}
+
+modbussessiontcpgatewaysimulatorbase::~modbussessiontcpgatewaysimulatorbase()
 {
 }
 
