@@ -5489,7 +5489,7 @@
                     <property name="caption"></property>
                     <property name="caption_visible">1</property>
                     <property name="center_pane">0</property>
-                    <property name="choices">&quot;64502&quot; &quot;63502&quot; &quot;62502&quot; &quot;61502&quot; &quot;60502&quot; &quot;59502&quot; &quot;58502&quot; &quot;57502&quot; &quot;56502&quot; &quot;55502&quot; &quot;54502&quot; &quot;53502&quot; &quot;52502&quot; &quot;51502&quot; &quot;50502&quot; &quot;502&quot; &quot;&quot; &quot;&quot;</property>
+                    <property name="choices">&quot;64502&quot; &quot;63502&quot; &quot;62502&quot; &quot;61502&quot; &quot;60502&quot; &quot;59502&quot; &quot;58502&quot; &quot;57502&quot; &quot;56502&quot; &quot;55502&quot; &quot;54502&quot; &quot;53502&quot; &quot;52502&quot; &quot;51502&quot; &quot;50502&quot; &quot;502&quot;</property>
                     <property name="close_button">1</property>
                     <property name="context_help"></property>
                     <property name="context_menu">1</property>
