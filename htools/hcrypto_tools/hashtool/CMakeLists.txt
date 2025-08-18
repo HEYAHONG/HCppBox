@@ -7,6 +7,13 @@ project(${PROJECT_NAME}
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 99)
 
+if(WIN32)
+    if(MSVC)
+        add_compile_options(-utf-8)
+    endif()
+endif()
+
+
 #添加线程库
 find_package(Threads REQUIRED)
 

@@ -6,6 +6,12 @@ project(${PROJECT_NAME}
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 99)
+if(WIN32)
+    if(MSVC)
+        add_compile_options(-utf-8)
+    endif()
+endif()
+
 file(GLOB C_CXX_FILES *.h *.cpp *.c *.hpp *.cxx)
 add_executable(${PROJECT_NAME}  ${C_CXX_FILES})
 #添加线程库
