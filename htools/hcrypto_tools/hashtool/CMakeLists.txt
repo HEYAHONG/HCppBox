@@ -67,6 +67,30 @@ hcppbox_enable(hsha512sum)
 hrc_enable(hsha512sum)
 target_link_libraries(hsha512sum  ${CMAKE_THREAD_LIBS_INIT})
 
+#hsha3sum224
+add_executable(hsha3sum224  hsha3sum224.cpp)
+hcppbox_enable(hsha3sum224)
+hrc_enable(hsha3sum224)
+target_link_libraries(hsha3sum224  ${CMAKE_THREAD_LIBS_INIT})
+
+#hsha3sum256
+add_executable(hsha3sum256  hsha3sum256.cpp)
+hcppbox_enable(hsha3sum256)
+hrc_enable(hsha3sum256)
+target_link_libraries(hsha3sum256  ${CMAKE_THREAD_LIBS_INIT})
+
+#hsha3sum384
+add_executable(hsha3sum384  hsha3sum384.cpp)
+hcppbox_enable(hsha3sum384)
+hrc_enable(hsha3sum384)
+target_link_libraries(hsha3sum384  ${CMAKE_THREAD_LIBS_INIT})
+
+#hsha3sum512
+add_executable(hsha3sum512  hsha3sum512.cpp)
+hcppbox_enable(hsha3sum512)
+hrc_enable(hsha3sum512)
+target_link_libraries(hsha3sum512  ${CMAKE_THREAD_LIBS_INIT})
+
 #hripemd160sum
 add_executable(hripemd160sum  hripemd160sum.cpp)
 hcppbox_enable(hripemd160sum)

@@ -11,6 +11,10 @@
 - `hsha256sum` 
 - `hsha384sum` 
 - `hsha512sum` 
+- `hsha3sum224`
+- `hsha3sum256`
+- `hsha3sum384`
+- `hsha3sum512`
 - `hripemd160sum` 
 - `hsm3sum`
 
