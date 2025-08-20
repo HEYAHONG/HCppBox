@@ -118,3 +118,8 @@
 - [hecdsa.c](hecdsa.c)
 - [hecdsa](hecdsa)
 
+## EdDSA
+
+- [heddsa.h](heddsa.h)
+- [heddsa.c](heddsa.c)
+- [heddsa](heddsa)

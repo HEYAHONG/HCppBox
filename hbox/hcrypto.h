@@ -34,6 +34,8 @@ extern "C"
 #include "hcrypto/hhmac.h"
 #include "hcrypto/hpoly1305.h"
 #include "hcrypto/hecdsa.h"
+#include "hcrypto/heddsa.h"
+
 
 #ifdef __cplusplus
 }

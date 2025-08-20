@@ -4488,7 +4488,7 @@ static int hcrypto_test(int argc,const char *argv[])
 
     {
         printf("hcrypto ecdsa256: start!\r\n");
-        hecdsa256_hash_t hash={0};
+        hecdsa256_hash_t hash= {0};
         //使用随机数填充hash
         hgetrandom(hash,sizeof(hecdsa256_hash_t),0);
         struct
@@ -4496,8 +4496,8 @@ static int hcrypto_test(int argc,const char *argv[])
             hecdsa256_public_key_t pub_key;
             hecdsa256_private_key_t pri_key;
             hecdsa256_signature_t signature;
-        } ecdsa_test_sign[2]={0};
-        for(size_t i=0;i<sizeof(ecdsa_test_sign)/sizeof(ecdsa_test_sign[0]);i++)
+        } ecdsa_test_sign[2]= {0};
+        for(size_t i=0; i<sizeof(ecdsa_test_sign)/sizeof(ecdsa_test_sign[0]); i++)
         {
             printf("hcrypto ecdsa256: keygen %i!\r\n",(int)i);
             hecdsa256_keygen(NULL,ecdsa_test_sign[i].pub_key,ecdsa_test_sign[i].pri_key);
@@ -4514,11 +4514,55 @@ static int hcrypto_test(int argc,const char *argv[])
             }
         }
         printf("hcrypto ecdsa256: verify 1 using signature 0 ret=%d\r\n",hecdsa256_verify(NULL,ecdsa_test_sign[1].pub_key,hash,ecdsa_test_sign[0].signature));
-        hecdsa256_shared_key_t shared_key[2]={0};
+        hecdsa256_shared_key_t shared_key[2]= {0};
         hecdsa256_ecdh256_keygen(NULL,ecdsa_test_sign[0].pub_key,ecdsa_test_sign[1].pri_key,shared_key[0]);
         hecdsa256_ecdh256_keygen(NULL,ecdsa_test_sign[1].pub_key,ecdsa_test_sign[0].pri_key,shared_key[1]);
         printf("hcrypto ecdsa256: shared_key %s\r\n",memcmp(shared_key[0],shared_key[1],sizeof(hecdsa256_shared_key_t))==0?"ok":"failed");
         printf("hcrypto ecdsa256: end!\r\n");
+    }
+
+    {
+        printf("hcrypto ed25519: start!\r\n");
+        uint8_t message[1024];
+        hgetrandom(message,sizeof(message),0);
+        struct
+        {
+            hed25519_edsign_secret_key_t sec;
+            hed25519_edsign_public_key_t pub;
+            hed25519_edsign_signature_t  sig;
+        }
+        ed25519_test_sign[2]= {0};
+        for(size_t i=0; i<sizeof(ed25519_test_sign)/sizeof(ed25519_test_sign[0]); i++)
+        {
+            hed25519_edsign_sec_generate(ed25519_test_sign[i].sec);
+            hed25519_edsign_sec_to_pub(NULL,ed25519_test_sign[i].pub,ed25519_test_sign[i].sec);
+            hed25519_edsign_sign(ed25519_test_sign[i].sig,NULL,ed25519_test_sign[i].pub,ed25519_test_sign[i].sec,message,sizeof(message));
+            hed25519_edsign_verify_state_t verify= {0};
+            hed25519_edsign_verify_init(&verify,NULL,ed25519_test_sign[i].sig,ed25519_test_sign[i].pub);
+            hed25519_edsign_verify_add(&verify,message,sizeof(message));
+            if(hed25519_edsign_verify(&verify,ed25519_test_sign[i].sig,ed25519_test_sign[i].pub))
+            {
+                printf("hcrypto ed25519: test %d ok!\r\n",(int)i);
+            }
+            else
+            {
+                printf("hcrypto ed25519: test %d failed!\r\n",(int)i);
+            }
+        }
+        {
+            hed25519_edsign_verify_state_t verify= {0};
+            hed25519_edsign_verify_init(&verify,NULL,ed25519_test_sign[0].sig,ed25519_test_sign[1].pub);
+            hed25519_edsign_verify_add(&verify,message,sizeof(message));
+            printf("hcrypto ed25519: verify 0 using signature 1 ret=%d\r\n",(int)hed25519_edsign_verify(&verify,ed25519_test_sign[0].sig,ed25519_test_sign[1].pub));
+        }
+        {
+            hgetrandom(message,sizeof(message),0);
+            hed25519_edsign_verify_state_t verify= {0};
+            hed25519_edsign_verify_init(&verify,NULL,ed25519_test_sign[0].sig,ed25519_test_sign[0].pub);
+            hed25519_edsign_verify_add(&verify,message,sizeof(message));
+            printf("hcrypto ed25519: verify 0 when message changed ret=%d\r\n",(int)hed25519_edsign_verify(&verify,ed25519_test_sign[0].sig,ed25519_test_sign[0].pub));
+        }
+        printf("hcrypto ed25519: end!\r\n");
     }
 
     return 0;
