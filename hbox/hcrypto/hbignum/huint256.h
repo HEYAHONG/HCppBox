@@ -234,6 +234,13 @@ void huint256_add(huint256_t *dst,const huint256_t *src1,const huint256_t *src2)
  */
 void huint256_sub(huint256_t *dst,const huint256_t *src1,const huint256_t *src2);
 
+
+typedef struct huint256_state huint256_state_t;
+struct huint256_state
+{
+    huint256_t state[8];        /**< 固定采用8个寄存器 */
+};
+
 /** \brief 乘
  *
  * \param state huint256_t* 状态值，用于中间状态存储,不可为空
@@ -243,6 +250,25 @@ void huint256_sub(huint256_t *dst,const huint256_t *src1,const huint256_t *src2)
  *
  */
 void huint256_mul(huint256_t *state,huint256_t *dst,const huint256_t *src1,const huint256_t *src2);
+
+/** \brief 乘(采用栈作为临时变量存储)
+ *
+ * \param dst huint256_t* 目标大数,dst=src1*src2
+ * \param src1 const huint256_t* 源大数1
+ * \param src2 const huint256_t* 源大数2
+ *
+ */
+void huint256_mul_with_stack(huint256_t *dst,const huint256_t *src1,const huint256_t *src2);
+
+/** \brief 乘(外部分配的状态寄存器)
+ *
+ * \param state huint256_state_t * 状态值，用于中间状态存储,不可为空
+ * \param dst huint256_t* 目标大数,dst=src1*src2
+ * \param src1 const huint256_t* 源大数1
+ * \param src2 const huint256_t* 源大数2
+ *
+ */
+void huint256_mul_with_external_state(huint256_state_t *state,huint256_t *dst,const huint256_t *src1,const huint256_t *src2);
 
 
 /** \brief 除
@@ -266,6 +292,17 @@ void huint256_div(huint256_t *state,huint256_t *state1,huint256_t *state2,huint2
  *
  */
 void huint256_div_with_stack(huint256_t *mod,huint256_t *dst,const huint256_t *src1,const huint256_t *src2);
+
+/** \brief 除(外部分配的状态寄存器)
+ *
+ * \param state huint256_state_t * 状态值，用于中间状态存储,不可为空
+ * \param mod huint256_t* 状态值，存储余数。mod=src1%src2
+ * \param dst huint256_t* 目标大数,dst=src1/src2
+ * \param src1 const huint256_t* 源大数1
+ * \param src2 const huint256_t* 源大数2
+ *
+ */
+void huint256_div_with_external_state(huint256_state_t * state,huint256_t *mod,huint256_t *dst,const huint256_t *src1,const huint256_t *src2);
 
 
 /** \brief 幂函数
@@ -291,6 +328,17 @@ void huint256_power(huint256_t *state,huint256_t *state1,huint256_t *state2,huin
 void huint256_power_with_stack(huint256_t *dst,const huint256_t *src1,const huint256_t *src2);
 
 
+/** \brief 幂函数(外部分配的状态寄存器)
+ *
+ * \param state huint256_state_t * 状态值，用于中间状态存储,不可为空
+ * \param dst huint256_t* 目标大数,dst=src1的src2次方
+ * \param src1 const huint256_t* 源大数1
+ * \param src2 const huint256_t* 源大数2
+ *
+ */
+void huint256_power_with_external_state(huint256_state_t * state,huint256_t *dst,const huint256_t *src1,const huint256_t *src2);
+
+
 /** \brief 幂取模函数（常用于RSA等加密算法）
  *
  * \param state huint256_t* 状态值，用于中间状态存储,不可为空
@@ -314,6 +362,28 @@ void huint256_power_mod(huint256_t *state,huint256_t *state1,huint256_t *state2,
  *
  */
 void huint256_power_mod_with_stack(huint256_t *dst,const huint256_t *src1,const huint256_t *src2,const huint256_t *src3);
+
+/** \brief 幂取模函数（常用于RSA等加密算法,外部分配的状态寄存器）
+ *
+ * \param state huint256_state_t * 状态值，用于中间状态存储,不可为空
+ * \param dst huint256_t* 目标大数,dst=src1的src2次方对src3取模
+ * \param src1 const huint256_t* 源大数1
+ * \param src2 const huint256_t* 源大数2
+ * \param src3 const huint256_t* 源大数3
+ *
+ */
+void huint256_power_mod_with_external_state(huint256_state_t * state,huint256_t *dst,const huint256_t *src1,const huint256_t *src2,const huint256_t *src3);
+
+
+/** \brief 辗转向除法
+ *
+ * \param state huint256_state_t* 状态值，用于中间状态存储,不可为空
+ * \param dst huint256_t* 目标大数
+ * \param src1 const huint256_t* 源大数1
+ * \param src2 const huint256_t* 源大数2
+ *
+ */
+void huint256_gcd(huint256_state_t * state,huint256_t *dst,const huint256_t *src1,const huint256_t *src2);
 
 #ifdef __cplusplus
 }

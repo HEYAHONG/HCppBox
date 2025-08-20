@@ -575,6 +575,23 @@ void huint3456_mul(huint3456_t *state,huint3456_t *dst,const huint3456_t *src1,c
     }
 }
 
+void huint3456_mul_with_stack(huint3456_t *dst,const huint3456_t *src1,const huint3456_t *src2)
+{
+    huint3456_t state;
+
+    huint3456_mul(&state,dst,src1,src2);
+}
+
+void huint3456_mul_with_external_state(huint3456_state_t *state,huint3456_t *dst,const huint3456_t *src1,const huint3456_t *src2)
+{
+    if(state==NULL)
+    {
+        return;
+    }
+
+    huint3456_mul(&state->state[0],dst,src1,src2);
+}
+
 void huint3456_div(huint3456_t *state,huint3456_t *state1,huint3456_t *state2,huint3456_t *dst,const huint3456_t *src1,const huint3456_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -584,7 +601,7 @@ void huint3456_div(huint3456_t *state,huint3456_t *state1,huint3456_t *state2,hu
 
 
     huint3456_load_uint32(dst,0);
-    if(huint3456_compare(src2,state)==0 )
+    if(huint3456_compare(src2,dst)==0 )
     {
         huint3456_load_uint32(state,0);
         //除0错误
@@ -636,6 +653,19 @@ void huint3456_div_with_stack(huint3456_t *mod,huint3456_t *dst,const huint3456_
     }
 }
 
+void huint3456_div_with_external_state(huint3456_state_t * state,huint3456_t *mod,huint3456_t *dst,const huint3456_t *src1,const huint3456_t *src2)
+{
+    if(state==NULL)
+    {
+        return;
+    }
+    huint3456_div(&state->state[0],&state->state[1],&state->state[2],dst,src1,src2);
+    if(mod!=NULL)
+    {
+        huint3456_copy(mod,&state->state[0]);
+    }
+}
+
 void huint3456_power(huint3456_t *state,huint3456_t *state1,huint3456_t *state2,huint3456_t *dst,const huint3456_t *src1,const huint3456_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -679,6 +709,15 @@ void huint3456_power_with_stack(huint3456_t *dst,const huint3456_t *src1,const h
 {
     huint3456_t state[3]= {0};
     huint3456_power(&state[0],&state[1],&state[2],dst,src1,src2);
+}
+
+void huint3456_power_with_external_state(huint3456_state_t * state,huint3456_t *dst,const huint3456_t *src1,const huint3456_t *src2)
+{
+    if(state==NULL)
+    {
+        return;
+    }
+    huint3456_power(&state->state[0],&state->state[1],&state->state[2],dst,src1,src2);
 }
 
 void huint3456_power_mod(huint3456_t *state,huint3456_t *state1,huint3456_t *state2,huint3456_t *state3,huint3456_t *dst,const huint3456_t *src1,const huint3456_t *src2,const huint3456_t *src3)
@@ -731,3 +770,67 @@ void huint3456_power_mod_with_stack(huint3456_t *dst,const huint3456_t *src1,con
     huint3456_t state[4]= {0};
     huint3456_power_mod(&state[0],&state[1],&state[2],&state[3],dst,src1,src2,src3);
 }
+
+void huint3456_power_mod_with_external_state(huint3456_state_t * state,huint3456_t *dst,const huint3456_t *src1,const huint3456_t *src2,const huint3456_t *src3)
+{
+    if(state==NULL)
+    {
+        return;
+    }
+    huint3456_power_mod(&state->state[0],&state->state[1],&state->state[2],&state->state[3],dst,src1,src2,src3);
+}
+
+void huint3456_gcd(huint3456_state_t * state,huint3456_t *dst,const huint3456_t *src1,const huint3456_t *src2)
+{
+    if(state==NULL || dst==NULL || src1==NULL || src2==NULL)
+    {
+        return;
+    }
+    /*
+     * 寄存器6,7分别存储除数与被除数
+     */
+    if(huint3456_compare(src1,src2) >=0)
+    {
+        huint3456_copy(&state->state[7],src1);
+        huint3456_copy(&state->state[6],src2);
+    }
+    else
+    {
+        huint3456_copy(&state->state[6],src1);
+        huint3456_copy(&state->state[7],src2);
+    }
+    /*
+     * 寄存器4,5分别存储商与余数
+     */
+    huint3456_load_uint32(&state->state[5],1);//初始时余数不为0
+    /*
+     * 寄存器3为0寄存器
+     */
+    huint3456_load_uint32(&state->state[3],0);
+    if(huint3456_compare(&state->state[3],&state->state[6])==0)
+    {
+        /*
+         * 当其中一个数为0时,返回较大的数
+         */
+        huint3456_copy(dst,&state->state[7]);
+        return;
+    }
+
+    do
+    {
+        huint3456_div(&state->state[5],&state->state[0],&state->state[1],&state->state[4],&state->state[7],&state->state[6]);
+        /*
+         * 重新设置被除数与除数
+         */
+        huint3456_copy(&state->state[7],&state->state[6]);
+        huint3456_copy(&state->state[6],&state->state[5]);
+    }
+    while(huint3456_compare(&state->state[3],&state->state[5])!=0);
+
+    /*
+     * 返回剩余的数
+     */
+    huint3456_copy(dst,&state->state[7]);
+
+}
+

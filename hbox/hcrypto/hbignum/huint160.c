@@ -575,6 +575,23 @@ void huint160_mul(huint160_t *state,huint160_t *dst,const huint160_t *src1,const
     }
 }
 
+void huint160_mul_with_stack(huint160_t *dst,const huint160_t *src1,const huint160_t *src2)
+{
+    huint160_t state;
+
+    huint160_mul(&state,dst,src1,src2);
+}
+
+void huint160_mul_with_external_state(huint160_state_t *state,huint160_t *dst,const huint160_t *src1,const huint160_t *src2)
+{
+    if(state==NULL)
+    {
+        return;
+    }
+
+    huint160_mul(&state->state[0],dst,src1,src2);
+}
+
 void huint160_div(huint160_t *state,huint160_t *state1,huint160_t *state2,huint160_t *dst,const huint160_t *src1,const huint160_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -584,7 +601,7 @@ void huint160_div(huint160_t *state,huint160_t *state1,huint160_t *state2,huint1
 
 
     huint160_load_uint32(dst,0);
-    if(huint160_compare(src2,state)==0 )
+    if(huint160_compare(src2,dst)==0 )
     {
         huint160_load_uint32(state,0);
         //除0错误
@@ -636,6 +653,19 @@ void huint160_div_with_stack(huint160_t *mod,huint160_t *dst,const huint160_t *s
     }
 }
 
+void huint160_div_with_external_state(huint160_state_t * state,huint160_t *mod,huint160_t *dst,const huint160_t *src1,const huint160_t *src2)
+{
+    if(state==NULL)
+    {
+        return;
+    }
+    huint160_div(&state->state[0],&state->state[1],&state->state[2],dst,src1,src2);
+    if(mod!=NULL)
+    {
+        huint160_copy(mod,&state->state[0]);
+    }
+}
+
 void huint160_power(huint160_t *state,huint160_t *state1,huint160_t *state2,huint160_t *dst,const huint160_t *src1,const huint160_t *src2)
 {
     if(state == NULL || state1==NULL || state2== NULL || dst==NULL || src1==NULL || src2 == NULL)
@@ -679,6 +709,15 @@ void huint160_power_with_stack(huint160_t *dst,const huint160_t *src1,const huin
 {
     huint160_t state[3]= {0};
     huint160_power(&state[0],&state[1],&state[2],dst,src1,src2);
+}
+
+void huint160_power_with_external_state(huint160_state_t * state,huint160_t *dst,const huint160_t *src1,const huint160_t *src2)
+{
+    if(state==NULL)
+    {
+        return;
+    }
+    huint160_power(&state->state[0],&state->state[1],&state->state[2],dst,src1,src2);
 }
 
 void huint160_power_mod(huint160_t *state,huint160_t *state1,huint160_t *state2,huint160_t *state3,huint160_t *dst,const huint160_t *src1,const huint160_t *src2,const huint160_t *src3)
@@ -731,3 +770,67 @@ void huint160_power_mod_with_stack(huint160_t *dst,const huint160_t *src1,const 
     huint160_t state[4]= {0};
     huint160_power_mod(&state[0],&state[1],&state[2],&state[3],dst,src1,src2,src3);
 }
+
+void huint160_power_mod_with_external_state(huint160_state_t * state,huint160_t *dst,const huint160_t *src1,const huint160_t *src2,const huint160_t *src3)
+{
+    if(state==NULL)
+    {
+        return;
+    }
+    huint160_power_mod(&state->state[0],&state->state[1],&state->state[2],&state->state[3],dst,src1,src2,src3);
+}
+
+void huint160_gcd(huint160_state_t * state,huint160_t *dst,const huint160_t *src1,const huint160_t *src2)
+{
+    if(state==NULL || dst==NULL || src1==NULL || src2==NULL)
+    {
+        return;
+    }
+    /*
+     * 寄存器6,7分别存储除数与被除数
+     */
+    if(huint160_compare(src1,src2) >=0)
+    {
+        huint160_copy(&state->state[7],src1);
+        huint160_copy(&state->state[6],src2);
+    }
+    else
+    {
+        huint160_copy(&state->state[6],src1);
+        huint160_copy(&state->state[7],src2);
+    }
+    /*
+     * 寄存器4,5分别存储商与余数
+     */
+    huint160_load_uint32(&state->state[5],1);//初始时余数不为0
+    /*
+     * 寄存器3为0寄存器
+     */
+    huint160_load_uint32(&state->state[3],0);
+    if(huint160_compare(&state->state[3],&state->state[6])==0)
+    {
+        /*
+         * 当其中一个数为0时,返回较大的数
+         */
+        huint160_copy(dst,&state->state[7]);
+        return;
+    }
+
+    do
+    {
+        huint160_div(&state->state[5],&state->state[0],&state->state[1],&state->state[4],&state->state[7],&state->state[6]);
+        /*
+         * 重新设置被除数与除数
+         */
+        huint160_copy(&state->state[7],&state->state[6]);
+        huint160_copy(&state->state[6],&state->state[5]);
+    }
+    while(huint160_compare(&state->state[3],&state->state[5])!=0);
+
+    /*
+     * 返回剩余的数
+     */
+    huint160_copy(dst,&state->state[7]);
+
+}
+

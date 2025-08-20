@@ -2926,6 +2926,40 @@ static int hcrypto_test(int argc,const char *argv[])
 
             }
         }
+
+        {
+            /*
+             * 辗转相除法测试
+             */
+            huint8224_state_t state;
+            huint8224_t num[7];
+            huint8224_load_uint32(&num[0],128);
+            huint8224_load_uint32(&num[1],56);
+            huint8224_load_uint32(&num[2],8);
+            huint8224_gcd(&state,&num[3],&num[0],&num[1]);
+            if(huint8224_compare(&num[2],&num[3])==0)
+            {
+                printf("hcrypto gcd(128,56)==8 ok!\r\n");
+            }
+            else
+            {
+                printf("hcrypto gcd(128,56)==8 failed!\r\n");
+            }
+            huint8224_load_uint32(&num[0],256);
+            huint8224_load_uint32(&num[1],17);
+            huint8224_load_uint32(&num[2],1);
+            huint8224_power_with_external_state(&state,&num[5],&num[0],&num[1]);
+            huint8224_power_with_external_state(&state,&num[6],&num[1],&num[0]);
+            huint8224_gcd(&state,&num[3],&num[5],&num[6]);
+            if(huint8224_compare(&num[2],&num[3])==0)
+            {
+                printf("hcrypto gcd(256^17,17^256)==1 ok!\r\n");
+            }
+            else
+            {
+                printf("hcrypto gcd(256^17,17^256)==1 failed!\r\n");
+            }
+        }
     }
     {
         const char *testdata="01234567890ABCabc~12345@#$%测试123";

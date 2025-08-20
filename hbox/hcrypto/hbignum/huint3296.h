@@ -234,6 +234,13 @@ void huint3296_add(huint3296_t *dst,const huint3296_t *src1,const huint3296_t *s
  */
 void huint3296_sub(huint3296_t *dst,const huint3296_t *src1,const huint3296_t *src2);
 
+
+typedef struct huint3296_state huint3296_state_t;
+struct huint3296_state
+{
+    huint3296_t state[8];        /**< 固定采用8个寄存器 */
+};
+
 /** \brief 乘
  *
  * \param state huint3296_t* 状态值，用于中间状态存储,不可为空
@@ -243,6 +250,25 @@ void huint3296_sub(huint3296_t *dst,const huint3296_t *src1,const huint3296_t *s
  *
  */
 void huint3296_mul(huint3296_t *state,huint3296_t *dst,const huint3296_t *src1,const huint3296_t *src2);
+
+/** \brief 乘(采用栈作为临时变量存储)
+ *
+ * \param dst huint3296_t* 目标大数,dst=src1*src2
+ * \param src1 const huint3296_t* 源大数1
+ * \param src2 const huint3296_t* 源大数2
+ *
+ */
+void huint3296_mul_with_stack(huint3296_t *dst,const huint3296_t *src1,const huint3296_t *src2);
+
+/** \brief 乘(外部分配的状态寄存器)
+ *
+ * \param state huint3296_state_t * 状态值，用于中间状态存储,不可为空
+ * \param dst huint3296_t* 目标大数,dst=src1*src2
+ * \param src1 const huint3296_t* 源大数1
+ * \param src2 const huint3296_t* 源大数2
+ *
+ */
+void huint3296_mul_with_external_state(huint3296_state_t *state,huint3296_t *dst,const huint3296_t *src1,const huint3296_t *src2);
 
 
 /** \brief 除
@@ -266,6 +292,17 @@ void huint3296_div(huint3296_t *state,huint3296_t *state1,huint3296_t *state2,hu
  *
  */
 void huint3296_div_with_stack(huint3296_t *mod,huint3296_t *dst,const huint3296_t *src1,const huint3296_t *src2);
+
+/** \brief 除(外部分配的状态寄存器)
+ *
+ * \param state huint3296_state_t * 状态值，用于中间状态存储,不可为空
+ * \param mod huint3296_t* 状态值，存储余数。mod=src1%src2
+ * \param dst huint3296_t* 目标大数,dst=src1/src2
+ * \param src1 const huint3296_t* 源大数1
+ * \param src2 const huint3296_t* 源大数2
+ *
+ */
+void huint3296_div_with_external_state(huint3296_state_t * state,huint3296_t *mod,huint3296_t *dst,const huint3296_t *src1,const huint3296_t *src2);
 
 
 /** \brief 幂函数
@@ -291,6 +328,17 @@ void huint3296_power(huint3296_t *state,huint3296_t *state1,huint3296_t *state2,
 void huint3296_power_with_stack(huint3296_t *dst,const huint3296_t *src1,const huint3296_t *src2);
 
 
+/** \brief 幂函数(外部分配的状态寄存器)
+ *
+ * \param state huint3296_state_t * 状态值，用于中间状态存储,不可为空
+ * \param dst huint3296_t* 目标大数,dst=src1的src2次方
+ * \param src1 const huint3296_t* 源大数1
+ * \param src2 const huint3296_t* 源大数2
+ *
+ */
+void huint3296_power_with_external_state(huint3296_state_t * state,huint3296_t *dst,const huint3296_t *src1,const huint3296_t *src2);
+
+
 /** \brief 幂取模函数（常用于RSA等加密算法）
  *
  * \param state huint3296_t* 状态值，用于中间状态存储,不可为空
@@ -314,6 +362,28 @@ void huint3296_power_mod(huint3296_t *state,huint3296_t *state1,huint3296_t *sta
  *
  */
 void huint3296_power_mod_with_stack(huint3296_t *dst,const huint3296_t *src1,const huint3296_t *src2,const huint3296_t *src3);
+
+/** \brief 幂取模函数（常用于RSA等加密算法,外部分配的状态寄存器）
+ *
+ * \param state huint3296_state_t * 状态值，用于中间状态存储,不可为空
+ * \param dst huint3296_t* 目标大数,dst=src1的src2次方对src3取模
+ * \param src1 const huint3296_t* 源大数1
+ * \param src2 const huint3296_t* 源大数2
+ * \param src3 const huint3296_t* 源大数3
+ *
+ */
+void huint3296_power_mod_with_external_state(huint3296_state_t * state,huint3296_t *dst,const huint3296_t *src1,const huint3296_t *src2,const huint3296_t *src3);
+
+
+/** \brief 辗转向除法
+ *
+ * \param state huint3296_state_t* 状态值，用于中间状态存储,不可为空
+ * \param dst huint3296_t* 目标大数
+ * \param src1 const huint3296_t* 源大数1
+ * \param src2 const huint3296_t* 源大数2
+ *
+ */
+void huint3296_gcd(huint3296_state_t * state,huint3296_t *dst,const huint3296_t *src1,const huint3296_t *src2);
 
 #ifdef __cplusplus
 }

@@ -234,6 +234,13 @@ void huint704_add(huint704_t *dst,const huint704_t *src1,const huint704_t *src2)
  */
 void huint704_sub(huint704_t *dst,const huint704_t *src1,const huint704_t *src2);
 
+
+typedef struct huint704_state huint704_state_t;
+struct huint704_state
+{
+    huint704_t state[8];        /**< 固定采用8个寄存器 */
+};
+
 /** \brief 乘
  *
  * \param state huint704_t* 状态值，用于中间状态存储,不可为空
@@ -243,6 +250,25 @@ void huint704_sub(huint704_t *dst,const huint704_t *src1,const huint704_t *src2)
  *
  */
 void huint704_mul(huint704_t *state,huint704_t *dst,const huint704_t *src1,const huint704_t *src2);
+
+/** \brief 乘(采用栈作为临时变量存储)
+ *
+ * \param dst huint704_t* 目标大数,dst=src1*src2
+ * \param src1 const huint704_t* 源大数1
+ * \param src2 const huint704_t* 源大数2
+ *
+ */
+void huint704_mul_with_stack(huint704_t *dst,const huint704_t *src1,const huint704_t *src2);
+
+/** \brief 乘(外部分配的状态寄存器)
+ *
+ * \param state huint704_state_t * 状态值，用于中间状态存储,不可为空
+ * \param dst huint704_t* 目标大数,dst=src1*src2
+ * \param src1 const huint704_t* 源大数1
+ * \param src2 const huint704_t* 源大数2
+ *
+ */
+void huint704_mul_with_external_state(huint704_state_t *state,huint704_t *dst,const huint704_t *src1,const huint704_t *src2);
 
 
 /** \brief 除
@@ -266,6 +292,17 @@ void huint704_div(huint704_t *state,huint704_t *state1,huint704_t *state2,huint7
  *
  */
 void huint704_div_with_stack(huint704_t *mod,huint704_t *dst,const huint704_t *src1,const huint704_t *src2);
+
+/** \brief 除(外部分配的状态寄存器)
+ *
+ * \param state huint704_state_t * 状态值，用于中间状态存储,不可为空
+ * \param mod huint704_t* 状态值，存储余数。mod=src1%src2
+ * \param dst huint704_t* 目标大数,dst=src1/src2
+ * \param src1 const huint704_t* 源大数1
+ * \param src2 const huint704_t* 源大数2
+ *
+ */
+void huint704_div_with_external_state(huint704_state_t * state,huint704_t *mod,huint704_t *dst,const huint704_t *src1,const huint704_t *src2);
 
 
 /** \brief 幂函数
@@ -291,6 +328,17 @@ void huint704_power(huint704_t *state,huint704_t *state1,huint704_t *state2,huin
 void huint704_power_with_stack(huint704_t *dst,const huint704_t *src1,const huint704_t *src2);
 
 
+/** \brief 幂函数(外部分配的状态寄存器)
+ *
+ * \param state huint704_state_t * 状态值，用于中间状态存储,不可为空
+ * \param dst huint704_t* 目标大数,dst=src1的src2次方
+ * \param src1 const huint704_t* 源大数1
+ * \param src2 const huint704_t* 源大数2
+ *
+ */
+void huint704_power_with_external_state(huint704_state_t * state,huint704_t *dst,const huint704_t *src1,const huint704_t *src2);
+
+
 /** \brief 幂取模函数（常用于RSA等加密算法）
  *
  * \param state huint704_t* 状态值，用于中间状态存储,不可为空
@@ -314,6 +362,28 @@ void huint704_power_mod(huint704_t *state,huint704_t *state1,huint704_t *state2,
  *
  */
 void huint704_power_mod_with_stack(huint704_t *dst,const huint704_t *src1,const huint704_t *src2,const huint704_t *src3);
+
+/** \brief 幂取模函数（常用于RSA等加密算法,外部分配的状态寄存器）
+ *
+ * \param state huint704_state_t * 状态值，用于中间状态存储,不可为空
+ * \param dst huint704_t* 目标大数,dst=src1的src2次方对src3取模
+ * \param src1 const huint704_t* 源大数1
+ * \param src2 const huint704_t* 源大数2
+ * \param src3 const huint704_t* 源大数3
+ *
+ */
+void huint704_power_mod_with_external_state(huint704_state_t * state,huint704_t *dst,const huint704_t *src1,const huint704_t *src2,const huint704_t *src3);
+
+
+/** \brief 辗转向除法
+ *
+ * \param state huint704_state_t* 状态值，用于中间状态存储,不可为空
+ * \param dst huint704_t* 目标大数
+ * \param src1 const huint704_t* 源大数1
+ * \param src2 const huint704_t* 源大数2
+ *
+ */
+void huint704_gcd(huint704_state_t * state,huint704_t *dst,const huint704_t *src1,const huint704_t *src2);
 
 #ifdef __cplusplus
 }
