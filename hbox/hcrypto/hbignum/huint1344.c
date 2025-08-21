@@ -524,6 +524,60 @@ size_t huint1344_ctz(const huint1344_t *dst)
     return HUINT1344_BITS_COUNT;
 }
 
+bool huint1344_t_is_zero(const huint1344_t * src)
+{
+    bool ret=false;
+    if(src==NULL)
+    {
+        return ret;
+    }
+    for(size_t i=0; i< sizeof(src->val)/sizeof(src->val[0]); i++)
+    {
+        if(i==0)
+        {
+            ret=(src->val[0]==0);
+        }
+        else
+        {
+            ret=(src->val[i]==0);
+        }
+
+        if(!ret)
+        {
+            break;
+        }
+    }
+
+    return ret;
+}
+
+bool huint1344_t_is_one(const huint1344_t * src)
+{
+    bool ret=false;
+    if(src==NULL)
+    {
+        return ret;
+    }
+    for(size_t i=0; i< sizeof(src->val)/sizeof(src->val[0]); i++)
+    {
+        if(i==0)
+        {
+            ret=(src->val[0]==1);
+        }
+        else
+        {
+            ret=(src->val[i]==0);
+        }
+
+        if(!ret)
+        {
+            break;
+        }
+    }
+
+    return ret;
+}
+
 void huint1344_add(huint1344_t *dst,const huint1344_t *src1,const huint1344_t *src2)
 {
     if(dst==NULL || src1==NULL || src2 == NULL)

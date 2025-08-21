@@ -215,6 +215,23 @@ size_t huint1920_clz(const huint1920_t *dst);
  */
 size_t huint1920_ctz(const huint1920_t *dst);
 
+
+/** \brief 判断大数是否为0
+ *
+ * \param src const huint1920_t* 源大数
+ * \return bool 是否为0（源大数为空时返回false）
+ *
+ */
+bool huint1920_t_is_zero(const huint1920_t * src);
+
+/** \brief 判断大数是否为1
+ *
+ * \param src const huint1920_t* 源大数
+ * \return bool 是否为1（源大数为空时返回false）
+ *
+ */
+bool huint1920_t_is_one(const huint1920_t * src);
+
 /** \brief 加
  *
  * \param dst huint1920_t* 目标大数

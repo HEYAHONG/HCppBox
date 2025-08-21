@@ -524,6 +524,60 @@ size_t huint4576_ctz(const huint4576_t *dst)
     return HUINT4576_BITS_COUNT;
 }
 
+bool huint4576_t_is_zero(const huint4576_t * src)
+{
+    bool ret=false;
+    if(src==NULL)
+    {
+        return ret;
+    }
+    for(size_t i=0; i< sizeof(src->val)/sizeof(src->val[0]); i++)
+    {
+        if(i==0)
+        {
+            ret=(src->val[0]==0);
+        }
+        else
+        {
+            ret=(src->val[i]==0);
+        }
+
+        if(!ret)
+        {
+            break;
+        }
+    }
+
+    return ret;
+}
+
+bool huint4576_t_is_one(const huint4576_t * src)
+{
+    bool ret=false;
+    if(src==NULL)
+    {
+        return ret;
+    }
+    for(size_t i=0; i< sizeof(src->val)/sizeof(src->val[0]); i++)
+    {
+        if(i==0)
+        {
+            ret=(src->val[0]==1);
+        }
+        else
+        {
+            ret=(src->val[i]==0);
+        }
+
+        if(!ret)
+        {
+            break;
+        }
+    }
+
+    return ret;
+}
+
 void huint4576_add(huint4576_t *dst,const huint4576_t *src1,const huint4576_t *src2)
 {
     if(dst==NULL || src1==NULL || src2 == NULL)

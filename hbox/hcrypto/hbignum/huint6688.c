@@ -524,6 +524,60 @@ size_t huint6688_ctz(const huint6688_t *dst)
     return HUINT6688_BITS_COUNT;
 }
 
+bool huint6688_t_is_zero(const huint6688_t * src)
+{
+    bool ret=false;
+    if(src==NULL)
+    {
+        return ret;
+    }
+    for(size_t i=0; i< sizeof(src->val)/sizeof(src->val[0]); i++)
+    {
+        if(i==0)
+        {
+            ret=(src->val[0]==0);
+        }
+        else
+        {
+            ret=(src->val[i]==0);
+        }
+
+        if(!ret)
+        {
+            break;
+        }
+    }
+
+    return ret;
+}
+
+bool huint6688_t_is_one(const huint6688_t * src)
+{
+    bool ret=false;
+    if(src==NULL)
+    {
+        return ret;
+    }
+    for(size_t i=0; i< sizeof(src->val)/sizeof(src->val[0]); i++)
+    {
+        if(i==0)
+        {
+            ret=(src->val[0]==1);
+        }
+        else
+        {
+            ret=(src->val[i]==0);
+        }
+
+        if(!ret)
+        {
+            break;
+        }
+    }
+
+    return ret;
+}
+
 void huint6688_add(huint6688_t *dst,const huint6688_t *src1,const huint6688_t *src2)
 {
     if(dst==NULL || src1==NULL || src2 == NULL)

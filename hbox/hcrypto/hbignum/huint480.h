@@ -215,6 +215,23 @@ size_t huint480_clz(const huint480_t *dst);
  */
 size_t huint480_ctz(const huint480_t *dst);
 
+
+/** \brief 判断大数是否为0
+ *
+ * \param src const huint480_t* 源大数
+ * \return bool 是否为0（源大数为空时返回false）
+ *
+ */
+bool huint480_t_is_zero(const huint480_t * src);
+
+/** \brief 判断大数是否为1
+ *
+ * \param src const huint480_t* 源大数
+ * \return bool 是否为1（源大数为空时返回false）
+ *
+ */
+bool huint480_t_is_one(const huint480_t * src);
+
 /** \brief 加
  *
  * \param dst huint480_t* 目标大数

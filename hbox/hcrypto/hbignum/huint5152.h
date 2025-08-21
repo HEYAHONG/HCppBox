@@ -215,6 +215,23 @@ size_t huint5152_clz(const huint5152_t *dst);
  */
 size_t huint5152_ctz(const huint5152_t *dst);
 
+
+/** \brief 判断大数是否为0
+ *
+ * \param src const huint5152_t* 源大数
+ * \return bool 是否为0（源大数为空时返回false）
+ *
+ */
+bool huint5152_t_is_zero(const huint5152_t * src);
+
+/** \brief 判断大数是否为1
+ *
+ * \param src const huint5152_t* 源大数
+ * \return bool 是否为1（源大数为空时返回false）
+ *
+ */
+bool huint5152_t_is_one(const huint5152_t * src);
+
 /** \brief 加
  *
  * \param dst huint5152_t* 目标大数

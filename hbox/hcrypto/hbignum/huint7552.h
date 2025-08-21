@@ -215,6 +215,23 @@ size_t huint7552_clz(const huint7552_t *dst);
  */
 size_t huint7552_ctz(const huint7552_t *dst);
 
+
+/** \brief 判断大数是否为0
+ *
+ * \param src const huint7552_t* 源大数
+ * \return bool 是否为0（源大数为空时返回false）
+ *
+ */
+bool huint7552_t_is_zero(const huint7552_t * src);
+
+/** \brief 判断大数是否为1
+ *
+ * \param src const huint7552_t* 源大数
+ * \return bool 是否为1（源大数为空时返回false）
+ *
+ */
+bool huint7552_t_is_one(const huint7552_t * src);
+
 /** \brief 加
  *
  * \param dst huint7552_t* 目标大数

@@ -215,6 +215,23 @@ size_t huint128_clz(const huint128_t *dst);
  */
 size_t huint128_ctz(const huint128_t *dst);
 
+
+/** \brief 判断大数是否为0
+ *
+ * \param src const huint128_t* 源大数
+ * \return bool 是否为0（源大数为空时返回false）
+ *
+ */
+bool huint128_t_is_zero(const huint128_t * src);
+
+/** \brief 判断大数是否为1
+ *
+ * \param src const huint128_t* 源大数
+ * \return bool 是否为1（源大数为空时返回false）
+ *
+ */
+bool huint128_t_is_one(const huint128_t * src);
+
 /** \brief 加
  *
  * \param dst huint128_t* 目标大数

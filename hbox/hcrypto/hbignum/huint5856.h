@@ -215,6 +215,23 @@ size_t huint5856_clz(const huint5856_t *dst);
  */
 size_t huint5856_ctz(const huint5856_t *dst);
 
+
+/** \brief 判断大数是否为0
+ *
+ * \param src const huint5856_t* 源大数
+ * \return bool 是否为0（源大数为空时返回false）
+ *
+ */
+bool huint5856_t_is_zero(const huint5856_t * src);
+
+/** \brief 判断大数是否为1
+ *
+ * \param src const huint5856_t* 源大数
+ * \return bool 是否为1（源大数为空时返回false）
+ *
+ */
+bool huint5856_t_is_one(const huint5856_t * src);
+
 /** \brief 加
  *
  * \param dst huint5856_t* 目标大数
