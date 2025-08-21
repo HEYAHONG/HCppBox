@@ -402,6 +402,27 @@ void huint4032_power_mod_with_external_state(huint4032_state_t * state,huint4032
  */
 void huint4032_gcd(huint4032_state_t * state,huint4032_t *dst,const huint4032_t *src1,const huint4032_t *src2);
 
+/** \brief 获取十进制数的位数（从最高非0位开始计算，通常用于打印）
+ *
+ * 注意：此函数需要注意溢出问题
+ * \param state huint4032_state_t* 状态值，用于中间状态存储,不可为空
+ * \param src const huint4032_t*  源大数
+ * \return size_t 获取十进制数的位数(从最高非0位开始计算，通常用于打印）
+ *
+ */
+size_t huint4032_dec_number_count(huint4032_state_t * state,const huint4032_t *src);
+
+/** \brief 获取十进制数的位上的值
+ *
+ * 注意：此函数需要注意溢出问题
+ * \param state huint4032_state_t* 状态值，用于中间状态存储,不可为空
+ * \param src const huint4032_t* 源大数
+ * \param index size_t 引索
+ * \return size_t 十进制位上的值(0~9)
+ *
+ */
+size_t huint4032_dec_number(huint4032_state_t * state,const huint4032_t *src,size_t index);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

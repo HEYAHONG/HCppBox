@@ -402,6 +402,27 @@ void huint512_power_mod_with_external_state(huint512_state_t * state,huint512_t 
  */
 void huint512_gcd(huint512_state_t * state,huint512_t *dst,const huint512_t *src1,const huint512_t *src2);
 
+/** \brief 获取十进制数的位数（从最高非0位开始计算，通常用于打印）
+ *
+ * 注意：此函数需要注意溢出问题
+ * \param state huint512_state_t* 状态值，用于中间状态存储,不可为空
+ * \param src const huint512_t*  源大数
+ * \return size_t 获取十进制数的位数(从最高非0位开始计算，通常用于打印）
+ *
+ */
+size_t huint512_dec_number_count(huint512_state_t * state,const huint512_t *src);
+
+/** \brief 获取十进制数的位上的值
+ *
+ * 注意：此函数需要注意溢出问题
+ * \param state huint512_state_t* 状态值，用于中间状态存储,不可为空
+ * \param src const huint512_t* 源大数
+ * \param index size_t 引索
+ * \return size_t 十进制位上的值(0~9)
+ *
+ */
+size_t huint512_dec_number(huint512_state_t * state,const huint512_t *src,size_t index);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

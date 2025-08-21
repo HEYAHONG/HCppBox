@@ -2814,6 +2814,44 @@ static int hcrypto_test(int argc,const char *argv[])
             uint32_t b=0;
             huint128_store_uint32(&value[1],&b);
             printf("hcrypto uint128:%08X pow %08X=%08X%08X\r\n",(int)a,(int)b,(int)value[5].val[1],(int)value[5].val[0]);
+            {
+                uint64_t result=0;
+                huint128_store_uint64(&value[5],&result);
+                printf("hcrypto uint128:%d pow %d=%" PRIu64 "\r\n",(int)a,(int)b,result);
+                {
+                    /*
+                     * 测试打印
+                     */
+                    printf("hcrypto uint128:");
+                    {
+                        huint128_state_t state;
+                        size_t dec_count=huint128_dec_number_count(&state,&value[0]);
+                        for(size_t i=0;i<dec_count;i++)
+                        {
+                            putchar('0'+(char)huint128_dec_number(&state,&value[0],dec_count-i-1));
+                        }
+                    }
+                    printf(" pow ");
+                    {
+                        huint128_state_t state;
+                        size_t dec_count=huint128_dec_number_count(&state,&value[1]);
+                        for(size_t i=0;i<dec_count;i++)
+                        {
+                            putchar('0'+(char)huint128_dec_number(&state,&value[1],dec_count-i-1));
+                        }
+                    }
+                    printf("=");
+                    {
+                        huint128_state_t state;
+                        size_t dec_count=huint128_dec_number_count(&state,&value[5]);
+                        for(size_t i=0;i<dec_count;i++)
+                        {
+                            putchar('0'+(char)huint128_dec_number(&state,&value[5],dec_count-i-1));
+                        }
+                    }
+                    printf("\r\n");
+                }
+            }
             huint128_copy(&value[0],&value[5]);
             huint128_load_uint32(&value[1],0xFEC00000U);
             uint32_t c=0;

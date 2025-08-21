@@ -888,3 +888,105 @@ void huint3968_gcd(huint3968_state_t * state,huint3968_t *dst,const huint3968_t 
 
 }
 
+size_t huint3968_dec_number_count(huint3968_state_t * state,const huint3968_t *src)
+{
+    size_t dec_number_count=0;
+    if(state==NULL || src==NULL)
+    {
+        return dec_number_count;
+    }
+
+    dec_number_count=0;
+
+    bool is_ok=false;
+    while(!is_ok)
+    {
+        /*
+         * 寄存器6存储10，寄存器7存储10的指数
+         */
+        huint3968_load_uint32(&state->state[6],10);
+        huint3968_load_uint32(&state->state[7],dec_number_count);
+        /*
+         * 寄存器5存储10的指数的结果
+         */
+        huint3968_power_with_external_state(state,&state->state[5],&state->state[6],&state->state[7]);
+
+        /*
+         * 比较大小
+         */
+        switch(huint3968_compare(&state->state[5],src))
+        {
+        case 1:
+        {
+            is_ok=true;
+        }
+        break;
+        case 0:
+        {
+            dec_number_count++;
+            is_ok=true;
+        }
+        break;
+        case -1:
+        {
+            dec_number_count++;
+        }
+        break;
+        case -2:
+        {
+            is_ok=true;
+        }
+        break;
+        default:
+        {
+
+        }
+        break;
+        }
+    }
+
+    return dec_number_count;
+}
+
+size_t huint3968_dec_number(huint3968_state_t * state,const huint3968_t *src,size_t index)
+{
+    size_t dec_number=0;
+    if(state==NULL || src==NULL)
+    {
+        return dec_number;
+    }
+
+    /*
+     * 寄存器6存储10，寄存器7存储10的指数
+     */
+    huint3968_load_uint32(&state->state[6],10);
+    huint3968_load_uint32(&state->state[7],index+1);
+    /*
+     * 寄存器5存储10的指数的结果
+     */
+    huint3968_power_with_external_state(state,&state->state[5],&state->state[6],&state->state[7]);
+    /*
+     * 第一次除法
+     */
+    huint3968_copy(&state->state[7],&state->state[5]);
+    huint3968_div_with_external_state(state,&state->state[4],&state->state[5],src,&state->state[7]);
+
+    /*
+     * 寄存器6存储10，寄存器7存储10的指数
+     */
+    huint3968_load_uint32(&state->state[7],index);
+    huint3968_power_with_external_state(state,&state->state[5],&state->state[6],&state->state[7]);
+
+    /*
+     * 第二次除法
+     */
+    huint3968_copy(&state->state[6],&state->state[4]);
+    huint3968_copy(&state->state[7],&state->state[5]);
+    huint3968_div_with_external_state(state,&state->state[4],&state->state[5],&state->state[6],&state->state[7]);
+
+    uint32_t result=0;
+    huint3968_store_uint32(&state->state[5],&result);
+    dec_number=result;
+
+    return dec_number;
+}
