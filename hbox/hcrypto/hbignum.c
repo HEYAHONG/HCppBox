@@ -47,12 +47,26 @@
 #define HUINT2080  1
 #endif // HUINT2080
 
+#ifndef HUINT3072
+#define HUINT3072  1
+#endif // HUINT3072
+#ifndef HUINT3104
+#define HUINT3104 1
+#endif // HUINT3104
+
 #ifndef HUINT4096
 #define HUINT4096  1
 #endif // HUINT4096
 #ifndef HUINT4128
 #define HUINT4128 1
 #endif // HUINT4128
+
+#ifndef HUINT6144
+#define HUINT6144  1
+#endif // HUINT6144
+#ifndef HUINT6176
+#define HUINT6176 1
+#endif // HUINT6176
 
 #ifndef HUINT8192
 #define HUINT8192  1

@@ -123,3 +123,13 @@
 - [heddsa.h](heddsa.h)
 - [heddsa.c](heddsa.c)
 - [heddsa](heddsa)
+
+# 不对称加密
+
+## RSA
+
+**注意：本组件运算速度极其慢，仍然需要优化。**
+
+- [hrsa.h](hrsa.h)
+- [hrsa.c](hrsa.c)
+- [hrsa](hrsa)

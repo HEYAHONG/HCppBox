@@ -2826,7 +2826,7 @@ static int hcrypto_test(int argc,const char *argv[])
                     {
                         huint128_state_t state;
                         size_t dec_count=huint128_dec_number_count(&state,&value[0]);
-                        for(size_t i=0;i<dec_count;i++)
+                        for(size_t i=0; i<dec_count; i++)
                         {
                             putchar('0'+(char)huint128_dec_number(&state,&value[0],dec_count-i-1));
                         }
@@ -2835,7 +2835,7 @@ static int hcrypto_test(int argc,const char *argv[])
                     {
                         huint128_state_t state;
                         size_t dec_count=huint128_dec_number_count(&state,&value[1]);
-                        for(size_t i=0;i<dec_count;i++)
+                        for(size_t i=0; i<dec_count; i++)
                         {
                             putchar('0'+(char)huint128_dec_number(&state,&value[1],dec_count-i-1));
                         }
@@ -2844,7 +2844,7 @@ static int hcrypto_test(int argc,const char *argv[])
                     {
                         huint128_state_t state;
                         size_t dec_count=huint128_dec_number_count(&state,&value[5]);
-                        for(size_t i=0;i<dec_count;i++)
+                        for(size_t i=0; i<dec_count; i++)
                         {
                             putchar('0'+(char)huint128_dec_number(&state,&value[5],dec_count-i-1));
                         }
@@ -3143,6 +3143,11 @@ static int hcrypto_test(int argc,const char *argv[])
 
             }
             while(!pem.empty());
+            struct hrsa2048_test_key
+            {
+                hrsa2048_public_key_t pubkey;
+                hrsa2048_private_key_t prikey;
+            } rsa2048_key;
             uint8_t bin_pem[4096]= {0};
             size_t len=hbase64_decode(bin_pem,sizeof(bin_pem),(const char *)base64_pem.c_str(),base64_pem.length());
             printf("hcrypto asn1:input length=%d\r\n",(int)len);
@@ -3175,7 +3180,49 @@ static int hcrypto_test(int argc,const char *argv[])
                     printf("\r\n");
 
                 }
-            },NULL,0,bin_pem,len);
+                struct hrsa2048_test_key *key=(struct hrsa2048_test_key *)usr;
+                if(key!=NULL)
+                {
+                    if(hasn1_ber_type_tag_get(type)==2)
+                    {
+                        switch(index)
+                        {
+                        case 1:
+                        {
+                            hrsa2048_private_key_load_n(&key->prikey,value->value,value->length);
+                            hrsa2048_public_key_load_n(&key->pubkey,value->value,value->length);
+                        }
+                        break;
+                        case 2:
+                        {
+                            hrsa2048_public_key_load_e(&key->pubkey,value->value,value->length);
+                        }
+                        break;
+                        case 3:
+                        {
+                            hrsa2048_private_key_load_d(&key->prikey,value->value,value->length);
+                        }
+                        break;
+                        default:
+                        {
+
+                        }
+                        break;
+                        }
+                    }
+                }
+            },&rsa2048_key,0,bin_pem,len);
+
+            {
+                hrsa2048_context_t ctx;
+                hrsa2048_plain_message_t msg;
+                hgetrandom(msg,sizeof(msg),0);
+                hrsa2048_cipher_message_t cipher_message={0};
+                hrsa2048_encipher(&ctx,cipher_message,msg,&rsa2048_key.prikey); /**< 注意：此步骤极其慢，可达分钟级 */
+                hrsa2048_plain_message_t plain_message={0};
+                hrsa2048_decipher(&ctx,plain_message,cipher_message,&rsa2048_key.pubkey);
+                printf("hcrypto rsa2048:test %s!\r\n",(memcmp(msg,plain_message,sizeof(hrsa2048_plain_message_t))==0)?"ok":"failed");
+            }
         }
     }
     {
