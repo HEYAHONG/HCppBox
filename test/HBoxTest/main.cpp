@@ -3218,7 +3218,7 @@ static int hcrypto_test(int argc,const char *argv[])
                 hrsa2048_plain_message_t msg;
                 hgetrandom(msg,sizeof(msg),0);
                 hrsa2048_cipher_message_t cipher_message={0};
-                hrsa2048_encipher(&ctx,cipher_message,msg,&rsa2048_key.prikey); /**< 注意：此步骤极其慢，可达分钟级 */
+                hrsa2048_encipher(&ctx,cipher_message,msg,&rsa2048_key.prikey);
                 hrsa2048_plain_message_t plain_message={0};
                 hrsa2048_decipher(&ctx,plain_message,cipher_message,&rsa2048_key.pubkey);
                 printf("hcrypto rsa2048:test %s!\r\n",(memcmp(msg,plain_message,sizeof(hrsa2048_plain_message_t))==0)?"ok":"failed");

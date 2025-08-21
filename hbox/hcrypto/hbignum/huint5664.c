@@ -618,12 +618,15 @@ void huint5664_mul(huint5664_t *state,huint5664_t *dst,const huint5664_t *src1,c
     huint5664_load_uint32(dst,0);
     size_t clz=huint5664_clz(src2);
     size_t ctz=huint5664_ctz(src2);
+    size_t last_index=ctz;
+    huint5664_left_shift(state,src1,last_index);
     for(size_t i=ctz; i < (HUINT5664_BITS_COUNT-clz); i++)
     {
         if(huint5664_bit(src2,i))
         {
             //当前位是1, src1左移后累加至结果
-            huint5664_left_shift(state,src1,i);
+            huint5664_left_shift(state,state,i-last_index);
+            last_index=i;
             huint5664_add(dst,dst,state);
         }
     }
@@ -681,10 +684,12 @@ void huint5664_div(huint5664_t *state,huint5664_t *state1,huint5664_t *state2,hu
     }
 
     huint5664_copy(state,src1);
-
+    size_t last_index=0;
+    huint5664_left_shift(state1,src2,(clz2-clz1)-last_index);
     for(size_t i=0; i<= clz2-clz1; i++)
     {
-        huint5664_left_shift(state1,src2,(clz2-clz1)-i);
+        huint5664_right_shift(state1,state1,i-last_index);
+        last_index=i;
         if(huint5664_compare(state,state1) >= 0)
         {
             //被除数大于左移后的除数，直接相减并将相应位置1
