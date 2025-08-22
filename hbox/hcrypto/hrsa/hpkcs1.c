@@ -112,7 +112,7 @@ bool hpkcs1_check_padding(const uint8_t *data_block,size_t data_block_length,con
                 }
                 if(length_ptr!=NULL)
                 {
-                    (*length_ptr)=data_block_length=i;
+                    (*length_ptr)=data_block_length-i;
                 }
                 ret=true;
             }
@@ -142,7 +142,7 @@ bool hpkcs1_check_padding(const uint8_t *data_block,size_t data_block_length,con
                 }
                 if(length_ptr!=NULL)
                 {
-                    (*length_ptr)=data_block_length=i;
+                    (*length_ptr)=data_block_length-i;
                 }
                 ret=true;
             }
