@@ -12,3 +12,4 @@
 #include "hrsa/hrsa2048.c"
 #include "hrsa/hrsa3072.c"
 #include "hrsa/hrsa4096.c"
+#include "hrsa/hpkcs1.c"

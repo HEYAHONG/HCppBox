@@ -19,6 +19,7 @@ extern "C"
 #include "hrsa/hrsa2048.h"
 #include "hrsa/hrsa3072.h"
 #include "hrsa/hrsa4096.h"
+#include "hrsa/hpkcs1.h"
 
 #ifdef __cplusplus
 }
