@@ -20,11 +20,9 @@ extern "C"
 
 typedef uint8_t hrsa4096_cipher_message_t[HRSA4096_CIPHER_MESSAGE_BYTES];       /**< 密文 */
 
-#define HRSA4096_PLAIN_MESSAGE_PADDING_BYTES        (11)                        /**< 为保证明文< 系数n,填充至少为1 */
+#define HRSA4096_DATA_BLOCK_BYTES                (HRSA4096_CIPHER_MESSAGE_BYTES)
 
-#define HRSA4096_PLAIN_MESSAGE_BYTES                (HRSA4096_CIPHER_MESSAGE_BYTES-HRSA4096_PLAIN_MESSAGE_PADDING_BYTES)
-
-typedef uint8_t hrsa4096_plain_message_t[HRSA4096_PLAIN_MESSAGE_BYTES];        /**< 明文 */
+typedef uint8_t hrsa4096_data_block_t[HRSA4096_DATA_BLOCK_BYTES];        /**< 明文数据块（明文经过填充得到的数据） */
 
 
 typedef struct hrsa4096_public_key hrsa4096_public_key_t;
@@ -63,23 +61,23 @@ struct hrsa4096_context
  *
  * \param ctx hrsa4096_context_t* 上下文
  * \param cipher_message hrsa4096_cipher_message_t 密文
- * \param plain_message const hrsa4096_plain_message_t 明文
+ * \param data_block const hrsa4096_data_block_t 明文数据块（明文经过填充得到的数据），注意：需要保证明文数据块存储的数据小于n
  * \param key const hrsa4096_private_key_t * 私钥
  * \return bool 是否成功
  *
  */
-bool hrsa4096_encipher(hrsa4096_context_t *ctx,hrsa4096_cipher_message_t cipher_message,const hrsa4096_plain_message_t plain_message,const hrsa4096_private_key_t *key);
+bool hrsa4096_encipher(hrsa4096_context_t *ctx,hrsa4096_cipher_message_t cipher_message,const hrsa4096_data_block_t data_block,const hrsa4096_private_key_t *key);
 
 /** \brief RSA4096解密
  *
  * \param ctx hrsa4096_context_t* 上下文
- * \param plain_message hrsa4096_plain_message_t 明文
+ * \param data_block hrsa4096_data_block_t 明文数据块（明文经过填充得到的数据）,注意：需要保证明文数据块存储的数据小于n
  * \param cipher_message const hrsa4096_cipher_message_t 密文
  * \param key const hrsa4096_public_key_t* 公钥
  * \return bool 是否成功
  *
  */
-bool hrsa4096_decipher(hrsa4096_context_t *ctx,hrsa4096_plain_message_t plain_message,const hrsa4096_cipher_message_t cipher_message,const hrsa4096_public_key_t *key);
+bool hrsa4096_decipher(hrsa4096_context_t *ctx,hrsa4096_data_block_t data_block,const hrsa4096_cipher_message_t cipher_message,const hrsa4096_public_key_t *key);
 
 #ifdef __cplusplus
 }

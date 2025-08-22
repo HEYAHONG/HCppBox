@@ -20,11 +20,9 @@ extern "C"
 
 typedef uint8_t hrsa1024_cipher_message_t[HRSA1024_CIPHER_MESSAGE_BYTES];       /**< 密文 */
 
-#define HRSA1024_PLAIN_MESSAGE_PADDING_BYTES        (11)                        /**< 为保证明文< 系数n,填充至少为1 */
+#define HRSA1024_DATA_BLOCK_BYTES                (HRSA1024_CIPHER_MESSAGE_BYTES)
 
-#define HRSA1024_PLAIN_MESSAGE_BYTES                (HRSA1024_CIPHER_MESSAGE_BYTES-HRSA1024_PLAIN_MESSAGE_PADDING_BYTES)
-
-typedef uint8_t hrsa1024_plain_message_t[HRSA1024_PLAIN_MESSAGE_BYTES];        /**< 明文 */
+typedef uint8_t hrsa1024_data_block_t[HRSA1024_DATA_BLOCK_BYTES];        /**< 明文数据块（明文经过填充得到的数据） */
 
 
 typedef struct hrsa1024_public_key hrsa1024_public_key_t;
@@ -63,23 +61,23 @@ struct hrsa1024_context
  *
  * \param ctx hrsa1024_context_t* 上下文
  * \param cipher_message hrsa1024_cipher_message_t 密文
- * \param plain_message const hrsa1024_plain_message_t 明文
+ * \param data_block const hrsa1024_data_block_t 明文数据块（明文经过填充得到的数据），注意：需要保证明文数据块存储的数据小于n
  * \param key const hrsa1024_private_key_t * 私钥
  * \return bool 是否成功
  *
  */
-bool hrsa1024_encipher(hrsa1024_context_t *ctx,hrsa1024_cipher_message_t cipher_message,const hrsa1024_plain_message_t plain_message,const hrsa1024_private_key_t *key);
+bool hrsa1024_encipher(hrsa1024_context_t *ctx,hrsa1024_cipher_message_t cipher_message,const hrsa1024_data_block_t data_block,const hrsa1024_private_key_t *key);
 
 /** \brief RSA1024解密
  *
  * \param ctx hrsa1024_context_t* 上下文
- * \param plain_message hrsa1024_plain_message_t 明文
+ * \param data_block hrsa1024_data_block_t 明文数据块（明文经过填充得到的数据）,注意：需要保证明文数据块存储的数据小于n
  * \param cipher_message const hrsa1024_cipher_message_t 密文
  * \param key const hrsa1024_public_key_t* 公钥
  * \return bool 是否成功
  *
  */
-bool hrsa1024_decipher(hrsa1024_context_t *ctx,hrsa1024_plain_message_t plain_message,const hrsa1024_cipher_message_t cipher_message,const hrsa1024_public_key_t *key);
+bool hrsa1024_decipher(hrsa1024_context_t *ctx,hrsa1024_data_block_t data_block,const hrsa1024_cipher_message_t cipher_message,const hrsa1024_public_key_t *key);
 
 #ifdef __cplusplus
 }

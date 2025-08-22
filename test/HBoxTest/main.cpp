@@ -3215,13 +3215,17 @@ static int hcrypto_test(int argc,const char *argv[])
 
             {
                 hrsa2048_context_t ctx;
-                hrsa2048_plain_message_t msg;
+                hrsa2048_data_block_t msg;
                 hgetrandom(msg,sizeof(msg),0);
+                /*
+                 * 确保小于n
+                 */
+                msg[0]&=0x7F;
                 hrsa2048_cipher_message_t cipher_message={0};
                 hrsa2048_encipher(&ctx,cipher_message,msg,&rsa2048_key.prikey);
-                hrsa2048_plain_message_t plain_message={0};
-                hrsa2048_decipher(&ctx,plain_message,cipher_message,&rsa2048_key.pubkey);
-                printf("hcrypto rsa2048:test %s!\r\n",(memcmp(msg,plain_message,sizeof(hrsa2048_plain_message_t))==0)?"ok":"failed");
+                hrsa2048_data_block_t data_block={0};
+                hrsa2048_decipher(&ctx,data_block,cipher_message,&rsa2048_key.pubkey);
+                printf("hcrypto rsa2048:test %s!\r\n",(memcmp(msg,data_block,sizeof(hrsa2048_data_block_t))==0)?"ok":"failed");
             }
         }
     }

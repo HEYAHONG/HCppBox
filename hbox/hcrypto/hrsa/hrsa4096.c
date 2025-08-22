@@ -93,14 +93,14 @@ bool hrsa4096_private_key_is_ok(const hrsa4096_private_key_t *key)
     return ret;
 }
 
-bool hrsa4096_encipher(hrsa4096_context_t *ctx,hrsa4096_cipher_message_t cipher_message,const hrsa4096_plain_message_t plain_message,const hrsa4096_private_key_t *key)
+bool hrsa4096_encipher(hrsa4096_context_t *ctx,hrsa4096_cipher_message_t cipher_message,const hrsa4096_data_block_t data_block,const hrsa4096_private_key_t *key)
 {
-    if(ctx==NULL || cipher_message==NULL || plain_message==NULL || key == NULL || !hrsa4096_private_key_is_ok(key))
+    if(ctx==NULL || cipher_message==NULL || data_block==NULL || key == NULL || !hrsa4096_private_key_is_ok(key))
     {
         return false;
     }
 
-    huint8192_load_be(&ctx->state.state[5],plain_message,sizeof(hrsa4096_plain_message_t));
+    huint8192_load_be(&ctx->state.state[5],data_block,sizeof(hrsa4096_data_block_t));
     huint8192_load_uint32(&ctx->state.state[6],0);
     memcpy(&ctx->state.state[6],&key->d,sizeof(key->d));
     huint8192_load_uint32(&ctx->state.state[7],0);
@@ -111,9 +111,9 @@ bool hrsa4096_encipher(hrsa4096_context_t *ctx,hrsa4096_cipher_message_t cipher_
     return true;
 }
 
-bool hrsa4096_decipher(hrsa4096_context_t *ctx,hrsa4096_plain_message_t plain_message,const hrsa4096_cipher_message_t cipher_message,const hrsa4096_public_key_t *key)
+bool hrsa4096_decipher(hrsa4096_context_t *ctx,hrsa4096_data_block_t data_block,const hrsa4096_cipher_message_t cipher_message,const hrsa4096_public_key_t *key)
 {
-    if(ctx==NULL || cipher_message==NULL || plain_message==NULL || key == NULL || !hrsa4096_public_key_is_ok(key))
+    if(ctx==NULL || cipher_message==NULL || data_block==NULL || key == NULL || !hrsa4096_public_key_is_ok(key))
     {
         return false;
     }
@@ -124,7 +124,7 @@ bool hrsa4096_decipher(hrsa4096_context_t *ctx,hrsa4096_plain_message_t plain_me
     huint8192_load_uint32(&ctx->state.state[7],0);
     memcpy(&ctx->state.state[7],&key->n,sizeof(key->n));
     huint8192_power_mod_with_external_state(&ctx->state,&ctx->state.state[4],&ctx->state.state[5],&ctx->state.state[6],&ctx->state.state[7]);
-    huint8192_store_be(&ctx->state.state[4],plain_message,sizeof(hrsa4096_plain_message_t));
+    huint8192_store_be(&ctx->state.state[4],data_block,sizeof(hrsa4096_data_block_t));
 
     return true;
 }
