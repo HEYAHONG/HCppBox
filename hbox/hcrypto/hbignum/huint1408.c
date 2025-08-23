@@ -496,7 +496,17 @@ size_t huint1408_clz(const huint1408_t *dst)
 {
     if(dst!=NULL)
     {
-        for(size_t i=0; i < HUINT1408_BITS_COUNT; i++)
+        size_t index_start=0;
+        for(size_t i=0; i<sizeof(dst->val)/sizeof(dst->val[0]); i++)
+        {
+            if(dst->val[sizeof(dst->val)/sizeof(dst->val[0])-1-i]!=0)
+            {
+                break;
+            }
+            index_start+=(sizeof(dst->val[0])*8);
+        }
+
+        for(size_t i=index_start; i < HUINT1408_BITS_COUNT; i++)
         {
             if(huint1408_bit(dst,HUINT1408_BITS_COUNT-1-i))
             {
@@ -512,7 +522,17 @@ size_t huint1408_ctz(const huint1408_t *dst)
 {
     if(dst!=NULL)
     {
-        for(size_t i=0; i < HUINT1408_BITS_COUNT; i++)
+        size_t index_start=0;
+        for(size_t i=0; i<sizeof(dst->val)/sizeof(dst->val[0]); i++)
+        {
+            if(dst->val[i]!=0)
+            {
+                break;
+            }
+            index_start+=(sizeof(dst->val[0])*8);
+        }
+
+        for(size_t i=index_start; i < HUINT1408_BITS_COUNT; i++)
         {
             if(huint1408_bit(dst,i))
             {
@@ -616,19 +636,42 @@ void huint1408_mul(huint1408_t *state,huint1408_t *dst,const huint1408_t *src1,c
     }
 
     huint1408_load_uint32(dst,0);
-    size_t clz=huint1408_clz(src2);
-    size_t ctz=huint1408_ctz(src2);
-    size_t last_index=ctz;
-    huint1408_left_shift(state,src1,last_index);
-    for(size_t i=ctz; i < (HUINT1408_BITS_COUNT-clz); i++)
+    size_t max_index=0;
+    size_t min_index=0;
+    for(size_t i=0; i<sizeof(src2->val)/sizeof(src2->val[0]); i++)
     {
-        if(huint1408_bit(src2,i))
+        if(src2->val[i]!=0)
         {
-            //当前位是1, src1左移后累加至结果
-            huint1408_left_shift(state,state,i-last_index);
-            last_index=i;
-            huint1408_add(dst,dst,state);
+            min_index=i;
+            break;
         }
+    }
+    for(size_t i=0; i<sizeof(src2->val)/sizeof(src2->val[0]); i++)
+    {
+        if(src2->val[sizeof(src2->val)/sizeof(src2->val[0])-1-i]!=0)
+        {
+            max_index=sizeof(src2->val)/sizeof(src2->val[0])-1-i;
+            break;
+        }
+    }
+    for(size_t i=min_index; i<=max_index; i++)
+    {
+        uint64_t temp=0;
+        for(size_t k=0; k<i; k++)
+        {
+            state->val[k]=0;
+        }
+        for(size_t j=0; j<(sizeof(src1->val)/sizeof(src1->val[0])); j++)
+        {
+            if(i+j >= (sizeof(state->val)/sizeof(state->val[0])))
+            {
+                break;
+            }
+            temp+=src1->val[j]*((uint64_t)src2->val[i]);
+            state->val[i+j]=temp;
+            temp>>=(sizeof(state->val[0])*8);
+        }
+        huint1408_add(dst,dst,state);
     }
 }
 
@@ -688,15 +731,18 @@ void huint1408_div(huint1408_t *state,huint1408_t *state1,huint1408_t *state2,hu
     huint1408_left_shift(state1,src2,(clz2-clz1)-last_index);
     for(size_t i=0; i<= clz2-clz1; i++)
     {
-        huint1408_right_shift(state1,state1,i-last_index);
+        huint1408_right_shift_internal(state1,state1,i-last_index);
         last_index=i;
         if(huint1408_compare(state,state1) >= 0)
         {
             //被除数大于左移后的除数，直接相减并将相应位置1
-            huint1408_sub(state2,state,state1);
+            {
+                //求补码
+                huint1408_complement(state2,state1);
+                //对补码进行加
+                huint1408_add(state,state,state2);
+            }
             huint1408_bit_set(dst,(clz2-clz1)-i);
-            //余数保存至state
-            huint1408_copy(state,state2);
         }
     }
 
