@@ -3214,18 +3214,55 @@ static int hcrypto_test(int argc,const char *argv[])
             },&rsa2048_key,0,bin_pem,len);
 
             {
-                hrsa2048_context_t ctx;
-                uint8_t msg[64];
-                hgetrandom(msg,sizeof(msg),0);
-                hrsa2048_data_block_t data_block_in={0};
-                hpkcs1_padding(data_block_in,sizeof(data_block_in),msg,sizeof(msg),HPKCS1_BT_TYPE_2);
-                hrsa2048_cipher_message_t cipher_message={0};
-                hrsa2048_encipher(&ctx,cipher_message,data_block_in,&rsa2048_key.prikey);
-                hrsa2048_data_block_t data_block={0};
-                hrsa2048_decipher(&ctx,data_block,cipher_message,&rsa2048_key.pubkey);
-                const uint8_t *msg_ptr=NULL;
-                hpkcs1_check_padding(data_block,sizeof(data_block),&msg_ptr,NULL);
-                printf("hcrypto rsa2048:test %s!\r\n",(memcmp(msg,msg_ptr,sizeof(msg))==0)?"ok":"failed");
+                {
+
+                    hrsa2048_context_t ctx;
+                    uint8_t msg[129];
+                    hgetrandom(msg,sizeof(msg),0);
+                    while(msg[0]==0)
+                    {
+                        hgetrandom(msg,1,0);
+                    }
+                    hrsa2048_data_block_t data_block_in= {0};
+                    hpkcs1_padding(data_block_in,sizeof(data_block_in),msg,sizeof(msg),HPKCS1_BT_TYPE_0);
+                    hrsa2048_cipher_message_t cipher_message= {0};
+                    hrsa2048_encipher(&ctx,cipher_message,data_block_in,&rsa2048_key.prikey);
+                    hrsa2048_data_block_t data_block= {0};
+                    hrsa2048_decipher(&ctx,data_block,cipher_message,&rsa2048_key.pubkey);
+                    const uint8_t *msg_ptr=NULL;
+                    hpkcs1_check_padding(data_block,sizeof(data_block),&msg_ptr,NULL);
+                    printf("hcrypto rsa2048:test 0 data block %s,msg %s!\r\n",(memcmp(data_block_in,data_block,sizeof(msg))==0)?"ok":"failed",(memcmp(msg,msg_ptr,sizeof(msg))==0)?"ok":"failed");
+                }
+                {
+
+                    hrsa2048_context_t ctx;
+                    uint8_t msg[129];
+                    hgetrandom(msg,sizeof(msg),0);
+                    hrsa2048_data_block_t data_block_in= {0};
+                    hpkcs1_padding(data_block_in,sizeof(data_block_in),msg,sizeof(msg),HPKCS1_BT_TYPE_1);
+                    hrsa2048_cipher_message_t cipher_message= {0};
+                    hrsa2048_encipher(&ctx,cipher_message,data_block_in,&rsa2048_key.prikey);
+                    hrsa2048_data_block_t data_block= {0};
+                    hrsa2048_decipher(&ctx,data_block,cipher_message,&rsa2048_key.pubkey);
+                    const uint8_t *msg_ptr=NULL;
+                    hpkcs1_check_padding(data_block,sizeof(data_block),&msg_ptr,NULL);
+                    printf("hcrypto rsa2048:test 1 data block %s,msg %s!\r\n",(memcmp(data_block_in,data_block,sizeof(msg))==0)?"ok":"failed",(memcmp(msg,msg_ptr,sizeof(msg))==0)?"ok":"failed");
+                }
+                {
+
+                    hrsa2048_context_t ctx;
+                    uint8_t msg[129];
+                    hgetrandom(msg,sizeof(msg),0);
+                    hrsa2048_data_block_t data_block_in= {0};
+                    hpkcs1_padding(data_block_in,sizeof(data_block_in),msg,sizeof(msg),HPKCS1_BT_TYPE_2);
+                    hrsa2048_cipher_message_t cipher_message= {0};
+                    hrsa2048_encipher(&ctx,cipher_message,data_block_in,&rsa2048_key.prikey);
+                    hrsa2048_data_block_t data_block= {0};
+                    hrsa2048_decipher(&ctx,data_block,cipher_message,&rsa2048_key.pubkey);
+                    const uint8_t *msg_ptr=NULL;
+                    hpkcs1_check_padding(data_block,sizeof(data_block),&msg_ptr,NULL);
+                    printf("hcrypto rsa2048:test 2 data block %s,msg %s!\r\n",(memcmp(data_block_in,data_block,sizeof(msg))==0)?"ok":"failed",(memcmp(msg,msg_ptr,sizeof(msg))==0)?"ok":"failed");
+                }
             }
         }
     }
