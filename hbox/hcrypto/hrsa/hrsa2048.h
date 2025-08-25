@@ -37,6 +37,8 @@ void hrsa2048_public_key_store_n(uint8_t *bytes,size_t bytes_len,const hrsa2048_
 void hrsa2048_public_key_load_e(hrsa2048_public_key_t *key,const uint8_t *bytes,size_t bytes_len);
 void hrsa2048_public_key_store_e(uint8_t *bytes,size_t bytes_len,const hrsa2048_public_key_t *key);
 bool hrsa2048_public_key_is_ok(const hrsa2048_public_key_t *key);
+bool hrsa2048_public_key_load_from_asn1_public_key(hrsa2048_public_key_t *key,const uint8_t *asn1_bytes,size_t bytes_len);
+bool hrsa2048_public_key_load_from_asn1_private_key(hrsa2048_public_key_t *key,const uint8_t *asn1_bytes,size_t bytes_len);
 
 typedef struct hrsa2048_private_key hrsa2048_private_key_t;
 struct hrsa2048_private_key
@@ -50,6 +52,8 @@ void hrsa2048_private_key_store_n(uint8_t *bytes,size_t bytes_len,const hrsa2048
 void hrsa2048_private_key_load_d(hrsa2048_private_key_t *key,const uint8_t *bytes,size_t bytes_len);
 void hrsa2048_private_key_store_d(uint8_t *bytes,size_t bytes_len,const hrsa2048_private_key_t *key);
 bool hrsa2048_private_key_is_ok(const hrsa2048_private_key_t *key);
+bool hrsa2048_private_key_load_from_asn1_private_key(hrsa2048_private_key_t *key,const uint8_t *asn1_bytes,size_t bytes_len);
+
 
 typedef struct hrsa2048_context hrsa2048_context_t;
 struct hrsa2048_context

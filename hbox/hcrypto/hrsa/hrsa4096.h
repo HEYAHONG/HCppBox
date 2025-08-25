@@ -37,6 +37,8 @@ void hrsa4096_public_key_store_n(uint8_t *bytes,size_t bytes_len,const hrsa4096_
 void hrsa4096_public_key_load_e(hrsa4096_public_key_t *key,const uint8_t *bytes,size_t bytes_len);
 void hrsa4096_public_key_store_e(uint8_t *bytes,size_t bytes_len,const hrsa4096_public_key_t *key);
 bool hrsa4096_public_key_is_ok(const hrsa4096_public_key_t *key);
+bool hrsa4096_public_key_load_from_asn1_public_key(hrsa4096_public_key_t *key,const uint8_t *asn1_bytes,size_t bytes_len);
+bool hrsa4096_public_key_load_from_asn1_private_key(hrsa4096_public_key_t *key,const uint8_t *asn1_bytes,size_t bytes_len);
 
 typedef struct hrsa4096_private_key hrsa4096_private_key_t;
 struct hrsa4096_private_key
@@ -50,6 +52,8 @@ void hrsa4096_private_key_store_n(uint8_t *bytes,size_t bytes_len,const hrsa4096
 void hrsa4096_private_key_load_d(hrsa4096_private_key_t *key,const uint8_t *bytes,size_t bytes_len);
 void hrsa4096_private_key_store_d(uint8_t *bytes,size_t bytes_len,const hrsa4096_private_key_t *key);
 bool hrsa4096_private_key_is_ok(const hrsa4096_private_key_t *key);
+bool hrsa4096_private_key_load_from_asn1_private_key(hrsa4096_private_key_t *key,const uint8_t *asn1_bytes,size_t bytes_len);
+
 
 typedef struct hrsa4096_context hrsa4096_context_t;
 struct hrsa4096_context

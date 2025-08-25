@@ -30,13 +30,13 @@ enum
 
 #define HPKCS1_PS_MIN_LENGTH    (8)
 
- /** \brief PKCS1数据块最大长度数据长度
-  *
-  * \param data_block_length size_t 数据块长度
-  * \return size_t  最大长度数据长度
-  *
-  */
- size_t hpkcs1_data_block_max_data_length(size_t data_block_length);
+/** \brief PKCS1数据块最大长度数据长度
+ *
+ * \param data_block_length size_t 数据块长度
+ * \return size_t  最大长度数据长度
+ *
+ */
+size_t hpkcs1_data_block_max_data_length(size_t data_block_length);
 
 /** \brief PKCS1填充
  *

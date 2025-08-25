@@ -3093,6 +3093,7 @@ static int hcrypto_test(int argc,const char *argv[])
          * 可使用 openssl asn1parse --inform pem --in emqx/client-key.pem查看pem内容
          */
         const uint8_t *key_pem=RCGetHandle("emqx/client-key.pem");
+        uint8_t bin_pem[4096]= {0};
         if(key_pem!=NULL)
         {
             std::string pem((const char *)key_pem);
@@ -3143,12 +3144,6 @@ static int hcrypto_test(int argc,const char *argv[])
 
             }
             while(!pem.empty());
-            struct hrsa2048_test_key
-            {
-                hrsa2048_public_key_t pubkey;
-                hrsa2048_private_key_t prikey;
-            } rsa2048_key;
-            uint8_t bin_pem[4096]= {0};
             size_t len=hbase64_decode(bin_pem,sizeof(bin_pem),(const char *)base64_pem.c_str(),base64_pem.length());
             printf("hcrypto asn1:input length=%d\r\n",(int)len);
             /*
@@ -3180,40 +3175,13 @@ static int hcrypto_test(int argc,const char *argv[])
                     printf("\r\n");
 
                 }
-                struct hrsa2048_test_key *key=(struct hrsa2048_test_key *)usr;
-                if(key!=NULL)
-                {
-                    if(hasn1_ber_type_tag_get(type)==2)
-                    {
-                        switch(index)
-                        {
-                        case 1:
-                        {
-                            hrsa2048_private_key_load_n(&key->prikey,value->value,value->length);
-                            hrsa2048_public_key_load_n(&key->pubkey,value->value,value->length);
-                        }
-                        break;
-                        case 2:
-                        {
-                            hrsa2048_public_key_load_e(&key->pubkey,value->value,value->length);
-                        }
-                        break;
-                        case 3:
-                        {
-                            hrsa2048_private_key_load_d(&key->prikey,value->value,value->length);
-                        }
-                        break;
-                        default:
-                        {
-
-                        }
-                        break;
-                        }
-                    }
-                }
-            },&rsa2048_key,0,bin_pem,len);
+            },NULL,0,bin_pem,len);
 
             {
+                hrsa2048_public_key_t pubkey={0};
+                hrsa2048_public_key_load_from_asn1_private_key(&pubkey,bin_pem,len);
+                hrsa2048_private_key_t prikey={0};
+                hrsa2048_private_key_load_from_asn1_private_key(&prikey,bin_pem,len);
                 {
 
                     hrsa2048_context_t ctx;
@@ -3226,9 +3194,9 @@ static int hcrypto_test(int argc,const char *argv[])
                     hrsa2048_data_block_t data_block_in= {0};
                     hpkcs1_padding(data_block_in,sizeof(data_block_in),msg,sizeof(msg),HPKCS1_BT_TYPE_0);
                     hrsa2048_cipher_message_t cipher_message= {0};
-                    hrsa2048_encipher(&ctx,cipher_message,data_block_in,&rsa2048_key.prikey);
+                    hrsa2048_encipher(&ctx,cipher_message,data_block_in,&prikey);
                     hrsa2048_data_block_t data_block= {0};
-                    hrsa2048_decipher(&ctx,data_block,cipher_message,&rsa2048_key.pubkey);
+                    hrsa2048_decipher(&ctx,data_block,cipher_message,&pubkey);
                     const uint8_t *msg_ptr=NULL;
                     hpkcs1_check_padding(data_block,sizeof(data_block),&msg_ptr,NULL);
                     printf("hcrypto rsa2048:test 0 data block %s,msg %s!\r\n",(memcmp(data_block_in,data_block,sizeof(msg))==0)?"ok":"failed",(memcmp(msg,msg_ptr,sizeof(msg))==0)?"ok":"failed");
@@ -3241,9 +3209,9 @@ static int hcrypto_test(int argc,const char *argv[])
                     hrsa2048_data_block_t data_block_in= {0};
                     hpkcs1_padding(data_block_in,sizeof(data_block_in),msg,sizeof(msg),HPKCS1_BT_TYPE_1);
                     hrsa2048_cipher_message_t cipher_message= {0};
-                    hrsa2048_encipher(&ctx,cipher_message,data_block_in,&rsa2048_key.prikey);
+                    hrsa2048_encipher(&ctx,cipher_message,data_block_in,&prikey);
                     hrsa2048_data_block_t data_block= {0};
-                    hrsa2048_decipher(&ctx,data_block,cipher_message,&rsa2048_key.pubkey);
+                    hrsa2048_decipher(&ctx,data_block,cipher_message,&pubkey);
                     const uint8_t *msg_ptr=NULL;
                     hpkcs1_check_padding(data_block,sizeof(data_block),&msg_ptr,NULL);
                     printf("hcrypto rsa2048:test 1 data block %s,msg %s!\r\n",(memcmp(data_block_in,data_block,sizeof(msg))==0)?"ok":"failed",(memcmp(msg,msg_ptr,sizeof(msg))==0)?"ok":"failed");
@@ -3256,9 +3224,9 @@ static int hcrypto_test(int argc,const char *argv[])
                     hrsa2048_data_block_t data_block_in= {0};
                     hpkcs1_padding(data_block_in,sizeof(data_block_in),msg,sizeof(msg),HPKCS1_BT_TYPE_2);
                     hrsa2048_cipher_message_t cipher_message= {0};
-                    hrsa2048_encipher(&ctx,cipher_message,data_block_in,&rsa2048_key.prikey);
+                    hrsa2048_encipher(&ctx,cipher_message,data_block_in,&prikey);
                     hrsa2048_data_block_t data_block= {0};
-                    hrsa2048_decipher(&ctx,data_block,cipher_message,&rsa2048_key.pubkey);
+                    hrsa2048_decipher(&ctx,data_block,cipher_message,&pubkey);
                     const uint8_t *msg_ptr=NULL;
                     hpkcs1_check_padding(data_block,sizeof(data_block),&msg_ptr,NULL);
                     printf("hcrypto rsa2048:test 2 data block %s,msg %s!\r\n",(memcmp(data_block_in,data_block,sizeof(msg))==0)?"ok":"failed",(memcmp(msg,msg_ptr,sizeof(msg))==0)?"ok":"failed");

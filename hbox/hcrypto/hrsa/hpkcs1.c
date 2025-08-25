@@ -56,7 +56,7 @@ bool hpkcs1_padding(uint8_t *data_block,size_t data_block_length,const uint8_t *
     break;
     case HPKCS1_BT_TYPE_1:
     {
-        for(size_t i=0;i<ps_length;i++)
+        for(size_t i=0; i<ps_length; i++)
         {
             data_block[2+i]=0xFF;
         }
@@ -65,7 +65,7 @@ bool hpkcs1_padding(uint8_t *data_block,size_t data_block_length,const uint8_t *
     case HPKCS1_BT_TYPE_2:
     default:
     {
-        for(size_t i=0;i<ps_length;i++)
+        for(size_t i=0; i<ps_length; i++)
         {
             uint8_t temp=0;
             while(0==(temp=(uint8_t)HPKCS1_RAND()));
@@ -102,7 +102,7 @@ bool hpkcs1_check_padding(const uint8_t *data_block,size_t data_block_length,con
     {
     case HPKCS1_BT_TYPE_0:
     {
-        for(size_t i=2;i<data_block_length;i++)
+        for(size_t i=2; i<data_block_length; i++)
         {
             if(data_block[i]!=0)
             {
@@ -124,7 +124,7 @@ bool hpkcs1_check_padding(const uint8_t *data_block,size_t data_block_length,con
     case HPKCS1_BT_TYPE_2:
     default:
     {
-        for(size_t i=2;i<data_block_length;i++)
+        for(size_t i=2; i<data_block_length; i++)
         {
             if(i==data_block_length-1)
             {
