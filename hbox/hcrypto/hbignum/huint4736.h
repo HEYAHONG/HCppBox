@@ -355,6 +355,42 @@ void huint4736_power_with_stack(huint4736_t *dst,const huint4736_t *src1,const h
  */
 void huint4736_power_with_external_state(huint4736_state_t * state,huint4736_t *dst,const huint4736_t *src1,const huint4736_t *src2);
 
+/** \brief 求根
+ *
+ * 注意：此函数求的是根的整数部分，小数部分将舍弃
+ * \param state huint4736_t* 状态值，用于中间状态存储,不可为空
+ * \param state1 huint4736_t* 状态值，用于中间状态存储,不可为空
+ * \param state2 huint4736_t* 状态值，用于中间状态存储,不可为空
+ * \param state3 huint4736_t* 状态值，用于中间状态存储,不可为空
+ * \param state4 huint4736_t* 状态值，用于中间状态存储,不可为空
+ * \param dst huint4736_t* 目标大数
+ * \param src const huint4736_t* 源大数
+ * \param index size_t 指数，不可为0
+ *
+ */
+void huint4736_root(huint4736_t *state,huint4736_t *state1,huint4736_t *state2,huint4736_t *state3,huint4736_t *state4,huint4736_t *dst,const huint4736_t *src,size_t index);
+
+
+/** \brief 求根(采用栈作为临时变量存储)
+ *
+ * 注意：此函数求的是根的整数部分，小数部分将舍弃
+ * \param dst huint4736_t* 目标大数
+ * \param src const huint4736_t* 源大数
+ * \param index size_t 指数,不可为0
+ *
+ */
+void huint4736_root_with_stack(huint4736_t *dst,const huint4736_t *src,size_t index);
+
+/** \brief 求根(外部分配的状态寄存器)
+ *
+ * 注意：此函数求的是根的整数部分，小数部分将舍弃
+ * \param state huint4736_state_t* 状态值，用于中间状态存储,不可为空
+ * \param dst huint4736_t* 目标大数
+ * \param src const huint4736_t* 源大数
+ * \param index size_t 指数
+ *
+ */
+void huint4736_root_with_external_state(huint4736_state_t * state,huint4736_t *dst,const huint4736_t *src,size_t index);
 
 /** \brief 幂取模函数（常用于RSA等加密算法）
  *

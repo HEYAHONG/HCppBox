@@ -825,6 +825,61 @@ void huint3072_power_with_external_state(huint3072_state_t * state,huint3072_t *
     huint3072_power(&state->state[0],&state->state[1],&state->state[2],dst,src1,src2);
 }
 
+void huint3072_root(huint3072_t *state,huint3072_t *state1,huint3072_t *state2,huint3072_t *state3,huint3072_t *state4,huint3072_t *dst,const huint3072_t *src,size_t index)
+{
+    if(state==NULL || state1==NULL || state2==NULL || state3==NULL || state4==NULL || dst==NULL || src==NULL || index == 0)
+    {
+        return;
+    }
+
+    if(index==1)
+    {
+        huint3072_copy(dst,src);
+        return;
+    }
+
+    huint3072_load_uint32(dst,0);
+    huint3072_load_uint64(state4,index);
+
+    size_t dst_max_bit=(HUINT3072_BITS_COUNT-huint3072_clz(src)+index-1)/index;
+
+    if(dst_max_bit*index > HUINT3072_BITS_COUNT)
+    {
+        dst_max_bit--;
+    }
+
+    for(size_t i=0; i<=dst_max_bit; i++)
+    {
+        huint3072_bit_set(dst,dst_max_bit-i);
+        huint3072_power(state,state1,state2,state3,dst,state4);
+        int compare_ret=huint3072_compare(state3,src);
+        if(compare_ret == 0)
+        {
+            break;
+        }
+        if(compare_ret > 0)
+        {
+            huint3072_bit_clear(dst,dst_max_bit-i);
+        }
+    }
+
+}
+
+void huint3072_root_with_stack(huint3072_t *dst,const huint3072_t *src,size_t index)
+{
+    huint3072_t state[5];
+    huint3072_root(&state[0],&state[1],&state[2],&state[3],&state[4],dst,src,index);
+}
+
+void huint3072_root_with_external_state(huint3072_state_t * state,huint3072_t *dst,const huint3072_t *src,size_t index)
+{
+    if(state==NULL)
+    {
+        return;
+    }
+    huint3072_root(&state->state[0],&state->state[1],&state->state[2],&state->state[3],&state->state[4],dst,src,index);
+}
+
 void huint3072_power_mod(huint3072_t *state,huint3072_t *state1,huint3072_t *state2,huint3072_t *state3,huint3072_t *dst,const huint3072_t *src1,const huint3072_t *src2,const huint3072_t *src3)
 {
     if(state == NULL || state1==NULL || state2== NULL || state3 == NULL || dst==NULL || src1==NULL || src2 == NULL)

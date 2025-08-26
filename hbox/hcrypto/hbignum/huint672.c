@@ -825,6 +825,61 @@ void huint672_power_with_external_state(huint672_state_t * state,huint672_t *dst
     huint672_power(&state->state[0],&state->state[1],&state->state[2],dst,src1,src2);
 }
 
+void huint672_root(huint672_t *state,huint672_t *state1,huint672_t *state2,huint672_t *state3,huint672_t *state4,huint672_t *dst,const huint672_t *src,size_t index)
+{
+    if(state==NULL || state1==NULL || state2==NULL || state3==NULL || state4==NULL || dst==NULL || src==NULL || index == 0)
+    {
+        return;
+    }
+
+    if(index==1)
+    {
+        huint672_copy(dst,src);
+        return;
+    }
+
+    huint672_load_uint32(dst,0);
+    huint672_load_uint64(state4,index);
+
+    size_t dst_max_bit=(HUINT672_BITS_COUNT-huint672_clz(src)+index-1)/index;
+
+    if(dst_max_bit*index > HUINT672_BITS_COUNT)
+    {
+        dst_max_bit--;
+    }
+
+    for(size_t i=0; i<=dst_max_bit; i++)
+    {
+        huint672_bit_set(dst,dst_max_bit-i);
+        huint672_power(state,state1,state2,state3,dst,state4);
+        int compare_ret=huint672_compare(state3,src);
+        if(compare_ret == 0)
+        {
+            break;
+        }
+        if(compare_ret > 0)
+        {
+            huint672_bit_clear(dst,dst_max_bit-i);
+        }
+    }
+
+}
+
+void huint672_root_with_stack(huint672_t *dst,const huint672_t *src,size_t index)
+{
+    huint672_t state[5];
+    huint672_root(&state[0],&state[1],&state[2],&state[3],&state[4],dst,src,index);
+}
+
+void huint672_root_with_external_state(huint672_state_t * state,huint672_t *dst,const huint672_t *src,size_t index)
+{
+    if(state==NULL)
+    {
+        return;
+    }
+    huint672_root(&state->state[0],&state->state[1],&state->state[2],&state->state[3],&state->state[4],dst,src,index);
+}
+
 void huint672_power_mod(huint672_t *state,huint672_t *state1,huint672_t *state2,huint672_t *state3,huint672_t *dst,const huint672_t *src1,const huint672_t *src2,const huint672_t *src3)
 {
     if(state == NULL || state1==NULL || state2== NULL || state3 == NULL || dst==NULL || src1==NULL || src2 == NULL)

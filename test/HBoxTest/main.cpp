@@ -2998,6 +2998,27 @@ static int hcrypto_test(int argc,const char *argv[])
                 printf("hcrypto gcd(256^17,17^256)==1 failed!\r\n");
             }
         }
+        {
+            /*
+             * 测试求根
+             */
+            huint8224_state_t state;
+            huint8224_t num[8];
+            huint8224_load_uint32(&num[0],239);
+            huint8224_load_uint32(&num[1],23);
+            huint8224_power_with_external_state(&state,&num[2],&num[0],&num[1]);
+            uint32_t index=0;
+            huint8224_store_uint32(&num[1],&index);
+            huint8224_root_with_external_state(&state,&num[3],&num[2],index);
+            if(huint8224_compare(&num[0],&num[3])==0)
+            {
+                printf("hcrypto uint root ok!\r\n");
+            }
+            else
+            {
+                printf("hcrypto uint root failed!\r\n");
+            }
+        }
     }
     {
         const char *testdata="01234567890ABCabc~12345@#$%测试123";
