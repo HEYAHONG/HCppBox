@@ -1066,7 +1066,7 @@ size_t huint6080_dec_number(huint6080_state_t * state,const huint6080_t *src,siz
      * 寄存器6存储10，寄存器7存储10的指数
      */
     huint6080_load_uint32(&state->state[6],10);
-    huint6080_load_uint32(&state->state[7],index+1);
+    huint6080_load_uint32(&state->state[7],index);
     /*
      * 寄存器5存储10的指数的结果
      */
@@ -1077,10 +1077,12 @@ size_t huint6080_dec_number(huint6080_state_t * state,const huint6080_t *src,siz
     huint6080_copy(&state->state[7],&state->state[5]);
     huint6080_div_with_external_state(state,&state->state[4],&state->state[5],src,&state->state[7]);
 
+    huint6080_copy(&state->state[4],&state->state[5]);
+
     /*
      * 寄存器6存储10，寄存器7存储10的指数
      */
-    huint6080_load_uint32(&state->state[7],index);
+    huint6080_load_uint32(&state->state[7],1);
     huint6080_power_with_external_state(state,&state->state[5],&state->state[6],&state->state[7]);
 
     /*
@@ -1091,7 +1093,7 @@ size_t huint6080_dec_number(huint6080_state_t * state,const huint6080_t *src,siz
     huint6080_div_with_external_state(state,&state->state[4],&state->state[5],&state->state[6],&state->state[7]);
 
     uint32_t result=0;
-    huint6080_store_uint32(&state->state[5],&result);
+    huint6080_store_uint32(&state->state[4],&result);
     dec_number=result;
 
     return dec_number;

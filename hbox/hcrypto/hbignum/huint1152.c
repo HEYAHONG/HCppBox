@@ -1066,7 +1066,7 @@ size_t huint1152_dec_number(huint1152_state_t * state,const huint1152_t *src,siz
      * 寄存器6存储10，寄存器7存储10的指数
      */
     huint1152_load_uint32(&state->state[6],10);
-    huint1152_load_uint32(&state->state[7],index+1);
+    huint1152_load_uint32(&state->state[7],index);
     /*
      * 寄存器5存储10的指数的结果
      */
@@ -1077,10 +1077,12 @@ size_t huint1152_dec_number(huint1152_state_t * state,const huint1152_t *src,siz
     huint1152_copy(&state->state[7],&state->state[5]);
     huint1152_div_with_external_state(state,&state->state[4],&state->state[5],src,&state->state[7]);
 
+    huint1152_copy(&state->state[4],&state->state[5]);
+
     /*
      * 寄存器6存储10，寄存器7存储10的指数
      */
-    huint1152_load_uint32(&state->state[7],index);
+    huint1152_load_uint32(&state->state[7],1);
     huint1152_power_with_external_state(state,&state->state[5],&state->state[6],&state->state[7]);
 
     /*
@@ -1091,7 +1093,7 @@ size_t huint1152_dec_number(huint1152_state_t * state,const huint1152_t *src,siz
     huint1152_div_with_external_state(state,&state->state[4],&state->state[5],&state->state[6],&state->state[7]);
 
     uint32_t result=0;
-    huint1152_store_uint32(&state->state[5],&result);
+    huint1152_store_uint32(&state->state[4],&result);
     dec_number=result;
 
     return dec_number;

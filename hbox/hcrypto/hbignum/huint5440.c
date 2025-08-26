@@ -1066,7 +1066,7 @@ size_t huint5440_dec_number(huint5440_state_t * state,const huint5440_t *src,siz
      * 寄存器6存储10，寄存器7存储10的指数
      */
     huint5440_load_uint32(&state->state[6],10);
-    huint5440_load_uint32(&state->state[7],index+1);
+    huint5440_load_uint32(&state->state[7],index);
     /*
      * 寄存器5存储10的指数的结果
      */
@@ -1077,10 +1077,12 @@ size_t huint5440_dec_number(huint5440_state_t * state,const huint5440_t *src,siz
     huint5440_copy(&state->state[7],&state->state[5]);
     huint5440_div_with_external_state(state,&state->state[4],&state->state[5],src,&state->state[7]);
 
+    huint5440_copy(&state->state[4],&state->state[5]);
+
     /*
      * 寄存器6存储10，寄存器7存储10的指数
      */
-    huint5440_load_uint32(&state->state[7],index);
+    huint5440_load_uint32(&state->state[7],1);
     huint5440_power_with_external_state(state,&state->state[5],&state->state[6],&state->state[7]);
 
     /*
@@ -1091,7 +1093,7 @@ size_t huint5440_dec_number(huint5440_state_t * state,const huint5440_t *src,siz
     huint5440_div_with_external_state(state,&state->state[4],&state->state[5],&state->state[6],&state->state[7]);
 
     uint32_t result=0;
-    huint5440_store_uint32(&state->state[5],&result);
+    huint5440_store_uint32(&state->state[4],&result);
     dec_number=result;
 
     return dec_number;

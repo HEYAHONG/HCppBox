@@ -1066,7 +1066,7 @@ size_t huint4160_dec_number(huint4160_state_t * state,const huint4160_t *src,siz
      * 寄存器6存储10，寄存器7存储10的指数
      */
     huint4160_load_uint32(&state->state[6],10);
-    huint4160_load_uint32(&state->state[7],index+1);
+    huint4160_load_uint32(&state->state[7],index);
     /*
      * 寄存器5存储10的指数的结果
      */
@@ -1077,10 +1077,12 @@ size_t huint4160_dec_number(huint4160_state_t * state,const huint4160_t *src,siz
     huint4160_copy(&state->state[7],&state->state[5]);
     huint4160_div_with_external_state(state,&state->state[4],&state->state[5],src,&state->state[7]);
 
+    huint4160_copy(&state->state[4],&state->state[5]);
+
     /*
      * 寄存器6存储10，寄存器7存储10的指数
      */
-    huint4160_load_uint32(&state->state[7],index);
+    huint4160_load_uint32(&state->state[7],1);
     huint4160_power_with_external_state(state,&state->state[5],&state->state[6],&state->state[7]);
 
     /*
@@ -1091,7 +1093,7 @@ size_t huint4160_dec_number(huint4160_state_t * state,const huint4160_t *src,siz
     huint4160_div_with_external_state(state,&state->state[4],&state->state[5],&state->state[6],&state->state[7]);
 
     uint32_t result=0;
-    huint4160_store_uint32(&state->state[5],&result);
+    huint4160_store_uint32(&state->state[4],&result);
     dec_number=result;
 
     return dec_number;

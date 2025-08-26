@@ -1066,7 +1066,7 @@ size_t huint8224_dec_number(huint8224_state_t * state,const huint8224_t *src,siz
      * 寄存器6存储10，寄存器7存储10的指数
      */
     huint8224_load_uint32(&state->state[6],10);
-    huint8224_load_uint32(&state->state[7],index+1);
+    huint8224_load_uint32(&state->state[7],index);
     /*
      * 寄存器5存储10的指数的结果
      */
@@ -1077,10 +1077,12 @@ size_t huint8224_dec_number(huint8224_state_t * state,const huint8224_t *src,siz
     huint8224_copy(&state->state[7],&state->state[5]);
     huint8224_div_with_external_state(state,&state->state[4],&state->state[5],src,&state->state[7]);
 
+    huint8224_copy(&state->state[4],&state->state[5]);
+
     /*
      * 寄存器6存储10，寄存器7存储10的指数
      */
-    huint8224_load_uint32(&state->state[7],index);
+    huint8224_load_uint32(&state->state[7],1);
     huint8224_power_with_external_state(state,&state->state[5],&state->state[6],&state->state[7]);
 
     /*
@@ -1091,7 +1093,7 @@ size_t huint8224_dec_number(huint8224_state_t * state,const huint8224_t *src,siz
     huint8224_div_with_external_state(state,&state->state[4],&state->state[5],&state->state[6],&state->state[7]);
 
     uint32_t result=0;
-    huint8224_store_uint32(&state->state[5],&result);
+    huint8224_store_uint32(&state->state[4],&result);
     dec_number=result;
 
     return dec_number;
