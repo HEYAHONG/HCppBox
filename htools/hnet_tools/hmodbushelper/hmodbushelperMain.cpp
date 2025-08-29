@@ -14,6 +14,7 @@
 #include "hmodbushelperMain.h"
 #include "modbussessiontcpclientgui.h"
 #include "modbussessiontcpgatewaysimulatorgui.h"
+#include "modbussessiontcpgatewayserialportgui.h"
 #include <wx/fontutil.h>
 #include <wx/log.h>
 #include <wx/filedlg.h>
@@ -123,6 +124,12 @@ void hmodbushelperFrame::OnMenuSelection_New_Modbus_Session_TCP_Gateway_Simulato
 {
     ModbusSessionTCPGatewaySimulatorGui *session=new ModbusSessionTCPGatewaySimulatorGui(this);
     m_main_auinotebook->AddPage(session,_T("Modbus TCP 网关(模拟器)"),true);
+}
+
+void hmodbushelperFrame::OnMenuSelection_New_Modbus_Session_TCP_Gateway_Serialport( wxCommandEvent& event )
+{
+    ModbusSessionTCPGatewaySerialportGui *session=new ModbusSessionTCPGatewaySerialportGui(this);
+    m_main_auinotebook->AddPage(session,_T("Modbus TCP 网关(串口)"),true);
 }
 
 void hmodbushelperFrame::OnMenuSelection_Modbus_Protocol( wxCommandEvent& event )

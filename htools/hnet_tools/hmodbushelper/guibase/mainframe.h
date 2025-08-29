@@ -33,6 +33,7 @@
 #include <wx/button.h>
 #include <wx/checkbox.h>
 #include <wx/choice.h>
+#include <wx/combobox.h>
 #include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -61,6 +62,7 @@ class mainframe : public wxFrame
 		virtual void OnMenuSelection_Menu_Logdialog( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMenuSelection_New_Modbus_Session_TCP_Client( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMenuSelection_New_Modbus_Session_TCP_Gateway_Simulator( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMenuSelection_New_Modbus_Session_TCP_Gateway_Serialport( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMenuSelection_Modbus_Protocol( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMSTimer( wxTimerEvent& event ) { event.Skip(); }
@@ -210,6 +212,56 @@ class modbussessiontcpgatewaysimulatorbase : public wxPanel
 		modbussessiontcpgatewaysimulatorbase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 750,500 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
 
 		~modbussessiontcpgatewaysimulatorbase();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class modbussessiontcpgatewayserialportbase
+///////////////////////////////////////////////////////////////////////////////
+class modbussessiontcpgatewayserialportbase : public wxPanel
+{
+	private:
+
+	protected:
+		wxTextCtrl* m_textCtrl_Log;
+		wxStaticText* m_staticText23;
+		wxComboBox* m_comboBox_Serialport_Name;
+		wxStaticText* m_staticText24;
+		wxTextCtrl* m_textCtrl_Serialport_Baudrate;
+		wxStaticText* m_staticText25;
+		wxChoice* m_choice_Serialport_Bits;
+		wxStaticText* m_staticText26;
+		wxChoice* m_choice_Serialport_Parity;
+		wxStaticText* m_staticText27;
+		wxChoice* m_choice_Serialport_Stopbits;
+		wxStaticText* m_staticText28;
+		wxChoice* m_choice_Serialport_Flowcontrol;
+		wxStaticText* m_staticText37;
+		wxChoice* m_choice_Modbus_Request_Timeout;
+		wxStaticLine* m_staticline11;
+		wxStaticText* m_staticText21;
+		wxCheckBox* m_checkBox_localhost;
+		wxStaticText* m_staticText19;
+		wxChoice* m_choice_port;
+		wxStaticText* m_staticText18;
+		wxButton* m_button_ipv4_gateway_start_stop;
+		wxStaticText* m_staticText20;
+		wxButton* m_button_ipv6_gateway_start_stop;
+		wxTimer m_timer_UIUpdate;
+
+		// Virtual event handlers, override them in your derived class
+		virtual void OnComboboxDropdown_Serialport_Name( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_IPV4_Gateway_Start_Stop( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_IPV6_Gateway_Start_Stop( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTimer_UIUpdate( wxTimerEvent& event ) { event.Skip(); }
+
+
+	public:
+		int m_Serialport_Baudrate;
+
+		modbussessiontcpgatewayserialportbase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 750,500 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
+
+		~modbussessiontcpgatewayserialportbase();
 
 };
 

@@ -42,6 +42,10 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_menuItem_new_modbussession_tcp_gateway_simulator = new wxMenuItem( m_menu_session, wxID_ANY, wxString( _("新建Modbus TCP网关(模拟器)") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menu_session->Append( m_menuItem_new_modbussession_tcp_gateway_simulator );
 
+	wxMenuItem* m_menuItem_new_modbussession_tcp_gateway_serialport;
+	m_menuItem_new_modbussession_tcp_gateway_serialport = new wxMenuItem( m_menu_session, wxID_ANY, wxString( _("新建Modbus TCP网关(串口)") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menu_session->Append( m_menuItem_new_modbussession_tcp_gateway_serialport );
+
 	m_mainframe_menubar->Append( m_menu_session, _("会话") );
 
 	m_menu_help = new wxMenu();
@@ -84,6 +88,7 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_menu_log->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_Menu_Logdialog ), this, m_menuItem_logdialog->GetId());
 	m_menu_session->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_New_Modbus_Session_TCP_Client ), this, m_menuItem_new_modbussession_tcp_client->GetId());
 	m_menu_session->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_New_Modbus_Session_TCP_Gateway_Simulator ), this, m_menuItem_new_modbussession_tcp_gateway_simulator->GetId());
+	m_menu_session->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_New_Modbus_Session_TCP_Gateway_Serialport ), this, m_menuItem_new_modbussession_tcp_gateway_serialport->GetId());
 	m_menu_help->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelection_Modbus_Protocol ), this, m_menuItem_Modbus_Protocol->GetId());
 	m_menu_help->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnAbout ), this, m_menuItem_Help_About->GetId());
 	this->Connect( m_ms_timer.GetId(), wxEVT_TIMER, wxTimerEventHandler( mainframe::OnMSTimer ) );
@@ -673,6 +678,216 @@ modbussessiontcpgatewaysimulatorbase::modbussessiontcpgatewaysimulatorbase( wxWi
 }
 
 modbussessiontcpgatewaysimulatorbase::~modbussessiontcpgatewaysimulatorbase()
+{
+}
+
+modbussessiontcpgatewayserialportbase::modbussessiontcpgatewayserialportbase( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name ) : wxPanel( parent, id, pos, size, style, name )
+{
+	wxBoxSizer* bSizer25;
+	bSizer25 = new wxBoxSizer( wxHORIZONTAL );
+
+	wxBoxSizer* bSizer27;
+	bSizer27 = new wxBoxSizer( wxVERTICAL );
+
+	m_textCtrl_Log = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
+	bSizer27->Add( m_textCtrl_Log, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer25->Add( bSizer27, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer26;
+	bSizer26 = new wxBoxSizer( wxVERTICAL );
+
+	wxBoxSizer* bSizer28;
+	bSizer28 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText23 = new wxStaticText( this, wxID_ANY, _("串口:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText23->Wrap( -1 );
+	bSizer28->Add( m_staticText23, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_comboBox_Serialport_Name = new wxComboBox( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_DROPDOWN|wxCB_READONLY );
+	bSizer28->Add( m_comboBox_Serialport_Name, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer26->Add( bSizer28, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer29;
+	bSizer29 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText24 = new wxStaticText( this, wxID_ANY, _("波特率:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText24->Wrap( -1 );
+	bSizer29->Add( m_staticText24, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_textCtrl_Serialport_Baudrate = new wxTextCtrl( this, wxID_ANY, _("115200"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer29->Add( m_textCtrl_Serialport_Baudrate, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer26->Add( bSizer29, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer30;
+	bSizer30 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText25 = new wxStaticText( this, wxID_ANY, _("数据位:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText25->Wrap( -1 );
+	bSizer30->Add( m_staticText25, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	wxString m_choice_Serialport_BitsChoices[] = { _("8"), _("7") };
+	int m_choice_Serialport_BitsNChoices = sizeof( m_choice_Serialport_BitsChoices ) / sizeof( wxString );
+	m_choice_Serialport_Bits = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choice_Serialport_BitsNChoices, m_choice_Serialport_BitsChoices, 0 );
+	m_choice_Serialport_Bits->SetSelection( 0 );
+	bSizer30->Add( m_choice_Serialport_Bits, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer26->Add( bSizer30, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer31;
+	bSizer31 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText26 = new wxStaticText( this, wxID_ANY, _("校验位:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText26->Wrap( -1 );
+	bSizer31->Add( m_staticText26, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	wxString m_choice_Serialport_ParityChoices[] = { _("None"), _("Odd"), _("Even"), _("Mark"), _("Space") };
+	int m_choice_Serialport_ParityNChoices = sizeof( m_choice_Serialport_ParityChoices ) / sizeof( wxString );
+	m_choice_Serialport_Parity = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choice_Serialport_ParityNChoices, m_choice_Serialport_ParityChoices, 0 );
+	m_choice_Serialport_Parity->SetSelection( 0 );
+	bSizer31->Add( m_choice_Serialport_Parity, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer26->Add( bSizer31, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer32;
+	bSizer32 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText27 = new wxStaticText( this, wxID_ANY, _("停止位:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText27->Wrap( -1 );
+	bSizer32->Add( m_staticText27, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	wxString m_choice_Serialport_StopbitsChoices[] = { _("1"), _("2") };
+	int m_choice_Serialport_StopbitsNChoices = sizeof( m_choice_Serialport_StopbitsChoices ) / sizeof( wxString );
+	m_choice_Serialport_Stopbits = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choice_Serialport_StopbitsNChoices, m_choice_Serialport_StopbitsChoices, 0 );
+	m_choice_Serialport_Stopbits->SetSelection( 0 );
+	bSizer32->Add( m_choice_Serialport_Stopbits, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer26->Add( bSizer32, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer33;
+	bSizer33 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText28 = new wxStaticText( this, wxID_ANY, _("流控："), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText28->Wrap( -1 );
+	bSizer33->Add( m_staticText28, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	wxString m_choice_Serialport_FlowcontrolChoices[] = { _("None"), _("RTSCTS"), _("XONXOFF"), _("DTRDSR") };
+	int m_choice_Serialport_FlowcontrolNChoices = sizeof( m_choice_Serialport_FlowcontrolChoices ) / sizeof( wxString );
+	m_choice_Serialport_Flowcontrol = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choice_Serialport_FlowcontrolNChoices, m_choice_Serialport_FlowcontrolChoices, 0 );
+	m_choice_Serialport_Flowcontrol->SetSelection( 0 );
+	bSizer33->Add( m_choice_Serialport_Flowcontrol, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer26->Add( bSizer33, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer45;
+	bSizer45 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText37 = new wxStaticText( this, wxID_ANY, _("等待响应时间(ms):"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText37->Wrap( -1 );
+	bSizer45->Add( m_staticText37, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	wxString m_choice_Modbus_Request_TimeoutChoices[] = { _("100"), _("500"), _("1000"), _("1500"), _("2000"), _("3000"), _("5000"), _("10000"), _("15000"), _("30000"), _("60000") };
+	int m_choice_Modbus_Request_TimeoutNChoices = sizeof( m_choice_Modbus_Request_TimeoutChoices ) / sizeof( wxString );
+	m_choice_Modbus_Request_Timeout = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choice_Modbus_Request_TimeoutNChoices, m_choice_Modbus_Request_TimeoutChoices, 0 );
+	m_choice_Modbus_Request_Timeout->SetSelection( 0 );
+	bSizer45->Add( m_choice_Modbus_Request_Timeout, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer26->Add( bSizer45, 1, wxEXPAND, 5 );
+
+	m_staticline11 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer26->Add( m_staticline11, 0, wxEXPAND | wxALL, 5 );
+
+	wxBoxSizer* bSizer20;
+	bSizer20 = new wxBoxSizer( wxVERTICAL );
+
+	bSizer20->SetMinSize( wxSize( 150,-1 ) );
+	wxBoxSizer* bSizer24;
+	bSizer24 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText21 = new wxStaticText( this, wxID_ANY, _("仅本地："), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText21->Wrap( -1 );
+	bSizer24->Add( m_staticText21, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_checkBox_localhost = new wxCheckBox( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBox_localhost->SetValue(true);
+	bSizer24->Add( m_checkBox_localhost, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+
+	bSizer20->Add( bSizer24, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer22;
+	bSizer22 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText19 = new wxStaticText( this, wxID_ANY, _("端口:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText19->Wrap( -1 );
+	bSizer22->Add( m_staticText19, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	wxString m_choice_portChoices[] = { _("64502"), _("63502"), _("62502"), _("61502"), _("60502"), _("59502"), _("58502"), _("57502"), _("56502"), _("55502"), _("54502"), _("53502"), _("52502"), _("51502"), _("50502"), _("502") };
+	int m_choice_portNChoices = sizeof( m_choice_portChoices ) / sizeof( wxString );
+	m_choice_port = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choice_portNChoices, m_choice_portChoices, 0 );
+	m_choice_port->SetSelection( 15 );
+	bSizer22->Add( m_choice_port, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer20->Add( bSizer22, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer21;
+	bSizer21 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText18 = new wxStaticText( this, wxID_ANY, _("IPV4:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText18->Wrap( -1 );
+	bSizer21->Add( m_staticText18, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_button_ipv4_gateway_start_stop = new wxButton( this, wxID_ANY, _("启动"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer21->Add( m_button_ipv4_gateway_start_stop, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer20->Add( bSizer21, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer23;
+	bSizer23 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText20 = new wxStaticText( this, wxID_ANY, _("IPV6:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText20->Wrap( -1 );
+	bSizer23->Add( m_staticText20, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_button_ipv6_gateway_start_stop = new wxButton( this, wxID_ANY, _("启动"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer23->Add( m_button_ipv6_gateway_start_stop, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer20->Add( bSizer23, 1, wxEXPAND, 5 );
+
+
+	bSizer26->Add( bSizer20, 0, wxEXPAND, 5 );
+
+
+	bSizer25->Add( bSizer26, 0, 0, 5 );
+
+
+	this->SetSizer( bSizer25 );
+	this->Layout();
+	m_timer_UIUpdate.SetOwner( this, m_timer_UIUpdate.GetId() );
+	m_timer_UIUpdate.Start( 50 );
+
+
+	// Connect Events
+	m_comboBox_Serialport_Name->Connect( wxEVT_COMBOBOX_DROPDOWN, wxCommandEventHandler( modbussessiontcpgatewayserialportbase::OnComboboxDropdown_Serialport_Name ), NULL, this );
+	m_button_ipv4_gateway_start_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpgatewayserialportbase::OnButtonClick_IPV4_Gateway_Start_Stop ), NULL, this );
+	m_button_ipv6_gateway_start_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( modbussessiontcpgatewayserialportbase::OnButtonClick_IPV6_Gateway_Start_Stop ), NULL, this );
+	this->Connect( m_timer_UIUpdate.GetId(), wxEVT_TIMER, wxTimerEventHandler( modbussessiontcpgatewayserialportbase::OnTimer_UIUpdate ) );
+}
+
+modbussessiontcpgatewayserialportbase::~modbussessiontcpgatewayserialportbase()
 {
 }
 
