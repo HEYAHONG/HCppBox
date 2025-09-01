@@ -3118,29 +3118,18 @@ static int hcrypto_test(int argc,const char *argv[])
         if(key_pem!=NULL)
         {
             std::string pem((const char *)key_pem);
-            auto Replace=[](std::string& strBig, const std::string& strsrc, const std::string& strdst)
-            {
-                std::string::size_type pos = 0;
-                std::string::size_type srclen = strsrc.size();
-                std::string::size_type dstlen = strdst.size();
-
-                while ((pos = strBig.find(strsrc, pos)) != std::string::npos)
-                {
-                    strBig.replace(pos, srclen, strdst);
-                    pos += dstlen;
-                }
-            };
-            Replace(pem,"\r","");
             auto GetLine=[](std::string &data) -> std::string
             {
                 std::string::size_type pos=data.find("\n");
-                std::string ret=data.substr(0,pos);
+                std::string ret;
                 if(pos!=std::string::npos)
                 {
+                    ret=data.substr(0,pos+1);
                     data=data.substr(pos+1);
                 }
                 else
                 {
+                    ret=data;
                     data.clear();
                 }
                 return ret;
@@ -3199,9 +3188,9 @@ static int hcrypto_test(int argc,const char *argv[])
             },NULL,0,bin_pem,len);
 
             {
-                hrsa2048_public_key_t pubkey={0};
+                hrsa2048_public_key_t pubkey= {0};
                 hrsa2048_public_key_load_from_asn1_private_key(&pubkey,bin_pem,len);
-                hrsa2048_private_key_t prikey={0};
+                hrsa2048_private_key_t prikey= {0};
                 hrsa2048_private_key_load_from_asn1_private_key(&prikey,bin_pem,len);
                 {
 

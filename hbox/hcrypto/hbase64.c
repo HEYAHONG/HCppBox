@@ -131,32 +131,50 @@ static size_t hbase64_single_encode(char *encoding,size_t encoding_length,const 
 
 size_t hbase64_decode(uint8_t *value,size_t value_length,const char *encoding,size_t encoding_length)
 {
-    if(encoding==NULL || encoding_length==0)
+    if(encoding==NULL || encoding_length==0 || value==NULL || value_length==0)
     {
         return 0;
     }
-    size_t max_cnt=encoding_length/4;
-    size_t cur_cnt=0;
+
     size_t len=0;
-    for(size_t i=0; i<max_cnt; i++)
+    char encoding_buffer[5]= {0};
+    size_t encoding_index=0;
+    for(size_t i=0; i<value_length;)
     {
-        if(value!=NULL && ((cur_cnt+1)*3 <= value_length))
+        if(encoding_index > encoding_length)
         {
-            hbase64_single_decode(&value[cur_cnt*3],value_length-(cur_cnt*3),&encoding[cur_cnt*4],encoding_length-cur_cnt*4);
+            break;
         }
-        len+=3;
-        if(encoding[cur_cnt*4+3]=='=')
+        memset(encoding_buffer,0,sizeof(encoding_buffer));
+        size_t j=0;
+        for(j=0; j < 4 ; j++)
         {
-            len-=1;
-            if(encoding[cur_cnt*4+2]=='=')
+            while(encoding[encoding_index]=='\r' || encoding[encoding_index]=='\n')
             {
-                len-=1;
+                /*
+                * 跳过回车换行符
+                */
+                encoding_index++;
+            }
+            encoding_buffer[j]=encoding[encoding_index++];
+            if(encoding_index > encoding_length)
+            {
+                j++;
+                break;
             }
         }
-        cur_cnt++;
+        size_t single_decode_length=hbase64_single_decode(&value[i],value_length-i,encoding_buffer,j);
+        i+=single_decode_length;
+        len=i;
+        if(single_decode_length < 3)
+        {
+            break;
+        }
     }
+
     return len;
 }
+
 
 
 size_t hbase64_encode(char *encoding,size_t encoding_length,const uint8_t*value,size_t value_length)
