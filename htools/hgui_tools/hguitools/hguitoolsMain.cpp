@@ -11,6 +11,8 @@
 #include "wx_pch.h"
 #endif
 
+#include "astyle.h"
+#include "astyle_main.h"
 #include "hguitoolsMain.h"
 #include "common_wxwidgets.h"
 #include "Version.h"
@@ -127,9 +129,8 @@ void hguitoolsFrame::dotdontscan_start_OnButtonClick( wxCommandEvent& event )
         std::advance(maxval,char_code_set.size()-1);
         wxLogMessage(wxT("字符编码最大值:%08X,字符编码最小值：%08X"),(int)(*maxval),(int)(*minval));
     }
-    std::string outputdata;
+    std::stringstream stream;
     {
-        std::stringstream stream;
         stream << "#include \"stdint.h\""<<std::endl;
         stream << "#include \"stdlib.h\""<<std::endl<<std::endl;
         stream<<"/* Font Size "<<font.GetPixelSize().GetHeight()<<" */"<<std::endl<<std::endl;
@@ -259,7 +260,31 @@ void hguitoolsFrame::dotdontscan_start_OnButtonClick( wxCommandEvent& event )
             stream << "};"<<std::endl;
         }
         stream << std::endl;
-        outputdata=stream.str();
+    }
+    std::string outputdata;
+    {
+        astyle::ASFormatter formatter;
+        formatter.setFormattingStyle(astyle::STYLE_ALLMAN);
+        formatter.setCStyle();
+        formatter.setModeManuallySet(true);
+        astyle::ASStreamIterator<std::stringstream> streamIterator(&stream);
+        formatter.init(&streamIterator);
+        while (formatter.hasMoreLines())
+        {
+            outputdata+=formatter.nextLine();
+            if(formatter.hasMoreLines())
+            {
+                outputdata+="\r\n";
+            }
+            else
+            {
+                if (formatter.getIsLineReady())
+                {
+                    outputdata+="\r\n";
+                    outputdata+=formatter.nextLine();
+                }
+            }
+        }
     }
     dotfontscan_scintilla_c_source->SetText(outputdata);
 }
@@ -337,10 +362,9 @@ void hguitoolsFrame::imageresourcegenerate_load_OnButtonClick( wxCommandEvent& e
     bitmap->imageresourcegenerate_bitmap_preview->SetBitmap(image);
     bitmap->Layout();
     bitmap->Show();
-    std::string outputdata;
+    std::stringstream stream;
     {
         std::string output_var_base="custom";
-        std::stringstream stream;
         stream << "#include \"hgui.h\""<<std::endl;
         {
             stream << "const uint8_t " << "hrawimage_" << output_var_base << "_data[]=" << std::endl;
@@ -373,11 +397,9 @@ void hguitoolsFrame::imageresourcegenerate_load_OnButtonClick( wxCommandEvent& e
             stream << "};" << std::endl;
         }
 
-        outputdata+=stream.str();
     }
     {
         std::string output_var_base="custom_gray";
-        std::stringstream stream;
         {
             stream << "const uint8_t " << "hrawimage_" << output_var_base << "_data[]=" << std::endl;
             stream << "{" << std::endl;
@@ -408,7 +430,31 @@ void hguitoolsFrame::imageresourcegenerate_load_OnButtonClick( wxCommandEvent& e
             stream << "};" << std::endl;
         }
 
-        outputdata+=stream.str();
+    }
+    std::string outputdata;
+    {
+        astyle::ASFormatter formatter;
+        formatter.setFormattingStyle(astyle::STYLE_ALLMAN);
+        formatter.setCStyle();
+        formatter.setModeManuallySet(true);
+        astyle::ASStreamIterator<std::stringstream> streamIterator(&stream);
+        formatter.init(&streamIterator);
+        while (formatter.hasMoreLines())
+        {
+            outputdata+=formatter.nextLine();
+            if(formatter.hasMoreLines())
+            {
+                outputdata+="\r\n";
+            }
+            else
+            {
+                if (formatter.getIsLineReady())
+                {
+                    outputdata+="\r\n";
+                    outputdata+=formatter.nextLine();
+                }
+            }
+        }
     }
     imageresourcegenerate_scintilla_c_source->SetText(wxString(outputdata.c_str()));
 }
@@ -443,3 +489,37 @@ void hguitoolsFrame::OnMSTimer( wxTimerEvent& event )
 {
     hcppbox_softwaretimer_isr();
 }
+
+/*
+ * 导入Astyle主程序
+ */
+#ifdef main
+#undef main
+#endif // main
+#define main astyle_main
+#ifdef _
+#undef _
+#endif
+#define _(X) (X)
+#ifdef _WIN32
+#ifdef UNICODE
+#undef UNICODE
+#endif // UNICODE
+#ifdef GetFileAttributes
+#undef GetFileAttributes
+#endif // GetFileAttributes
+#define GetFileAttributes GetFileAttributesA
+#ifdef  FormatMessage
+#undef  FormatMessage
+#endif //  FormatMessage
+#define  FormatMessage  FormatMessageA
+#ifdef SHELLEXECUTEINFO
+#undef SHELLEXECUTEINFO
+#endif // SHELLEXECUTEINFO
+#define SHELLEXECUTEINFO SHELLEXECUTEINFOA
+#ifdef ShellExecuteEx
+#undef ShellExecuteEx
+#endif // ShellExecuteEx
+#define ShellExecuteEx ShellExecuteExA
+#endif
+#include "astyle_main.cpp"

@@ -34,9 +34,15 @@ if(WIN32)
 	endif()
 endif()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../common ${CMAKE_CURRENT_SOURCE_DIR}/ )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../common  ${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/astyle/ ${CMAKE_CURRENT_SOURCE_DIR}/ )
 
-file(GLOB MAIN_CXX_C_FILES *.cpp *.c *.h ../../common/common_wxwidgets.h ../../common/common_wxwidgets.cpp guibase/*.cpp guibase/*.c guibase/*.h )
+file(GLOB MAIN_CXX_C_FILES *.cpp *.c *.h ../../common/common_wxwidgets.h ../../common/common_wxwidgets.cpp  guibase/*.cpp guibase/*.c guibase/*.h 
+../../common/3rdparty/astyle/ASBeautifier.cpp
+../../common/3rdparty/astyle/ASEnhancer.cpp
+../../common/3rdparty/astyle/ASFormatter.cpp
+../../common/3rdparty/astyle/ASLocalizer.cpp
+../../common/3rdparty/astyle/ASResource.cpp
+)
 list(APPEND  MAIN_SRCS ${MAIN_CXX_C_FILES})
 
 if(WIN32)
