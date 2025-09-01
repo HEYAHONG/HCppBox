@@ -259,6 +259,46 @@ void hguitoolsFrame::dotdontscan_start_OnButtonClick( wxCommandEvent& event )
             stream << "0x00" <<std::endl;
             stream << "};"<<std::endl;
         }
+        {
+            if(char_code_set.size()>0)
+            {
+                //输出点阵字符集大小
+                char buff[512]= {0};
+                sprintf(buff,"extern const uint32_t hdotfont_char_set_%d_size;",(int)font_size);
+                stream << buff<<std::endl;
+                buff[0]='\0';
+                sprintf(buff,"const uint32_t hdotfont_char_set_%d_size=%d;",(int)font_size,(int)char_code_set.size());
+                stream << buff<<std::endl;
+            }
+
+            if(char_code_set.size()>0)
+            {
+                //输出字符集
+                {
+                    //输出变量名
+                    char buff[512]= {0};
+                    sprintf(buff,"extern const uint8_t *const hdotfont_char_set_%d[];",(int)font_size);
+                    stream << buff<<std::endl;
+                    buff[0]='\0';
+                    sprintf(buff,"const uint8_t *const hdotfont_char_set_%d[]=",(int)font_size);
+                    stream << buff<<std::endl;
+                }
+                stream << "{"<<std::endl;
+                for(auto it=char_code_set.begin(); it!=char_code_set.end(); it++)
+                {
+                    {
+                        //单个字符的变量名称
+                        char buff[512]= {0};
+                        sprintf(buff,"hdotfont_char_%08X_%d,",(int)(*it),(int)font_size);
+                        stream << buff<<std::endl;
+                    }
+                }
+                //末尾添0
+                stream << "NULL" <<std::endl;
+                stream << "};"<<std::endl;
+            }
+
+        }
         stream << std::endl;
     }
     std::string outputdata;
