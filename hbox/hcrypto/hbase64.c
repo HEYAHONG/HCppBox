@@ -155,13 +155,20 @@ size_t hbase64_decode(uint8_t *value,size_t value_length,const char *encoding,si
                 * 跳过回车换行符、空格
                 */
                 encoding_index++;
+                if(encoding_index >= encoding_length)
+                {
+                    break;
+                }
             }
-            encoding_buffer[j]=encoding[encoding_index++];
-            if(encoding_index > encoding_length)
+            if(encoding_index >= encoding_length)
             {
-                j++;
                 break;
             }
+            encoding_buffer[j]=encoding[encoding_index++];
+        }
+        if(j<4)
+        {
+            break;
         }
         size_t single_decode_length=hbase64_single_decode(&value[i],value_length-i,encoding_buffer,j);
         i+=single_decode_length;
