@@ -141,7 +141,7 @@ size_t hbase64_decode(uint8_t *value,size_t value_length,const char *encoding,si
     size_t encoding_index=0;
     for(size_t i=0; i<value_length;)
     {
-        if(encoding_index > encoding_length)
+        if(encoding_index >= encoding_length)
         {
             break;
         }
