@@ -149,10 +149,10 @@ size_t hbase64_decode(uint8_t *value,size_t value_length,const char *encoding,si
         size_t j=0;
         for(j=0; j < 4 ; j++)
         {
-            while(encoding[encoding_index]=='\r' || encoding[encoding_index]=='\n')
+            while(encoding[encoding_index]=='\r' || encoding[encoding_index]=='\n' || encoding[encoding_index]==' ' )
             {
                 /*
-                * 跳过回车换行符
+                * 跳过回车换行符、空格
                 */
                 encoding_index++;
             }
