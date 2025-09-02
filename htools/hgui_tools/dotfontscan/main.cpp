@@ -15,7 +15,9 @@
 #include <algorithm>
 #include "stdio.h"
 #include "stdlib.h"
-
+#include "astyle.h"
+#include "astyle_main.h"
+#include "sstream"
 
 static class ft_lib
 {
@@ -386,7 +388,7 @@ static void checkout_fontfile()
                 "/usr/share/fonts/noto/NotoSansCJK-Regular.ttc",//Cygwin noto 字体
                 "/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc",//ubuntu noto字体，使用sudo apt-get install fonts-noto-cjk安装
             };
-            for(size_t i=0;i<sizeof(font_file_path_list)/sizeof(font_file_path_list[0]);i++)
+            for(size_t i=0; i<sizeof(font_file_path_list)/sizeof(font_file_path_list[0]); i++)
             {
                 font_file_path=font_file_path_list[i];
                 if((fp=fopen(font_file_path.c_str(),"r"))!=NULL)
@@ -465,19 +467,21 @@ static void font_bitmap_get(void (*on_get)(FT_Bitmap bmp,int x,int y,wchar_t _ch
 
 static std::fstream outfile;
 static std::set<wchar_t> output_char_set;
+std::stringstream stream;
 static void generate_c_file()
 {
     outfile.open(output_file_path.c_str(),std::ios::out);
+
     if(outfile.is_open())
     {
         //包含文件
-        outfile << "#include \"stdint.h\""<<std::endl;
-        outfile << "#include \"stdlib.h\""<<std::endl;
+        stream << "#include \"stdint.h\""<<std::endl;
+        stream << "#include \"stdlib.h\""<<std::endl;
         //生成12到32的点阵
         for(size_t i=12; i<=32; i++)
         {
             //字体注释信息
-            outfile<<"/* Font Size "<<i<<" */"<<std::endl<<std::endl;
+            stream<<"/* Font Size "<<i<<" */"<<std::endl<<std::endl;
 
             output_char_set.clear();
             font_bitmap_get([](FT_Bitmap bmp,int x,int y,wchar_t _char,int font_size)
@@ -487,11 +491,11 @@ static void generate_c_file()
                 size_t h=bmp.rows;
                 {
                     //单个字体的注释
-                    outfile << "/*"<<std::endl;
+                    stream << "/*"<<std::endl;
                     {
                         char buff[512]= {0};
                         sprintf(buff,"char=%08X,size=%d,x=%d,y=%d,width=%d,height=%d",(int)_char,(int)font_size,(int)x,(int)y,(int)w,(int)h);
-                        outfile << buff<<std::endl;
+                        stream << buff<<std::endl;
                     }
                     for(size_t i=0; i<h; i++)
                     {
@@ -499,43 +503,43 @@ static void generate_c_file()
                         {
                             if(bmp.buffer[i*w+j]<0x80)
                             {
-                                outfile<<" ";
+                                stream<<" ";
                             }
                             else
                             {
-                                outfile<<"#";
+                                stream<<"#";
                             }
                         }
-                        outfile << std::endl;
+                        stream << std::endl;
                     }
-                    outfile << "*/"<<std::endl;
+                    stream << "*/"<<std::endl;
                 }
                 {
                     {
                         //输出变量名
                         char buff[512]= {0};
                         sprintf(buff,"const uint8_t hdotfont_char_%08X_%d[]=",(int)_char,(int)font_size);
-                        outfile << buff<<std::endl;
+                        stream << buff<<std::endl;
                     }
-                    outfile << "{"<<std::endl;
+                    stream << "{"<<std::endl;
 
-                    outfile << "/* wchar_t */"<<std::endl;
+                    stream << "/* wchar_t */"<<std::endl;
                     {
                         //输出wchar_t的值
                         char buff[512]= {0};
                         sprintf(buff,"0x%02X,0x%02X,0x%02X,0x%02X,",(int)_char&0xFF,(int)(_char>>8)&0xFF,(int)(_char>>16)&0xFF,(int)(_char>>24)&0xFF);
-                        outfile << buff<<std::endl;
+                        stream << buff<<std::endl;
                     }
 
-                    outfile << "/* x,y,w,h */"<<std::endl;
+                    stream << "/* x,y,w,h */"<<std::endl;
                     {
                         //输出x,y,w,h
                         char buff[512]= {0};
                         sprintf(buff,"%d,%d,%d,%d,",(int)x,(int)y,(int)w,(int)h);
-                        outfile << buff<<std::endl;
+                        stream << buff<<std::endl;
                     }
 
-                    outfile << "/* data */"<<std::endl;
+                    stream << "/* data */"<<std::endl;
                     {
                         uint8_t temp=0;
                         for(size_t i=0; i<h; i++)
@@ -553,11 +557,11 @@ static void generate_c_file()
                                     {
                                         char buff[512]= {0};
                                         sprintf(buff,"0x%02X,",temp);
-                                        outfile << buff;
+                                        stream << buff;
                                     }
                                     if((pixel_index/8)%8==7)
                                     {
-                                        outfile<<std::endl;
+                                        stream<<std::endl;
                                     }
                                     temp=0;
                                 }
@@ -567,7 +571,7 @@ static void generate_c_file()
                                     {
                                         char buff[512]= {0};
                                         sprintf(buff,"0x%02X,",temp);
-                                        outfile << buff;
+                                        stream << buff;
                                     }
                                     temp=0;
                                 }
@@ -576,10 +580,10 @@ static void generate_c_file()
                     }
 
                     //末尾添0
-                    outfile << "0x00" <<std::endl;
-                    outfile << "};"<<std::endl;
+                    stream << "0x00" <<std::endl;
+                    stream << "};"<<std::endl;
                 }
-                outfile << std::endl;
+                stream << std::endl;
             },i);
 
             if(output_char_set.size()>0)
@@ -587,10 +591,10 @@ static void generate_c_file()
                 //输出点阵字符集大小
                 char buff[512]= {0};
                 sprintf(buff,"extern const uint32_t hdotfont_char_set_%d_size;",(int)i);
-                outfile << buff<<std::endl;
+                stream << buff<<std::endl;
                 buff[0]='\0';
                 sprintf(buff,"const uint32_t hdotfont_char_set_%d_size=%d;",(int)i,(int)output_char_set.size());
-                outfile << buff<<std::endl;
+                stream << buff<<std::endl;
             }
 
             if(output_char_set.size()>0)
@@ -600,27 +604,53 @@ static void generate_c_file()
                     //输出变量名
                     char buff[512]= {0};
                     sprintf(buff,"extern const uint8_t *const hdotfont_char_set_%d[];",(int)i);
-                    outfile << buff<<std::endl;
+                    stream << buff<<std::endl;
                     buff[0]='\0';
                     sprintf(buff,"const uint8_t *const hdotfont_char_set_%d[]=",(int)i);
-                    outfile << buff<<std::endl;
+                    stream << buff<<std::endl;
                 }
-                outfile << "{"<<std::endl;
+                stream << "{"<<std::endl;
                 for(auto it=output_char_set.begin(); it!=output_char_set.end(); it++)
                 {
                     {
                         //单个字符的变量名称
                         char buff[512]= {0};
                         sprintf(buff,"hdotfont_char_%08X_%d,",(int)(*it),(int)i);
-                        outfile << buff<<std::endl;
+                        stream << buff<<std::endl;
                     }
                 }
                 //末尾添0
-                outfile << "NULL" <<std::endl;
-                outfile << "};"<<std::endl;
+                stream << "NULL" <<std::endl;
+                stream << "};"<<std::endl;
             }
 
         }
+        std::string outputdata;
+        {
+            astyle::ASFormatter formatter;
+            formatter.setFormattingStyle(astyle::STYLE_ALLMAN);
+            formatter.setCStyle();
+            formatter.setModeManuallySet(true);
+            astyle::ASStreamIterator<std::stringstream> streamIterator(&stream);
+            formatter.init(&streamIterator);
+            while (formatter.hasMoreLines())
+            {
+                outputdata+=formatter.nextLine();
+                if(formatter.hasMoreLines())
+                {
+                    outputdata+="\r\n";
+                }
+                else
+                {
+                    if (formatter.getIsLineReady())
+                    {
+                        outputdata+="\r\n";
+                        outputdata+=formatter.nextLine();
+                    }
+                }
+            }
+        }
+        outfile << outputdata;
         outfile.close();
     }
     else
@@ -629,11 +659,6 @@ static void generate_c_file()
     }
 }
 
-static void c_file_codestyle()
-{
-    std::string astyle_cmd=std::string("astyle -n ")+output_file_path;
-    system(astyle_cmd.c_str());
-}
 
 int main(int argc,const char *argv[])
 {
@@ -645,9 +670,41 @@ int main(int argc,const char *argv[])
 
     generate_c_file();
 
-    c_file_codestyle();
 
     return 0;
 }
 
 
+/*
+ * 导入Astyle主程序
+ */
+#ifdef main
+#undef main
+#endif // main
+#define main astyle_main
+#ifdef _
+#undef _
+#endif
+#define _(X) (X)
+#ifdef _WIN32
+#ifdef UNICODE
+#undef UNICODE
+#endif // UNICODE
+#ifdef GetFileAttributes
+#undef GetFileAttributes
+#endif // GetFileAttributes
+#define GetFileAttributes GetFileAttributesA
+#ifdef  FormatMessage
+#undef  FormatMessage
+#endif //  FormatMessage
+#define  FormatMessage  FormatMessageA
+#ifdef SHELLEXECUTEINFO
+#undef SHELLEXECUTEINFO
+#endif // SHELLEXECUTEINFO
+#define SHELLEXECUTEINFO SHELLEXECUTEINFOA
+#ifdef ShellExecuteEx
+#undef ShellExecuteEx
+#endif // ShellExecuteEx
+#define ShellExecuteEx ShellExecuteExA
+#endif
+#include "astyle_main.cpp"
