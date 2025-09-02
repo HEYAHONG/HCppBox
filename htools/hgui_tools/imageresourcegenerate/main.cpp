@@ -2,6 +2,9 @@
 #include "hrc.h"
 #include H3RDPARTY_ARGTABLE3_HEADER
 #include "string"
+#include "astyle.h"
+#include "astyle_main.h"
+#include "sstream"
 
 static void show_banner()
 {
@@ -169,12 +172,14 @@ void generate_c_source(void)
     outfile.open(output_file_path.c_str(),std::ios::out);
     if(outfile.is_open())
     {
-        outfile << "#include \"hgui.h\""<<std::endl;
+        std::stringstream stream;
+
+        stream << "#include \"hgui.h\""<<std::endl;
 
 
         {
-            outfile << "const uint8_t " << "hrawimage_" << output_var_base << "_data[]=" << std::endl;
-            outfile << "{" << std::endl;
+            stream << "const uint8_t " << "hrawimage_" << output_var_base << "_data[]=" << std::endl;
+            stream << "{" << std::endl;
             uint8_t *data=new uint8_t[image.cols *image.rows*3];
             image.forEach<BGR888_Pixel>([&](BGR888_Pixel &p,const int *pos)
             {
@@ -184,25 +189,25 @@ void generate_c_source(void)
             });
             for(size_t i=0; i<image.cols *image.rows*3; i++)
             {
-                outfile << std::to_string(data[i]) << ",";
+                stream << std::to_string(data[i]) << ",";
                 if(i>0 && i%40==0)
                 {
-                    outfile<< std::endl;
+                    stream<< std::endl;
                 }
             }
             delete []data;
-            outfile << "0" << std::endl;
-            outfile << "};" << std::endl;
+            stream << "0" << std::endl;
+            stream << "};" << std::endl;
 
-            outfile << "const hgui_gui_rawimage_t " << "hrawimage_" << output_var_base << "=" << std::endl;
-            outfile << "{" << std::endl;
-            outfile << std::to_string(image.cols) << "," << std::to_string(image.rows) << "," << "3" << "," << "hrawimage_" << output_var_base << "_data" << std::endl;
-            outfile << "};" << std::endl;
+            stream << "const hgui_gui_rawimage_t " << "hrawimage_" << output_var_base << "=" << std::endl;
+            stream << "{" << std::endl;
+            stream << std::to_string(image.cols) << "," << std::to_string(image.rows) << "," << "3" << "," << "hrawimage_" << output_var_base << "_data" << std::endl;
+            stream << "};" << std::endl;
         }
 
         {
-            outfile << "const uint8_t " << "hrawimage_" << output_var_base << "_gray" << "_data[]=" << std::endl;
-            outfile << "{" << std::endl;
+            stream << "const uint8_t " << "hrawimage_" << output_var_base << "_gray" << "_data[]=" << std::endl;
+            stream << "{" << std::endl;
             uint8_t *data=new uint8_t[grayimage.cols *grayimage.rows];
             grayimage.forEach<uint8_t>([&](uint8_t &p,const int *pos)
             {
@@ -210,30 +215,51 @@ void generate_c_source(void)
             });
             for(size_t i=0; i<grayimage.cols *grayimage.rows; i++)
             {
-                outfile << std::to_string(data[i]) << ",";
+                stream << std::to_string(data[i]) << ",";
                 if(i>0 && i%40==0)
                 {
-                    outfile<< std::endl;
+                    stream<< std::endl;
                 }
             }
             delete []data;
-            outfile << "0" << std::endl;
-            outfile << "};" << std::endl;
+            stream << "0" << std::endl;
+            stream << "};" << std::endl;
 
-            outfile << "const hgui_gui_rawimage_t " << "hrawimage_" << output_var_base << "_gray" << "=" << std::endl;
-            outfile << "{" << std::endl;
-            outfile << std::to_string(grayimage.cols) << "," << std::to_string(grayimage.rows) << "," << "1" << "," << "hrawimage_" << output_var_base  << "_gray" << "_data" << std::endl;
-            outfile << "};" << std::endl;
+            stream << "const hgui_gui_rawimage_t " << "hrawimage_" << output_var_base << "_gray" << "=" << std::endl;
+            stream << "{" << std::endl;
+            stream << std::to_string(grayimage.cols) << "," << std::to_string(grayimage.rows) << "," << "1" << "," << "hrawimage_" << output_var_base  << "_gray" << "_data" << std::endl;
+            stream << "};" << std::endl;
         }
 
+        std::string outputdata;
+        {
+            astyle::ASFormatter formatter;
+            formatter.setFormattingStyle(astyle::STYLE_ALLMAN);
+            formatter.setCStyle();
+            formatter.setModeManuallySet(true);
+            astyle::ASStreamIterator<std::stringstream> streamIterator(&stream);
+            formatter.init(&streamIterator);
+            while (formatter.hasMoreLines())
+            {
+                outputdata+=formatter.nextLine();
+                if(formatter.hasMoreLines())
+                {
+                    outputdata+="\r\n";
+                }
+                else
+                {
+                    if (formatter.getIsLineReady())
+                    {
+                        outputdata+="\r\n";
+                        outputdata+=formatter.nextLine();
+                    }
+                }
+            }
+        }
+        outfile << outputdata;
         outfile.close();
     }
 
-    {
-        //整理代码
-        std::string astyle_cmd=std::string("astyle -n ")+output_file_path;
-        system(astyle_cmd.c_str());
-    }
 
 }
 
@@ -250,3 +276,37 @@ int main(int argc,char *argv[])
 
     return 0;
 }
+
+/*
+ * 导入Astyle主程序
+ */
+#ifdef main
+#undef main
+#endif // main
+#define main astyle_main
+#ifdef _
+#undef _
+#endif
+#define _(X) (X)
+#ifdef _WIN32
+#ifdef UNICODE
+#undef UNICODE
+#endif // UNICODE
+#ifdef GetFileAttributes
+#undef GetFileAttributes
+#endif // GetFileAttributes
+#define GetFileAttributes GetFileAttributesA
+#ifdef  FormatMessage
+#undef  FormatMessage
+#endif //  FormatMessage
+#define  FormatMessage  FormatMessageA
+#ifdef SHELLEXECUTEINFO
+#undef SHELLEXECUTEINFO
+#endif // SHELLEXECUTEINFO
+#define SHELLEXECUTEINFO SHELLEXECUTEINFOA
+#ifdef ShellExecuteEx
+#undef ShellExecuteEx
+#endif // ShellExecuteEx
+#define ShellExecuteEx ShellExecuteExA
+#endif
+#include "astyle_main.cpp"
