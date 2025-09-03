@@ -18,8 +18,10 @@
 | `MBTCP_SERIALPORT_PARITY`      | 串口校验（N=None、E=Even、O=Odd、S=Space、M=Mark）    | 默认为N                      |
 | `MBTCP_SERIALPORT_STOPBITS`    | 串口停止位                                            | 默认为1                      |
 | `MBTCP_SERIALPORT_FLOWCONTROL` | 串口流控(N=None、R=`RTSCTS`、D=`DTRDSR`、X=`XONXOFF`) | 默认为N                      |
+| `MBTCP_SERIALPORT_BLOCK`       | 每次串口请求的阻塞事件，单位为毫秒                    | 默认为100ms                  |
 
 # 依赖库
 
 - [libevent](https://libevent.org/)
+- [libserialport](https://sigrok.org/wiki/libserialport)
 

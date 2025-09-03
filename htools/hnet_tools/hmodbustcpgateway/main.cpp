@@ -237,6 +237,18 @@ void check_env()
         }
     }
 
+    {
+        const char *value=hgetenv("MBTCP_SERIALPORT_BLOCK");
+        if(value!=NULL && strlen(value) > 0)
+        {
+            int block=atoi(value);
+            if(block > 0)
+            {
+                service_com_block_time_ms=block;
+            }
+        }
+    }
+
 }
 
 static void check_args(int argc,char *argv[])
