@@ -12,11 +12,29 @@
 #include "inttypes.h"
 #include H3RDPARTY_ARGTABLE3_HEADER
 
+
+
 static std::string service_port="502";
 static std::string service_addr="0.0.0.0";
 static std::string service_com_port;
 static struct sp_port_config * service_com_config=NULL;
 static int service_com_block_time_ms=100;
+static class main_cleanup
+{
+public:
+    main_cleanup()
+    {
+
+    }
+    ~ main_cleanup()
+    {
+        if(service_com_config!=NULL)
+        {
+            sp_free_config(service_com_config);
+        }
+    }
+
+} g_main_cleanup;
 
 enum
 {
