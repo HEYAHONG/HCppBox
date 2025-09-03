@@ -104,6 +104,141 @@ static void show_banner()
     }
 }
 
+void check_env()
+{
+    {
+        const char *value=hgetenv("MBTCP_ADDR");
+        if(value!=NULL && strlen(value) > 0)
+        {
+            service_addr=value;
+        }
+    }
+    {
+        const char *value=hgetenv("MBTCP_PORT");
+        if(value!=NULL && strlen(value) > 0)
+        {
+            service_port=value;
+        }
+    }
+    {
+        const char *value=hgetenv("MBTCP_SERIALPORT");
+        if(value!=NULL && strlen(value) > 0)
+        {
+            service_com_port=value;
+        }
+    }
+    {
+        const char *value=hgetenv("MBTCP_SERIALPORT_BAUDRATE");
+        if(value!=NULL && strlen(value) > 0)
+        {
+            int baudrate=atoi(value);
+            if(baudrate > 0)
+            {
+                sp_set_config_baudrate(service_com_config,baudrate);
+            }
+        }
+    }
+    {
+        const char *value=hgetenv("MBTCP_SERIALPORT_DATABITS");
+        if(value!=NULL && strlen(value) > 0)
+        {
+            int databits=atoi(value);
+            if(databits > 0)
+            {
+                sp_set_config_baudrate(service_com_config,databits);
+            }
+        }
+    }
+    {
+        const char *value=hgetenv("MBTCP_SERIALPORT_PARITY");
+        if(value!=NULL && strlen(value) > 0)
+        {
+            enum sp_parity parity=SP_PARITY_NONE;
+            switch(value[0])
+            {
+            case 'N':
+            {
+                parity=SP_PARITY_NONE;
+            }
+            break;
+            case 'O':
+            {
+                parity=SP_PARITY_ODD;
+            }
+            break;
+            case 'E':
+            {
+                parity=SP_PARITY_EVEN;
+            }
+            break;
+            case 'S':
+            {
+                parity=SP_PARITY_SPACE;
+            }
+            break;
+            case 'M':
+            {
+                parity=SP_PARITY_MARK;
+            }
+            break;
+            default:
+            {
+            }
+            break;
+            }
+            sp_set_config_parity(service_com_config,parity);
+        }
+    }
+    {
+        const char *value=hgetenv("MBTCP_SERIALPORT_STOPBITS");
+        if(value!=NULL && strlen(value) > 0)
+        {
+            int stopbits=atoi(value);
+            if(stopbits > 0)
+            {
+                sp_set_config_baudrate(service_com_config,stopbits);
+            }
+        }
+    }
+    {
+        const char *value=hgetenv("MBTCP_SERIALPORT_FLOWCONTROL");
+        if(value!=NULL && strlen(value) > 0)
+        {
+            enum sp_flowcontrol flowcontrol=SP_FLOWCONTROL_NONE;
+            switch(value[0])
+            {
+            case 'N':
+            {
+                flowcontrol=SP_FLOWCONTROL_NONE;
+            }
+            break;
+            case 'R':
+            {
+                flowcontrol=SP_FLOWCONTROL_RTSCTS;
+            }
+            break;
+            case 'D':
+            {
+                flowcontrol=SP_FLOWCONTROL_DTRDSR;
+            }
+            break;
+            case 'X':
+            {
+                flowcontrol=SP_FLOWCONTROL_XONXOFF;
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
+            sp_set_config_flowcontrol(service_com_config,flowcontrol);
+        }
+    }
+
+}
+
 static void check_args(int argc,char *argv[])
 {
     struct arg_lit  * help=NULL;
@@ -510,6 +645,8 @@ int service_main()
 int main(int argc,char *argv[])
 {
     init_serialport();
+
+    check_env();
 
     check_args(argc,argv);
 
