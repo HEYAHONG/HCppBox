@@ -398,6 +398,7 @@ static void signal_callback(evutil_socket_t sig, short events, void *user_data)
 
 int service_main()
 {
+    HCPPSocketInit();
     SERVICE_LOG_INFO("service_main started!\r\n");
     struct event_base *base = event_base_new();
     if(base==NULL)
