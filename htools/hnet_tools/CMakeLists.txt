@@ -17,3 +17,17 @@ message(STATUS "Enable hmodbushelper_tool!" )
 else()
 message(STATUS "Disable hmodbushelper_tool!" )
 endif()
+
+pkg_check_modules(LIBEVENT QUIET IMPORTED_TARGET libevent)
+pkg_check_modules(LIBEVENT_CORE QUIET IMPORTED_TARGET libevent_core)
+pkg_check_modules(LIBEVENT_EXTRA QUIET IMPORTED_TARGET libevent_extra)
+if(LIBSERIALPORT_FOUND AND LIBEVENT_FOUND AND LIBEVENT_CORE_FOUND AND LIBEVENT_EXTRA_FOUND)
+#添加hmodbustcpgateway工具构建
+add_custom_target(hmodbustcpgateway_tool  ${CMAKE_COMMAND} -E make_directory hmodbustcpgateway && ${CMAKE_COMMAND}  -S ${CMAKE_CURRENT_SOURCE_DIR}/hmodbustcpgateway/ -B hmodbustcpgateway && ${CMAKE_COMMAND} --build hmodbustcpgateway
+                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+                                    USES_TERMINAL)
+add_dependencies(hnet_tools hmodbustcpgateway_tool)
+message(STATUS "Enable hmodbustcpgateway_tool!" )
+else()
+message(STATUS "Disable hmodbustcpgateway_tool!" )
+endif()
