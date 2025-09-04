@@ -21,6 +21,12 @@ add_executable(${PROJECT_NAME}  ${C_CXX_FILES})
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME}  ${CMAKE_THREAD_LIBS_INIT})
 
+check_include_file(syslog.h HAVE_SYSLOG_H)
+if(HAVE_SYSLOG_H)
+target_compile_definitions(${PROJECT_NAME}  PUBLIC  HAVE_SYSLOG_H=1)
+endif()
+
+
 #设定HCppBox使用纯C++
 set(HCPPBOX_USE_PURE_CPLUSPLUS ON)
 
@@ -41,4 +47,5 @@ pkg_check_modules(LIBEVENT_CORE QUIET IMPORTED_TARGET libevent_core)
 target_link_libraries(${PROJECT_NAME}  PkgConfig::LIBEVENT_CORE)
 pkg_check_modules(LIBEVENT_EXTRA QUIET IMPORTED_TARGET libevent_extra)
 target_link_libraries(${PROJECT_NAME}  PkgConfig::LIBEVENT_EXTRA)
+
 

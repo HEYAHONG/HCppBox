@@ -11,6 +11,9 @@
 #endif // HDEFAULTS_OS_UNIX
 #include "inttypes.h"
 #include H3RDPARTY_ARGTABLE3_HEADER
+#ifdef HAVE_SYSLOG_H
+#include "syslog.h"
+#endif // HAVE_SYSLOG_H
 
 
 
@@ -24,7 +27,9 @@ static class main_cleanup
 public:
     main_cleanup()
     {
-
+#ifdef HAVE_SYSLOG_H
+        openlog("hmodbustcpgateway", LOG_NDELAY|LOG_NOWAIT|LOG_PID, LOG_DAEMON);
+#endif // HAVE_SYSLOG_H
     }
     ~ main_cleanup()
     {
@@ -32,6 +37,9 @@ public:
         {
             sp_free_config(service_com_config);
         }
+#ifdef HAVE_SYSLOG_H
+        closelog();
+#endif // HAVE_SYSLOG_H
     }
 
 } g_main_cleanup;
@@ -46,6 +54,18 @@ int service_log(int level,const char *format,...)
 {
     int ret=0;
     va_list va;
+#ifdef HAVE_SYSLOG_H
+    va_start(va,format);
+    if(SERVICE_LOG_LEVEL_INFO==level)
+    {
+        vsyslog(LOG_DAEMON|LOG_INFO,format,va);
+    }
+    if(SERVICE_LOG_LEVEL_ERROR==level)
+    {
+        vsyslog(LOG_DAEMON|LOG_ERR,format,va);
+    }
+    va_end(va);
+#endif
     va_start(va,format);
     if(SERVICE_LOG_LEVEL_INFO==level)
     {
