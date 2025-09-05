@@ -1,6 +1,7 @@
 #ifndef __GUIBASE_H__
 #define __GUIBASE_H__
 
+#include <wx/defs.h>
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
@@ -21,6 +22,10 @@
 #include <wx/textctrl.h>
 #include <wx/frame.h>
 #include <wx/aui/aui.h>
+#include <wx/utils.h>
+#if  wxUSE_REGEX
+#include <wx/regex.h>
+#endif
 
 #ifdef _
 #undef _
