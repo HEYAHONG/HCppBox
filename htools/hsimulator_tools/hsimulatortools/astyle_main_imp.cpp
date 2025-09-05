@@ -1,3 +1,4 @@
+#include "HCPPBox.h"
 #include "astyle.h"
 #include "astyle_main.h"
 
