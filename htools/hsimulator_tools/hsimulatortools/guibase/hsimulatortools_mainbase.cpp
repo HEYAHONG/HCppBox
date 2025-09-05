@@ -38,7 +38,7 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	this->SetMenuBar( m_menubar );
 
 	mainpanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	m_mgr.AddPane( mainpanel, wxAuiPaneInfo() .Center() .CloseButton( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).BottomDockable( false ).Floatable( false ).MinSize( wxSize( -1,500 ) ) );
+	m_mgr.AddPane( mainpanel, wxAuiPaneInfo() .Center() .CaptionVisible( false ).CloseButton( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).BottomDockable( false ).Floatable( false ).MinSize( wxSize( -1,500 ) ) );
 
 	wxGridSizer* maingSizer;
 	maingSizer = new wxGridSizer( 0, 1, 0, 0 );
