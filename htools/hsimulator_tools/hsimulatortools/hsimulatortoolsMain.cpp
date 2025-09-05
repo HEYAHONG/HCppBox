@@ -30,6 +30,7 @@
 #include <sstream>
 #include <string>
 #include "guibase.h"
+#include "rvvm/rvvm.h"
 
 hsimulatortoolsFrame::hsimulatortoolsFrame(wxFrame *frame)
     : mainframe(frame)
@@ -48,6 +49,16 @@ hsimulatortoolsFrame::hsimulatortoolsFrame(wxFrame *frame)
         }
     }
     hcppbox_init();
+
+    if(!rvvm_check_abi(RVVM_ABI_VERSION))
+    {
+        wxMessageBox(wxString(wxT("RVVM ABI 不兼容，程序运行可能异常！")),wxT("错误"));
+    }
+    else
+    {
+         wxLogMessage(wxT("RVVM:"  RVVM_VERSION "!"));
+    }
+
     {
         const char *banner=(const char *)RCGetHandle("banner");
         if(banner!=NULL)

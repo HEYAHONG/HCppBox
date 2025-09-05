@@ -203,7 +203,6 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 	maingSizer->Fit( mainpanel );
 	logspanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	logspanel->SetMinSize( wxSize( 600,100 ) );
-	logspanel->SetMaxSize( wxSize( -1,250 ) );
 
 	m_mgr.AddPane( logspanel, wxAuiPaneInfo() .Name( wxT("logs") ).Center() .CaptionVisible( false ).CloseButton( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).TopDockable( false ).Floatable( false ).BestSize( wxSize( 600,200 ) ) );
 
