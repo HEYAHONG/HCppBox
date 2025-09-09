@@ -3,6 +3,26 @@
 #include "thread"
 #include <wx/stdpaths.h>
 
+extern "C"
+{
+typedef struct gui_window_t gui_window_t;
+extern bool gui_window_init_auto(rvvm_machine_t* machine, uint32_t width, uint32_t height);
+extern i2c_bus_t* i2c_oc_init_auto(rvvm_machine_t* machine);
+extern rvvm_mmio_dev_t* ns16550a_init_term_auto(rvvm_machine_t* machine);
+extern bool ata_init_auto(rvvm_machine_t* machine, const char* image, bool rw);
+extern void riscv_clint_init_auto(rvvm_machine_t* machine);
+extern void riscv_imsic_init_auto(rvvm_machine_t* machine);
+extern rvvm_intc_t* riscv_aplic_init_auto(rvvm_machine_t* machine);
+extern rvvm_intc_t* riscv_plic_init_auto(rvvm_machine_t* machine);
+extern pci_bus_t* pci_bus_init_auto(rvvm_machine_t* machine);
+extern rvvm_mmio_dev_t* rtc_goldfish_init_auto(rvvm_machine_t* machine);
+extern rvvm_mmio_dev_t* syscon_init_auto(rvvm_machine_t* machine);
+typedef struct pci_dev pci_dev_t;
+extern pci_dev_t* nvme_init_auto(rvvm_machine_t* machine, const char* image_path, bool rw);
+}
+
+
+
 RVVMGenericGui::RVVMGenericGui(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name):rvvmgenericbase(parent, id, pos,size,style, name),m_running_machine(NULL)
 {
 

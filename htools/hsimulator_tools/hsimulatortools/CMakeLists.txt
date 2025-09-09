@@ -57,14 +57,6 @@ else()
 endif()
 target_link_libraries(${PROJECT_NAME} ${MAIN_LIBS})
 
-include(CheckIncludeFile)
-check_include_file(rvvm/rvvm.h HAVE_RVVM_H)
-if(HAVE_RVVM_H)
-target_compile_definitions(${PROJECT_NAME}  PUBLIC  HAVE_RVVM_H=1)
-target_link_libraries(${PROJECT_NAME} rvvm)
-else()
-message(FATAL_ERROR "RVVM not found!")
-endif()
 
 
 #添加线程库
@@ -78,6 +70,12 @@ else()
 endif()
 include(${wxWidgets_USE_FILE})
 target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
+
+include(FindPkgConfig)
+#添加rvvm 
+pkg_check_modules(LIBRVVM REQUIRED IMPORTED_TARGET rvvm)
+target_link_libraries(${PROJECT_NAME}  PkgConfig::LIBRVVM)
+
 
 #设定HCppBox使用纯C++
 set(HCPPBOX_USE_PURE_CPLUSPLUS ON)
