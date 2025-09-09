@@ -23,6 +23,7 @@ public:
     ~hsimulatortoolsFrame();
 protected:
     virtual void OnMSTimer( wxTimerEvent& event );
+    virtual void OnMenuSelectionRVVMGeneric( wxCommandEvent& event );
 private:
     virtual void OnClose(wxCloseEvent& event);
     virtual void OnQuit(wxCommandEvent& event);

@@ -31,6 +31,7 @@
 #include <string>
 #include "guibase.h"
 #include "rvvm/rvvm.h"
+#include "rvvmgenericgui.h"
 
 hsimulatortoolsFrame::hsimulatortoolsFrame(wxFrame *frame)
     : mainframe(frame)
@@ -56,7 +57,7 @@ hsimulatortoolsFrame::hsimulatortoolsFrame(wxFrame *frame)
     }
     else
     {
-         wxLogMessage(wxT("RVVM:"  RVVM_VERSION "!"));
+        wxLogMessage(wxT("RVVM:"  RVVM_VERSION "!"));
     }
 
     {
@@ -92,5 +93,11 @@ void hsimulatortoolsFrame::OnAbout(wxCommandEvent &event)
 void hsimulatortoolsFrame::OnMSTimer( wxTimerEvent& event )
 {
     hcppbox_softwaretimer_isr();
+}
+
+void hsimulatortoolsFrame::OnMenuSelectionRVVMGeneric( wxCommandEvent& event )
+{
+    RVVMGenericGui *vm=new RVVMGenericGui(mainauinotebook);
+    mainauinotebook->AddPage(vm,_T("RVVM-通用"),true);
 }
 

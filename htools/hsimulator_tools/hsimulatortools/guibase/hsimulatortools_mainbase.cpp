@@ -28,6 +28,17 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 
 	m_menubar->Append( m_menu_file, _("文件") );
 
+	m_menu_virtualmachine = new wxMenu();
+	m_menu_rvvm = new wxMenu();
+	wxMenuItem* m_menu_rvvmItem = new wxMenuItem( m_menu_virtualmachine, wxID_ANY, _("RVVM"), wxEmptyString, wxITEM_NORMAL, m_menu_rvvm );
+	wxMenuItem* m_menuItem_rvvm_generic;
+	m_menuItem_rvvm_generic = new wxMenuItem( m_menu_rvvm, wxID_ANY, wxString( _("RISCV通用") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menu_rvvm->Append( m_menuItem_rvvm_generic );
+
+	m_menu_virtualmachine->Append( m_menu_rvvmItem );
+
+	m_menubar->Append( m_menu_virtualmachine, _("虚拟机") );
+
 	m_menu_help = new wxMenu();
 	wxMenuItem* m_menu_help_about;
 	m_menu_help_about = new wxMenuItem( m_menu_help, ID_MENU_HELP_ABOUT, wxString( _("关于") ) , wxEmptyString, wxITEM_NORMAL );
@@ -88,6 +99,7 @@ mainframe::mainframe( wxWindow* parent, wxWindowID id, const wxString& title, co
 
 	// Connect Events
 	m_menu_file->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnQuit ), this, m_menu_file_quit->GetId());
+	m_menu_rvvm->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnMenuSelectionRVVMGeneric ), this, m_menuItem_rvvm_generic->GetId());
 	m_menu_help->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( mainframe::OnAbout ), this, m_menu_help_about->GetId());
 	this->Connect( m_timer_ms.GetId(), wxEVT_TIMER, wxTimerEventHandler( mainframe::OnMSTimer ) );
 }
@@ -98,5 +110,147 @@ mainframe::~mainframe()
 	this->Disconnect( m_timer_ms.GetId(), wxEVT_TIMER, wxTimerEventHandler( mainframe::OnMSTimer ) );
 
 	m_mgr.UnInit();
+
+}
+
+rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name ) : wxPanel( parent, id, pos, size, style, name )
+{
+	wxBoxSizer* bSizer2;
+	bSizer2 = new wxBoxSizer( wxVERTICAL );
+
+	m_listbook_rvvm_generic = new wxListbook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLB_LEFT );
+	m_panel_rvvm_generic_settings = new wxPanel( m_listbook_rvvm_generic, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer7;
+	bSizer7 = new wxBoxSizer( wxHORIZONTAL );
+
+
+	bSizer7->Add( 50, 0, 0, 0, 5 );
+
+	wxBoxSizer* bSizer4;
+	bSizer4 = new wxBoxSizer( wxVERTICAL );
+
+
+	bSizer4->Add( 0, 50, 0, 0, 5 );
+
+	wxBoxSizer* bSizer6;
+	bSizer6 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText1 = new wxStaticText( m_panel_rvvm_generic_settings, wxID_ANY, _("CPU SMP:"), wxDefaultPosition, wxSize( -1,-1 ), 0 );
+	m_staticText1->Wrap( -1 );
+	m_staticText1->SetMinSize( wxSize( 100,-1 ) );
+
+	bSizer6->Add( m_staticText1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	wxString m_choice_rvvm_generic_smpChoices[] = { _("1"), _("2"), _("3"), _("4"), _("5"), _("6"), _("7"), _("8"), _("16"), _("32") };
+	int m_choice_rvvm_generic_smpNChoices = sizeof( m_choice_rvvm_generic_smpChoices ) / sizeof( wxString );
+	m_choice_rvvm_generic_smp = new wxChoice( m_panel_rvvm_generic_settings, wxID_ANY, wxDefaultPosition, wxSize( 100,-1 ), m_choice_rvvm_generic_smpNChoices, m_choice_rvvm_generic_smpChoices, 0 );
+	m_choice_rvvm_generic_smp->SetSelection( 0 );
+	bSizer6->Add( m_choice_rvvm_generic_smp, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+
+	bSizer4->Add( bSizer6, 0, 0, 5 );
+
+	wxBoxSizer* bSizer9;
+	bSizer9 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText2 = new wxStaticText( m_panel_rvvm_generic_settings, wxID_ANY, _("内存(MiB):"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText2->Wrap( -1 );
+	m_staticText2->SetMinSize( wxSize( 100,-1 ) );
+
+	bSizer9->Add( m_staticText2, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_slider_rvvm_generic_mem = new wxSlider( m_panel_rvvm_generic_settings, wxID_ANY, 1024, 256, 32768, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL|wxSL_VALUE_LABEL );
+	bSizer9->Add( m_slider_rvvm_generic_mem, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer4->Add( bSizer9, 0, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer11;
+	bSizer11 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText4 = new wxStaticText( m_panel_rvvm_generic_settings, wxID_ANY, _("固件（BIOS):"), wxDefaultPosition, wxSize( 100,-1 ), 0 );
+	m_staticText4->Wrap( -1 );
+	bSizer11->Add( m_staticText4, 0, wxALL, 5 );
+
+	m_filePicker_rvvm_firmware_image = new wxFilePickerCtrl( m_panel_rvvm_generic_settings, wxID_ANY, wxEmptyString, _("Select a file"), _("*.*"), wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE );
+	bSizer11->Add( m_filePicker_rvvm_firmware_image, 0, wxALL, 5 );
+
+	m_hyperlink1 = new wxHyperlinkCtrl( m_panel_rvvm_generic_settings, wxID_ANY, _("固件下载"), wxT("https://github.com/LekKit/RVVM"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
+	bSizer11->Add( m_hyperlink1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+
+	bSizer4->Add( bSizer11, 0, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer10;
+	bSizer10 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText3 = new wxStaticText( m_panel_rvvm_generic_settings, wxID_ANY, _("磁盘:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText3->Wrap( -1 );
+	m_staticText3->SetMinSize( wxSize( 100,-1 ) );
+
+	bSizer10->Add( m_staticText3, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_filePicker_rvvm_generic_disk_image = new wxFilePickerCtrl( m_panel_rvvm_generic_settings, wxID_ANY, wxEmptyString, _("Select a file"), _("*.*"), wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE );
+	bSizer10->Add( m_filePicker_rvvm_generic_disk_image, 0, wxALL, 5 );
+
+	m_checkBox_rvvm_generic_disk_ata = new wxCheckBox( m_panel_rvvm_generic_settings, wxID_ANY, _("ATA"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer10->Add( m_checkBox_rvvm_generic_disk_ata, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+
+	bSizer4->Add( bSizer10, 0, wxEXPAND, 5 );
+
+
+	bSizer7->Add( bSizer4, 1, wxEXPAND, 5 );
+
+
+	m_panel_rvvm_generic_settings->SetSizer( bSizer7 );
+	m_panel_rvvm_generic_settings->Layout();
+	bSizer7->Fit( m_panel_rvvm_generic_settings );
+	m_listbook_rvvm_generic->AddPage( m_panel_rvvm_generic_settings, _("基本设置"), false );
+	#ifdef __WXGTK__ // Small icon style not supported in GTK
+	wxListView* m_listbook_rvvm_genericListView = m_listbook_rvvm_generic->GetListView();
+	long m_listbook_rvvm_genericFlags = m_listbook_rvvm_genericListView->GetWindowStyleFlag();
+	if( m_listbook_rvvm_genericFlags & wxLC_SMALL_ICON )
+	{
+		m_listbook_rvvm_genericFlags = ( m_listbook_rvvm_genericFlags & ~wxLC_SMALL_ICON ) | wxLC_ICON;
+	}
+	m_listbook_rvvm_genericListView->SetWindowStyleFlag( m_listbook_rvvm_genericFlags );
+	#endif
+
+	bSizer2->Add( m_listbook_rvvm_generic, 1, wxEXPAND | wxALL, 5 );
+
+	wxBoxSizer* bSizer5;
+	bSizer5 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_button_rvvm_generic_start = new wxButton( this, wxID_ANY, _("启动"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer5->Add( m_button_rvvm_generic_start, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_button_rvvm_generic_stop = new wxButton( this, wxID_ANY, _(" 停止"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button_rvvm_generic_stop->Enable( false );
+
+	bSizer5->Add( m_button_rvvm_generic_stop, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_button_rvvm_generic_quit = new wxButton( this, wxID_ANY, _(" 退出虚拟机"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer5->Add( m_button_rvvm_generic_quit, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+
+	bSizer2->Add( bSizer5, 0, 0, 5 );
+
+
+	this->SetSizer( bSizer2 );
+	this->Layout();
+
+	// Connect Events
+	m_button_rvvm_generic_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Start ), NULL, this );
+	m_button_rvvm_generic_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Stop ), NULL, this );
+	m_button_rvvm_generic_quit->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Quit ), NULL, this );
+}
+
+rvvmgenericbase::~rvvmgenericbase()
+{
+	// Disconnect Events
+	m_button_rvvm_generic_start->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Start ), NULL, this );
+	m_button_rvvm_generic_stop->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Stop ), NULL, this );
+	m_button_rvvm_generic_quit->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Quit ), NULL, this );
 
 }

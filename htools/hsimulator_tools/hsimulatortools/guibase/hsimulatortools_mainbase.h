@@ -27,6 +27,15 @@
 #include <wx/timer.h>
 #include <wx/frame.h>
 #include <wx/aui/aui.h>
+#include <wx/stattext.h>
+#include <wx/choice.h>
+#include <wx/slider.h>
+#include <wx/filepicker.h>
+#include <wx/hyperlink.h>
+#include <wx/checkbox.h>
+#include <wx/listbook.h>
+#include <wx/listctrl.h>
+#include <wx/button.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -47,6 +56,8 @@ class mainframe : public wxFrame
 		wxStatusBar* m_statusBar;
 		wxMenuBar* m_menubar;
 		wxMenu* m_menu_file;
+		wxMenu* m_menu_virtualmachine;
+		wxMenu* m_menu_rvvm;
 		wxMenu* m_menu_help;
 		wxPanel* mainpanel;
 		wxAuiNotebook* mainauinotebook;
@@ -58,6 +69,7 @@ class mainframe : public wxFrame
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnQuit( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMenuSelectionRVVMGeneric( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMSTimer( wxTimerEvent& event ) { event.Skip(); }
 
@@ -68,6 +80,44 @@ class mainframe : public wxFrame
 		wxAuiManager m_mgr;
 
 		~mainframe();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class rvvmgenericbase
+///////////////////////////////////////////////////////////////////////////////
+class rvvmgenericbase : public wxPanel
+{
+	private:
+
+	protected:
+		wxListbook* m_listbook_rvvm_generic;
+		wxPanel* m_panel_rvvm_generic_settings;
+		wxStaticText* m_staticText1;
+		wxChoice* m_choice_rvvm_generic_smp;
+		wxStaticText* m_staticText2;
+		wxSlider* m_slider_rvvm_generic_mem;
+		wxStaticText* m_staticText4;
+		wxFilePickerCtrl* m_filePicker_rvvm_firmware_image;
+		wxHyperlinkCtrl* m_hyperlink1;
+		wxStaticText* m_staticText3;
+		wxFilePickerCtrl* m_filePicker_rvvm_generic_disk_image;
+		wxCheckBox* m_checkBox_rvvm_generic_disk_ata;
+		wxButton* m_button_rvvm_generic_start;
+		wxButton* m_button_rvvm_generic_stop;
+		wxButton* m_button_rvvm_generic_quit;
+
+		// Virtual event handlers, override them in your derived class
+		virtual void OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_RVVM_Generic_Stop( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClick_RVVM_Generic_Quit( wxCommandEvent& event ) { event.Skip(); }
+
+
+	public:
+
+		rvvmgenericbase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 750,500 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
+
+		~rvvmgenericbase();
 
 };
 
