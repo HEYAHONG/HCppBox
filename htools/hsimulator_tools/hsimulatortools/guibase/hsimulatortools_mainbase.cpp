@@ -159,8 +159,13 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 
 	bSizer9->Add( m_staticText2, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
-	m_slider_rvvm_generic_mem = new wxSlider( m_panel_rvvm_generic_settings, wxID_ANY, 1024, 256, 32768, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL|wxSL_VALUE_LABEL );
-	bSizer9->Add( m_slider_rvvm_generic_mem, 1, wxALL|wxEXPAND, 5 );
+	wxString m_choice_rvvm_generic_memChoices[] = { _("256"), _("512"), _("1024"), _("2048"), _("4096"), _("8192"), _("16384"), _("32768") };
+	int m_choice_rvvm_generic_memNChoices = sizeof( m_choice_rvvm_generic_memChoices ) / sizeof( wxString );
+	m_choice_rvvm_generic_mem = new wxChoice( m_panel_rvvm_generic_settings, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choice_rvvm_generic_memNChoices, m_choice_rvvm_generic_memChoices, 0 );
+	m_choice_rvvm_generic_mem->SetSelection( 3 );
+	m_choice_rvvm_generic_mem->SetMinSize( wxSize( 100,-1 ) );
+
+	bSizer9->Add( m_choice_rvvm_generic_mem, 0, wxALL, 5 );
 
 
 	bSizer4->Add( bSizer9, 0, wxEXPAND, 5 );

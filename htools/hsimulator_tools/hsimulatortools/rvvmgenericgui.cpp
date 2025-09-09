@@ -92,7 +92,8 @@ rvvm_machine_t *RVVMGenericGui::CreateMachine(const char *isa)
     {
         smp=1;
     }
-    long int mem_mb=m_slider_rvvm_generic_mem->GetValue();
+    unsigned long int mem_mb=256;
+    m_choice_rvvm_generic_mem->GetString(m_choice_rvvm_generic_mem->GetSelection()).ToULong(&mem_mb);
     if(mem_mb < 256)
     {
         mem_mb=256;

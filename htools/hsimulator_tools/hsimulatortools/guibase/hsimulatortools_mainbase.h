@@ -29,7 +29,6 @@
 #include <wx/aui/aui.h>
 #include <wx/stattext.h>
 #include <wx/choice.h>
-#include <wx/slider.h>
 #include <wx/filepicker.h>
 #include <wx/hyperlink.h>
 #include <wx/checkbox.h>
@@ -96,7 +95,7 @@ class rvvmgenericbase : public wxPanel
 		wxStaticText* m_staticText1;
 		wxChoice* m_choice_rvvm_generic_smp;
 		wxStaticText* m_staticText2;
-		wxSlider* m_slider_rvvm_generic_mem;
+		wxChoice* m_choice_rvvm_generic_mem;
 		wxStaticText* m_staticText4;
 		wxFilePickerCtrl* m_filePicker_rvvm_firmware_image;
 		wxHyperlinkCtrl* m_hyperlink1;
