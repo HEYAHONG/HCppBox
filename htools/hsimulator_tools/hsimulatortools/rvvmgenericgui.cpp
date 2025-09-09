@@ -108,6 +108,9 @@ rvvm_machine_t *RVVMGenericGui::CreateMachine(const char *isa)
         syscon_init_auto(machine);
 
         //标准输出作为串口终端输出
+        /*
+         * TODO:GUI程序会打开一个无用的console
+         */
         ns16550a_init_term_auto(machine);
 
         /*
@@ -129,7 +132,7 @@ rvvm_machine_t *RVVMGenericGui::CreateMachine(const char *isa)
         /*
          * 加载固件
          */
-        rvvm_load_bootrom(machine,firmware.c_str());
+        rvvm_load_firmware(machine,firmware.c_str());
 
         /*
          * 初始化GUI
