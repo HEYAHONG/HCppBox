@@ -264,9 +264,45 @@ void RVVMGenericGui::MachineSerialportLoop()
             {
             case 0:
             {
-                m_richText_rvvm_generic_serialport0->BeginTextColour(m_richText_rvvm_generic_serialport0->GetForegroundColour());
-                m_richText_rvvm_generic_serialport0->WriteText(data);
-                m_richText_rvvm_generic_serialport0->EndTextColour();
+                wxString remain_data=data;
+                while(!remain_data.IsEmpty())
+                {
+                    {
+                        int pos=wxNOT_FOUND;
+                        if((pos=remain_data.Find('\b'))!=wxNOT_FOUND)
+                        {
+                            //处理退格
+                            wxRichTextRange current_pos(m_richText_rvvm_generic_serialport0->GetLastPosition()-1,m_richText_rvvm_generic_serialport0->GetLastPosition());
+                            m_richText_rvvm_generic_serialport0->Delete(current_pos);
+                            if(pos==0)
+                            {
+                                remain_data=remain_data.substr(pos+1);
+                                data.Clear();
+                                continue;
+                            }
+                            else
+                            {
+                                data=remain_data.substr(0,pos);
+                                remain_data=remain_data.substr(pos+1);
+                            }
+                        }
+                        else
+                        {
+                            data=remain_data;
+                            remain_data.Clear();
+                        }
+                    }
+                    m_richText_rvvm_generic_serialport0->BeginTextColour(m_richText_rvvm_generic_serialport0->GetForegroundColour());
+                    m_richText_rvvm_generic_serialport0->WriteText(data);
+                    m_richText_rvvm_generic_serialport0->EndTextColour();
+                    {
+                        long pos=m_richText_rvvm_generic_serialport0->GetLastPosition();
+                        if(pos > 0 && !m_richText_rvvm_generic_serialport0->IsPositionVisible(pos))
+                        {
+                            m_richText_rvvm_generic_serialport0->ShowPosition(pos);
+                        }
+                    }
+                }
             }
             break;
             default:
