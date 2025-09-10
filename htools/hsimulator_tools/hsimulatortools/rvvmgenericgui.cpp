@@ -32,7 +32,8 @@ RVVMGenericGui::RVVMGenericGui(wxWindow* parent, wxWindowID id, const wxPoint& p
 
 RVVMGenericGui::~RVVMGenericGui()
 {
-
+    StopMachine(m_running_machine);
+    m_running_machine=NULL;
 }
 
 void RVVMGenericGui::OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event )
@@ -40,7 +41,7 @@ void RVVMGenericGui::OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event )
     std::lock_guard<std::recursive_mutex> lock(m_vm_gui_lock);
     m_button_rvvm_generic_start->Enable(false);
     m_button_rvvm_generic_stop->Enable(true);
-    InitMaichineSerialport();
+    InitMachineSerialport();
     m_running_machine=CreateMachine();
     if(m_running_machine!=NULL)
     {
@@ -59,11 +60,9 @@ void RVVMGenericGui::OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event )
 }
 void RVVMGenericGui::OnButtonClick_RVVM_Generic_Stop( wxCommandEvent& event )
 {
-    if(m_running_machine!=NULL)
-    {
-        rvvm_pause_machine(m_running_machine);
-    }
+    StopMachine(m_running_machine);
     std::lock_guard<std::recursive_mutex> lock(m_vm_gui_lock);
+    m_running_machine=NULL;
     m_button_rvvm_generic_start->Enable(true);
     m_button_rvvm_generic_stop->Enable(false);
 }
@@ -83,7 +82,7 @@ void RVVMGenericGui::OnButtonClick_RVVM_Generic_Quit( wxCommandEvent& event )
 
 void RVVMGenericGui::OnTimer_RVVM_MS_Timer( wxTimerEvent& event )
 {
-    MaichineSerialportLoop();
+    MachineSerialportLoop();
 }
 
 void RVVMGenericGui::LoadDefaultMachineSettings()
@@ -197,7 +196,19 @@ void RVVMGenericGui::RunMachine(rvvm_machine_t *machine)
 
 }
 
-void RVVMGenericGui::InitMaichineSerialport()
+void RVVMGenericGui::StopMachine(rvvm_machine_t *machine)
+{
+    if(machine==NULL)
+    {
+        return;
+    }
+    {
+        rvvm_pause_machine(machine);
+    }
+    std::lock_guard<std::recursive_mutex> lock(m_vm_gui_lock);
+}
+
+void RVVMGenericGui::InitMachineSerialport()
 {
     {
         wxFont font=m_richText_rvvm_generic_serialport0->GetFont();
@@ -233,7 +244,7 @@ void RVVMGenericGui::InitMaichineSerialport()
 
 }
 
-void RVVMGenericGui::MaichineSerialportLoop()
+void RVVMGenericGui::MachineSerialportLoop()
 {
     for(size_t i=0; i<sizeof(m_machine_serialport)/sizeof(m_machine_serialport[0]); i++)
     {

@@ -55,6 +55,7 @@ private:
     virtual void LoadDefaultMachineSettings();
     virtual rvvm_machine_t *CreateMachine(const char *isa=NULL);
     virtual void RunMachine(rvvm_machine_t *machine);
+    virtual void StopMachine(rvvm_machine_t *machine);
     rvvm_machine_t * m_running_machine;
     struct rvvm_serialport_t
     {
@@ -63,8 +64,8 @@ private:
         RVVMGenericGui *parent;
         wxMessageQueue<wxString> Output;
     } m_machine_serialport[1];
-    virtual void InitMaichineSerialport();
-    virtual void MaichineSerialportLoop();
+    virtual void InitMachineSerialport();
+    virtual void MachineSerialportLoop();
 
 };
 #endif // __cplusplus
