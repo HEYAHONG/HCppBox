@@ -32,6 +32,7 @@
 #include <wx/filepicker.h>
 #include <wx/hyperlink.h>
 #include <wx/checkbox.h>
+#include <wx/richtext/richtextctrl.h>
 #include <wx/listbook.h>
 #include <wx/listctrl.h>
 #include <wx/button.h>
@@ -102,14 +103,21 @@ class rvvmgenericbase : public wxPanel
 		wxStaticText* m_staticText3;
 		wxFilePickerCtrl* m_filePicker_rvvm_generic_disk_image;
 		wxCheckBox* m_checkBox_rvvm_generic_disk_ata;
+		wxPanel* m_panel_rvvm_generic_serialport;
+		wxAuiNotebook* m_auinotebook_rvvm_generic_serialport;
+		wxPanel* m_panel_rvvm_generic_serialport0;
+		wxRichTextCtrl* m_richText_rvvm_generic_serialport0;
 		wxButton* m_button_rvvm_generic_start;
 		wxButton* m_button_rvvm_generic_stop;
 		wxButton* m_button_rvvm_generic_quit;
+		wxTimer m_timer_rvvm_ms_timer;
 
 		// Virtual event handlers, override them in your derived class
+		virtual void OnKeyDown_RVVM_Generic_Serialport0( wxKeyEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_RVVM_Generic_Stop( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_RVVM_Generic_Quit( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTimer_RVVM_MS_Timer( wxTimerEvent& event ) { event.Skip(); }
 
 
 	public:

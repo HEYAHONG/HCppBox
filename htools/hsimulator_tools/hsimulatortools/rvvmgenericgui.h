@@ -10,11 +10,34 @@ extern "C"
 #endif // __cplusplus
 #include <rvvm/rvvm.h>
 
+typedef struct chardev  rvvm_device_chardev_t;
+#ifndef chardev_t
+struct chardev
+{
+    // IO Dev -> Chardev calls
+    uint32_t (*poll)(struct chardev* dev);
+    size_t (*read)(struct chardev* dev, void* buf, size_t nbytes);
+    size_t (*write)(struct chardev* dev, const void* buf, size_t nbytes);
+
+    // Chardev -> IO Device notifications (IRQ)
+    void   (*notify)(void* io_dev, uint32_t flags);
+
+    // Common RVVM API features
+    void   (*update)(struct chardev* dev);
+    void   (*remove)(struct chardev* dev);
+
+    void* data;
+    void* io_dev;
+};
+#endif
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
+
 #ifdef __cplusplus
+#include <wx/msgqueue.h>
 class RVVMGenericGui:public rvvmgenericbase
 {
     std::recursive_mutex m_vm_gui_lock;
@@ -26,12 +49,22 @@ protected:
     virtual void OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event );
     virtual void OnButtonClick_RVVM_Generic_Stop( wxCommandEvent& event );
     virtual void OnButtonClick_RVVM_Generic_Quit( wxCommandEvent& event );
+    virtual void OnTimer_RVVM_MS_Timer( wxTimerEvent& event );
 
 private:
     virtual void LoadDefaultMachineSettings();
     virtual rvvm_machine_t *CreateMachine(const char *isa=NULL);
     virtual void RunMachine(rvvm_machine_t *machine);
     rvvm_machine_t * m_running_machine;
+    struct rvvm_serialport_t
+    {
+        rvvm_device_chardev_t dev;
+        size_t index;
+        RVVMGenericGui *parent;
+        wxMessageQueue<wxString> Output;
+    } m_machine_serialport[1];
+    virtual void InitMaichineSerialport();
+    virtual void MaichineSerialportLoop();
 
 };
 #endif // __cplusplus

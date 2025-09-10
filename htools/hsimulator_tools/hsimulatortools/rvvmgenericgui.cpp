@@ -2,23 +2,25 @@
 #include "wx/log.h"
 #include "thread"
 #include <wx/stdpaths.h>
+#include <wx/fontutil.h>
 
 extern "C"
 {
-typedef struct gui_window_t gui_window_t;
-extern bool gui_window_init_auto(rvvm_machine_t* machine, uint32_t width, uint32_t height);
-extern i2c_bus_t* i2c_oc_init_auto(rvvm_machine_t* machine);
-extern rvvm_mmio_dev_t* ns16550a_init_term_auto(rvvm_machine_t* machine);
-extern bool ata_init_auto(rvvm_machine_t* machine, const char* image, bool rw);
-extern void riscv_clint_init_auto(rvvm_machine_t* machine);
-extern void riscv_imsic_init_auto(rvvm_machine_t* machine);
-extern rvvm_intc_t* riscv_aplic_init_auto(rvvm_machine_t* machine);
-extern rvvm_intc_t* riscv_plic_init_auto(rvvm_machine_t* machine);
-extern pci_bus_t* pci_bus_init_auto(rvvm_machine_t* machine);
-extern rvvm_mmio_dev_t* rtc_goldfish_init_auto(rvvm_machine_t* machine);
-extern rvvm_mmio_dev_t* syscon_init_auto(rvvm_machine_t* machine);
-typedef struct pci_dev pci_dev_t;
-extern pci_dev_t* nvme_init_auto(rvvm_machine_t* machine, const char* image_path, bool rw);
+    typedef struct gui_window_t gui_window_t;
+    extern bool gui_window_init_auto(rvvm_machine_t* machine, uint32_t width, uint32_t height);
+    extern i2c_bus_t* i2c_oc_init_auto(rvvm_machine_t* machine);
+    extern rvvm_mmio_dev_t* ns16550a_init_auto(rvvm_machine_t* machine, struct chardev* chardev);
+    extern rvvm_mmio_dev_t* ns16550a_init_term_auto(rvvm_machine_t* machine);
+    extern bool ata_init_auto(rvvm_machine_t* machine, const char* image, bool rw);
+    extern void riscv_clint_init_auto(rvvm_machine_t* machine);
+    extern void riscv_imsic_init_auto(rvvm_machine_t* machine);
+    extern rvvm_intc_t* riscv_aplic_init_auto(rvvm_machine_t* machine);
+    extern rvvm_intc_t* riscv_plic_init_auto(rvvm_machine_t* machine);
+    extern pci_bus_t* pci_bus_init_auto(rvvm_machine_t* machine);
+    extern rvvm_mmio_dev_t* rtc_goldfish_init_auto(rvvm_machine_t* machine);
+    extern rvvm_mmio_dev_t* syscon_init_auto(rvvm_machine_t* machine);
+    typedef struct pci_dev pci_dev_t;
+    extern pci_dev_t* nvme_init_auto(rvvm_machine_t* machine, const char* image_path, bool rw);
 }
 
 
@@ -38,6 +40,7 @@ void RVVMGenericGui::OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event )
     std::lock_guard<std::recursive_mutex> lock(m_vm_gui_lock);
     m_button_rvvm_generic_start->Enable(false);
     m_button_rvvm_generic_stop->Enable(true);
+    InitMaichineSerialport();
     m_running_machine=CreateMachine();
     if(m_running_machine!=NULL)
     {
@@ -76,6 +79,11 @@ void RVVMGenericGui::OnButtonClick_RVVM_Generic_Quit( wxCommandEvent& event )
             ((wxAuiNotebook*)GetParent())->DeletePage(index);
         }
     }
+}
+
+void RVVMGenericGui::OnTimer_RVVM_MS_Timer( wxTimerEvent& event )
+{
+    MaichineSerialportLoop();
 }
 
 void RVVMGenericGui::LoadDefaultMachineSettings()
@@ -128,11 +136,10 @@ rvvm_machine_t *RVVMGenericGui::CreateMachine(const char *isa)
         rtc_goldfish_init_auto(machine);
         syscon_init_auto(machine);
 
-        //标准输出作为串口终端输出
-        /*
-         * TODO:GUI程序会打开一个无用的console
-         */
-        ns16550a_init_term_auto(machine);
+        for(size_t i=0; i<sizeof(m_machine_serialport)/sizeof(m_machine_serialport[0]); i++)
+        {
+            ns16550a_init_auto(machine,&m_machine_serialport[i].dev);
+        }
 
         /*
          * 添加磁盘
@@ -156,9 +163,12 @@ rvvm_machine_t *RVVMGenericGui::CreateMachine(const char *isa)
         rvvm_load_firmware(machine,firmware.c_str());
 
         /*
-         * 初始化GUI
+         * 初始化GUI,默认在GTK下使用(Windows下会产生冲突)
          */
+#ifdef __WXGTK__
         gui_window_init_auto(machine, 640, 480);
+#endif
+
     }
     return machine;
 }
@@ -172,6 +182,7 @@ void RVVMGenericGui::RunMachine(rvvm_machine_t *machine)
     std::lock_guard<std::recursive_mutex> lock(m_vm_gui_lock);
     m_button_rvvm_generic_start->Enable(false);
     m_button_rvvm_generic_stop->Enable(true);
+    m_panel_rvvm_generic_settings->Enable(false);
 
     rvvm_start_machine(machine);
 
@@ -182,5 +193,71 @@ void RVVMGenericGui::RunMachine(rvvm_machine_t *machine)
 
     m_button_rvvm_generic_start->Enable(true);
     m_button_rvvm_generic_stop->Enable(false);
+    m_panel_rvvm_generic_settings->Enable(true);
 
+}
+
+void RVVMGenericGui::InitMaichineSerialport()
+{
+    {
+        wxFont font=m_richText_rvvm_generic_serialport0->GetFont();
+        m_richText_rvvm_generic_serialport0->SetFont(*wxTheFontList->FindOrCreateFont(font.GetNativeFontInfo()->GetPointSize(),wxFONTFAMILY_TELETYPE,font.GetStyle(),font.GetWeight()));
+    }
+    for(size_t i=0; i<sizeof(m_machine_serialport)/sizeof(m_machine_serialport[0]); i++)
+    {
+        memset(&m_machine_serialport[i].dev,0,sizeof(m_machine_serialport[i].dev));
+        m_machine_serialport[i].index=i;
+        m_machine_serialport[i].parent=this;
+        m_machine_serialport[i].dev.write=[](struct chardev* dev, const void* buf, size_t nbytes)->size_t
+        {
+            struct rvvm_serialport_t *serialport=(struct rvvm_serialport_t *)GET_STRUCT_PTR_BY_MEMBER_PTR(dev,struct rvvm_serialport_t,dev);
+            if(serialport!=NULL && serialport->parent!=NULL)
+            {
+                switch(serialport->index)
+                {
+                case 0:
+                {
+                    serialport->Output.Post(wxString::FromUTF8((const char *)buf,nbytes));
+                }
+                break;
+                default:
+                {
+
+                }
+                break;
+                }
+            }
+            return nbytes;
+        };
+    }
+
+}
+
+void RVVMGenericGui::MaichineSerialportLoop()
+{
+    for(size_t i=0; i<sizeof(m_machine_serialport)/sizeof(m_machine_serialport[0]); i++)
+    {
+        wxString data;
+        wxString msg;
+        while(wxMSGQUEUE_NO_ERROR==m_machine_serialport[i].Output.ReceiveTimeout(0,msg))
+        {
+            data+=msg;
+        }
+        if(!data.IsEmpty())
+        {
+            switch(i)
+            {
+            case 0:
+            {
+                m_richText_rvvm_generic_serialport0->AppendText(data);
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
+        }
+    }
 }

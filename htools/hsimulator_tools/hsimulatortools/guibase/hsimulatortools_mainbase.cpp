@@ -211,7 +211,32 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 	m_panel_rvvm_generic_settings->SetSizer( bSizer7 );
 	m_panel_rvvm_generic_settings->Layout();
 	bSizer7->Fit( m_panel_rvvm_generic_settings );
-	m_listbook_rvvm_generic->AddPage( m_panel_rvvm_generic_settings, _("基本设置"), false );
+	m_listbook_rvvm_generic->AddPage( m_panel_rvvm_generic_settings, _("基本"), true );
+	m_panel_rvvm_generic_serialport = new wxPanel( m_listbook_rvvm_generic, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer101;
+	bSizer101 = new wxBoxSizer( wxVERTICAL );
+
+	m_auinotebook_rvvm_generic_serialport = new wxAuiNotebook( m_panel_rvvm_generic_serialport, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_NB_BOTTOM|wxAUI_NB_TAB_MOVE );
+	m_panel_rvvm_generic_serialport0 = new wxPanel( m_auinotebook_rvvm_generic_serialport, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer111;
+	bSizer111 = new wxBoxSizer( wxVERTICAL );
+
+	m_richText_rvvm_generic_serialport0 = new wxRichTextCtrl( m_panel_rvvm_generic_serialport0, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
+	bSizer111->Add( m_richText_rvvm_generic_serialport0, 1, wxEXPAND | wxALL, 5 );
+
+
+	m_panel_rvvm_generic_serialport0->SetSizer( bSizer111 );
+	m_panel_rvvm_generic_serialport0->Layout();
+	bSizer111->Fit( m_panel_rvvm_generic_serialport0 );
+	m_auinotebook_rvvm_generic_serialport->AddPage( m_panel_rvvm_generic_serialport0, _("串口0"), false, wxNullBitmap );
+
+	bSizer101->Add( m_auinotebook_rvvm_generic_serialport, 1, wxEXPAND | wxALL, 5 );
+
+
+	m_panel_rvvm_generic_serialport->SetSizer( bSizer101 );
+	m_panel_rvvm_generic_serialport->Layout();
+	bSizer101->Fit( m_panel_rvvm_generic_serialport );
+	m_listbook_rvvm_generic->AddPage( m_panel_rvvm_generic_serialport, _("串口"), false );
 	#ifdef __WXGTK__ // Small icon style not supported in GTK
 	wxListView* m_listbook_rvvm_genericListView = m_listbook_rvvm_generic->GetListView();
 	long m_listbook_rvvm_genericFlags = m_listbook_rvvm_genericListView->GetWindowStyleFlag();
@@ -244,18 +269,25 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 
 	this->SetSizer( bSizer2 );
 	this->Layout();
+	m_timer_rvvm_ms_timer.SetOwner( this, m_timer_rvvm_ms_timer.GetId() );
+	m_timer_rvvm_ms_timer.Start( 10 );
+
 
 	// Connect Events
+	m_richText_rvvm_generic_serialport0->Connect( wxEVT_KEY_DOWN, wxKeyEventHandler( rvvmgenericbase::OnKeyDown_RVVM_Generic_Serialport0 ), NULL, this );
 	m_button_rvvm_generic_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Start ), NULL, this );
 	m_button_rvvm_generic_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Stop ), NULL, this );
 	m_button_rvvm_generic_quit->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Quit ), NULL, this );
+	this->Connect( m_timer_rvvm_ms_timer.GetId(), wxEVT_TIMER, wxTimerEventHandler( rvvmgenericbase::OnTimer_RVVM_MS_Timer ) );
 }
 
 rvvmgenericbase::~rvvmgenericbase()
 {
 	// Disconnect Events
+	m_richText_rvvm_generic_serialport0->Disconnect( wxEVT_KEY_DOWN, wxKeyEventHandler( rvvmgenericbase::OnKeyDown_RVVM_Generic_Serialport0 ), NULL, this );
 	m_button_rvvm_generic_start->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Start ), NULL, this );
 	m_button_rvvm_generic_stop->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Stop ), NULL, this );
 	m_button_rvvm_generic_quit->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Quit ), NULL, this );
+	this->Disconnect( m_timer_rvvm_ms_timer.GetId(), wxEVT_TIMER, wxTimerEventHandler( rvvmgenericbase::OnTimer_RVVM_MS_Timer ) );
 
 }
