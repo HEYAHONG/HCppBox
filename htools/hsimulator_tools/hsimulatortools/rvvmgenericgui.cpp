@@ -27,7 +27,15 @@ extern "C"
 
 RVVMGenericGui::RVVMGenericGui(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name):rvvmgenericbase(parent, id, pos,size,style, name),m_running_machine(NULL)
 {
-
+    {
+        /*
+         * 初始化串口0输出
+         */
+        wxFont font=m_richText_rvvm_generic_serialport0->GetFont();
+        m_richText_rvvm_generic_serialport0->SetFont(*wxTheFontList->FindOrCreateFont(font.GetNativeFontInfo()->GetPointSize(),wxFONTFAMILY_TELETYPE,font.GetStyle(),font.GetWeight()));
+        m_richText_rvvm_generic_serialport0->SetBackgroundColour(*wxBLACK);
+        m_richText_rvvm_generic_serialport0->SetForegroundColour(*wxWHITE);
+    }
 }
 
 RVVMGenericGui::~RVVMGenericGui()
@@ -210,10 +218,6 @@ void RVVMGenericGui::StopMachine(rvvm_machine_t *machine)
 
 void RVVMGenericGui::InitMachineSerialport()
 {
-    {
-        wxFont font=m_richText_rvvm_generic_serialport0->GetFont();
-        m_richText_rvvm_generic_serialport0->SetFont(*wxTheFontList->FindOrCreateFont(font.GetNativeFontInfo()->GetPointSize(),wxFONTFAMILY_TELETYPE,font.GetStyle(),font.GetWeight()));
-    }
     for(size_t i=0; i<sizeof(m_machine_serialport)/sizeof(m_machine_serialport[0]); i++)
     {
         memset(&m_machine_serialport[i].dev,0,sizeof(m_machine_serialport[i].dev));
@@ -260,7 +264,9 @@ void RVVMGenericGui::MachineSerialportLoop()
             {
             case 0:
             {
-                m_richText_rvvm_generic_serialport0->AppendText(data);
+                m_richText_rvvm_generic_serialport0->BeginTextColour(m_richText_rvvm_generic_serialport0->GetForegroundColour());
+                m_richText_rvvm_generic_serialport0->WriteText(data);
+                m_richText_rvvm_generic_serialport0->EndTextColour();
             }
             break;
             default:
