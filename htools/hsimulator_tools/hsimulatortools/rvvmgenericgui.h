@@ -46,6 +46,8 @@ public:
     virtual ~RVVMGenericGui();
 
 protected:
+    virtual void OnChar_RVVM_Generic_Serialport0( wxKeyEvent& event );
+    virtual void OnKeyDown_RVVM_Generic_Serialport0( wxKeyEvent& event );
     virtual void OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event );
     virtual void OnButtonClick_RVVM_Generic_Stop( wxCommandEvent& event );
     virtual void OnButtonClick_RVVM_Generic_Quit( wxCommandEvent& event );
@@ -63,6 +65,8 @@ private:
         size_t index;
         RVVMGenericGui *parent;
         wxMessageQueue<wxString> Output;
+        wxMessageQueue<uint8_t> Input;
+        std::atomic<size_t> InputDataCount;
     } m_machine_serialport[1];
     virtual void InitMachineSerialport();
     virtual void MachineSerialportLoop();

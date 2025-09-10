@@ -113,6 +113,7 @@ class rvvmgenericbase : public wxPanel
 		wxTimer m_timer_rvvm_ms_timer;
 
 		// Virtual event handlers, override them in your derived class
+		virtual void OnChar_RVVM_Generic_Serialport0( wxKeyEvent& event ) { event.Skip(); }
 		virtual void OnKeyDown_RVVM_Generic_Serialport0( wxKeyEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_RVVM_Generic_Stop( wxCommandEvent& event ) { event.Skip(); }

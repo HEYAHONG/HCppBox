@@ -44,6 +44,50 @@ RVVMGenericGui::~RVVMGenericGui()
     m_running_machine=NULL;
 }
 
+void RVVMGenericGui::OnChar_RVVM_Generic_Serialport0( wxKeyEvent& event )
+{
+    wxChar uc=event.GetUnicodeKey();
+    if(uc!=wxKEY_NONE)
+    {
+        m_machine_serialport[0].Input.Post((uint8_t)uc);
+        m_machine_serialport[0].InputDataCount++;
+    }
+}
+
+void RVVMGenericGui::OnKeyDown_RVVM_Generic_Serialport0( wxKeyEvent& event )
+{
+    {
+        switch ( event.GetKeyCode() )
+        {
+        case WXK_LEFT:
+        {
+
+        }
+        break;
+        case WXK_RIGHT:
+        {
+
+        }
+        break;
+        case WXK_UP:
+        {
+
+        }
+        break;
+        case WXK_DOWN:
+        {
+
+        }
+        break;
+        default:
+        {
+            event.Skip();
+        }
+        break;
+        }
+    }
+}
+
 void RVVMGenericGui::OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event )
 {
     std::lock_guard<std::recursive_mutex> lock(m_vm_gui_lock);
@@ -56,6 +100,7 @@ void RVVMGenericGui::OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event )
         std::thread machine_thread([&]()
         {
             RunMachine(m_running_machine);
+            m_running_machine=NULL;
         });
         machine_thread.detach();
     }
@@ -220,6 +265,11 @@ void RVVMGenericGui::InitMachineSerialport()
 {
     for(size_t i=0; i<sizeof(m_machine_serialport)/sizeof(m_machine_serialport[0]); i++)
     {
+        {
+            uint8_t msg=0;
+            while(m_machine_serialport[i].Input.ReceiveTimeout(0,msg)==wxMSGQUEUE_NO_ERROR);
+        }
+        m_machine_serialport[i].InputDataCount=0;
         memset(&m_machine_serialport[i].dev,0,sizeof(m_machine_serialport[i].dev));
         m_machine_serialport[i].index=i;
         m_machine_serialport[i].parent=this;
@@ -244,6 +294,37 @@ void RVVMGenericGui::InitMachineSerialport()
             }
             return nbytes;
         };
+        m_machine_serialport[i].dev.poll=[](struct chardev* dev)->uint32_t
+        {
+            const uint32_t serialport_rx=0x01;
+            const uint32_t serialport_tx=0x02;
+            struct rvvm_serialport_t *serialport=(struct rvvm_serialport_t *)GET_STRUCT_PTR_BY_MEMBER_PTR(dev,struct rvvm_serialport_t,dev);
+            if(serialport!=NULL && serialport->parent!=NULL)
+            {
+                return serialport_tx | (serialport->InputDataCount > 0 ? serialport_rx:0);
+            }
+            return serialport_tx;
+        };
+        m_machine_serialport[i].dev.read=[](struct chardev* dev, void* buf, size_t nbytes)->size_t
+        {
+            struct rvvm_serialport_t *serialport=(struct rvvm_serialport_t *)GET_STRUCT_PTR_BY_MEMBER_PTR(dev,struct rvvm_serialport_t,dev);
+            if(serialport==NULL && serialport->parent==NULL)
+            {
+                return 0;
+            }
+            size_t ret=0;
+            while((nbytes--) > 0)
+            {
+                uint8_t msg=0;
+                if(wxMSGQUEUE_NO_ERROR==serialport->Input.ReceiveTimeout(0,msg))
+                {
+                    ((uint8_t *)buf)[ret]=msg;
+                    ret++;
+                    serialport->InputDataCount--;
+                }
+            }
+            return ret;
+        };
     }
 
 }
@@ -265,9 +346,14 @@ void RVVMGenericGui::MachineSerialportLoop()
             case 0:
             {
                 wxString remain_data=data;
+                /*
+                 * 替换\r\n
+                 */
+                remain_data.Replace(_T("\r\n"),_T("\n"));
                 while(!remain_data.IsEmpty())
                 {
                     {
+                        data.Clear();
                         int pos=wxNOT_FOUND;
                         if((pos=remain_data.Find('\b'))!=wxNOT_FOUND)
                         {
@@ -286,7 +372,8 @@ void RVVMGenericGui::MachineSerialportLoop()
                                 remain_data=remain_data.substr(pos+1);
                             }
                         }
-                        else
+
+                        if(data.IsEmpty())
                         {
                             data=remain_data;
                             remain_data.Clear();

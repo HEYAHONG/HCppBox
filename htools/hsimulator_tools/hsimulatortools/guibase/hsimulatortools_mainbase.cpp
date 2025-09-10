@@ -274,6 +274,7 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 
 
 	// Connect Events
+	m_richText_rvvm_generic_serialport0->Connect( wxEVT_CHAR, wxKeyEventHandler( rvvmgenericbase::OnChar_RVVM_Generic_Serialport0 ), NULL, this );
 	m_richText_rvvm_generic_serialport0->Connect( wxEVT_KEY_DOWN, wxKeyEventHandler( rvvmgenericbase::OnKeyDown_RVVM_Generic_Serialport0 ), NULL, this );
 	m_button_rvvm_generic_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Start ), NULL, this );
 	m_button_rvvm_generic_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Stop ), NULL, this );
@@ -284,6 +285,7 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 rvvmgenericbase::~rvvmgenericbase()
 {
 	// Disconnect Events
+	m_richText_rvvm_generic_serialport0->Disconnect( wxEVT_CHAR, wxKeyEventHandler( rvvmgenericbase::OnChar_RVVM_Generic_Serialport0 ), NULL, this );
 	m_richText_rvvm_generic_serialport0->Disconnect( wxEVT_KEY_DOWN, wxKeyEventHandler( rvvmgenericbase::OnKeyDown_RVVM_Generic_Serialport0 ), NULL, this );
 	m_button_rvvm_generic_start->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Start ), NULL, this );
 	m_button_rvvm_generic_stop->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Stop ), NULL, this );
