@@ -103,6 +103,13 @@ void RVVMGenericGui::OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event )
             m_running_machine=NULL;
         });
         machine_thread.detach();
+        {
+            //自动切换至串口页面
+            {
+                m_listbook_rvvm_generic->SetSelection(1);
+                m_panel_rvvm_generic_serialport0->SetFocus();
+            }
+        }
     }
     else
     {
