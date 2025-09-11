@@ -214,6 +214,40 @@ rvvm_machine_t *RVVMGenericGui::CreateMachine(const char *isa)
          */
         rvvm_load_firmware(machine,firmware.c_str());
 
+
+        {
+            /*
+             * 加载(Linux)内核
+             */
+            std::string kernel_path=m_filePicker_rvvm_generic_kernel->GetPath().ToStdString();
+            if(kernel_path.length()>0)
+            {
+                rvvm_load_kernel(machine,kernel_path.c_str());
+                std::string kernel_cmdline=m_textCtrl_rvvm_generic_kernel_cmdline->GetValue().ToStdString();
+                if(kernel_cmdline.length()>0)
+                {
+                    rvvm_set_cmdline(machine,kernel_cmdline.c_str());
+                }
+                if(m_checkBox_rvvm_generic_kernel_cmdline_default->IsChecked())
+                {
+                    if(m_checkBox_rvvm_generic_disk_ata->IsChecked())
+                    {
+                        /*
+                         * 直接采用磁盘作为根文件系统(磁盘镜像不采用分区)
+                         */
+                        rvvm_append_cmdline(machine,"root=/dev/sda rw");
+                    }
+                    else
+                    {
+                        /*
+                         * 直接采用磁盘作为根文件系统（磁盘镜像不采用分区）
+                         */
+                        rvvm_append_cmdline(machine,"root=/dev/nvme0n1 rootflags=discard rw");
+                    }
+                }
+            }
+        }
+
         /*
          * 初始化GUI,默认在GTK下使用(Windows下会产生冲突)
          */

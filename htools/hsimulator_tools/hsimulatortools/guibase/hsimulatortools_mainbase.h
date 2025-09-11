@@ -100,6 +100,11 @@ class rvvmgenericbase : public wxPanel
 		wxStaticText* m_staticText4;
 		wxFilePickerCtrl* m_filePicker_rvvm_firmware_image;
 		wxHyperlinkCtrl* m_hyperlink1;
+		wxStaticText* m_staticText5;
+		wxFilePickerCtrl* m_filePicker_rvvm_generic_kernel;
+		wxStaticText* m_staticText6;
+		wxTextCtrl* m_textCtrl_rvvm_generic_kernel_cmdline;
+		wxCheckBox* m_checkBox_rvvm_generic_kernel_cmdline_default;
 		wxStaticText* m_staticText3;
 		wxFilePickerCtrl* m_filePicker_rvvm_generic_disk_image;
 		wxCheckBox* m_checkBox_rvvm_generic_disk_ata;

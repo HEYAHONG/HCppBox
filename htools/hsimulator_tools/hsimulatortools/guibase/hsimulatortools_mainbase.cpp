@@ -178,13 +178,47 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 	bSizer11->Add( m_staticText4, 0, wxALL, 5 );
 
 	m_filePicker_rvvm_firmware_image = new wxFilePickerCtrl( m_panel_rvvm_generic_settings, wxID_ANY, wxEmptyString, _("Select a file"), _("*.*"), wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE );
-	bSizer11->Add( m_filePicker_rvvm_firmware_image, 0, wxALL, 5 );
+	bSizer11->Add( m_filePicker_rvvm_firmware_image, 1, wxALL, 5 );
 
 	m_hyperlink1 = new wxHyperlinkCtrl( m_panel_rvvm_generic_settings, wxID_ANY, _("固件下载"), wxT("https://github.com/LekKit/RVVM"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
 	bSizer11->Add( m_hyperlink1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
 
 	bSizer4->Add( bSizer11, 0, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer12;
+	bSizer12 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText5 = new wxStaticText( m_panel_rvvm_generic_settings, wxID_ANY, _("内核:"), wxDefaultPosition, wxSize( -1,-1 ), 0 );
+	m_staticText5->Wrap( -1 );
+	m_staticText5->SetMinSize( wxSize( 100,-1 ) );
+
+	bSizer12->Add( m_staticText5, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_filePicker_rvvm_generic_kernel = new wxFilePickerCtrl( m_panel_rvvm_generic_settings, wxID_ANY, wxEmptyString, _("Select a file"), _("*.*"), wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE );
+	bSizer12->Add( m_filePicker_rvvm_generic_kernel, 1, wxALL, 5 );
+
+
+	bSizer4->Add( bSizer12, 0, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer13;
+	bSizer13 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText6 = new wxStaticText( m_panel_rvvm_generic_settings, wxID_ANY, _("内核命令行:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText6->Wrap( -1 );
+	m_staticText6->SetMinSize( wxSize( 100,-1 ) );
+
+	bSizer13->Add( m_staticText6, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_textCtrl_rvvm_generic_kernel_cmdline = new wxTextCtrl( m_panel_rvvm_generic_settings, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer13->Add( m_textCtrl_rvvm_generic_kernel_cmdline, 1, wxALL, 5 );
+
+	m_checkBox_rvvm_generic_kernel_cmdline_default = new wxCheckBox( m_panel_rvvm_generic_settings, wxID_ANY, _("追加默认值"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBox_rvvm_generic_kernel_cmdline_default->SetValue(true);
+	bSizer13->Add( m_checkBox_rvvm_generic_kernel_cmdline_default, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+
+	bSizer4->Add( bSizer13, 0, wxEXPAND, 5 );
 
 	wxBoxSizer* bSizer10;
 	bSizer10 = new wxBoxSizer( wxHORIZONTAL );
@@ -196,7 +230,7 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 	bSizer10->Add( m_staticText3, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
 	m_filePicker_rvvm_generic_disk_image = new wxFilePickerCtrl( m_panel_rvvm_generic_settings, wxID_ANY, wxEmptyString, _("Select a file"), _("*.*"), wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE );
-	bSizer10->Add( m_filePicker_rvvm_generic_disk_image, 0, wxALL, 5 );
+	bSizer10->Add( m_filePicker_rvvm_generic_disk_image, 1, wxALL, 5 );
 
 	m_checkBox_rvvm_generic_disk_ata = new wxCheckBox( m_panel_rvvm_generic_settings, wxID_ANY, _("ATA"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer10->Add( m_checkBox_rvvm_generic_disk_ata, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
