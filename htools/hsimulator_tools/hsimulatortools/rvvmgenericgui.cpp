@@ -290,8 +290,9 @@ void RVVMGenericGui::StopMachine(rvvm_machine_t *machine)
         return;
     }
     {
-        rvvm_pause_machine(machine);
+        rvvm_reset_machine(machine,false);
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     std::lock_guard<std::recursive_mutex> lock(m_vm_gui_lock);
 }
 
