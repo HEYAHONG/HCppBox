@@ -261,6 +261,8 @@ void RVVMGenericGui::StopMachine(rvvm_machine_t *machine)
     std::lock_guard<std::recursive_mutex> lock(m_vm_gui_lock);
 }
 
+static const uint32_t serialport_rx=0x01;
+static const uint32_t serialport_tx=0x02;
 void RVVMGenericGui::InitMachineSerialport()
 {
     for(size_t i=0; i<sizeof(m_machine_serialport)/sizeof(m_machine_serialport[0]); i++)
@@ -292,12 +294,11 @@ void RVVMGenericGui::InitMachineSerialport()
                 break;
                 }
             }
+            serialport->Flags=dev->poll(dev);
             return nbytes;
         };
         m_machine_serialport[i].dev.poll=[](struct chardev* dev)->uint32_t
         {
-            const uint32_t serialport_rx=0x01;
-            const uint32_t serialport_tx=0x02;
             struct rvvm_serialport_t *serialport=(struct rvvm_serialport_t *)GET_STRUCT_PTR_BY_MEMBER_PTR(dev,struct rvvm_serialport_t,dev);
             if(serialport!=NULL && serialport->parent!=NULL)
             {
@@ -323,8 +324,29 @@ void RVVMGenericGui::InitMachineSerialport()
                     serialport->InputDataCount--;
                 }
             }
+            serialport->Flags=dev->poll(dev);
             return ret;
         };
+        m_machine_serialport[i].dev.update=[](struct chardev* dev)
+        {
+            struct rvvm_serialport_t *serialport=(struct rvvm_serialport_t *)GET_STRUCT_PTR_BY_MEMBER_PTR(dev,struct rvvm_serialport_t,dev);
+            if(serialport==NULL && serialport->parent==NULL)
+            {
+                return;
+            }
+            if(dev->poll!=NULL && dev->notify!=NULL)
+            {
+                uint32_t flags=dev->poll(dev);
+                uint32_t orig_flags=serialport->Flags;
+                serialport->Flags=flags;
+                flags&=(~orig_flags);
+                if(flags)
+                {
+                    dev->notify(dev->io_dev,flags);
+                }
+            }
+        };
+        m_machine_serialport[i].Flags=m_machine_serialport[i].dev.poll(&m_machine_serialport[i].dev);
     }
 
 }
@@ -379,9 +401,12 @@ void RVVMGenericGui::MachineSerialportLoop()
                             remain_data.Clear();
                         }
                     }
+                    m_richText_rvvm_generic_serialport0->SetInsertionPointEnd();
+                    m_richText_rvvm_generic_serialport0->BeginSuppressUndo();
                     m_richText_rvvm_generic_serialport0->BeginTextColour(m_richText_rvvm_generic_serialport0->GetForegroundColour());
                     m_richText_rvvm_generic_serialport0->WriteText(data);
                     m_richText_rvvm_generic_serialport0->EndTextColour();
+                    m_richText_rvvm_generic_serialport0->EndSuppressUndo();
                     {
                         long pos=m_richText_rvvm_generic_serialport0->GetLastPosition();
                         if(pos > 0 && !m_richText_rvvm_generic_serialport0->IsPositionVisible(pos))

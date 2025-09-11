@@ -67,6 +67,7 @@ private:
         wxMessageQueue<wxString> Output;
         wxMessageQueue<uint8_t> Input;
         std::atomic<size_t> InputDataCount;
+        std::atomic<uint32_t> Flags;
     } m_machine_serialport[1];
     virtual void InitMachineSerialport();
     virtual void MachineSerialportLoop();
