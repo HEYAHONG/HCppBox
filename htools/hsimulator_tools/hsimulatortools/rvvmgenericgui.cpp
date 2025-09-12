@@ -44,6 +44,20 @@ RVVMGenericGui::~RVVMGenericGui()
     m_running_machine=NULL;
 }
 
+void RVVMGenericGui::OnChoice_RVVM_Generic_Isa( wxCommandEvent& event )
+{
+    if(m_choice_rvvm_generic_isa->GetString(m_choice_rvvm_generic_isa->GetSelection())==wxString(_T("rv32")))
+    {
+        //32位系统选择内存为512M
+        m_choice_rvvm_generic_mem->SetSelection(1);
+    }
+    else
+    {
+        //64位系统选择内存为2G
+        m_choice_rvvm_generic_mem->SetSelection(3);
+    }
+}
+
 void RVVMGenericGui::OnChar_RVVM_Generic_Serialport0( wxKeyEvent& event )
 {
     wxChar uc=event.GetUnicodeKey();
@@ -159,6 +173,15 @@ rvvm_machine_t *RVVMGenericGui::CreateMachine(const char *isa)
     {
         smp=1;
     }
+    std::string isa_string;
+    if(isa!=NULL)
+    {
+        isa_string=isa;
+    }
+    else
+    {
+        isa_string=m_choice_rvvm_generic_isa->GetString(m_choice_rvvm_generic_isa->GetSelection()).ToStdString();
+    }
     unsigned long int mem_mb=256;
     m_choice_rvvm_generic_mem->GetString(m_choice_rvvm_generic_mem->GetSelection()).ToULong(&mem_mb);
     if(mem_mb < 256)
@@ -171,7 +194,7 @@ rvvm_machine_t *RVVMGenericGui::CreateMachine(const char *isa)
         wxLogMessage(_T("RVVM虚拟机必须指定固件（BIOS）!"));
         return NULL;
     }
-    rvvm_machine_t *machine=rvvm_create_machine(mem_mb*1024*1024,smp,isa);
+    rvvm_machine_t *machine=rvvm_create_machine(mem_mb*1024*1024,smp,isa_string.c_str());
     if(machine!=NULL)
     {
         //初始化基本外设
@@ -259,7 +282,7 @@ rvvm_machine_t *RVVMGenericGui::CreateMachine(const char *isa)
          * 初始化GUI,默认在GTK下使用(Windows下会产生冲突)
          */
 #ifdef __WXGTK__
-        gui_window_init_auto(machine, 640, 480);
+        //gui_window_init_auto(machine, 640, 480);
 #endif
 
     }

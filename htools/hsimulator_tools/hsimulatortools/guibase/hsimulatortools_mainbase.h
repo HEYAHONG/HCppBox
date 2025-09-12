@@ -93,6 +93,8 @@ class rvvmgenericbase : public wxPanel
 	protected:
 		wxListbook* m_listbook_rvvm_generic;
 		wxPanel* m_panel_rvvm_generic_settings;
+		wxStaticText* m_staticText7;
+		wxChoice* m_choice_rvvm_generic_isa;
 		wxStaticText* m_staticText1;
 		wxChoice* m_choice_rvvm_generic_smp;
 		wxStaticText* m_staticText2;
@@ -118,6 +120,7 @@ class rvvmgenericbase : public wxPanel
 		wxTimer m_timer_rvvm_ms_timer;
 
 		// Virtual event handlers, override them in your derived class
+		virtual void OnChoice_RVVM_Generic_Isa( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnChar_RVVM_Generic_Serialport0( wxKeyEvent& event ) { event.Skip(); }
 		virtual void OnKeyDown_RVVM_Generic_Serialport0( wxKeyEvent& event ) { event.Skip(); }
 		virtual void OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event ) { event.Skip(); }

@@ -46,6 +46,7 @@ public:
     virtual ~RVVMGenericGui();
 
 protected:
+    virtual void OnChoice_RVVM_Generic_Isa( wxCommandEvent& event );
     virtual void OnChar_RVVM_Generic_Serialport0( wxKeyEvent& event );
     virtual void OnKeyDown_RVVM_Generic_Serialport0( wxKeyEvent& event );
     virtual void OnButtonClick_RVVM_Generic_Start( wxCommandEvent& event );

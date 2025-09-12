@@ -132,6 +132,24 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 
 	bSizer4->Add( 0, 50, 0, 0, 5 );
 
+	wxBoxSizer* bSizer14;
+	bSizer14 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText7 = new wxStaticText( m_panel_rvvm_generic_settings, wxID_ANY, _("指令集:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText7->Wrap( -1 );
+	m_staticText7->SetMinSize( wxSize( 100,-1 ) );
+
+	bSizer14->Add( m_staticText7, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	wxString m_choice_rvvm_generic_isaChoices[] = { _("rv32"), _("rv64") };
+	int m_choice_rvvm_generic_isaNChoices = sizeof( m_choice_rvvm_generic_isaChoices ) / sizeof( wxString );
+	m_choice_rvvm_generic_isa = new wxChoice( m_panel_rvvm_generic_settings, wxID_ANY, wxDefaultPosition, wxSize( 100,-1 ), m_choice_rvvm_generic_isaNChoices, m_choice_rvvm_generic_isaChoices, 0 );
+	m_choice_rvvm_generic_isa->SetSelection( 1 );
+	bSizer14->Add( m_choice_rvvm_generic_isa, 0, wxALL, 5 );
+
+
+	bSizer4->Add( bSizer14, 0, wxEXPAND, 5 );
+
 	wxBoxSizer* bSizer6;
 	bSizer6 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -308,6 +326,7 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 
 
 	// Connect Events
+	m_choice_rvvm_generic_isa->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( rvvmgenericbase::OnChoice_RVVM_Generic_Isa ), NULL, this );
 	m_richText_rvvm_generic_serialport0->Connect( wxEVT_CHAR, wxKeyEventHandler( rvvmgenericbase::OnChar_RVVM_Generic_Serialport0 ), NULL, this );
 	m_richText_rvvm_generic_serialport0->Connect( wxEVT_KEY_DOWN, wxKeyEventHandler( rvvmgenericbase::OnKeyDown_RVVM_Generic_Serialport0 ), NULL, this );
 	m_button_rvvm_generic_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Start ), NULL, this );
@@ -319,6 +338,7 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 rvvmgenericbase::~rvvmgenericbase()
 {
 	// Disconnect Events
+	m_choice_rvvm_generic_isa->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( rvvmgenericbase::OnChoice_RVVM_Generic_Isa ), NULL, this );
 	m_richText_rvvm_generic_serialport0->Disconnect( wxEVT_CHAR, wxKeyEventHandler( rvvmgenericbase::OnChar_RVVM_Generic_Serialport0 ), NULL, this );
 	m_richText_rvvm_generic_serialport0->Disconnect( wxEVT_KEY_DOWN, wxKeyEventHandler( rvvmgenericbase::OnKeyDown_RVVM_Generic_Serialport0 ), NULL, this );
 	m_button_rvvm_generic_start->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Start ), NULL, this );
