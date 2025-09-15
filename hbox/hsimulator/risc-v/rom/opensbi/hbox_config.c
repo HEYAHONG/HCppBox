@@ -45,7 +45,7 @@ int hbox_getchar(void)
     int ch=EOF;
     {
         ch=sbi_ecall_getc();
-        if((((ch != '\f') && (ch != '\r') && (ch != '\n') && (ch != '\t')) && ch < ' ') || ch > 127)
+        if((((ch != '\f') && (ch != '\r') && (ch != '\n') && (ch != '\b') && (ch != '\t')) && ch < ' ') || ch > 127)
         {
             /*
              * 空格字符当作失败
