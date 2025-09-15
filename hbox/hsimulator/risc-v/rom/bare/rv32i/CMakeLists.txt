@@ -80,8 +80,8 @@ ${CMAKE_CURRENT_SOURCE_DIR}/../
 
 #设定HRC文件系统目录为fs
 set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../fs/)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../hbox HBox EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../hrc HRC EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../hbox HBox EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../hrc HRC EXCLUDE_FROM_ALL)
 #启用HBox、HRC
 hbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})

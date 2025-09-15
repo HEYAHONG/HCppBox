@@ -1,0 +1,91 @@
+#include "opensbi_port.h"
+#include "hbox.h"
+#include <sbi/sbi_ecall_interface.h>
+
+
+typedef struct sbiret
+{
+    unsigned long error;
+    unsigned long value;
+} sbiret_t;
+
+struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,unsigned long arg1, unsigned long arg2,unsigned long arg3, unsigned long arg4,unsigned long arg5)
+{
+    struct sbiret ret= {0};;
+
+    register unsigned long a0 asm ("a0") = (unsigned long)(arg0);
+    register unsigned long a1 asm ("a1") = (unsigned long)(arg1);
+    register unsigned long a2 asm ("a2") = (unsigned long)(arg2);
+    register unsigned long a3 asm ("a3") = (unsigned long)(arg3);
+    register unsigned long a4 asm ("a4") = (unsigned long)(arg4);
+    register unsigned long a5 asm ("a5") = (unsigned long)(arg5);
+    register unsigned long a6 asm ("a6") = (unsigned long)(fid);
+    register unsigned long a7 asm ("a7") = (unsigned long)(ext);
+    asm volatile ("ecall"
+                  : "+r" (a0), "+r" (a1)
+                  : "r" (a2), "r" (a3), "r" (a4), "r" (a5), "r" (a6), "r" (a7)
+                  : "memory");
+    ret.error = a0;
+    ret.value = a1;
+
+    return ret;
+}
+
+void sbi_ecall_putc(char ch)
+{
+    sbi_ecall(SBI_EXT_0_1_CONSOLE_PUTCHAR, 0,(uint8_t)ch, 0, 0, 0, 0, 0);
+}
+
+
+int  sbi_ecall_getc(void)
+{
+    return sbi_ecall(SBI_EXT_0_1_CONSOLE_GETCHAR, 0,0, 0, 0, 0, 0, 0).error;
+}
+
+void sbi_ecall_console_puts(const char *str)
+{
+    sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,strlen(str), (unsigned long)str, 0, 0, 0, 0);
+}
+
+void sbi_ecall_shutdown(void)
+{
+    sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET,SBI_SRST_RESET_TYPE_SHUTDOWN, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
+}
+void sbi_ecall_reboot(void)
+{
+    sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET,SBI_SRST_RESET_TYPE_COLD_REBOOT, SBI_SRST_RESET_REASON_NONE, 0, 0, 0, 0);
+}
+
+
+/*
+ * opensbi的入口，放在首地址
+ */
+__SECTION(".vector")  __attribute__((naked)) void opensbi_entry(uintptr_t a0, uintptr_t a1) ;
+__NO_INIT sbi_entry_para_t sbi_entry_para_data;
+void _start();
+void opensbi_entry(uintptr_t a0, uintptr_t a1)
+{
+
+    /*
+     * 设置初始SP指针
+     */
+    asm volatile ("la sp,__stack");
+
+    /*
+     * 保存入口参数
+     */
+    sbi_entry_para_data.a0=a0;
+    sbi_entry_para_data.a1=a1;
+
+    /*
+     * 启动C语言入口
+     */
+    _start();
+
+    /*
+     * 固件退出（一般不会到这一步）
+     */
+    sbi_ecall_console_puts("firmware entry leave!\r\n");
+}
+
+
