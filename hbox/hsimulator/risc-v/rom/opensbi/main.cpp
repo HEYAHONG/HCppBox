@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "hbox.h"
 #include "opensbi_port.h"
+#include "ctype.h"
 
 
 int main()
@@ -65,7 +66,7 @@ static void print_fdt(const void *fdt,int offset,int depth)
                             {
                                 break;
                             }
-                            if((prop_value[i] < ' ') && (prop_value[i]!='\r' &&  prop_value[i]!='\n' && !(prop_value[i]=='\0' && (strcmp(prop_name,"compatible")==0))))
+                            if(((!isprint((char)prop_value[i])  && (strcmp(prop_name,"model")!=0)) && !(prop_value[i]=='\0' && (strcmp(prop_name,"compatible")==0))))
                             {
                                 is_printable_string=false;
                                 break;
