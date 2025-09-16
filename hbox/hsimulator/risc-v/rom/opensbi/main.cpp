@@ -33,12 +33,13 @@ static void print_fdt(const void *fdt,int offset,int depth)
     {
         return;
     }
-    int prev_offset=-1;
-    while(prev_offset >=0 || offset >= 0)
+    /*
+     * 遍历属性
+     */
     {
-        if(prev_offset >= 0)
+        if(offset >= 0)
         {
-            const char *name=fdt_get_name(fdt,prev_offset,NULL);
+            const char *name=fdt_get_name(fdt,offset,NULL);
             if(name!=NULL)
             {
                 if(name[0]=='\0')
@@ -50,7 +51,7 @@ static void print_fdt(const void *fdt,int offset,int depth)
             }
             {
                 int prop_offset=0;
-                fdt_for_each_property_offset(prop_offset,fdt,prev_offset)
+                fdt_for_each_property_offset(prop_offset,fdt,offset)
                 {
                     int prop_size=0;
                     const char *prop_name=NULL;
@@ -64,7 +65,7 @@ static void print_fdt(const void *fdt,int offset,int depth)
                             {
                                 break;
                             }
-                            if((prop_value[i] < ' ') && (prop_value[i]!='\r' &&  prop_value[i]!='\n' && prop_value[i]!='\0'))
+                            if((prop_value[i] < ' ') && (prop_value[i]!='\r' &&  prop_value[i]!='\n' && !(prop_value[i]=='\0' && (strcmp(prop_name,"compatible")==0))))
                             {
                                 is_printable_string=false;
                                 break;
@@ -130,13 +131,19 @@ static void print_fdt(const void *fdt,int offset,int depth)
                 }
             }
         }
-        int node_depth=0;
-        prev_offset=offset;
-        if(offset < 0)
+    }
+    /*
+     * 遍历子节点
+     */
+    {
+        if(offset >= 0)
         {
-            break;
+            int child=0;
+            fdt_for_each_subnode(child,fdt,offset)
+            {
+                print_fdt(fdt,child,depth+1);
+            }
         }
-        offset=fdt_next_node(fdt, offset, &node_depth);
     }
 }
 
