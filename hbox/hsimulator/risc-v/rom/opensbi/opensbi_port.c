@@ -13,14 +13,14 @@ struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,unsigned long arg1,
 {
     struct sbiret ret= {0};;
 
-    register unsigned long a0 asm ("a0") = (unsigned long)(arg0);
-    register unsigned long a1 asm ("a1") = (unsigned long)(arg1);
-    register unsigned long a2 asm ("a2") = (unsigned long)(arg2);
-    register unsigned long a3 asm ("a3") = (unsigned long)(arg3);
-    register unsigned long a4 asm ("a4") = (unsigned long)(arg4);
-    register unsigned long a5 asm ("a5") = (unsigned long)(arg5);
-    register unsigned long a6 asm ("a6") = (unsigned long)(fid);
-    register unsigned long a7 asm ("a7") = (unsigned long)(ext);
+    register size_t a0 asm ("a0") = (unsigned long)(arg0);
+    register size_t a1 asm ("a1") = (unsigned long)(arg1);
+    register size_t a2 asm ("a2") = (unsigned long)(arg2);
+    register size_t a3 asm ("a3") = (unsigned long)(arg3);
+    register size_t a4 asm ("a4") = (unsigned long)(arg4);
+    register size_t a5 asm ("a5") = (unsigned long)(arg5);
+    register size_t a6 asm ("a6") = (unsigned long)(fid);
+    register size_t a7 asm ("a7") = (unsigned long)(ext);
     asm volatile ("ecall"
                   : "+r" (a0), "+r" (a1)
                   : "r" (a2), "r" (a3), "r" (a4), "r" (a5), "r" (a6), "r" (a7)
@@ -60,7 +60,7 @@ void sbi_ecall_reboot(void)
 size_t sbi_rdtime(void)
 {
     size_t ret;
-    asm volatile ("rdtime %0":"+r"(ret)::);
+    asm volatile ("rdtime %0":"+r"(ret)::"memory");
     return ret;
 }
 
@@ -77,6 +77,11 @@ void opensbi_entry(uintptr_t a0, uintptr_t a1)
      * 设置初始SP指针
      */
     asm volatile ("la sp,__stack");
+
+    /*
+     *
+     */
+    sbi_ecall_console_puts("firmware entry enter!\r\n");
 
     /*
      * 保存入口参数
