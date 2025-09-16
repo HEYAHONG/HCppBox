@@ -59,9 +59,9 @@ void sbi_ecall_reboot(void)
 
 size_t sbi_rdtime(void)
 {
-    register size_t a5 asm("a5");
-    asm volatile ("rdtime a5");
-    return a5;
+    size_t ret;
+    asm volatile ("rdtime %0":"+r"(ret)::);
+    return ret;
 }
 
 /*

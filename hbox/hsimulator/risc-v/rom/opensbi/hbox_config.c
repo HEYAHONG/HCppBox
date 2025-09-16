@@ -10,7 +10,22 @@ hdefaults_tick_t hbox_tick_get(void)
     /*
      * TODO:确定系数,默认为aclint-mtimer @ 10000000Hz,
      */
+#if defined(HDEFAULTS_ARCH_RISCV64)
     return sbi_rdtime()/10000;
+#else
+    {
+        hdefaults_mutex_lock(NULL);
+        static uint64_t mtime_base=0;
+        uint64_t current_mtime=(mtime_base&(0xFFFFFFFF00000000))+sbi_rdtime();
+        if(current_mtime < mtime_base)
+        {
+            current_mtime+=(1ULL<<32);
+        }
+        mtime_base=current_mtime;
+        hdefaults_mutex_unlock(NULL);
+        return current_mtime/10000;
+    }
+#endif
 }
 
 void hbox_enter_critical()
