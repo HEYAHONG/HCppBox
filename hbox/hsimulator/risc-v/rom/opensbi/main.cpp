@@ -19,6 +19,127 @@ int main()
     }
 }
 
+static void print_blank(size_t n)
+{
+    while(n--)
+    {
+        hshell_printf(NULL,"    ");
+    }
+}
+
+static void print_fdt(const void *fdt,int offset,int depth)
+{
+    if(offset < 0 || depth < 0)
+    {
+        return;
+    }
+    int prev_offset=-1;
+    while(prev_offset >=0 || offset >= 0)
+    {
+        if(prev_offset >= 0)
+        {
+            const char *name=fdt_get_name(fdt,prev_offset,NULL);
+            if(name!=NULL)
+            {
+                if(name[0]=='\0')
+                {
+                    name="/";
+                }
+                print_blank(depth);
+                hshell_printf(NULL,"%s\r\n",name);
+            }
+            {
+                int prop_offset=0;
+                fdt_for_each_property_offset(prop_offset,fdt,prev_offset)
+                {
+                    int prop_size=0;
+                    const char *prop_name=NULL;
+                    const uint8_t *prop_value = (const uint8_t *)fdt_getprop_by_offset(fdt, prop_offset, &prop_name, &prop_size);
+                    if(name!=NULL)
+                    {
+                        bool is_printable_string=(prop_value!=NULL) && (prop_size > 0) && (prop_value[prop_size-1]=='\0');
+                        for(size_t i=0;i<prop_size;i++)
+                        {
+                            if((i+1)==prop_size)
+                            {
+                                break;
+                            }
+                            if((prop_value[i] < ' ') && (prop_value[i]!='\r' &&  prop_value[i]!='\n' && prop_value[i]!='\0'))
+                            {
+                                is_printable_string=false;
+                                break;
+                            }
+                        }
+                        if(is_printable_string)
+                        {
+                            print_blank(depth+1);
+                            const char *value=(const char *)prop_value;
+                            hshell_printf(NULL,"%-32s:",prop_name);
+                            size_t value_base=0;
+                            while(value_base+strlen(&value[value_base])+1 <= prop_size)
+                            {
+                                hshell_printf(NULL,"%s ",&value[value_base]);
+                                value_base+=(strlen(&value[value_base])+1);
+                            }
+                            hshell_printf(NULL,"\r\n");
+                        }
+                        else
+                        {
+                            print_blank(depth+1);
+                            switch(prop_size)
+                            {
+                            case 0:
+                            {
+                                hshell_printf(NULL,"%-32s\r\n",prop_name);
+                            }
+                            break;
+                            case 1:
+                            {
+                                uint8_t value=prop_value[0];
+                                hshell_printf(NULL,"%-32s:%02X\r\n",prop_name,(int)value);
+                            }
+                            break;
+                            case 2:
+                            {
+                                uint16_t value=fdt16_ld((const fdt16_t *)prop_value);
+                                hshell_printf(NULL,"%-32s:%04X\r\n",prop_name,(int)value);
+                            }
+                            break;
+                            case 4:
+                            {
+                                uint32_t value=fdt32_ld((const fdt32_t *)prop_value);
+                                hshell_printf(NULL,"%-32s:%08X\r\n",prop_name,(int)value);
+                            }
+                            break;
+                            case 8:
+                            {
+                                uint64_t value=fdt64_ld((const fdt64_t *)prop_value);
+                                hshell_printf(NULL,"%-32s:%08X%08X\r\n",prop_name,(int)((value>>32)&0xFFFFFFFF),(int)((value>>0)&0xFFFFFFFF));
+                            }
+                            break;
+                            default:
+                            {
+                                char value[512]= {0};
+                                hbase16_encode_with_null_terminator(value,sizeof(value),prop_value,prop_size);
+                                hshell_printf(NULL,"%-32s:%s\r\n",prop_name,value);
+                            }
+                            break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int node_depth=0;
+        prev_offset=offset;
+        if(offset < 0)
+        {
+            break;
+        }
+        offset=fdt_next_node(fdt, offset, &node_depth);
+    }
+}
+
 /*
  * 主初始化
  */
@@ -27,6 +148,16 @@ void  main_init(const hruntime_function_t *func)
     //注册命令
     HSHELL_COMMANDS_REGISTER(NULL);
     hshell_printf(NULL,"fdt addr=0x%p,len=%d bytes,header check %s!\r\n",sbi_entry_para_data.a1,fdt_totalsize((void *)sbi_entry_para_data.a1),fdt_check_header((void *)sbi_entry_para_data.a1)==0?"ok":"failed");
+    if(fdt_check_header((void *)sbi_entry_para_data.a1)==0)
+    {
+        const void *fdt=(void *)sbi_entry_para_data.a1;
+        size_t fdt_total_size=fdt_totalsize(fdt);
+        if(fdt_check_full(fdt,fdt_total_size)==0)
+        {
+            hshell_printf(NULL,"device tree:\r\n");
+            print_fdt(fdt,0,1);
+        }
+    }
     hshell_printf(NULL,"HBox Init(tick=%llu)!\r\n",(unsigned long long)hdefaults_tick_get());
 }
 HRUNTIME_INIT_EXPORT(main,255,main_init,NULL);
