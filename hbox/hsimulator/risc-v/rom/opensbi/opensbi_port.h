@@ -6,6 +6,8 @@ extern "C"
 {
 #endif
 
+#include H3RDPARTY_LIBFDT_HEADER
+
 typedef struct sbi_entry_para sbi_entry_para_t;
 struct sbi_entry_para
 {
@@ -21,6 +23,7 @@ void sbi_ecall_console_puts(const char *str);
 void sbi_ecall_shutdown(void);
 void sbi_ecall_reboot(void);
 
+size_t sbi_rdtime(void);
 
 #ifdef __cplusplus
 }

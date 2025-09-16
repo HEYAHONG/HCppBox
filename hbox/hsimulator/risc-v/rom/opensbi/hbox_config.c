@@ -7,7 +7,10 @@
 
 hdefaults_tick_t hbox_tick_get(void)
 {
-    return 0;
+    /*
+     * TODO:确定系数,默认为aclint-mtimer @ 10000000Hz,
+     */
+    return sbi_rdtime()/10000;
 }
 
 void hbox_enter_critical()

@@ -57,6 +57,13 @@ void sbi_ecall_reboot(void)
 }
 
 
+size_t sbi_rdtime(void)
+{
+    register size_t a5 asm("a5");
+    asm volatile ("rdtime a5");
+    return a5;
+}
+
 /*
  * opensbi的入口，放在首地址
  */
