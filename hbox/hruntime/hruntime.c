@@ -8,6 +8,7 @@
  **************************************************************/
 #include "hruntime.h"
 #include "hsoftwaretimer.h"
+#include "hdriverframework.h"
 #include "h3rdparty.h"
 #include "hevent.h"
 #include "stdbool.h"
@@ -21,6 +22,7 @@ enum
     HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN,
     HRUNTIME_INTERNAL_FLAG_LOOP_END,
     HRUNTIME_INTERNAL_FLAG_LOOP_DISABLE_SOFTWARETIMER,
+    HRUNTIME_INTERNAL_FLAG_LOOP_DISABLE_SOFTWATCHDOG,
     HRUNTIME_INTERNAL_FLAG_END
 };
 
@@ -162,6 +164,21 @@ void hruntime_loop()
         hsoftwaretimer_loop_hruntime();
     }
 
+    /*
+     * 软件看门狗
+     */
+    if(!hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_LOOP_DISABLE_SOFTWATCHDOG))
+    {
+        if(hwatchdog_is_valid())
+        {
+            HWATCHDOG_FEED();
+        }
+        else
+        {
+            hruntime_loop_enable_softwatchdog(false);
+        }
+    }
+
 #if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETTIMEOFDAY) && !defined(HGETTIMEOFDAY)
     /*
      * 调用一次hgettimeofday检查内部变量是否溢出
@@ -198,6 +215,18 @@ void hruntime_loop_enable_softwaretimer(bool enable)
     else
     {
         hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_DISABLE_SOFTWARETIMER);
+    }
+}
+
+void hruntime_loop_enable_softwatchdog(bool enable)
+{
+    if(enable)
+    {
+        hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_DISABLE_SOFTWATCHDOG);
+    }
+    else
+    {
+        hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_DISABLE_SOFTWATCHDOG);
     }
 }
 

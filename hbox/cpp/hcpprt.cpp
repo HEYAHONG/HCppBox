@@ -192,9 +192,6 @@ void hcpprt_loop(void)
     hcpprt_internal_flag_clear(HCPPRT_INTERNAL_FLAG_LOOP_END);
     hcpprt_internal_flag_set(HCPPRT_INTERNAL_FLAG_LOOP_BEGIN);
 
-    //hsoftdog组件
-    HSTACKLESSCOROUTINE_ENTRY(hsoftdog);
-
     //C语言组件循环
     hruntime_loop();
 

@@ -72,6 +72,14 @@ bool hruntime_loop_end(void);
  */
 void hruntime_loop_enable_softwaretimer(bool enable);
 
+
+/** \brief hruntime启用软件看门狗,注意：此函数应当在初始化时调用，运行过程中尽量不要使用。当看门狗无效时将自动关闭软件看门狗，此时若看门狗再次有效需要手动打开
+ *
+ * \param enable bool 是否启用
+ *
+ */
+void hruntime_loop_enable_softwatchdog(bool enable);
+
 /*
  * 运行时函数(用于初始化或者循环中使用)
  */
