@@ -13,10 +13,10 @@ char **environ = __env;
 
 #ifdef __PICOLIBC__
 
-__attribute__((weak)) FILE stdin_file={0};
+__attribute__((weak)) FILE stdin_file= {0};
 __attribute__((weak)) FILE * const stdin=&stdin_file;
 
-__attribute__((weak)) FILE stdout_file={0};
+__attribute__((weak)) FILE stdout_file= {0};
 __attribute__((weak)) FILE * const stdout=&stdout_file;
 
 #endif // __PICOLIBC__

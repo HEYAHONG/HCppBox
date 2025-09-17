@@ -60,7 +60,7 @@ static void print_fdt(const void *fdt,int offset,int depth)
                     if(name!=NULL)
                     {
                         bool is_printable_string=(prop_value!=NULL) && (prop_size > 0) && (prop_value[prop_size-1]=='\0');
-                        for(size_t i=0;i<prop_size;i++)
+                        for(size_t i=0; i<prop_size; i++)
                         {
                             if((i+1)==prop_size)
                             {
