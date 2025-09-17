@@ -101,5 +101,25 @@ static int hbox_shutdown_entry(int argc,const char *argv[])
 }
 HSHELL_COMMAND_EXPORT(poweroff,hbox_shutdown_entry,poweroff system);
 
+static int hbox_sleep_entry(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    if(argc<2)
+    {
+        hshell_printf(hshell_ctx,"sleep [n]\r\n");
+    }
+    else
+    {
+        int n=atoi(argv[1]);
+        if(n>0)
+        {
+            hdefaults_tick_t start=hdefaults_tick_get();
+            while(hdefaults_tick_get()-start < n*1000);
+        }
+    }
+    return 0;
+}
+HSHELL_COMMAND_EXPORT(sleep,hbox_sleep_entry,sleep);
+
 
 
