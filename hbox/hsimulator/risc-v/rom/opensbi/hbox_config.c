@@ -121,5 +121,26 @@ static int hbox_sleep_entry(int argc,const char *argv[])
 }
 HSHELL_COMMAND_EXPORT(sleep,hbox_sleep_entry,sleep);
 
+#include "malloc.h"
+static int cmd_free_entry(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    struct mallinfo info=mallinfo();
+    size_t system_total=0;
+    {
+        extern char __heap_start[];
+        extern char __heap_end[];
+        system_total=(uintptr_t)__heap_end-(uintptr_t)__heap_start;
+    }
+    size_t free_size=(system_total-info.arena)+info.fordblks;
+    size_t max_used_size=info.arena;
+    size_t used_size=info.uordblks;
+    size_t total_size=free_size+used_size;
+    hshell_printf(hshell_ctx,"total:%d bytes,max_used:%d bytes,used:%d bytes,free:%d bytes\r\n",total_size,max_used_size,used_size,free_size);
+    return 0;
+};
+HSHELL_COMMAND_EXPORT(free,cmd_free_entry,show memory info);
+
+
 
 

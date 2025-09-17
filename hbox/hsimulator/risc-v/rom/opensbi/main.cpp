@@ -166,6 +166,11 @@ void  main_init(const hruntime_function_t *func)
             print_fdt(fdt,0,1);
         }
     }
+    {
+        extern  uint8_t __heap_start[];
+        extern  uint8_t __heap_end[];
+        hshell_printf(NULL,"Heap:start=%p,end=%p\r\n",__heap_start,__heap_end);
+    }
     hshell_printf(NULL,"HBox Init(tick=%llu)!\r\n",(unsigned long long)hdefaults_tick_get());
 }
 HRUNTIME_INIT_EXPORT(main,255,main_init,NULL);
