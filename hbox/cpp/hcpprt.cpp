@@ -180,7 +180,6 @@ bool hcpprt_init_done()
     return hcpprt_internal_flag_is_set(HCPPRT_INTERNAL_FLAG_INIT_DONE);
 }
 
-HSTACKLESSCOROUTINE_DECLARE_COROUTINE(hsoftdog);
 void hcpprt_loop(void)
 {
     //若未初始化则执行初始化
