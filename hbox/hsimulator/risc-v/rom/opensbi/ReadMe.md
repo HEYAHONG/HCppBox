@@ -1,6 +1,6 @@
 # 说明
 
-本rom代码主要运行于[opensbi](https://github.com/riscv-software-src/opensbi)环境，可使用[rvvm](https://github.com/LekKit/RVVM.git)或者[qemu](https://www.qemu.org/)测试。
+本rom代码主要运行于[opensbi](https://github.com/riscv-software-src/opensbi)环境，可使用[rvvm](https://github.com/LekKit/RVVM.git)或者[qemu](https://www.qemu.org/)（机器选项指定virt）测试。
 
 本rom需要在加载[opensbi](https://github.com/riscv-software-src/opensbi)的同时直接加载至内存中。
 
