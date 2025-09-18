@@ -1,6 +1,21 @@
 #include "hbox.h"
 static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
 {
+//h3rdparty/h3rdparty_argtable3_arg_cmd.c
+//h3rdparty/h3rdparty_argtable3_arg_date.c
+//h3rdparty/h3rdparty_argtable3_arg_dbl.c
+//h3rdparty/h3rdparty_argtable3_arg_dstr.c
+//h3rdparty/h3rdparty_argtable3_arg_end.c
+//h3rdparty/h3rdparty_argtable3_arg_file.c
+//h3rdparty/h3rdparty_argtable3_arg_getopt_long.c
+//h3rdparty/h3rdparty_argtable3_arg_hashtable.c
+//h3rdparty/h3rdparty_argtable3_arg_int.c
+//h3rdparty/h3rdparty_argtable3_arg_lit.c
+//h3rdparty/h3rdparty_argtable3_arg_rem.c
+//h3rdparty/h3rdparty_argtable3_arg_rex.c
+//h3rdparty/h3rdparty_argtable3_arg_str.c
+//h3rdparty/h3rdparty_argtable3_argtable3.c
+//h3rdparty/h3rdparty_argtable3_arg_utils.c
 //h3rdparty/h3rdparty_cjson.c
     {hdefaults_str(cJSON_GetErrorPtr),(uintptr_t)&cJSON_GetErrorPtr},
     {hdefaults_str(cJSON_GetStringValue),(uintptr_t)&cJSON_GetStringValue},
@@ -95,9 +110,33 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
     {hdefaults_str(cJSONUtils_MergePatchCaseSensitive),(uintptr_t)&cJSONUtils_MergePatchCaseSensitive},
     {hdefaults_str(cJSONUtils_GenerateMergePatch),(uintptr_t)&cJSONUtils_GenerateMergePatch},
     {hdefaults_str(cJSONUtils_GenerateMergePatchCaseSensitive),(uintptr_t)&cJSONUtils_GenerateMergePatchCaseSensitive},
+//h3rdparty/h3rdparty_common.c
+    {hdefaults_str(h3rdparty_init),(uintptr_t)&h3rdparty_init},
 //h3rdparty/h3rdparty_freebsd_elf_header.c
+//h3rdparty/h3rdparty_libfdt_fdt_addresses.c
+//h3rdparty/h3rdparty_libfdt_fdt.c
+//h3rdparty/h3rdparty_libfdt_fdt_check.c
+//h3rdparty/h3rdparty_libfdt_fdt_empty_tree.c
+//h3rdparty/h3rdparty_libfdt_fdt_overlay.c
+//h3rdparty/h3rdparty_libfdt_fdt_ro.c
+//h3rdparty/h3rdparty_libfdt_fdt_rw.c
+//h3rdparty/h3rdparty_libfdt_fdt_strerror.c
+//h3rdparty/h3rdparty_libfdt_fdt_sw.c
+//h3rdparty/h3rdparty_libfdt_fdt_wip.c
+//h3rdparty/h3rdparty_libqrencode_bitstream.c
+//h3rdparty/h3rdparty_libqrencode_mask.c
+//h3rdparty/h3rdparty_libqrencode_mmask.c
+//h3rdparty/h3rdparty_libqrencode_mqrspec.c
+//h3rdparty/h3rdparty_libqrencode_qrencode.c
+//h3rdparty/h3rdparty_libqrencode_qrinput.c
+//h3rdparty/h3rdparty_libqrencode_qrspec.c
+//h3rdparty/h3rdparty_libqrencode_rsecc.c
+//h3rdparty/h3rdparty_libqrencode_split.c
 //h3rdparty/h3rdparty_lz4_lz4.c
+//h3rdparty/h3rdparty_lz4_lz4file.c
+//h3rdparty/h3rdparty_lz4_lz4frame.c
 //h3rdparty/h3rdparty_lz4_lz4hc.c
+//h3rdparty/h3rdparty_lz4_xxhash.c
 //h3rdparty/h3rdparty_mqtt_packet.c
 //h3rdparty/h3rdparty_pb_common.c
     {hdefaults_str(pb_default_field_callback),(uintptr_t)&pb_default_field_callback},
@@ -142,6 +181,7 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
     {hdefaults_str(hvfctprintf),(uintptr_t)&hvfctprintf},
 //h3rdparty/h3rdparty_softfloat.c
 //h3rdparty/h3rdparty_softfp.c
+//h3rdparty/h3rdparty_tlsf_tlsf.c
 //h3rdparty/h3rdparty_zlib_adler32.c
 //h3rdparty/h3rdparty_zlib_compress.c
 //h3rdparty/h3rdparty_zlib_crc32.c

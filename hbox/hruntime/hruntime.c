@@ -156,6 +156,7 @@ void hruntime_loop()
         }
     }
 
+#ifndef HRUNTIME_NO_SOFTWARETIMER
     /*
      * 定时器循环
      */
@@ -163,7 +164,9 @@ void hruntime_loop()
     {
         hsoftwaretimer_loop_hruntime();
     }
+#endif // HRUNTIME_NO_SOFTWARETIMER
 
+#ifndef HRUNTIME_NO_SOFTWATCHDOG
     /*
      * 软件看门狗
      */
@@ -178,6 +181,7 @@ void hruntime_loop()
             hruntime_loop_enable_softwatchdog(false);
         }
     }
+#endif // HRUNTIME_NO_SOFTWATCHDOG
 
 #if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETTIMEOFDAY) && !defined(HGETTIMEOFDAY)
     /*
