@@ -78,8 +78,10 @@ void opensbi_entry(uintptr_t a0, uintptr_t a1)
          * 此入口同时也是S-mode下的陷入(trap)地址（opensbi默认会设置为直接模式）
          */
         size_t scause=0;
+        size_t stval=0;
         asm volatile ("csrr %0,scause":"+r"(scause)::"memory");
-        if(scause!=0)
+        asm volatile ("csrr %0,stval":"+r"(stval)::"memory");
+        if(scause!=0 || (scause==0 && stval!=0))
         {
             if(scause > (1ULL << (8*sizeof(size_t)-1)))
             {
