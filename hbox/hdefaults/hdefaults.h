@@ -382,6 +382,15 @@ void  hdefaults_mutex_lock(void *usr);
  */
 void  hdefaults_mutex_unlock(void *usr);
 
+
+/** \brief 通过符号名称获取符号地址
+ *
+ * \param symbol_name const char* 符号名称
+ * \return void * 符号地址，为NULL表示失败
+ *
+ */
+void * hdefaults_symbol_find(const char * symbol_name);
+
 enum
 {
     HDEFAULTS_USERCALL_NUMBER_RESERVED_SYSCALL_BEGIN=0,                                 /**< 为syscall保留的调用号，一般调用号均从此值开始 */
@@ -392,6 +401,7 @@ enum
     HDEFAULTS_USERCALL_NUMBER_FREE,                                                     /**< 同hdefaults_free,注意：返回值类型为int*/
     HDEFAULTS_USERCALL_NUMBER_GLOCK,                                                    /**< 同 hdefaults_mutex_lock,注意：返回值类型为int */
     HDEFAULTS_USERCALL_NUMBER_GUNLOCK,                                                  /**< 同 hdefaults_mutex_unlock,注意：返回值类型为int */
+    HDEFAULTS_USERCALL_NUMBER_SYMBOL_FIND,                                              /**< 同 hdefaults_symbol_find */
     HDEFAULTS_USERCALL_NUMBER_END=4096,                                                 /**< 调用号均不超过此值 */
 };
 
@@ -590,6 +600,7 @@ typedef struct hdefaults_api_table
     void                (*mutex_lock)(void *);
     void                (*mutex_unlock)(void *);
     intptr_t            (*usercall)(uintptr_t,...);
+    void *              (*symbol_find)(const char * );
 } hdefaults_api_table_t;
 
 /** \brief 获取API表

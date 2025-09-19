@@ -58,7 +58,7 @@ static hdefaults_tick_t do_hdefaults_tick_get(void)
 #elif defined(HDEFAULTS_OS_UNIX)
 #if defined(CLOCK_MONOTONIC)
     {
-        struct timespec ts={0};
+        struct timespec ts= {0};
         clock_gettime(CLOCK_MONOTONIC,&ts);
         return ts.tv_sec*1000ULL+ts.tv_nsec/1000000ULL;
     }
@@ -164,12 +164,18 @@ static void  do_hdefaults_mutex_unlock(void *usr)
 #endif
 }
 
+extern void *hdlsym(void *handle, const char *name);
+void * do_hdefaults_symbol_find(const char * symbol_name)
+{
+    return hdlsym(NULL,symbol_name);
+}
 
 HDEFAULTS_USERCALL_DECLARE(tick);
 HDEFAULTS_USERCALL_DECLARE(malloc);
 HDEFAULTS_USERCALL_DECLARE(free);
 HDEFAULTS_USERCALL_DECLARE(glock);
 HDEFAULTS_USERCALL_DECLARE(gunlock);
+HDEFAULTS_USERCALL_DECLARE(symbol_find);
 intptr_t do_hdefaults_usercall(uintptr_t number,...)
 {
     intptr_t ret=0;
@@ -212,6 +218,11 @@ intptr_t do_hdefaults_usercall(uintptr_t number,...)
         case HDEFAULTS_USERCALL_NUMBER_GUNLOCK:
         {
             ret=__hdefaults_usercall_gunlock(number,va);
+        }
+        break;
+        case HDEFAULTS_USERCALL_NUMBER_SYMBOL_FIND:
+        {
+            ret=__hdefaults_usercall_symbol_find(number,va);
         }
         break;
         default:
@@ -258,6 +269,11 @@ HDEFAULTS_USERCALL_DEFINE1(gunlock,HDEFAULTS_USERCALL_NUMBER_GUNLOCK,int,void *,
     return 0;
 }
 
+HDEFAULTS_USERCALL_DEFINE1(symbol_find,HDEFAULTS_USERCALL_NUMBER_SYMBOL_FIND,void *,const char *,symbol_name)
+{
+    return hdefaults_symbol_find(symbol_name);
+}
+
 static const hdefaults_api_table_t default_api_table=
 {
     do_hdefaults_tick_get,
@@ -266,6 +282,7 @@ static const hdefaults_api_table_t default_api_table=
     do_hdefaults_mutex_lock,
     do_hdefaults_mutex_unlock,
     do_hdefaults_usercall,
+    do_hdefaults_symbol_find
 };
 static const hdefaults_api_table_t * api_table=&default_api_table;
 const hdefaults_api_table_t * hdefaults_get_api_table(void)
@@ -342,6 +359,19 @@ void  hdefaults_mutex_unlock(void *usr)
     else
     {
         do_hdefaults_mutex_unlock(usr);
+    }
+}
+
+void * hdefaults_symbol_find(const char * symbol_name)
+{
+    const hdefaults_api_table_t *api_table=hdefaults_get_api_table();
+    if(api_table!=NULL && api_table->symbol_find!=NULL)
+    {
+        return api_table->symbol_find(symbol_name);
+    }
+    else
+    {
+        return do_hdefaults_symbol_find(symbol_name);
     }
 }
 

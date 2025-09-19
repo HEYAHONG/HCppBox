@@ -25,6 +25,7 @@
 |         `void hdefaults_free(void *ptr,void *usr);`          |  默认内存释放  |                                                              |
 |           `void  hdefaults_mutex_lock(void *usr);`           | 默认互斥锁加锁 | 通常在实现时使用临界区实现,如需使用互斥锁，必须使用支持递归的互斥锁 |
 |          `void  hdefaults_mutex_unlock(void *usr);`          | 默认互斥锁解锁 | 通常在实现时使用临界区实现，如需使用互斥锁，必须使用支持递归的互斥锁 |
+|  `void * hdefaults_symbol_find(const char * symbol_name);`   |  默认符号查找  |            可用于查找自身符号，默认采用libdl库。             |
 | `const hdefaults_api_table_t * hdefaults_get_api_table(void);` |   获取API表    |                                                              |
 | `const hdefaults_api_table_t * hdefaults_set_api_table(const hdefaults_api_table_t* new_api_table);` |   修改API表    |               一般情况下，只在程序初始化时调用               |
 |          `hdefaults_usercall(usercall_number,...)`           |    用户调用    |           一般不直接使用，用于封装`usercall`调用。           |
