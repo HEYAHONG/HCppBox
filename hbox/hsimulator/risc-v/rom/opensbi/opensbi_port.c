@@ -88,6 +88,12 @@ void opensbi_entry(uintptr_t a0, uintptr_t a1)
             else
             {
                 //异常
+                char code[256]={0};
+                itoa(scause,code,10);
+                sbi_ecall_console_puts("exception=");
+                sbi_ecall_console_puts(code);
+                sbi_ecall_console_puts("\r\n");
+                while(true);
             }
             /*
              * 采用sret返回
