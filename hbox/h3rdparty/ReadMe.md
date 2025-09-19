@@ -147,3 +147,25 @@ TLSF内存分配算法实现。
 
 注意:此库需要根据使用情况添加C语言文件(h3rdparty_libfdt_*.c),某些C文件可能在某些场景下不能正常编译。
 
+# FreeRTOS
+
+FreeRTOS操作系统
+
+若要使用相应API，请使用以下代码：
+
+```c
+#include FREERTOS_KERNEL_FREERTOS_HEADER
+#include FREERTOS_KERNEL_TASK_HEADER
+#include FREERTOS_KERNEL_TIMERS_HEADER
+#include FREERTOS_KERNEL_QUEUE_HEADER
+#include FREERTOS_KERNEL_SEMPHR_HEADER
+#include FREERTOS_KERNEL_CROUTINE_HEADER
+#include FREERTOS_KERNEL_LIST_HEADER
+#include FREERTOS_KERNEL_EVENT_GROUPS_HEADER
+```
+
+ 提供的配置宏定义如下：
+
+|             宏定义             |                             说明                             |       备注       |
+| :----------------------------: | :----------------------------------------------------------: | :--------------: |
+| `FREERTOS_KERNEL_MEMMANG_HEAP` | 配置FreeRTOS内核所使用的heap，可选1、2、3、4、5，分别使用heap_1.c、heap_2.c、heap_3.c、heap_4.c、heap_5.c、 | 默认使用heap_3.c |

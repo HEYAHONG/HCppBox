@@ -23,6 +23,8 @@ CheckTool mkdir
 [ $? -eq 0 ] || exit;
 CheckTool rsync
 [ $? -eq 0 ] || exit;
+CheckTool grep
+[ $? -eq 0 ] || exit;
 
 
 #获取当前目录
@@ -64,9 +66,10 @@ fi
 if [ -f "${script_dir}/freertos_kernel/LICENSE.md" ]
 then
 	rsync -rl --progress  "${script_dir}/freertos_kernel/LICENSE.md" "${script_dir}/"
+	rsync -rl --progress  --include="*.h" --include="*.c" --exclude="*" "${script_dir}/freertos_kernel/portable/MemMang/" "${script_dir}/"
 	rsync -rl --progress  --include="*.h" --include="*.c" --exclude="*" "${script_dir}/freertos_kernel/" "${script_dir}/"
 	rsync -rl --progress  --include="*.h" --include="*.c" --exclude="*" "${script_dir}/freertos_kernel/include/" "${script_dir}/"
-	for c_file in `ls *.c`
+	for c_file in `ls *.c | grep -v heap`
 	do
 		cp "freertos_kernel_template_c" "../../../h3rdparty_freertos_kernel_${c_file}"
 		sed -i "s/freertos_kernel_filename/${c_file}/g"  "../../../h3rdparty_freertos_kernel_${c_file}"
