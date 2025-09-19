@@ -32,7 +32,7 @@ hrc_enable(FreeRTOSKernelSim)
 file(GLOB  FREERTOS_KERNEL_SIM_CPP_C_FILES *.cpp *.CPP *.c *.C *.h ../../hbox/h3rdparty/h3rdparty_freertos_kernel*.c)
 target_sources(FreeRTOSKernelSim PUBLIC ${FREERTOS_KERNEL_SIM_CPP_C_FILES})
 
-if(WIN32)
+if(WIN32 OR CYGWIN)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/win32)
 file(GLOB  FREERTOS_PORT_SOURCE win32/*.c win32/*.s)
 target_sources(FreeRTOSKernelSim PUBLIC ${FREERTOS_PORT_SOURCE})

@@ -30,8 +30,9 @@
 #include <stdio.h>
 
 /* Scheduler includes. */
-#include "hbox.h"
+#define FREERTOS_KERNEL_FREERTOS_HEADER "h3rdparty/3rdparty/FreeRTOS/Kernel/FreeRTOS.h"
 #include FREERTOS_KERNEL_FREERTOS_HEADER
+#define  FREERTOS_KERNEL_TASK_HEADER "h3rdparty/3rdparty/FreeRTOS/Kernel/task.h"
 #include FREERTOS_KERNEL_TASK_HEADER
 
 #ifdef WIN32_LEAN_AND_MEAN
