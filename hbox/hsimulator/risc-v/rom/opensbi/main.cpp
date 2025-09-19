@@ -155,6 +155,12 @@ void  main_init(const hruntime_function_t *func)
 {
     //注册命令
     HSHELL_COMMANDS_REGISTER(NULL);
+    {
+        //打印陷入地址(中断与异常处理的地址)
+        uintptr_t stvec=0;
+        asm volatile ("csrr %0,stvec":"+r"(stvec)::"memory");
+        hshell_printf(NULL,"stvec=%p\r\n",stvec);
+    }
     hshell_printf(NULL,"fdt addr=0x%p,len=%d bytes,header check %s!\r\n",sbi_entry_para_data.a1,fdt_totalsize((void *)sbi_entry_para_data.a1),fdt_check_header((void *)sbi_entry_para_data.a1)==0?"ok":"failed");
     if(fdt_check_header((void *)sbi_entry_para_data.a1)==0)
     {
