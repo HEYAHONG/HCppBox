@@ -84,11 +84,16 @@ extern void* hmemoryheap_malloc(size_t nBytes);
 #ifdef HDEFAULTS_MALLOC
 extern void * HDEFAULTS_MALLOC(size_t bytes);
 #endif // HDEFAULTS_MALLOC
+#if defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL)
+extern void * pvPortMalloc( size_t xWantedSize );
+#endif
 static void * do_hdefaults_malloc(size_t nBytes,void *usr)
 {
     UNUSED(usr);
 #ifdef HDEFAULTS_MALLOC
     return HDEFAULTS_MALLOC(nBytes);
+#elif defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL)
+    return pvPortMalloc(nBytes);
 #elif defined(__RTTHREAD__)
     return rt_malloc(nBytes);
 #elif defined(USING_HMEMORYHEAP)
@@ -104,11 +109,16 @@ extern void hmemoryheap_free(void*);
 #ifdef HDEFAULTS_FREE
 extern void  HDEFAULTS_FREE(void *ptr);
 #endif // HDEFAULTS_FREE
+#if defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL)
+extern void vPortFree( void * pv );
+#endif
 static void do_hdefaults_free(void *ptr,void *usr)
 {
     UNUSED(usr);
 #ifdef HDEFAULTS_FREE
     HDEFAULTS_FREE(ptr);
+#elif defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL)
+    vPortFree(ptr);
 #elif defined(__RTTHREAD__)
     rt_free(ptr);
 #elif defined(USING_HMEMORYHEAP)
