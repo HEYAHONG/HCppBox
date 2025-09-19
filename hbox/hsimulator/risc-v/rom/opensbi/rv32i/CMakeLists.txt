@@ -7,7 +7,7 @@ file(GLOB C_CXX_FILES ../*.h ../*.c ../*.cpp ../*.s *.h *.c *.cpp)
 
 if(${PICOLIBC})
 set(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} \
-	-march=rv32i\
+	-march=rv32i_zicsr\
     -mabi=ilp32\
     -mcmodel=medany \
     -std=gnu11\
@@ -17,7 +17,7 @@ set(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} \
     --specs=picolibcpp.specs\
 ")
 set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
-    -march=rv32i\
+    -march=rv32i_zicsr\
     -mabi=ilp32\
     -mcmodel=medany \
     -std=gnu++11\
@@ -27,7 +27,7 @@ set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
     --specs=picolibcpp.specs\
 ")
 set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS}\
-    -march=rv32i\
+    -march=rv32i_zicsr\
     -mabi=ilp32\
     -mcmodel=medany \
     -nostdlib++\
@@ -40,7 +40,7 @@ endif()
 
 if(${NEWLIB})
 set(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} \
-    -march=rv32i\
+    -march=rv32i_zicsr\
     -mabi=ilp32\
     -mcmodel=medany \
 	-std=gnu11\
@@ -50,7 +50,7 @@ set(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} \
     --specs=nano.specs\
 ")
 set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
-    -march=rv32i\
+    -march=rv32i_zicsr\
     -mabi=ilp32\
     -mcmodel=medany \
     -std=gnu++11\
@@ -60,7 +60,7 @@ set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
     --specs=nano.specs\
 ")
 set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS}\
-    -march=rv32i\
+    -march=rv32i_zicsr\
     -mabi=ilp32\
     -mcmodel=medany \
     -nostdlib++\
@@ -74,7 +74,7 @@ endif()
 set(CMAKE_ASM_FLAGS ${CMAKE_C_FLAGS})
 
 add_custom_target(link_script
-COMMAND ${CMAKE_CXX_COMPILER} -E -march=rv32i -mabi=ilp32  -o ${CMAKE_BINARY_DIR}/rom.ld ${CMAKE_CURRENT_SOURCE_DIR}/../rom.ldS.h
+COMMAND ${CMAKE_CXX_COMPILER} -E -march=rv32i_zicsr -mabi=ilp32  -o ${CMAKE_BINARY_DIR}/rom.ld ${CMAKE_CURRENT_SOURCE_DIR}/../rom.ldS.h
 )
 
 add_definitions(

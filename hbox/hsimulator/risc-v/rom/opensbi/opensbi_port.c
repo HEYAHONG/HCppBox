@@ -67,11 +67,35 @@ size_t sbi_rdtime(void)
 /*
  * opensbi的入口，放在首地址
  */
-__SECTION(".vector")  __attribute__((naked)) void opensbi_entry(uintptr_t a0, uintptr_t a1) ;
+__SECTION(".vector")  __attribute__((naked))  void opensbi_entry(uintptr_t a0, uintptr_t a1) ;
 __NO_INIT sbi_entry_para_t sbi_entry_para_data;
 void _start();
 void opensbi_entry(uintptr_t a0, uintptr_t a1)
 {
+
+    {
+        /*
+         * 此入口同时也是S-mode下的陷入(trap)地址（opensbi默认会设置为直接模式）
+         */
+        size_t scause=0;
+        asm volatile ("csrr %0,scause":"+r"(scause)::"memory");
+        if(scause!=0)
+        {
+            if(scause > (1ULL << (8*sizeof(size_t)-1)))
+            {
+                //中断
+            }
+            else
+            {
+                //异常
+            }
+            /*
+             * 采用sret返回
+             */
+            asm volatile ("sret");
+        }
+
+    }
 
     /*
      * 设置初始SP指针
