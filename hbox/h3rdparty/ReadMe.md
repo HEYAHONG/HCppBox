@@ -15,6 +15,7 @@
 - [argtable3](https://github.com/argtable/argtable3.git):命令行解析工具
 - [tlsf](https://github.com/mattconte/tlsf.git):TLSF 内存分配算法实现
 - [libfdt](https://git.kernel.org/pub/scm/utils/dtc/dtc.git):设备树操作库
+- [FreeRTOS](www.freertos.org):FreeRTOS操作系统
 
  提供的配置宏定义如下：
 
@@ -30,6 +31,7 @@
 |          `H3RDPARTY_USING_SYSTEM_ARGTABLE3`          |        使用系统argtable3         |    链接到系统的argtable3(动态库)时,可使用此宏定义防止冲突    |
 |            `H3RDPARTY_USING_SYSTEM_TLSF`             |           使用系统tlsf           |          链接到系统的tlsf时,可使用此宏定义防止冲突           |
 |           `H3RDPARTY_USING_SYSTEM_LIBFDT`            |          使用系统libfdt          |         链接到系统的libfdt时,可使用此宏定义防止冲突          |
+|                  `FREERTOS_KERNEL`                   |       启用FreeRTOS内核代码       | 若启用FreeRTOS内核代码，必须完成FreeRTOS的移植，否则将编译不过。 |
 
 # nanopb
 

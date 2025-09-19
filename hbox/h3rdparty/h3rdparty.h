@@ -245,6 +245,36 @@ int hvfctprintf(void (*out)(char character, void* arg), void* arg, const char* f
 #endif
 #endif
 
+/*
+ * FreeRTOS头文件
+ */
+ #ifndef FREERTOS_KERNEL_FREERTOS_HEADER
+ #define FREERTOS_KERNEL_FREERTOS_HEADER "h3rdparty/3rdparty/FreeRTOS/Kernel/FreeRTOS.h"
+ #endif
+ #ifndef FREERTOS_KERNEL_TASK_HEADER
+ #define FREERTOS_KERNEL_TASK_HEADER "h3rdparty/3rdparty/FreeRTOS/Kernel/task.h"
+ #endif
+ #ifndef FREERTOS_KERNEL_TIMERS_HEADER
+ #define FREERTOS_KERNEL_TIMERS_HEADER "h3rdparty/3rdparty/FreeRTOS/Kernel/timers.h"
+ #endif
+ #ifndef FREERTOS_KERNEL_QUEUE_HEADER
+ #define FREERTOS_KERNEL_QUEUE_HEADER "h3rdparty/3rdparty/FreeRTOS/Kernel/queue.h"
+ #endif
+ #ifndef FREERTOS_KERNEL_SEMPHR_HEADER
+ #define FREERTOS_KERNEL_SEMPHR_HEADER "h3rdparty/3rdparty/FreeRTOS/Kernel/semphr.h"
+ #endif
+ #ifndef FREERTOS_KERNEL_CROUTINE_HEADER
+ #define FREERTOS_KERNEL_CROUTINE_HEADER "h3rdparty/3rdparty/FreeRTOS/Kernel/croutine.h"
+ #endif
+ #ifndef FREERTOS_KERNEL_LIST_HEADER
+ #define FREERTOS_KERNEL_LIST_HEADER "h3rdparty/3rdparty/FreeRTOS/Kernel/list.h"
+ #endif
+ #ifndef FREERTOS_KERNEL_EVENT_GROUPS_HEADER
+ #define FREERTOS_KERNEL_EVENT_GROUPS_HEADER "h3rdparty/3rdparty/FreeRTOS/Kernel/event_groups.h"
+ #endif
+
+
+
 #endif // __H3RDPARTY_H__
 
 
