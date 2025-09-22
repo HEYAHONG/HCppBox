@@ -140,6 +140,15 @@ static int cmd_free_entry(int argc,const char *argv[])
 };
 HSHELL_COMMAND_EXPORT(free,cmd_free_entry,show memory info);
 
-
+static int cmd_ps_entry(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    char strbuff[4096];
+    strbuff[sizeof(strbuff)-1]='\0';
+    vTaskList(strbuff);
+    hshell_printf(hshell_ctx,"%s\r\n",strbuff);
+    return 0;
+};
+HSHELL_COMMAND_EXPORT(ps,cmd_ps_entry,show process info);
 
 

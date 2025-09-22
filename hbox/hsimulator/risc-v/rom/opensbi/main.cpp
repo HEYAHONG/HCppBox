@@ -231,7 +231,7 @@ void  main_init(const hruntime_function_t *func)
     }
     hshell_printf(NULL,"HBox Init(tick=%llu)!\r\n",(unsigned long long)hdefaults_tick_get());
 
-    xTaskCreate( shell_task, "shell_task",4096, NULL, 1, NULL );
+    xTaskCreate( shell_task, "shell_task",8192, NULL, 1, NULL );
 
 }
 HRUNTIME_INIT_EXPORT(main,255,main_init,NULL);
