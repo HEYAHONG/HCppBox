@@ -3,7 +3,7 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../toolchain.cmake")
 set(PROJECT_NAME rom)
 project(${PROJECT_NAME} C CXX ASM)
 
-file(GLOB C_CXX_FILES ../*.h ../*.c ../*.cpp ../*.s *.h *.c *.cpp)
+file(GLOB C_CXX_FILES ../*.h ../*.c ../*.cpp ../*.s ../*.S *.h *.c *.cpp)
 
 if(${PICOLIBC})
 set(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} \

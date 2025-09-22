@@ -3,22 +3,65 @@
 #include "hbox.h"
 #include "opensbi_port.h"
 #include "ctype.h"
+#include FREERTOS_KERNEL_FREERTOS_HEADER
+#include FREERTOS_KERNEL_TASK_HEADER
+#include FREERTOS_KERNEL_TIMERS_HEADER
+#include FREERTOS_KERNEL_QUEUE_HEADER
+#include FREERTOS_KERNEL_SEMPHR_HEADER
+#include FREERTOS_KERNEL_CROUTINE_HEADER
+#include FREERTOS_KERNEL_LIST_HEADER
+#include FREERTOS_KERNEL_EVENT_GROUPS_HEADER
 
 
-int main()
+extern "C" void vApplicationStackOverflowHook( TaskHandle_t xTask,char * pcTaskName );
+void vApplicationStackOverflowHook( TaskHandle_t xTask,char * pcTaskName )
+{
+    hshell_printf(NULL,"%s StackOverflow!\r\n",pcTaskName);
+    while(true);
+}
+
+extern "C" void vApplicationIdleHook( void );
+void vApplicationIdleHook( void )
+{
+    if(hwatchdog_is_valid())
+    {
+        HWATCHDOG_FEED();
+    }
+    else
+    {
+        hruntime_loop_enable_softwatchdog(false);
+    }
+}
+
+void main_task(void *arg)
 {
 
-    hshell_printf(NULL,"main enter!\r\n");
-
-    hruntime_init_lowlevel();
+    hshell_printf(NULL,"main task enter!\r\n");
 
     hruntime_init();
 
     while(true)
     {
         hruntime_loop();
+        vTaskDelay(1);
     }
 }
+
+int main()
+{
+
+    hshell_printf(NULL,"main enter!\r\n");
+    hruntime_init_lowlevel();
+
+    xTaskCreate( main_task, "main_task",4096, NULL, 2, NULL );
+
+    vTaskStartScheduler();
+
+    hshell_printf(NULL,"main leave!\r\n");
+
+    return 0;
+}
+
 
 static void print_blank(size_t n)
 {
@@ -148,6 +191,15 @@ static void print_fdt(const void *fdt,int offset,int depth)
     }
 }
 
+static void shell_task(void *arg)
+{
+    while(true)
+    {
+        while(EOF!=hshell_loop(NULL));
+        vTaskDelay(1);
+    }
+}
+
 /*
  * 主初始化
  */
@@ -178,6 +230,9 @@ void  main_init(const hruntime_function_t *func)
         hshell_printf(NULL,"Heap:start=%p,end=%p\r\n",__heap_start,__heap_end);
     }
     hshell_printf(NULL,"HBox Init(tick=%llu)!\r\n",(unsigned long long)hdefaults_tick_get());
+
+    xTaskCreate( shell_task, "shell_task",4096, NULL, 1, NULL );
+
 }
 HRUNTIME_INIT_EXPORT(main,255,main_init,NULL);
 HRUNTIME_SYMBOL_EXPORT(main_init);
@@ -187,7 +242,7 @@ HRUNTIME_SYMBOL_EXPORT(main_init);
  */
 void  main_loop(const hruntime_function_t *func)
 {
-    while(EOF!=hshell_loop(NULL));
+
 }
 HRUNTIME_LOOP_EXPORT(main,255,main_loop,NULL);
 HRUNTIME_SYMBOL_EXPORT(main_loop);

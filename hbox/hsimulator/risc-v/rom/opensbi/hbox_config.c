@@ -4,48 +4,48 @@
 #ifdef HRC_ENABLED
 #include "hrc.h"
 #endif // HRC_ENABLED
+#include FREERTOS_KERNEL_FREERTOS_HEADER
+#include FREERTOS_KERNEL_TASK_HEADER
+#include FREERTOS_KERNEL_TIMERS_HEADER
+#include FREERTOS_KERNEL_QUEUE_HEADER
+#include FREERTOS_KERNEL_SEMPHR_HEADER
+#include FREERTOS_KERNEL_CROUTINE_HEADER
+#include FREERTOS_KERNEL_LIST_HEADER
+#include FREERTOS_KERNEL_EVENT_GROUPS_HEADER
 
 hdefaults_tick_t hbox_tick_get(void)
 {
-    /*
-     * TODO:确定系数,默认为aclint-mtimer @ 10000000Hz,
-     */
-#if defined(HDEFAULTS_ARCH_RISCV64)
-    return sbi_rdtime()/10000;
-#else
-    {
-        hdefaults_mutex_lock(NULL);
-        static uint64_t mtime_base=0;
-        uint64_t current_mtime=(mtime_base&(0xFFFFFFFF00000000))+sbi_rdtime();
-        if(current_mtime < mtime_base)
-        {
-            current_mtime+=(1ULL<<32);
-        }
-        mtime_base=current_mtime;
-        hdefaults_mutex_unlock(NULL);
-        return current_mtime/10000;
-    }
-#endif
+    return xTaskGetTickCount();
 }
+
+static SemaphoreHandle_t g_lock=NULL;
 
 void hbox_enter_critical()
 {
-
+    if(g_lock==NULL)
+    {
+        g_lock=xSemaphoreCreateRecursiveMutex();
+        xSemaphoreTake(g_lock,portMAX_DELAY);
+    }
+    else
+    {
+        xSemaphoreTake(g_lock,portMAX_DELAY);
+    }
 }
 
 void hbox_exit_critical()
 {
-
+    xSemaphoreGive(g_lock);
 }
 
 void * hbox_malloc(size_t bytes)
 {
-    return malloc(bytes);
+    return pvPortMalloc(bytes);
 }
 
 void hbox_free(void *ptr)
 {
-    free(ptr);
+    vPortFree(ptr);
 }
 
 
@@ -113,8 +113,7 @@ static int hbox_sleep_entry(int argc,const char *argv[])
         int n=atoi(argv[1]);
         if(n>0)
         {
-            hdefaults_tick_t start=hdefaults_tick_get();
-            while(hdefaults_tick_get()-start < n*1000);
+            vTaskDelay(n*1000);
         }
     }
     return 0;

@@ -62,6 +62,7 @@ PHDRS
 SECTIONS
 {
 	PROVIDE(__stack = ORIGIN(ram) + LENGTH(ram));
+	PROVIDE(__freertos_irq_stack_top = ORIGIN(ram) + LENGTH(ram));
 
 	/*
 	 * 向量表
@@ -73,7 +74,6 @@ SECTIONS
 	} >ram AT>ram :text
 
 	.init : {
-		. = ORIGIN(ram)+0x400;
 		KEEP (*(.text.init.enter))
 		KEEP (*(.data.init.enter))
 		KEEP (*(SORT_BY_NAME(.init) SORT_BY_NAME(.init.*)))

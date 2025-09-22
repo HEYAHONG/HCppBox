@@ -34,6 +34,22 @@
 #define HRUNTIME_USING_SYMBOL_SECTION 1
 
 /*
+ * 不启用看门狗（在FreeRTOS空闲钩子中启用）
+ */
+#define HRUNTIME_NO_SOFTWATCHDOG 1
+
+/*
+ * 启用FreeRTOS内核
+ */
+#define FREERTOS_KERNEL 1
+
+
+/*
+ * 选择FreeRTOS内核 heap_3
+ */
+#define FREERTOS_KERNEL_MEMMANG_HEAP 3
+
+/*
  * 使用自定义的putchar
  */
 #define HPUTCHAR hbox_putchar
