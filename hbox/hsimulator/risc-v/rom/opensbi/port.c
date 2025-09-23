@@ -148,15 +148,6 @@ BaseType_t xPortStartScheduler( void )
     vPortSetupTimerInterrupt();
 
 
-#if ( ( configMTIME_BASE_ADDRESS != 0 ) && ( configMTIMECMP_BASE_ADDRESS != 0 ) )
-    {
-        /* Enable mtime and external interrupts.  1<<7 for timer interrupt,
-         * 1<<11 for external interrupt.  _RB_ What happens here when mtime is
-         * not present as with pulpino? */
-        __asm volatile ( "csrs mie, %0" ::"r" ( 0x880 ) );
-    }
-#endif /* ( configMTIME_BASE_ADDRESS != 0 ) && ( configMTIMECMP_BASE_ADDRESS != 0 ) */
-
     xPortStartFirstTask();
 
     /* Should not get here as after calling xPortStartFirstTask() only tasks
