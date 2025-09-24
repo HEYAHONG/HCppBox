@@ -2,14 +2,6 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "HCPPBox.h"
-#include FREERTOS_KERNEL_FREERTOS_HEADER
-#include FREERTOS_KERNEL_TASK_HEADER
-#include FREERTOS_KERNEL_TIMERS_HEADER
-#include FREERTOS_KERNEL_QUEUE_HEADER
-#include FREERTOS_KERNEL_SEMPHR_HEADER
-#include FREERTOS_KERNEL_CROUTINE_HEADER
-#include FREERTOS_KERNEL_LIST_HEADER
-#include FREERTOS_KERNEL_EVENT_GROUPS_HEADER
 
 bool running=true;
 extern "C" void vApplicationStackOverflowHook( TaskHandle_t xTask,char * pcTaskName );
