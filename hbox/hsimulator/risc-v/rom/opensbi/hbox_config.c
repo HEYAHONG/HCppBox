@@ -4,50 +4,6 @@
 #ifdef HRC_ENABLED
 #include "hrc.h"
 #endif // HRC_ENABLED
-#include FREERTOS_KERNEL_FREERTOS_HEADER
-#include FREERTOS_KERNEL_TASK_HEADER
-#include FREERTOS_KERNEL_TIMERS_HEADER
-#include FREERTOS_KERNEL_QUEUE_HEADER
-#include FREERTOS_KERNEL_SEMPHR_HEADER
-#include FREERTOS_KERNEL_CROUTINE_HEADER
-#include FREERTOS_KERNEL_LIST_HEADER
-#include FREERTOS_KERNEL_EVENT_GROUPS_HEADER
-
-hdefaults_tick_t hbox_tick_get(void)
-{
-    return xTaskGetTickCount();
-}
-
-static SemaphoreHandle_t g_lock=NULL;
-
-void hbox_enter_critical()
-{
-    if(g_lock==NULL)
-    {
-        g_lock=xSemaphoreCreateRecursiveMutex();
-        xSemaphoreTake(g_lock,portMAX_DELAY);
-    }
-    else
-    {
-        xSemaphoreTake(g_lock,portMAX_DELAY);
-    }
-}
-
-void hbox_exit_critical()
-{
-    xSemaphoreGive(g_lock);
-}
-
-void * hbox_malloc(size_t bytes)
-{
-    return pvPortMalloc(bytes);
-}
-
-void hbox_free(void *ptr)
-{
-    vPortFree(ptr);
-}
-
 
 int hbox_putchar(int ch)
 {

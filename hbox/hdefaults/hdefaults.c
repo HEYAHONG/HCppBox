@@ -14,6 +14,20 @@
 #ifdef __RTTHREAD__
 #include "rtthread.h"
 #endif // __RTTHREAD__
+#if defined(FREERTOS_KERNEL)
+/*
+ * 由h3rdparty组件引入FreeRTOS代码
+ */
+#include "h3rdparty.h"
+#include FREERTOS_KERNEL_FREERTOS_HEADER
+#include FREERTOS_KERNEL_TASK_HEADER
+#include FREERTOS_KERNEL_TIMERS_HEADER
+#include FREERTOS_KERNEL_QUEUE_HEADER
+#include FREERTOS_KERNEL_SEMPHR_HEADER
+#include FREERTOS_KERNEL_CROUTINE_HEADER
+#include FREERTOS_KERNEL_LIST_HEADER
+#include FREERTOS_KERNEL_EVENT_GROUPS_HEADER
+#endif
 #ifdef WIN32
 #include "windows.h"
 static CRITICAL_SECTION g_mutex_lock;
@@ -51,6 +65,8 @@ static hdefaults_tick_t do_hdefaults_tick_get(void)
 {
 #ifdef HDEFAULTS_TICK_GET
     return HDEFAULTS_TICK_GET();
+#elif defined(FREERTOS_KERNEL)
+    return xTaskGetTickCount();
 #elif defined(HDEFAULTS_OS_RTTHREAD)
     return rt_tick_get_millisecond();
 #elif defined(HDEFAULTS_OS_WINDOWS)
@@ -139,6 +155,8 @@ static void  do_hdefaults_mutex_lock(void *usr)
     UNUSED(usr);
 #ifdef HDEFAULTS_MUTEX_LOCK
     HDEFAULTS_MUTEX_LOCK();
+#elif defined(FREERTOS_KERNEL)
+    vTaskSuspendAll();
 #elif defined(__RTTHREAD__)
     rt_enter_critical();
 #elif defined(WIN32)
@@ -161,6 +179,8 @@ static void  do_hdefaults_mutex_unlock(void *usr)
     UNUSED(usr);
 #ifdef  HDEFAULTS_MUTEX_UNLOCK
     HDEFAULTS_MUTEX_UNLOCK();
+#elif defined(FREERTOS_KERNEL)
+    xTaskResumeAll();
 #elif defined(__RTTHREAD__)
     rt_exit_critical();
 #elif defined(WIN32)
