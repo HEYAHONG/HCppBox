@@ -102,6 +102,23 @@ struct hruntime_function
  */
 void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t array_size);
 
+/*
+ * 定义导出的HRuntimeInit数据项
+ */
+#define HRUNTIME_INIT_DATA(name,priority,entry,usr)
+
+/*
+ * 定义导出的HRuntimeInit结构体
+ */
+#define HRUNTIME_INIT_STRUCT(name,priority,entry,usr) \
+    static const hruntime_function_t hruntime_init_##name = \
+    {\
+        (priority),\
+        (entry) ,\
+        (usr) \
+    }
+
+
 #if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
 /*
  * armcc/armclang,使用名称为HRuntimeInit的section
@@ -111,14 +128,10 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
  * 导出初始化
  */
 #define HRUNTIME_INIT_EXPORT(name,priority,entry,usr) \
+    HRUNTIME_INIT_DATA(name,priority,entry,usr) \
     __USED\
     __SECTION("HRuntimeInit")\
-    static const hruntime_function_t hruntime_init_##name = \
-    {\
-        (priority),\
-        (entry) ,\
-        (usr) \
-    }
+    HRUNTIME_INIT_STRUCT(name,priority,entry,usr)
 
 /*
  * 调用导出的初始化函数
@@ -142,14 +155,10 @@ hruntime_function_array_invoke((hruntime_function_t *)&HRuntimeInit$$Base,(((uin
 * 导出初始化
 */
 #define HRUNTIME_INIT_EXPORT(name,priority,entry,usr) \
+    HRUNTIME_INIT_DATA(name,priority,entry,usr) \
     __USED\
     __SECTION(".HRuntimeInit")\
-    static const hruntime_function_t hruntime_init_##name = \
-    {\
-        (priority),\
-        (entry) ,\
-        (usr) \
-    }
+    HRUNTIME_INIT_STRUCT(name,priority,entry,usr)
 
 /*
  * 调用导出的初始化函数
@@ -182,6 +191,22 @@ hruntime_function_array_invoke(__hruntime_init_start,(((uintptr_t)__hruntime_ini
 #endif
 
 
+/*
+ * 定义导出的HRuntimeLoop数据项
+ */
+#define HRUNTIME_LOOP_DATA(name,priority,entry,usr)
+
+/*
+ * 定义导出的HRuntimeLoop结构体
+ */
+#define HRUNTIME_LOOP_STRUCT(name,priority,entry,usr) \
+    static const hruntime_function_t hruntime_loop_##name = \
+    {\
+        (priority),\
+        (entry) ,\
+        (usr) \
+    }
+
 #if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
 /*
  * armcc/armclang,使用名称为HRuntimeLoop的section
@@ -191,14 +216,10 @@ hruntime_function_array_invoke(__hruntime_init_start,(((uintptr_t)__hruntime_ini
  * 导出循环
  */
 #define HRUNTIME_LOOP_EXPORT(name,priority,entry,usr) \
+    HRUNTIME_LOOP_DATA(name,priority,entry,usr)\
     __USED\
     __SECTION("HRuntimeLoop")\
-    static const hruntime_function_t hruntime_loop_##name = \
-    {\
-        (priority),\
-        (entry) ,\
-        (usr) \
-    }
+    HRUNTIME_LOOP_STRUCT(name,priority,entry,usr)
 
 /*
  * 调用导出的循环函数
@@ -222,14 +243,10 @@ hruntime_function_array_invoke((hruntime_function_t *)&HRuntimeLoop$$Base,(((uin
 * 导出循环
 */
 #define HRUNTIME_LOOP_EXPORT(name,priority,entry,usr) \
+    HRUNTIME_LOOP_DATA(name,priority,entry,usr)\
     __USED\
     __SECTION(".HRuntimeLoop")\
-    static const hruntime_function_t hruntime_loop_##name = \
-    {\
-        (priority),\
-        (entry) ,\
-        (usr) \
-    }
+    HRUNTIME_LOOP_STRUCT(name,priority,entry,usr)
 
 /*
  * 调用导出的循环函数

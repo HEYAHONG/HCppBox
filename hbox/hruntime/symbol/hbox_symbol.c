@@ -1063,6 +1063,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hpkcs1_padding),(uintptr_t)&hpkcs1_padding},
     {hdefaults_str(hpkcs1_check_padding),(uintptr_t)&hpkcs1_check_padding},
 //hdefaults.c
+    {hdefaults_str(hdlsym),(uintptr_t)&hdlsym},
     {hdefaults_str(hdefaults_syscall_function_find),(uintptr_t)&hdefaults_syscall_function_find},
     {hdefaults_str(__hdefaults_usercall_return_check),(uintptr_t)&__hdefaults_usercall_return_check},
     {hdefaults_str(hdefaults_tick_get),(uintptr_t)&hdefaults_tick_get},
@@ -1070,6 +1071,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hdefaults_free),(uintptr_t)&hdefaults_free},
     {hdefaults_str(hdefaults_mutex_lock),(uintptr_t)&hdefaults_mutex_lock},
     {hdefaults_str(hdefaults_mutex_unlock),(uintptr_t)&hdefaults_mutex_unlock},
+    {hdefaults_str(hdefaults_symbol_find),(uintptr_t)&hdefaults_symbol_find},
     {hdefaults_str(hdefaults_get_api_table),(uintptr_t)&hdefaults_get_api_table},
     {hdefaults_str(hdefaults_set_api_table),(uintptr_t)&hdefaults_set_api_table},
     {hdefaults_str(hgettimeofday),(uintptr_t)&hgettimeofday},
@@ -1104,7 +1106,6 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hclock),(uintptr_t)&hclock},
     {hdefaults_str(hdlopen),(uintptr_t)&hdlopen},
     {hdefaults_str(hdlclose),(uintptr_t)&hdlclose},
-    {hdefaults_str(hdlsym),(uintptr_t)&hdlsym},
 //hdriverframework.c
     {hdefaults_str(hdriverframework_driver_base_set),(uintptr_t)&hdriverframework_driver_base_set},
     {hdefaults_str(hdriverframework_driver_base_getname),(uintptr_t)&hdriverframework_driver_base_getname},
