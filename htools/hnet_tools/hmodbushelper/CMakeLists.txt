@@ -1,5 +1,4 @@
-
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
 
 #程序名称
@@ -74,8 +73,8 @@ set(HCPPBOX_USE_PURE_CPLUSPLUS ON)
 
 #设定HRC文件系统目录为fs
 set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fs/)
-#添加3rdparty/HCppBox
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../  HCppBox EXCLUDE_FROM_ALL)
+#添加HCppBox
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../common/  common EXCLUDE_FROM_ALL)
 #启用HCppBox、HRC
 hcppbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})

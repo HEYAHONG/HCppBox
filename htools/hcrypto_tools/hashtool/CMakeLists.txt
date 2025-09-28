@@ -22,8 +22,8 @@ set(HCPPBOX_USE_PURE_CPLUSPLUS ON)
 
 #设定HRC文件系统目录为fs
 set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fs/)
-#添加3rdparty/HCppBox
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../  HCppBox EXCLUDE_FROM_ALL)
+#添加HCppBox
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../common/  common EXCLUDE_FROM_ALL)
 
 #hmd4sum
 add_executable(hmd4sum  hmd4sum.cpp)
