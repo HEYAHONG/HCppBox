@@ -115,11 +115,11 @@
  * (in words, not in bytes!).  The kernel does not use this constant for any
  * other purpose.  Demo applications use the constant to make the demos somewhat
  * portable across hardware architectures. */
-#define configMINIMAL_STACK_SIZE                   128
+#define configMINIMAL_STACK_SIZE                   (2*1024*1024/sizeof(uint32_t))
 
 /* configMAX_TASK_NAME_LEN sets the maximum length (in characters) of a task's
  * human readable name.  Includes the NULL terminator. */
-#define configMAX_TASK_NAME_LEN                    16
+#define configMAX_TASK_NAME_LEN                    32
 
 /* Time is measured in 'ticks' - which is the number of times the tick interrupt
  * has executed since the RTOS kernel was started.
