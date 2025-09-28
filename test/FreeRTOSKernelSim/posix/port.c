@@ -55,7 +55,9 @@
 * `process handle SIGUSR1 -n true -p false -s false`
 *----------------------------------------------------------*/
 #ifdef __linux__
+#ifndef _GNU_SOURCE
     #define _GNU_SOURCE
+#endif
 #endif
 #include "portmacro.h"
 #include <errno.h>
