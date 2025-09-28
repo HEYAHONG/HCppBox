@@ -19,7 +19,7 @@ target_include_directories(FreeRTOSPort PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/FreeR
 target_include_directories(FreeRTOSPort PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../hbox/)
 target_include_directories(FreeRTOSPort PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../hbox/cpp/)
 file(GLOB  FREERTOS_PORT_SOURCE FreeRTOS/win32/*.c FreeRTOS/win32/*.s)
-target_sources(FreeRTOSKernelSim PUBLIC ${FREERTOS_PORT_SOURCE})
+target_sources(FreeRTOSPort PUBLIC ${FREERTOS_PORT_SOURCE})
 target_link_libraries(FreeRTOSPort winmm)
 else()
 target_include_directories(FreeRTOSPort PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS/)
