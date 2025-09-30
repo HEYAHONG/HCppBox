@@ -66,7 +66,12 @@ static int getchar_nonblock(void)
 #ifdef HDEFAULTS_OS_WINDOWS
     if(_kbhit())
     {
-        return getchar();
+        int ch=_getche();
+        if(ch=='\r')
+        {
+            ch='\n';
+        }
+        return ch;
     }
 #else
 #ifdef HAVE_FCNTL_H
