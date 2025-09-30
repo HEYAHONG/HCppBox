@@ -45,7 +45,7 @@ int main()
     /*创建任务*/
     xTaskCreate( main_task1, "main_task1",40960, NULL, 1, NULL );
     xTaskCreate( main_task2, "main_task2",40960, NULL, 1, NULL );
-    xTaskCreate( hshell_task, "hshell_task2",40960, NULL, 3, NULL );
+    xTaskCreate( hshell_task, "hshell_task",40960, NULL, 3, NULL );
 
     /* Start the scheduler so the tasks start executing. */
     vTaskStartScheduler();
