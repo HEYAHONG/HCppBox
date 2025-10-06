@@ -1,0 +1,16 @@
+/***************************************************************
+ * Name:      h3rdparty_mini_rv32ima.c
+ * Purpose:   引入第三方源代码文件
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2025-10-07
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+#include "hdefaults.h"
+#include "h3rdparty.h"
+
+#include "stdarg.h"
+#include "3rdparty/mini_rv32ima/mini_rv32ima_filename"
+
+
+

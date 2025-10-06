@@ -28,6 +28,7 @@
 #include "h3rdparty/port/tlsf/h3rdparty_port_tlsf.h"
 #include "h3rdparty/port/libfdt/h3rdparty_port_libfdt.h"
 #include "h3rdparty/port/FreeRTOS/h3rdparty_port_FreeRTOS.h"
+#include "h3rdparty/port/mini-rv32ima/h3rdparty_port_mini_rv32ima.h"
 
 
 

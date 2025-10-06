@@ -16,6 +16,7 @@
 - [tlsf](https://github.com/mattconte/tlsf.git):TLSF 内存分配算法实现
 - [libfdt](https://git.kernel.org/pub/scm/utils/dtc/dtc.git):设备树操作库
 - [FreeRTOS](www.freertos.org):FreeRTOS操作系统
+- [mini-rv32ima](https://github.com/cnlohr/mini-rv32ima.git):C语言编写的极小的RISC-V模拟器
 
  提供的配置宏定义如下：
 
@@ -170,3 +171,33 @@ FreeRTOS操作系统
 | :--------------------------------------: | :----------------------------------------------------------: | :--------------: |
 |      `FREERTOS_KERNEL_MEMMANG_HEAP`      | 配置FreeRTOS内核所使用的heap，可选1、2、3、4、5，分别使用heap_1.c、heap_2.c、heap_3.c、heap_4.c、heap_5.c、 | 默认使用heap_3.c |
 | `FREERTOS_KERNEL_NO_AUTO_INCLUDE_HEADER` |                   不自动包含FreeRTOS头文件                   |    默认不定义    |
+
+# mini-rv32ima
+
+C语言编写的极小的RISC-V模拟器。
+
+此模拟器几乎可以运行在支持C语言的任何平台(包括各种单片机，如[esp32s3](https://github.com/ohdarling/linux-esp32s3.git)、[Atmega328p](https://github.com/raspiduino/arv32-opt.git)、[ch32v003](https://github.com/tvlad1234/linux-ch32v003.git)等)，不过需要移植I/O部分,如果本身内存不够，可通过外扩RAM解决。
+
+此模拟器可加载nommu版本的Linux。
+
+若要使用相应库功能，请使用以下代码：
+
+```c++
+/*
+ * 定义移植mini-rv32ima需要的宏定义(需要根据具体移植修改)
+ */
+#define MINI_RV32_RAM_SIZE ram_amt
+#define MINIRV32_IMPLEMENTATION
+
+
+/*
+ * 包含mini-rv32ima头文件
+ */
+#include H3RDPARTY_MINI_RV32IMA_HEADER
+#include H3RDPARTY_MINI_RV32IMA_64MB_DTB_HEADER
+```
+
+注意：
+
+- 本组件中只包含核心的模拟器代码。其它代码(如测试代码)请见 [mini-rv32ima](https://github.com/cnlohr/mini-rv32ima.git)源代码。
+
