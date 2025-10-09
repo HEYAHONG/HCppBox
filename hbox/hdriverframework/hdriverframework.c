@@ -95,3 +95,24 @@ size_t hdriverframework_driver_base_vm_write(hdriverframework_driver_base_t *drv
     return ret;
 }
 
+
+size_t hdriverframework_driver_base_getmaxvmopsize(hdriverframework_driver_base_t *drv)
+{
+    size_t ret=0;
+    if(drv!=NULL && drv->process!=NULL)
+    {
+        drv->process(drv,HDRIVERFRAMEWORK_OP_GET_MAX_VM_OP_SIZE,&ret);
+    }
+    return ret;
+}
+
+
+size_t hdriverframework_driver_base_getminvmopsize(hdriverframework_driver_base_t *drv)
+{
+    size_t ret=0;
+    if(drv!=NULL && drv->process!=NULL)
+    {
+        drv->process(drv,HDRIVERFRAMEWORK_OP_GET_MIN_VM_OP_SIZE,&ret);
+    }
+    return ret;
+}

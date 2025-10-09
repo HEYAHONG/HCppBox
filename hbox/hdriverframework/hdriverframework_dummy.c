@@ -94,6 +94,26 @@ static int hdriverframework_driver_base_dummy_process(hdriverframework_driver_ba
         }
     }
     break;
+    case HDRIVERFRAMEWORK_OP_GET_MAX_VM_OP_SIZE:
+    {
+        size_t *ret_ptr=va_arg(va,size_t *);
+        if(ret_ptr!=NULL)
+        {
+            (*ret_ptr)=8;
+            ret=HDRIVERFRAMEWORK_EOK;
+        }
+    }
+    break;
+    case HDRIVERFRAMEWORK_OP_GET_MIN_VM_OP_SIZE:
+    {
+        size_t *ret_ptr=va_arg(va,size_t *);
+        if(ret_ptr!=NULL)
+        {
+            (*ret_ptr)=1;
+            ret=HDRIVERFRAMEWORK_EOK;
+        }
+    }
+    break;
     default:
     {
 
@@ -186,3 +206,23 @@ size_t hdriverframework_driver_dummy_vm_write(hdriverframework_driver_dummy_t *d
     return hdriverframework_driver_base_vm_write(&drv->base,map_item,address,data,length);
 }
 
+size_t hdriverframework_driver_dummy_getmaxvmopsize(hdriverframework_driver_dummy_t *drv)
+{
+    hdriverframework_driver_base_dummy_check(drv);
+    if(drv==NULL)
+    {
+        return 0;
+    }
+    return hdriverframework_driver_base_getmaxvmopsize(&drv->base);
+}
+
+
+size_t hdriverframework_driver_dummy_getminvmopsize(hdriverframework_driver_dummy_t *drv)
+{
+    hdriverframework_driver_base_dummy_check(drv);
+    if(drv==NULL)
+    {
+        return 0;
+    }
+    return hdriverframework_driver_base_getminvmopsize(&drv->base);
+}

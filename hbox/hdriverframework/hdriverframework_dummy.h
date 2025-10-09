@@ -93,6 +93,23 @@ size_t hdriverframework_driver_dummy_vm_read(hdriverframework_driver_dummy_t *dr
  */
 size_t hdriverframework_driver_dummy_vm_write(hdriverframework_driver_dummy_t *drv,const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,const uint8_t *data,size_t length);
 
+/** \brief 获取最大的虚拟内存操作的字节数大小
+ *
+ * \param drv hdriverframework_driver_dummy_t* 驱动指针
+ * \return size_t 最大的虚拟内存操作的字节数大小,返回0表示选项不可用
+ *
+ */
+size_t hdriverframework_driver_dummy_getmaxvmopsize(hdriverframework_driver_dummy_t *drv);
+
+
+/** \brief 获取最小的虚拟内存操作的字节数大小
+ *
+ * \param drv hdriverframework_driver_dummy_t* 驱动指针
+ * \return size_t 最大的虚拟内存操作的字节数大小,返回0表示选项不可用
+ *
+ */
+size_t hdriverframework_driver_dummy_getminvmopsize(hdriverframework_driver_dummy_t *drv);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

@@ -39,7 +39,7 @@ static size_t hsoftwarevirtualmemory_default_write(const hsoftwarevirtualmemory_
 
 static const hsoftwarevirtualmemory_map_item_t hsoftwarevirtualmemory_default_map_table[]=
 {
-    {0,0,hsoftwarevirtualmemory_default_read,hsoftwarevirtualmemory_default_write,NULL}
+    {0,0,hsoftwarevirtualmemory_default_read,hsoftwarevirtualmemory_default_write,NULL,0}
 };
 
 const hsoftwarevirtualmemory_map_item_t * hsoftwarevirtualmemory_global_map_table=NULL;

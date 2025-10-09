@@ -50,6 +50,7 @@ struct hsoftwarevirtualmemory_map_item
     hsoftwarevirtualmemory_read_callback_t   read_callback;
     hsoftwarevirtualmemory_write_callback_t  write_callback;
     void *                                   usr;
+    uintptr_t                                flags;     /**< 标志位,默认为0，默认情况下，在32位系统下最少32位，读写回调的实现需要遵循标志位的设置*/
 };
 
 /** \brief 软件虚拟内存读

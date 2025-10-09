@@ -181,6 +181,8 @@ enum
     HDRIVERFRAMEWORK_OP_GET_OF_COMPATIBLE=3,                                    /**< 获取设备树(Open Firmware Device Tree)的兼容字符串数据(必须以NULL结尾)，其可变参数为const char ***,在使用设备树的情况下,用于加载驱动 */
     HDRIVERFRAMEWORK_OP_VM_READ=4,                                              /**< 虚拟内存读,相关参数见hsoftwarevirtualmemory,当驱动有可映射至虚拟内存的可编址资源时，可使用此操作 */
     HDRIVERFRAMEWORK_OP_VM_WRITE=5,                                             /**< 虚拟内存写,相关参数见hsoftwarevirtualmemory,当驱动有可映射至虚拟内存的可编址资源时，可使用此操作 */
+    HDRIVERFRAMEWORK_OP_GET_MAX_VM_OP_SIZE=6,                                   /**< 获取最大的虚拟内存操作的字节数大小（一般为2的N次方，一般使用对齐访问），其可变参数为size_t * */
+    HDRIVERFRAMEWORK_OP_GET_MIN_VM_OP_SIZE=7,                                   /**< 获取最小的虚拟内存操作的字节数大小（一般为2的N次方，一般使用对齐访问），其可变参数为size_t * */
     HDRIVERFRAMEWORK_OP_DRIVER_BASE=0x10000,                                    /**< 驱动操作起始,由具体的驱动使用 */
 };
 
@@ -263,6 +265,23 @@ size_t hdriverframework_driver_base_vm_read(hdriverframework_driver_base_t *drv,
  */
 size_t hdriverframework_driver_base_vm_write(hdriverframework_driver_base_t *drv,const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,const uint8_t *data,size_t length);
 
+
+/** \brief 获取最大的虚拟内存操作的字节数大小
+ *
+ * \param drv hdriverframework_driver_base_t* 驱动指针
+ * \return size_t 最大的虚拟内存操作的字节数大小,返回0表示选项不可用
+ *
+ */
+size_t hdriverframework_driver_base_getmaxvmopsize(hdriverframework_driver_base_t *drv);
+
+
+/** \brief 获取最小的虚拟内存操作的字节数大小
+ *
+ * \param drv hdriverframework_driver_base_t* 驱动指针
+ * \return size_t 最大的虚拟内存操作的字节数大小,返回0表示选项不可用
+ *
+ */
+size_t hdriverframework_driver_base_getminvmopsize(hdriverframework_driver_base_t *drv);
 
 #ifdef __cplusplus
 }
