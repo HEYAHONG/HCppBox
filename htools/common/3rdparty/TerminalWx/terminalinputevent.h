@@ -15,7 +15,7 @@ License: wxWindows License Version 3.1 (See the file license3.txt)
 // -------------------------------------------------------------------
 // ProcessEvent
 // -------------------------------------------------------------------
-DECLARE_EVENT_TYPE(chEVT_TERMINAL_INPUT, wxID_ANY)
+DECLARE_EXPORTED_EVENT_TYPE(,chEVT_TERMINAL_INPUT, wxID_ANY)
 
 
 class TerminalInputEvent : public wxEvent
