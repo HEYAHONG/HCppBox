@@ -23,4 +23,13 @@
 #define H3RDPARTY_MINI_RV32IMA_HEADER "h3rdparty/3rdparty/mini-rv32ima/mini-rv32ima.h"
 #endif
 
+/*
+ * 修复在MSVC下的编译错误，如需使用此宏定义请先#undef再进行定义
+ */
+#ifndef MINIRV32WARN
+#define MINIRV32WARN( ... )
+#endif
+
+
+
 #endif // __H3RDPARTY_PORT_MINI_RV32IMA_H_INCLUDE__
