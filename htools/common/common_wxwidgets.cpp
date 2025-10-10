@@ -49,7 +49,8 @@ void hcppbox_deinit(void)
 
     hcppbox_thread_flag=false;
 
-    while(!hcppbox_thread_flag)
+    std::chrono::time_point tp_start=std::chrono::steady_clock::now();
+    while((!hcppbox_thread_flag) && ((std::chrono::steady_clock::now()-tp_start) < std::chrono::seconds(3)))
     {
         std::this_thread::yield();
     }

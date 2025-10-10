@@ -34,7 +34,12 @@ if(WIN32)
 	endif()
 endif()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../common  ${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/astyle/ ${CMAKE_CURRENT_SOURCE_DIR}/ )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../common
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/astyle/
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/GTerm
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/taTelnet
+${CMAKE_CURRENT_SOURCE_DIR}/ )
 
 file(GLOB MAIN_CXX_C_FILES *.cpp *.c *.h ../../common/common_wxwidgets.h ../../common/common_wxwidgets.cpp  guibase/*.cpp guibase/*.c guibase/*.h 
 ../../common/3rdparty/astyle/ASBeautifier.cpp
@@ -42,6 +47,15 @@ file(GLOB MAIN_CXX_C_FILES *.cpp *.c *.h ../../common/common_wxwidgets.h ../../c
 ../../common/3rdparty/astyle/ASFormatter.cpp
 ../../common/3rdparty/astyle/ASLocalizer.cpp
 ../../common/3rdparty/astyle/ASResource.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/*.h
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/GTerm/*.h
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/taTelnet/*.h
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/*.hpp
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/GTerm/*.hpp
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/taTelnet/*.hpp
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/*.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/GTerm/*.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/taTelnet/*.cpp
 )
 list(APPEND  MAIN_SRCS ${MAIN_CXX_C_FILES})
 

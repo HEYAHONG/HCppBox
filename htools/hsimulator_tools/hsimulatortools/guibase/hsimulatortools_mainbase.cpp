@@ -273,8 +273,8 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 	wxBoxSizer* bSizer111;
 	bSizer111 = new wxBoxSizer( wxVERTICAL );
 
-	m_richText_rvvm_generic_serialport0 = new wxRichTextCtrl( m_panel_rvvm_generic_serialport0, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
-	bSizer111->Add( m_richText_rvvm_generic_serialport0, 1, wxEXPAND | wxALL, 5 );
+	m_HCPPTerminal_Serialport0= new HCPPTerminal( m_panel_rvvm_generic_serialport0, wxID_ANY, wxDefaultPosition);
+	bSizer111->Add( m_HCPPTerminal_Serialport0, 1, wxALL|wxEXPAND, 5 );
 
 
 	m_panel_rvvm_generic_serialport0->SetSizer( bSizer111 );
@@ -327,8 +327,6 @@ rvvmgenericbase::rvvmgenericbase( wxWindow* parent, wxWindowID id, const wxPoint
 
 	// Connect Events
 	m_choice_rvvm_generic_isa->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( rvvmgenericbase::OnChoice_RVVM_Generic_Isa ), NULL, this );
-	m_richText_rvvm_generic_serialport0->Connect( wxEVT_CHAR, wxKeyEventHandler( rvvmgenericbase::OnChar_RVVM_Generic_Serialport0 ), NULL, this );
-	m_richText_rvvm_generic_serialport0->Connect( wxEVT_KEY_DOWN, wxKeyEventHandler( rvvmgenericbase::OnKeyDown_RVVM_Generic_Serialport0 ), NULL, this );
 	m_button_rvvm_generic_start->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Start ), NULL, this );
 	m_button_rvvm_generic_stop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Stop ), NULL, this );
 	m_button_rvvm_generic_quit->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Quit ), NULL, this );
@@ -339,8 +337,6 @@ rvvmgenericbase::~rvvmgenericbase()
 {
 	// Disconnect Events
 	m_choice_rvvm_generic_isa->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( rvvmgenericbase::OnChoice_RVVM_Generic_Isa ), NULL, this );
-	m_richText_rvvm_generic_serialport0->Disconnect( wxEVT_CHAR, wxKeyEventHandler( rvvmgenericbase::OnChar_RVVM_Generic_Serialport0 ), NULL, this );
-	m_richText_rvvm_generic_serialport0->Disconnect( wxEVT_KEY_DOWN, wxKeyEventHandler( rvvmgenericbase::OnKeyDown_RVVM_Generic_Serialport0 ), NULL, this );
 	m_button_rvvm_generic_start->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Start ), NULL, this );
 	m_button_rvvm_generic_stop->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Stop ), NULL, this );
 	m_button_rvvm_generic_quit->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( rvvmgenericbase::OnButtonClick_RVVM_Generic_Quit ), NULL, this );

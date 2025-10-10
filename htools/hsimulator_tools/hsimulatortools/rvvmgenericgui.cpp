@@ -27,15 +27,15 @@ extern "C"
 
 RVVMGenericGui::RVVMGenericGui(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name):rvvmgenericbase(parent, id, pos,size,style, name),m_running_machine(NULL)
 {
+    m_HCPPTerminal_Serialport0->set_input_callback([&](wxString input)
     {
-        /*
-         * 初始化串口0输出
-         */
-        wxFont font=m_richText_rvvm_generic_serialport0->GetFont();
-        m_richText_rvvm_generic_serialport0->SetFont(*wxTheFontList->FindOrCreateFont(font.GetNativeFontInfo()->GetPointSize(),wxFONTFAMILY_TELETYPE,font.GetStyle(),font.GetWeight()));
-        m_richText_rvvm_generic_serialport0->SetBackgroundColour(*wxBLACK);
-        m_richText_rvvm_generic_serialport0->SetForegroundColour(*wxWHITE);
-    }
+        std::string input_array=input.ToStdString();
+        for(size_t i=0;i<input_array.length();i++)
+        {
+            m_machine_serialport[0].Input.Post((uint8_t)input_array.c_str()[i]);
+            m_machine_serialport[0].InputDataCount++;
+        }
+    });
 }
 
 RVVMGenericGui::~RVVMGenericGui()
@@ -55,50 +55,6 @@ void RVVMGenericGui::OnChoice_RVVM_Generic_Isa( wxCommandEvent& event )
     {
         //64位系统选择内存为2G
         m_choice_rvvm_generic_mem->SetSelection(3);
-    }
-}
-
-void RVVMGenericGui::OnChar_RVVM_Generic_Serialport0( wxKeyEvent& event )
-{
-    wxChar uc=event.GetUnicodeKey();
-    if(uc!=wxKEY_NONE)
-    {
-        m_machine_serialport[0].Input.Post((uint8_t)uc);
-        m_machine_serialport[0].InputDataCount++;
-    }
-}
-
-void RVVMGenericGui::OnKeyDown_RVVM_Generic_Serialport0( wxKeyEvent& event )
-{
-    {
-        switch ( event.GetKeyCode() )
-        {
-        case WXK_LEFT:
-        {
-
-        }
-        break;
-        case WXK_RIGHT:
-        {
-
-        }
-        break;
-        case WXK_UP:
-        {
-
-        }
-        break;
-        case WXK_DOWN:
-        {
-
-        }
-        break;
-        default:
-        {
-            event.Skip();
-        }
-        break;
-        }
     }
 }
 
@@ -437,53 +393,7 @@ void RVVMGenericGui::MachineSerialportLoop()
             case 0:
             {
                 wxString remain_data=data;
-                /*
-                 * 替换\r\n
-                 */
-                remain_data.Replace(_T("\r\n"),_T("\n"));
-                while(!remain_data.IsEmpty())
-                {
-                    {
-                        data.Clear();
-                        int pos=wxNOT_FOUND;
-                        if((pos=remain_data.Find('\b'))!=wxNOT_FOUND)
-                        {
-                            //处理退格
-                            wxRichTextRange current_pos(m_richText_rvvm_generic_serialport0->GetLastPosition()-1,m_richText_rvvm_generic_serialport0->GetLastPosition());
-                            m_richText_rvvm_generic_serialport0->Delete(current_pos);
-                            if(pos==0)
-                            {
-                                remain_data=remain_data.substr(pos+1);
-                                data.Clear();
-                                continue;
-                            }
-                            else
-                            {
-                                data=remain_data.substr(0,pos);
-                                remain_data=remain_data.substr(pos+1);
-                            }
-                        }
-
-                        if(data.IsEmpty())
-                        {
-                            data=remain_data;
-                            remain_data.Clear();
-                        }
-                    }
-                    m_richText_rvvm_generic_serialport0->SetInsertionPointEnd();
-                    m_richText_rvvm_generic_serialport0->BeginSuppressUndo();
-                    m_richText_rvvm_generic_serialport0->BeginTextColour(m_richText_rvvm_generic_serialport0->GetForegroundColour());
-                    m_richText_rvvm_generic_serialport0->WriteText(data);
-                    m_richText_rvvm_generic_serialport0->EndTextColour();
-                    m_richText_rvvm_generic_serialport0->EndSuppressUndo();
-                    {
-                        long pos=m_richText_rvvm_generic_serialport0->GetLastPosition();
-                        if(pos > 0 && !m_richText_rvvm_generic_serialport0->IsPositionVisible(pos))
-                        {
-                            m_richText_rvvm_generic_serialport0->ShowPosition(pos);
-                        }
-                    }
-                }
+                m_HCPPTerminal_Serialport0->DisplayChars(remain_data);
             }
             break;
             default:
