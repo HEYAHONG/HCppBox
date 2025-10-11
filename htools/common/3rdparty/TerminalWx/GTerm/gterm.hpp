@@ -19,8 +19,8 @@ License: wxWindows License Version 3.1 (See the file license3.txt)
 #include <stdlib.h>
 #include <stdio.h>
 
-#define MAXWIDTH 200
-#define MAXHEIGHT 100
+#define MAXWIDTH 2000
+#define MAXHEIGHT 1000
 
 
 #define GTERM_PC
@@ -67,8 +67,8 @@ private:
 	int width, height, scroll_top, scroll_bot;
 	unsigned char *text;
 	unsigned short *color;
-	short linenumbers[MAXHEIGHT]; // text at text[linenumbers[y]*MAXWIDTH]
-	unsigned char dirty_startx[MAXHEIGHT], dirty_endx[MAXHEIGHT];
+	int linenumbers[MAXHEIGHT]; // text at text[linenumbers[y]*MAXWIDTH]
+	size_t dirty_startx[MAXHEIGHT], dirty_endx[MAXHEIGHT];
 	int pending_scroll; // >0 means scroll up
 	int doing_update;
 
