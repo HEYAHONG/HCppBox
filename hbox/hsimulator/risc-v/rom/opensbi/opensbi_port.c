@@ -45,7 +45,16 @@ int  sbi_ecall_getc(void)
 
 void sbi_ecall_console_puts(const char *str)
 {
-    sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,strlen(str), (unsigned long)str, 0, 0, 0, 0);
+    size_t len=0;
+    if(str!=NULL)
+    {
+        const char *str_ptr=str;
+        while((*str_ptr++)!='\0')
+        {
+            len++;
+        }
+    }
+    sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,len, (unsigned long)str, 0, 0, 0, 0);
 }
 
 void sbi_ecall_shutdown(void)
