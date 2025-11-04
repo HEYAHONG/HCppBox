@@ -318,7 +318,7 @@ static void hruntime_loop_cache_table_sort(hruntime_function_t *array_base,size_
         is_sorted=true;
         for(size_t i=0; i<array_size; i++)
         {
-            if(i==(array_size-1) || array_base[i].entry==NULL)
+            if(i==(array_size-1) || array_base[i].entry==NULL || array_base[i+1].entry==NULL)
             {
                 break;
             }
