@@ -191,6 +191,15 @@ hruntime_function_array_invoke(__hruntime_init_start,(((uintptr_t)__hruntime_ini
 #endif
 
 
+/** \brief 运行循环函数(内部使用, 用户不应使用)
+ * 一般用于使用段进行循环时，供内部使用
+ *
+ * \param array_base const hruntime_function_t* 运行时函数数组
+ * \param array_size size_t 运行时函数数组大小
+ *
+ */
+void hruntime_function_loop_cache_invoke(const hruntime_function_t *array_base,size_t array_size);
+
 /*
  * 定义导出的HRuntimeLoop数据项
  */
@@ -229,6 +238,11 @@ extern const  int HRuntimeLoop$$Limit;
 #define HRUNTIME_LOOP_INVOKE() \
 hruntime_function_array_invoke((hruntime_function_t *)&HRuntimeLoop$$Base,(((uintptr_t)(hruntime_function_t *)&HRuntimeLoop$$Limit)-((uintptr_t)(hruntime_function_t *)&HRuntimeLoop$$Base))/sizeof(hruntime_function_t))
 
+
+#define HRUNTIME_LOOP_CACHE_INVOKE() \
+hruntime_function_loop_cache_invoke((hruntime_function_t *)&HRuntimeLoop$$Base,(((uintptr_t)(hruntime_function_t *)&HRuntimeLoop$$Limit)-((uintptr_t)(hruntime_function_t *)&HRuntimeLoop$$Base))/sizeof(hruntime_function_t))
+
+
 #elif defined(HCOMPILER_GCC) || defined(HCOMPILER_CLANG)
 /*
  * gcc/clang,使用名称为.HRuntimeLoop的section
@@ -256,7 +270,8 @@ extern const  hruntime_function_t __hruntime_loop_end[];
 #define HRUNTIME_LOOP_INVOKE() \
 hruntime_function_array_invoke(__hruntime_loop_start,(((uintptr_t)__hruntime_loop_end)-((uintptr_t)__hruntime_loop_start))/sizeof(hruntime_function_t))
 
-
+#define HRUNTIME_LOOP_CACHE_INVOKE() \
+hruntime_function_loop_cache_invoke(__hruntime_loop_start,(((uintptr_t)__hruntime_loop_end)-((uintptr_t)__hruntime_loop_start))/sizeof(hruntime_function_t))
 
 
 #else
@@ -275,6 +290,10 @@ hruntime_function_array_invoke(__hruntime_loop_start,(((uintptr_t)__hruntime_loo
  */
 #define HRUNTIME_LOOP_INVOKE()
 
+/*
+ * 调用导出的循环函数(带缓存)
+ */
+#define HRUNTIME_LOOP_CACHE_INVOKE()
 
 #endif
 

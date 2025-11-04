@@ -119,6 +119,10 @@ bool hruntime_init_done(void)
     return hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_INIT_DONE);
 }
 
+#if defined(HRUNTIME_USING_LOOP_CACHE_TABLE)
+#define HRUNTIME_USING_LOOP_SECTION_CACHE   1
+#endif
+
 void hruntime_loop()
 {
     if(!hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_INIT_DONE))
@@ -131,7 +135,11 @@ void hruntime_loop()
     hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN);
 
 #ifdef HRUNTIME_USING_LOOP_SECTION
+#ifdef HRUNTIME_USING_LOOP_SECTION_CACHE
+    HRUNTIME_LOOP_CACHE_INVOKE();
+#else
     HRUNTIME_LOOP_INVOKE();
+#endif
 #endif // HRUNTIME_USING_LOOP_SECTION
 
     /*
@@ -286,6 +294,82 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
         }
     }
 
+}
+
+#if defined(HRUNTIME_USING_LOOP_CACHE_TABLE)
+#ifndef HRUNTIME_USING_LOOP_CACHE_TABLE_ITEM_COUNT
+#define HRUNTIME_USING_LOOP_CACHE_TABLE_ITEM_COUNT   16
+#endif
+static hruntime_function_t hruntime_loop_cache_table[HRUNTIME_USING_LOOP_CACHE_TABLE_ITEM_COUNT]= {0};
+
+static void hruntime_loop_cache_table_sort(hruntime_function_t *array_base,size_t array_size)
+{
+    if(array_base==NULL || array_size == 0)
+    {
+        return;
+    }
+
+    /*
+     * 冒泡排序
+     */
+    bool is_sorted=false;
+    while(!is_sorted)
+    {
+        is_sorted=true;
+        for(size_t i=0; i<array_size; i++)
+        {
+            if(i==(array_size-1) || array_base[i].entry==NULL)
+            {
+                break;
+            }
+            if(array_base[i].priority > array_base[i+1].priority)
+            {
+                /*
+                 * 交换项，标记为未排序完成
+                 */
+                hruntime_function_t temp=array_base[i+1];
+                array_base[i+1]=array_base[i];
+                array_base[i]=temp;
+                is_sorted=false;
+            }
+        }
+    }
+}
+
+#endif
+
+void hruntime_function_loop_cache_invoke(const hruntime_function_t *array_base,size_t array_size)
+{
+    if(array_base==NULL || array_size == 0)
+    {
+        return;
+    }
+#if defined(HRUNTIME_USING_LOOP_CACHE_TABLE)
+    if(hruntime_loop_cache_table[0].entry==NULL)
+    {
+        //复制表
+        for(size_t i=0; i< array_size && i < sizeof(hruntime_loop_cache_table)/sizeof(hruntime_loop_cache_table[0]); i++)
+        {
+            hruntime_loop_cache_table[i]=array_base[i];
+        }
+
+        //表排序
+        hruntime_loop_cache_table_sort(hruntime_loop_cache_table,sizeof(hruntime_loop_cache_table)/sizeof(hruntime_loop_cache_table[0]));
+    }
+
+    {
+        //执行循环函数
+        for(size_t i=0; i<sizeof(hruntime_loop_cache_table)/sizeof(hruntime_loop_cache_table[0]); i++)
+        {
+            if(hruntime_loop_cache_table[i].entry==NULL)
+            {
+                break;
+            }
+            hruntime_loop_cache_table[i].entry(&hruntime_loop_cache_table[i]);
+        }
+    }
+
+#endif
 }
 
 #if defined(HRUNTIME_SYMBOL_SCAN) || defined(HRUNTIME_NO_SYMBOL_TABLE)

@@ -24,9 +24,20 @@
 #define HRUNTIME_USING_LOOP_SECTION 1
 
 /*
+ * 启用循环段缓存表
+ */
+#define HRUNTIME_USING_LOOP_CACHE_TABLE 1
+
+/*
+ * 循环段缓存表表大小
+ */
+#define HRUNTIME_USING_LOOP_CACHE_TABLE_ITEM_COUNT 128
+
+/*
  * 启用符号段
  */
 #define HRUNTIME_USING_SYMBOL_SECTION 1
+
 
 /*
  * 不启用看门狗（在FreeRTOS空闲钩子中启用）
