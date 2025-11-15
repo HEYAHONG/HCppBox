@@ -17,6 +17,7 @@
 - [libfdt](https://git.kernel.org/pub/scm/utils/dtc/dtc.git):设备树操作库
 - [FreeRTOS](www.freertos.org):FreeRTOS操作系统
 - [mini-rv32ima](https://github.com/cnlohr/mini-rv32ima.git):C语言编写的极小的RISC-V模拟器
+- [matiec](https://github.com/thiagoralves/matiec.git):IEC 61131-3 编译器，注意:本库仅集成matiec编译器的内置库的C语言头文件,而非编译本身。
 
  提供的配置宏定义如下：
 
@@ -200,4 +201,19 @@ C语言编写的极小的RISC-V模拟器。
 注意：
 
 - 本组件中只包含核心的模拟器代码。其它代码(如测试代码)请见 [mini-rv32ima](https://github.com/cnlohr/mini-rv32ima.git)源代码。
+
+# matiec
+
+IEC 61131-3编译器，可将IEC 61131-3中定义的编程语言（通常用于PLC）转化为C语言代码。
+
+一般情况下，PLC的编程更加注重控制逻辑的实现，一般称为组态。
+
+matiec编译器生成的C语言文件编译时需要指定库的头文件路径，此时可使用本库内置的头文件路径（**需要手动指定**），见[3rdparty/matiec_c_header/](3rdparty/matiec_c_header/)
+
+matiec编译器生成的C语言代码包含以下入口：
+
+- `void config_init__(void);`:组态初始化，一般只调用一次。
+- `void config_run__(unsigned long tick);`：组态运行，多次调用，参数为节拍，每次调用时加一。
+
+matiec编译器生成的C语言代码的组态逻辑与其它C语言代码的交互主要通过变量实现，即组态运行前更新变量，运行后根据变量的变化执行相应的操作。如对于使用到定时器的代码，应当定义**`TIME __CURRENT_TIME;`**全局变量，并在调用组态运行前更新此变量。
 
