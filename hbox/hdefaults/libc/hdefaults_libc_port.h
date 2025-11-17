@@ -33,6 +33,7 @@ extern "C"
 #include "wrapper/htime.h"
 #include "wrapper/hclock.h"
 #include "wrapper/hstrcmp.h"
+#include "wrapper/hstrncmp.h"
 
 #ifdef __cplusplus
 }

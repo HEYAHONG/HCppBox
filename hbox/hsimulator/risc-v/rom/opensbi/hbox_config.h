@@ -70,4 +70,9 @@
  */
 #define HDEFAULTS_LIBC_TINY_STRCMP 1
 
+/*
+ * 使用精简的strncmp
+ */
+#define HDEFAULTS_LIBC_TINY_STRNCMP 1
+
 #endif // __HBOX_CONFIG_H__
