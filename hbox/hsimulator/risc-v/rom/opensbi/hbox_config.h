@@ -65,6 +65,9 @@
  */
 #define HGETCHAR hbox_getchar
 
-
+/*
+ * 使用精简的strcmp
+ */
+#define HDEFAULTS_LIBC_TINY_STRCMP 1
 
 #endif // __HBOX_CONFIG_H__

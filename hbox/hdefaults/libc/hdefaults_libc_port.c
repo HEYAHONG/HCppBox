@@ -34,4 +34,5 @@
 #include "wrapper/hfwrite.c"
 #include "wrapper/htime.c"
 #include "wrapper/hclock.c"
+#include "wrapper/hstrcmp.c"
 

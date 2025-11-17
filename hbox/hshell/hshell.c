@@ -321,7 +321,7 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
         {
             for(size_t i=0; i<context->command.array_count; i++)
             {
-                if(context->command.array_base[i].name!=NULL && strcmp(argv[1],context->command.array_base[i].name)==0)
+                if(context->command.array_base[i].name!=NULL && hstrcmp(argv[1],context->command.array_base[i].name)==0)
                 {
                     hshell_context_printf(context,"%s:\r\n%s\r\n",context->command.array_base[i].name,context->command.array_base[i].help!=NULL?context->command.array_base[i].help:"");
                     help_shown=true;
@@ -333,7 +333,7 @@ static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_cod
         {
             for(size_t i=0; i<sizeof(hshell_internal_command)/sizeof(hshell_internal_command[0]); i++)
             {
-                if(hshell_internal_command[i].name!=NULL && strcmp(argv[1],hshell_internal_command[i].name)==0)
+                if(hshell_internal_command[i].name!=NULL && hstrcmp(argv[1],hshell_internal_command[i].name)==0)
                 {
                     hshell_context_printf(context,"%s:\r\n%s\r\n",hshell_internal_command[i].name,hshell_internal_command[i].help!=NULL?hshell_internal_command[i].help:"");
                     help_shown=true;
@@ -407,7 +407,7 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
         {
             for(size_t i=0; i<context->command.array_count; i++)
             {
-                if(context->command.array_base[i].name!=NULL && strcmp(argv[0],context->command.array_base[i].name)==0)
+                if(context->command.array_base[i].name!=NULL && hstrcmp(argv[0],context->command.array_base[i].name)==0)
                 {
                     if(context->command.array_base[i].entry!=NULL)
                     {
@@ -426,7 +426,7 @@ static int hshell_process_execute_command(hshell_context_t *ctx,int argc,const c
         //处理内部命令
         for(size_t i=0; i<sizeof(hshell_internal_command)/sizeof(hshell_internal_command[0]); i++)
         {
-            if(hshell_internal_command[i].name!=NULL && strcmp(argv[0],hshell_internal_command[i].name)==0)
+            if(hshell_internal_command[i].name!=NULL && hstrcmp(argv[0],hshell_internal_command[i].name)==0)
             {
                 if(hshell_internal_command[i].entry!=NULL)
                 {
@@ -1025,21 +1025,21 @@ static int hshell_process_control(hshell_context_t *ctx)
             {
             case HSHELL_CTLSEQ_CONTROL_SET_C1_CSI:
             {
-                if(!escape_processed && strcmp((char *)context->escape_sequence,"[A")==0)
+                if(!escape_processed && hstrcmp((char *)context->escape_sequence,"[A")==0)
                 {
                     //上键(上一条历史记录)
                     escape_processed=true;
                     hshell_history_load_next(context);
                 }
 
-                if(!escape_processed && strcmp((char *)context->escape_sequence,"[B")==0)
+                if(!escape_processed && hstrcmp((char *)context->escape_sequence,"[B")==0)
                 {
                     //下键（下一条历史记录）
                     escape_processed=true;
                     hshell_history_load_prev(context);
                 }
 
-                if(!escape_processed && strcmp((char *)context->escape_sequence,"[C")==0)
+                if(!escape_processed && hstrcmp((char *)context->escape_sequence,"[C")==0)
                 {
                     //右键
                     escape_processed=true;
@@ -1051,7 +1051,7 @@ static int hshell_process_control(hshell_context_t *ctx)
 
                 }
 
-                if(!escape_processed && strcmp((char *)context->escape_sequence,"[D")==0)
+                if(!escape_processed && hstrcmp((char *)context->escape_sequence,"[D")==0)
                 {
                     //左键
                     escape_processed=true;
@@ -1062,7 +1062,7 @@ static int hshell_process_control(hshell_context_t *ctx)
                     }
                 }
 
-                if(!escape_processed && strcmp((char *)context->escape_sequence,"[2~")==0)
+                if(!escape_processed && hstrcmp((char *)context->escape_sequence,"[2~")==0)
                 {
                     //insert键
                     escape_processed=true;
@@ -1076,7 +1076,7 @@ static int hshell_process_control(hshell_context_t *ctx)
                     }
                 }
 
-                if(!escape_processed && strcmp((char *)context->escape_sequence,"[3~")==0)
+                if(!escape_processed && hstrcmp((char *)context->escape_sequence,"[3~")==0)
                 {
                     //del键
                     escape_processed=true;

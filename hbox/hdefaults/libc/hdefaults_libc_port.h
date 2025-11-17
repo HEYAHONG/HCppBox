@@ -32,6 +32,7 @@ extern "C"
 #include "wrapper/hfwrite.h"
 #include "wrapper/htime.h"
 #include "wrapper/hclock.h"
+#include "wrapper/hstrcmp.h"
 
 #ifdef __cplusplus
 }
