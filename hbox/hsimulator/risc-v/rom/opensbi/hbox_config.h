@@ -75,4 +75,9 @@
  */
 #define HDEFAULTS_LIBC_TINY_STRNCMP 1
 
+/*
+ * 使用精简的strlen
+ */
+#define HDEFAULTS_LIBC_TINY_STRLEN 1
+
 #endif // __HBOX_CONFIG_H__

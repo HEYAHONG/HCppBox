@@ -13,6 +13,7 @@
 | `HDEFAULTS_LIBC_OPTIMIZE_LEVEL` | C运行库优化级别。 | 默认优化级别为0（直接包装原C运行库的函数）,无操作系统时优化级别为1。 |
 | `HDEFAULTS_LIBC_TINY_STRCMP`    | 采用精简版strcmp  | 某些工具链的C库可能有问题，可启用此选项使用内置精简版strcmp  |
 | `HDEFAULTS_LIBC_TINY_STRNCMP`   | 采用精简版strncmp | 某些工具链的C库可能有问题，可启用此选项使用内置精简版strncmp |
+| `HDEFAULTS_LIBC_TINY_STRLEN`    | 采用精简版strlen  | 某些工具链的C库可能有问题，可启用此选项使用内置精简版strlen  |
 
 # C运行库
 
@@ -198,5 +199,13 @@
 | ---------- | ------------------- | ------------------------ |
 | `HSTRNCMP` | 用户实现的`strncmp` | 参数与返回值同`hstrncmp` |
 
+## `strlen`
 
+获取以NULL结尾的字符串的长度
+
+可外部配置的宏定义如下:
+
+| 宏定义    | 说明               | 备注                    |
+| --------- | ------------------ | ----------------------- |
+| `HSTRLEN` | 用户实现的`strlen` | 参数与返回值同`hstrlen` |
 

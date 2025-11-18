@@ -36,4 +36,5 @@
 #include "wrapper/hclock.c"
 #include "wrapper/hstrcmp.c"
 #include "wrapper/hstrncmp.c"
+#include "wrapper/hstrlen.c"
 
