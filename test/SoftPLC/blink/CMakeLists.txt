@@ -11,7 +11,7 @@ if(MSVC)
     add_compile_options(-utf-8 )
 endif()
 
-include(../../hbox/cmake/FindMATIEC.cmake)
+include(../../../hbox/cmake/FindMATIEC.cmake)
 
 if(NOT MATIEC_IEC2C_FOUND)
     message(FATAL_ERROR "iec2c must be existed!")
