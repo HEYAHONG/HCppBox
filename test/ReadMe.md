@@ -33,3 +33,8 @@ cmake --build .
 # Android
 
 Android测试见目录[Android](Android)。Android测试项目需要Android Studio及最新的Android SDK,一般情况不与其它平台通用。
+
+# SoftPLC
+
+软件PLC相关测试见[SoftPLC](SoftPLC)。此目录中的代码需要单独测试，不包含在当前目录中。
+
