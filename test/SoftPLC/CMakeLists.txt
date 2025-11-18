@@ -28,3 +28,8 @@ add_custom_target(blink_st ALL
                  COMMAND ${IEC2C} -p -l -n -r -R -a -b -c -I ${MATIEC_IEC_HEADER} -T ${CMAKE_CURRENT_SOURCE_DIR}/blink ${CMAKE_CURRENT_SOURCE_DIR}/blink.st
                  )
 
+##blink.st库文件
+file(GLOB BLINK_ST_PLC_C_FILES ${CMAKE_CURRENT_SOURCE_DIR}/blink/Config*.c ${CMAKE_CURRENT_SOURCE_DIR}/blink/Res*.c)
+add_library(blink_st_plc ${BLINK_ST_PLC_C_FILES})
+add_dependencies(blink_st_plc blink_st)
+target_include_directories(blink_st_plc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/blink)
