@@ -33,3 +33,5 @@ file(GLOB BLINK_ST_PLC_C_FILES ${CMAKE_CURRENT_SOURCE_DIR}/blink/Config*.c ${CMA
 add_library(blink_st_plc ${BLINK_ST_PLC_C_FILES})
 add_dependencies(blink_st_plc blink_st)
 target_include_directories(blink_st_plc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/blink)
+set_property(TARGET blink_st_plc PROPERTY CXX_STANDARD 11)
+set_property(TARGET blink_st_plc PROPERTY C_STANDARD 11)
