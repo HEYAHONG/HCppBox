@@ -35,6 +35,7 @@ extern "C"
 #include "wrapper/hstrcmp.h"
 #include "wrapper/hstrncmp.h"
 #include "wrapper/hstrlen.h"
+#include "wrapper/hmemset.h"
 
 #ifdef __cplusplus
 }

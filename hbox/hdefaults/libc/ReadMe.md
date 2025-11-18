@@ -14,6 +14,7 @@
 | `HDEFAULTS_LIBC_TINY_STRCMP`    | 采用精简版strcmp  | 某些工具链的C库可能有问题，可启用此选项使用内置精简版strcmp  |
 | `HDEFAULTS_LIBC_TINY_STRNCMP`   | 采用精简版strncmp | 某些工具链的C库可能有问题，可启用此选项使用内置精简版strncmp |
 | `HDEFAULTS_LIBC_TINY_STRLEN`    | 采用精简版strlen  | 某些工具链的C库可能有问题，可启用此选项使用内置精简版strlen  |
+| `HDEFAULTS_LIBC_TINY_MEMSET`    | 采用精简版memset  | 某些工具链的C库可能有问题，可启用此选项使用内置精简版memset  |
 
 # C运行库
 
@@ -209,3 +210,12 @@
 | --------- | ------------------ | ----------------------- |
 | `HSTRLEN` | 用户实现的`strlen` | 参数与返回值同`hstrlen` |
 
+## `memset`
+
+填充内存
+
+可外部配置的宏定义如下:
+
+| 宏定义    | 说明               | 备注                    |
+| --------- | ------------------ | ----------------------- |
+| `HMEMSET` | 用户实现的`memset` | 参数与返回值同`hmemset` |

@@ -37,4 +37,5 @@
 #include "wrapper/hstrcmp.c"
 #include "wrapper/hstrncmp.c"
 #include "wrapper/hstrlen.c"
+#include "wrapper/hmemset.c"
 

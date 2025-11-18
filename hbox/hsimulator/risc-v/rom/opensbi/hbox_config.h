@@ -80,4 +80,9 @@
  */
 #define HDEFAULTS_LIBC_TINY_STRLEN 1
 
+/*
+ * 使用精简的memset
+ */
+#define HDEFAULTS_LIBC_TINY_MEMSET 1
+
 #endif // __HBOX_CONFIG_H__
