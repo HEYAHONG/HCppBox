@@ -65,7 +65,7 @@ extern void config_run__(unsigned long tick);
  * matiec生成的节拍间隔(us)
  */
 extern unsigned long long common_ticktime__;
-
+extern unsigned long greatest_tick_count__;
 
 /*
  * 当前时间
@@ -166,6 +166,10 @@ void hsoftplc_loop(void)
          * 组态运行
          */
         static unsigned long tick=0;
+        if(greatest_tick_count__!=0 && greatest_tick_count__ < tick)
+        {
+            tick=0;
+        }
         config_run__(tick++);
 
         {
