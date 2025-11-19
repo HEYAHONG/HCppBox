@@ -5,7 +5,7 @@
 #include <iec_types_all.h>
 
 /*
- * QX0.0
+ * %QX0.0
  */
 extern "C" BOOL * __QX0_0;
 static BOOL last_qx0_0;
@@ -27,7 +27,7 @@ static void hsoftplc_callback(hsoftplc_callback_type_t cb_type)
     case HSOFTPLC_CALLBACK_TYPE_CONFIG_RUN_BEGIN:
     {
         /*
-         * 记录QX0.0的值
+         * 记录%QX0.0的值
          */
         last_qx0_0=(*__QX0_0);
     }
@@ -35,7 +35,7 @@ static void hsoftplc_callback(hsoftplc_callback_type_t cb_type)
     case HSOFTPLC_CALLBACK_TYPE_CONFIG_RUN_END:
     {
         /*
-         * 判断QX0.0的值
+         * 判断%QX0.0的值
          */
         if((*__QX0_0)!=last_qx0_0)
         {
