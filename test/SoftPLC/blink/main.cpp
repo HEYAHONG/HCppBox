@@ -2,14 +2,9 @@
 #include "HCPPBox.h"
 #include <chrono>
 #include <thread>
-#include <iec_types_all.h>
 
-/*
- * %QX0.0
- */
-extern "C" BOOL * __QX0_0;
-static BOOL last_qx0_0;
-
+extern "C" bool plc_get_qx0_0(void);
+static bool last_qx0_0=false;
 static void hsoftplc_callback(hsoftplc_callback_type_t cb_type)
 {
     switch(cb_type)
@@ -21,15 +16,15 @@ static void hsoftplc_callback(hsoftplc_callback_type_t cb_type)
     break;
     case HSOFTPLC_CALLBACK_TYPE_CONFIG_INIT_END:
     {
-         hprintf("config init end!\r\n");
+        hprintf("config init end!\r\n");
     }
     break;
     case HSOFTPLC_CALLBACK_TYPE_CONFIG_RUN_BEGIN:
     {
         /*
-         * 记录%QX0.0的值
+         * 记录%QX0.0
          */
-        last_qx0_0=(*__QX0_0);
+        last_qx0_0=plc_get_qx0_0();
     }
     break;
     case HSOFTPLC_CALLBACK_TYPE_CONFIG_RUN_END:
@@ -37,14 +32,15 @@ static void hsoftplc_callback(hsoftplc_callback_type_t cb_type)
         /*
          * 判断%QX0.0的值
          */
-        if((*__QX0_0)!=last_qx0_0)
+        if((plc_get_qx0_0())!=last_qx0_0)
         {
-            hprintf("QX0.0=%-08s tick=%u\r\n",(*__QX0_0)?"true":"false",(unsigned)hdefaults_tick_get());
+            hprintf("%%QX0.0=%-08s tick=%u\r\n",(plc_get_qx0_0())?"true":"false",(unsigned)hdefaults_tick_get());
         }
     }
     break;
     }
 }
+
 
 int main(int argc,char *argv[])
 {
@@ -60,5 +56,5 @@ int main(int argc,char *argv[])
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         hcpprt_loop();
     }
-	return 0;
+    return 0;
 }

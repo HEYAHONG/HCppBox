@@ -46,7 +46,7 @@ set_property(TARGET blink_st_plc PROPERTY C_STANDARD 11)
 target_link_libraries(HBox blink_st_plc)
 
 #主程序
-file(GLOB BLINK_C_FILES  *.cpp *.h)
+file(GLOB BLINK_C_FILES  *.cpp *.h *.c)
 add_executable(blink ${BLINK_C_FILES})
 target_link_libraries(blink blink_st_plc)
 hcppbox_enable(blink)

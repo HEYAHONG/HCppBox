@@ -8,7 +8,6 @@
  **************************************************************/
 #ifndef __HSOFTPLC_H__
 #define __HSOFTPLC_H__
-#include "hdefaults.h"
 #ifdef __cplusplus
 extern "C"
 {

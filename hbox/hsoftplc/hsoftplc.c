@@ -7,6 +7,50 @@
  * License:   MIT
  **************************************************************/
 #include "hsoftplc.h"
+#include "stdlib.h"
+#include "stdint.h"
+
+/*
+ * 导入配置文件
+ */
+//导入config.h
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
+#ifndef hdefaults_xstr
+#define hdefaults_xstr(s) hdefaults_str(s)
+#endif // hdefaults_xstr
+
+
+#ifndef hdefaults_str
+#define hdefaults_str(s) #s
+#endif // hdefaults_str
+
+//导入外部配置，使用命令行定义HBOX_CONFIG_HEADER指定外部配置文件名。
+#ifdef HBOX_CONFIG_HEADER
+#include hdefaults_xstr(HBOX_CONFIG_HEADER)
+#endif
+
+#ifdef __RTTHREAD__
+#include "rtthread.h"
+#ifndef hdefaults_tick_t
+#define hdefaults_tick_t rt_tick_t
+#endif // hdefaults_tick_t
+#endif // __RTTHREAD__
+#ifndef hdefaults_tick_t
+#define hdefaults_tick_t uint32_t
+#endif // hdefaults_tick_t
+
+/*
+ * 引入hdefaults_tick_get
+ */
+extern hdefaults_tick_t hdefaults_tick_get(void);
+
+/*
+ * 引入hgettimeofday
+ */
+#include "hdefaults/syscall/wrapper/hgettimeofday.h"
 
 #if defined(HSOFTPLC)
 #include "h3rdparty/3rdparty/matiec_c_header/iec_types_all.h"
@@ -86,6 +130,8 @@ void hsoftplc_init(void)
     }
 #endif
 }
+
+
 
 void hsoftplc_loop(void)
 {
