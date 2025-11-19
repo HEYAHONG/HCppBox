@@ -146,3 +146,9 @@ hbox意为HYH的工具箱。
 
 具体实现见[hruntime](hruntime)目录。
 
+## hsoftplc
+
+辅助实现软件PLC功能。 
+
+具体实现见[hsoftplc](hhsoftplc)目录。
+

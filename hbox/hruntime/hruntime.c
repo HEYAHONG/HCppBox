@@ -11,6 +11,7 @@
 #include "hdriverframework.h"
 #include "h3rdparty.h"
 #include "hevent.h"
+#include "hsoftplc.h"
 #include "stdbool.h"
 #include "stdint.h"
 #include "stdlib.h"
@@ -109,6 +110,10 @@ void hruntime_init()
         }
     }
 
+#if defined(HSOFTPLC)
+    hsoftplc_init();
+#endif
+
     //标记初始化完成
     hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_INIT_DONE);
 
@@ -202,6 +207,9 @@ void hruntime_loop()
     }
 #endif
 
+#if defined(HSOFTPLC)
+    hsoftplc_loop();
+#endif
 
     hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN);
     hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_END);

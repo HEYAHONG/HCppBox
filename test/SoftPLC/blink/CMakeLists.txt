@@ -20,7 +20,16 @@ else()
 endif()
 
 #添加C语言头文件
-include_directories(${MATIEC_C_HEADER})
+include_directories(
+${MATIEC_C_HEADER}
+${CMAKE_CURRENT_SOURCE_DIR}
+${CMAKE_CURRENT_SOURCE_DIR}/blink
+)
+#启用hsoftplc组件
+add_compile_options( -DHSOFTPLC=1 )
+
+#添加HCppBox库
+add_subdirectory(../../../ HCppBox EXCLUDE_FROM_ALL)
 
 #blink.st
 add_custom_target(blink_st ALL
@@ -29,9 +38,15 @@ add_custom_target(blink_st ALL
                  )
 
 ##blink.st库文件
-file(GLOB BLINK_ST_PLC_C_FILES ${CMAKE_CURRENT_SOURCE_DIR}/blink/Config*.c ${CMAKE_CURRENT_SOURCE_DIR}/blink/Res*.c)
+file(GLOB BLINK_ST_PLC_C_FILES ${CMAKE_CURRENT_SOURCE_DIR}/blink/Config*.c ${CMAKE_CURRENT_SOURCE_DIR}/blink/Res*.c ${CMAKE_CURRENT_SOURCE_DIR}/blink/*.h)
 add_library(blink_st_plc ${BLINK_ST_PLC_C_FILES})
 add_dependencies(blink_st_plc blink_st)
-target_include_directories(blink_st_plc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/blink)
 set_property(TARGET blink_st_plc PROPERTY CXX_STANDARD 11)
 set_property(TARGET blink_st_plc PROPERTY C_STANDARD 11)
+target_link_libraries(HBox blink_st_plc)
+
+#主程序
+file(GLOB BLINK_C_FILES  *.cpp *.h)
+add_executable(blink ${BLINK_C_FILES})
+target_link_libraries(blink blink_st_plc)
+hcppbox_enable(blink)

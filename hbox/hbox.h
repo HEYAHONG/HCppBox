@@ -27,6 +27,7 @@
 #include "huuid.h"
 #include "hcrypto.h"
 #include "hruntime.h"
+#include "hsoftplc.h"
 
 /*
 由C++编写的组件
