@@ -45,6 +45,12 @@ typedef void (*hsoftplc_callback_t)(hsoftplc_callback_type_t cb_type);
  */
 hsoftplc_callback_t hsoftplc_set_callback(hsoftplc_callback_t cb);
 
+/*
+ * 基本变量头文件，通过include使用。
+ * #include HSOFTPLC_IEC_BASE_TYPE_HEADER
+ */
+#define HSOFTPLC_IEC_BASE_TYPE_HEADER "hsoftplc/hsoftplc_iec_base_type.h"
+
 /** \brief 软件PLC获取变量指针
  *
  * \param variable-name const char* 变量名称
@@ -52,6 +58,7 @@ hsoftplc_callback_t hsoftplc_set_callback(hsoftplc_callback_t cb);
  *
  */
 void *hsoftplc_get_located_variables(const char *variable_name);
+
 
 #ifdef __cplusplus
 }

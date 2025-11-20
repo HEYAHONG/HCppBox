@@ -2,13 +2,14 @@
 #include "HCPPBox.h"
 #include <chrono>
 #include <thread>
+#include HSOFTPLC_IEC_BASE_TYPE_HEADER
 
 static bool plc_get_qx0_0(void)
 {
     /*
      * 获取%QX0.0
      */
-    uint8_t *var=(uint8_t *)hsoftplc_get_located_variables("__QX0_0");
+    IEC_BOOL *var=(IEC_BOOL *)hsoftplc_get_located_variables("__QX0_0");
     if(var!=NULL)
     {
         return (*var)!=0;
