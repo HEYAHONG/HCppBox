@@ -45,6 +45,14 @@ typedef void (*hsoftplc_callback_t)(hsoftplc_callback_type_t cb_type);
  */
 hsoftplc_callback_t hsoftplc_set_callback(hsoftplc_callback_t cb);
 
+/** \brief 软件PLC获取变量指针
+ *
+ * \param variable-name const char* 变量名称
+ * \return void * 变量指针
+ *
+ */
+void *hsoftplc_get_located_variables(const char *variable_name);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

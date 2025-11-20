@@ -26,6 +26,11 @@
  */
 #include "hdefaults/syscall/wrapper/hgettimeofday.h"
 
+/*
+ * 引入hstrcmp
+ */
+#include "hdefaults/libc/wrapper/hstrcmp.h"
+
 #if defined(HSOFTPLC)
 #include "h3rdparty/3rdparty/matiec_c_header/iec_types_all.h"
 
@@ -166,4 +171,32 @@ hsoftplc_callback_t hsoftplc_set_callback(hsoftplc_callback_t cb)
     hsoftplc_callback_t ret=hsoftplc_callback;
     hsoftplc_callback=cb;
     return ret;
+}
+
+static const struct
+{
+    const char *  name;
+    void *        variable;
+}
+hsoftplc_located_variables[]=
+{
+#if defined(HSOFTPLC) && !defined(HSOFTPLC_NO_DYNAMIC_LOCATED_VARIABLES)
+#undef __LOCATED_VAR
+#define __LOCATED_VAR(type, name, ...) {  #name , (void *) &__##name },
+#include "LOCATED_VARIABLES.h"
+#undef __LOCATED_VAR
+#endif
+    {NULL,NULL}
+};
+
+void *hsoftplc_get_located_variables(const char *variable_name)
+{
+    for(size_t i=0; i<sizeof(hsoftplc_located_variables)/sizeof(hsoftplc_located_variables[0]); i++)
+    {
+        if(hsoftplc_located_variables[i].name!=NULL && hstrcmp(hsoftplc_located_variables[i].name,variable_name)==0)
+        {
+            return hsoftplc_located_variables[i].variable;
+        }
+    }
+    return NULL;
 }

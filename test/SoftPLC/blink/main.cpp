@@ -3,7 +3,18 @@
 #include <chrono>
 #include <thread>
 
-extern "C" bool plc_get_qx0_0(void);
+static bool plc_get_qx0_0(void)
+{
+    /*
+     * 获取%QX0.0
+     */
+    uint8_t *var=(uint8_t *)hsoftplc_get_located_variables("__QX0_0");
+    if(var!=NULL)
+    {
+        return (*var)!=0;
+    }
+    return false;
+}
 static bool last_qx0_0=false;
 static void hsoftplc_callback(hsoftplc_callback_type_t cb_type)
 {
