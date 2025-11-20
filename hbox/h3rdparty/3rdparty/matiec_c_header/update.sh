@@ -23,7 +23,8 @@ CheckTool mkdir
 [ $? -eq 0 ] || exit;
 CheckTool rsync
 [ $? -eq 0 ] || exit;
-
+CheckTool sed
+[ $? -eq 0 ] || exit;
 
 #获取当前目录
 slef_path=
@@ -66,4 +67,5 @@ then
 	rsync -rl --progress  "${script_dir}/matiec/COPYING" "${script_dir}/"
 	rsync -rl --progress  --include="*.h" --include="*.c" --exclude="*" "${script_dir}/matiec/lib/C/" "${script_dir}/"
 	rsync -rl --progress  --include="*.sh" --include="*.txt" --include="COPYING*"   --include="*.c" --exclude="*" "${script_dir}/matiec/lib/" "${script_dir}/"
+	sed -i 's/#ifdef __APPLE__/#if defined(__APPLE__) || defined(__unix__)/g' "${script_dir}/iec_std_lib.h"
 fi

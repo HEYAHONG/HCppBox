@@ -41,7 +41,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__unix__)
 #include <time.h>
 #endif
 
