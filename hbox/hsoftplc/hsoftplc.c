@@ -200,3 +200,89 @@ void *hsoftplc_get_located_variables(const char *variable_name)
     }
     return NULL;
 }
+
+size_t hsoftplc_get_located_all_variables(hsoftplc_located_variable_enum_callback_t cb,void *usr)
+{
+    size_t ret=0;
+    for(size_t i=0; i<sizeof(hsoftplc_located_variables)/sizeof(hsoftplc_located_variables[0]); i++)
+    {
+        if(hsoftplc_located_variables[i].name!=NULL && hsoftplc_located_variables[i].variable!=NULL )
+        {
+            if(cb!=NULL)
+            {
+                cb(hsoftplc_located_variables[i].name,hsoftplc_located_variables[i].variable,usr);
+            }
+            ret++;
+        }
+    }
+    return ret;
+}
+
+bool hsoftplc_get_iec_addr_from_variable_name(hsoftplc_variable_name_t iec_addr,const char * variable_name)
+{
+    bool ret=false;
+    if(iec_addr==NULL || variable_name==NULL)
+    {
+        return ret;
+    }
+
+    if(variable_name[0]!='_' || variable_name[1]!='_' )
+    {
+        return ret;
+    }
+
+    iec_addr[0]='%';
+
+    for(size_t i=0; i< sizeof(hsoftplc_variable_name_t)-1; i++)
+    {
+        iec_addr[1+i]=variable_name[2+i];
+        if(iec_addr[1+i]=='_')
+        {
+            iec_addr[1+i]='.';
+        }
+        if(iec_addr[1+i]=='\0')
+        {
+            break;
+        }
+    }
+
+    iec_addr[sizeof(hsoftplc_variable_name_t)-1]='\0';
+
+    ret=true;
+    return ret;
+}
+
+bool hsoftplc_get_variable_name_from_iec_addr(hsoftplc_variable_name_t variable_name,const char *iec_addr)
+{
+    bool ret=false;
+    if(iec_addr==NULL || variable_name==NULL)
+    {
+        return ret;
+    }
+
+    if(iec_addr[0]!='%' )
+    {
+        return ret;
+    }
+
+    variable_name[0]='_';
+    variable_name[1]='_';
+
+    for(size_t i=0; i< sizeof(hsoftplc_variable_name_t)-1; i++)
+    {
+        variable_name[2+i]=iec_addr[1+i];
+        if(variable_name[2+i]=='.')
+        {
+            variable_name[2+i]='_';
+        }
+        if(variable_name[2+i]=='\0')
+        {
+            break;
+        }
+    }
+
+    variable_name[sizeof(hsoftplc_variable_name_t)-1]='\0';
+
+    ret=true;
+    return ret;
+}

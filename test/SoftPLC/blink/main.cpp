@@ -9,7 +9,9 @@ static bool plc_get_qx0_0(void)
     /*
      * 获取%QX0.0
      */
-    IEC_BOOL *var=(IEC_BOOL *)hsoftplc_get_located_variables("__QX0_0");
+    hsoftplc_variable_name_t variable_name;
+    hsoftplc_get_variable_name_from_iec_addr(variable_name,"%QX0.0");
+    IEC_BOOL *var=(IEC_BOOL *)hsoftplc_get_located_variables(variable_name);
     if(var!=NULL)
     {
         return (*var)!=0;
@@ -23,6 +25,20 @@ static void hsoftplc_callback(hsoftplc_callback_type_t cb_type)
     {
     case HSOFTPLC_CALLBACK_TYPE_CONFIG_INIT_BEGIN:
     {
+        {
+            /*
+             * 枚举变量
+             */
+            size_t var_count=hsoftplc_get_located_all_variables([](const char *name,void *var,void *usr)
+            {
+                hsoftplc_variable_name_t iec_addr;
+                hsoftplc_variable_name_t variable_name;
+                hsoftplc_get_iec_addr_from_variable_name(iec_addr,name);
+                hsoftplc_get_variable_name_from_iec_addr(variable_name,iec_addr);
+                hprintf("var=%s,iec_addr=%s,addr=0x%p\r\n",variable_name,iec_addr,var);
+            },NULL);
+            hprintf("var_count=%d\r\n",(int)var_count);
+        }
         hprintf("config init begin!\r\n");
     }
     break;

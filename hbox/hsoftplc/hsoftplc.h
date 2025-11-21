@@ -8,6 +8,8 @@
  **************************************************************/
 #ifndef __HSOFTPLC_H__
 #define __HSOFTPLC_H__
+#include "stdlib.h"
+#include "stdbool.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -59,6 +61,47 @@ hsoftplc_callback_t hsoftplc_set_callback(hsoftplc_callback_t cb);
  */
 void *hsoftplc_get_located_variables(const char *variable_name);
 
+/** \brief 软件PLC变量枚举回调
+ *
+ * \param variable_name const char* 变量名称
+ * \param variable void* 变量
+ * \param usr void* 用户参数
+ *
+ */
+typedef void (*hsoftplc_located_variable_enum_callback_t)(const char *variable_name,void *variable,void *usr);
+
+/** \brief 软件PLC变量枚举
+ *
+ * \param cb hsoftplc_located_variable_enum_callback_t 变量枚举回调
+ * \param usr void* 用户参数
+ * \return size_t 变量个数
+ *
+ */
+size_t hsoftplc_get_located_all_variables(hsoftplc_located_variable_enum_callback_t cb,void *usr);
+
+
+/** \brief 变量名称类型
+ */
+typedef char hsoftplc_variable_name_t[32];
+
+/** \brief 通过变量名称获取IEC地址
+ *
+ * \param iec_addr hsoftplc_variable_name_t IEC地址
+ * \param variable_name const char *  变量名称
+ * \return bool 是否成功
+ *
+ */
+bool hsoftplc_get_iec_addr_from_variable_name(hsoftplc_variable_name_t iec_addr,const char * variable_name);
+
+
+/** \brief 通过IEC地址获取变量名称
+ *
+ * \param variable_name hsoftplc_variable_name_t 变量名称
+ * \param iec_addr const char* IEC地址
+ * \return bool 是否成功
+ *
+ */
+bool hsoftplc_get_variable_name_from_iec_addr(hsoftplc_variable_name_t variable_name,const char *iec_addr);
 
 #ifdef __cplusplus
 }
