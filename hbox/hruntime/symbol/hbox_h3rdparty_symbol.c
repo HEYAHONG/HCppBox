@@ -113,6 +113,14 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
 //h3rdparty/h3rdparty_common.c
     {hdefaults_str(h3rdparty_init),(uintptr_t)&h3rdparty_init},
 //h3rdparty/h3rdparty_freebsd_elf_header.c
+//h3rdparty/h3rdparty_freertos_kernel_croutine.c
+//h3rdparty/h3rdparty_freertos_kernel_event_groups.c
+//h3rdparty/h3rdparty_freertos_kernel_heap.c
+//h3rdparty/h3rdparty_freertos_kernel_list.c
+//h3rdparty/h3rdparty_freertos_kernel_queue.c
+//h3rdparty/h3rdparty_freertos_kernel_stream_buffer.c
+//h3rdparty/h3rdparty_freertos_kernel_tasks.c
+//h3rdparty/h3rdparty_freertos_kernel_timers.c
 //h3rdparty/h3rdparty_libfdt_fdt_addresses.c
 //h3rdparty/h3rdparty_libfdt_fdt.c
 //h3rdparty/h3rdparty_libfdt_fdt_check.c
