@@ -84,24 +84,42 @@ size_t hsoftplc_get_located_all_variables(hsoftplc_located_variable_enum_callbac
  */
 typedef char hsoftplc_variable_name_t[32];
 
-/** \brief 通过变量名称获取IEC地址
+/** \brief 软件PLC通过变量名称获取IEC地址
  *
  * \param iec_addr hsoftplc_variable_name_t IEC地址
- * \param variable_name const char *  变量名称
+ * \param variable_name const char *  C语言变量名称
  * \return bool 是否成功
  *
  */
 bool hsoftplc_get_iec_addr_from_variable_name(hsoftplc_variable_name_t iec_addr,const char * variable_name);
 
 
-/** \brief 通过IEC地址获取变量名称
+/** \brief 软件PLC通过IEC地址获取变量名称
  *
- * \param variable_name hsoftplc_variable_name_t 变量名称
+ * \param variable_name hsoftplc_variable_name_t C语言变量名称
  * \param iec_addr const char* IEC地址
  * \return bool 是否成功
  *
  */
 bool hsoftplc_get_variable_name_from_iec_addr(hsoftplc_variable_name_t variable_name,const char *iec_addr);
+
+typedef struct hsoftplc_variable_symbol hsoftplc_variable_symbol_t;
+struct hsoftplc_variable_symbol
+{
+    hsoftplc_variable_name_t buffer;                /**< 存储数据的缓冲 */
+    char            variable_location;              /**< 位置：通常为I（输入）、Q（输出）、M（内存） */
+    char            variable_size;                  /**< 大小：通常为X（1位）、B（8位）、W（16位）、D（32位）、L（64位） */
+    const char *    variable_address[3];            /**< 地址：通常为数字字符串 */
+};
+
+
+/** \brief 软件PLC解析变量符号
+ *
+ * \param variable_name_or_iec_addr const char* C语言变量名称或者IEC地址
+ * \return hsoftplc_variable_symbol_t 变量符号，当失败时变量位置为'\0'字符
+ *
+ */
+hsoftplc_variable_symbol_t hsoftplc_parse_variable_symbol(const char *variable_name_or_iec_addr);
 
 #ifdef __cplusplus
 }

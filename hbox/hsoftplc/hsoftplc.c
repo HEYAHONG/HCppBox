@@ -286,3 +286,72 @@ bool hsoftplc_get_variable_name_from_iec_addr(hsoftplc_variable_name_t variable_
     ret=true;
     return ret;
 }
+
+hsoftplc_variable_symbol_t hsoftplc_parse_variable_symbol(const char *variable_name_or_iec_addr)
+{
+    hsoftplc_variable_symbol_t ret= {0};
+    if(variable_name_or_iec_addr==NULL)
+    {
+        return ret;
+    }
+    size_t base_offset=0;
+    if(variable_name_or_iec_addr[0]=='%')
+    {
+        //IEC地址
+        base_offset=1;
+    }
+    else if(variable_name_or_iec_addr[0]=='_' && variable_name_or_iec_addr[1]=='_' )
+    {
+        //C语言变量名称
+        base_offset=2;
+    }
+    else
+    {
+        //错误的参数
+        return ret;
+    }
+    ret.variable_location=variable_name_or_iec_addr[base_offset];
+    if(ret.variable_location == '\0')
+    {
+        return ret;
+    }
+    ret.variable_size=variable_name_or_iec_addr[base_offset+1];
+    if(ret.variable_size == '\0')
+    {
+        ret.variable_location = '\0';
+        return ret;
+    }
+    size_t address_offset=base_offset+2;
+    if(ret.variable_size >= '0' && ret.variable_size <= 9)
+    {
+        //省略变量大小,默认为1位
+        ret.variable_size='X';
+        address_offset=base_offset+1;
+    }
+
+    ret.variable_address[0]=ret.buffer;
+    ret.buffer[sizeof(ret.buffer)-1]='\0';
+    for(size_t i=0; i<sizeof(ret.buffer)-1; i++)
+    {
+        ret.buffer[i]=variable_name_or_iec_addr[i+address_offset];
+        if(ret.buffer[i] == '\0')
+        {
+            break;
+        }
+        if(ret.buffer[i] == '.' || ret.buffer[i] == '_')
+        {
+            ret.buffer[i]='\0';
+            ret.buffer[i+1]='\0';
+            for(size_t j=0; j<sizeof(ret.variable_address)/sizeof(ret.variable_address[0]); j++)
+            {
+                if(ret.variable_address[j]==NULL)
+                {
+                    ret.variable_address[j]=&ret.buffer[i+1];
+                    break;
+                }
+            }
+        }
+    }
+
+    return ret;
+}
