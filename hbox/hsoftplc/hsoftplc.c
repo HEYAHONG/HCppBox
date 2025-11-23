@@ -322,7 +322,7 @@ hsoftplc_variable_symbol_t hsoftplc_parse_variable_symbol(const char *variable_n
         return ret;
     }
     size_t address_offset=base_offset+2;
-    if(ret.variable_size >= '0' && ret.variable_size <= 9)
+    if(ret.variable_size >= '0' && ret.variable_size <= '9')
     {
         //省略变量大小,默认为1位
         ret.variable_size='X';
