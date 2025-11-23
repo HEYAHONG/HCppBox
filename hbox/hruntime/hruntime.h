@@ -105,11 +105,14 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
 /*
  * 定义导出的HRuntimeInit数据项
  */
+#ifndef HRUNTIME_INIT_DATA
 #define HRUNTIME_INIT_DATA(name,priority,entry,usr)
+#endif // HRUNTIME_INIT_DATA
 
 /*
  * 定义导出的HRuntimeInit结构体
  */
+#ifndef HRUNTIME_INIT_STRUCT
 #define HRUNTIME_INIT_STRUCT(name,priority,entry,usr) \
     static const hruntime_function_t hruntime_init_##name = \
     {\
@@ -117,7 +120,7 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
         (entry) ,\
         (usr) \
     }
-
+#endif // HRUNTIME_INIT_STRUCT
 
 #if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
 /*
@@ -200,14 +203,37 @@ hruntime_function_array_invoke(__hruntime_init_start,(((uintptr_t)__hruntime_ini
  */
 void hruntime_function_loop_cache_invoke(const hruntime_function_t *array_base,size_t array_size);
 
+
+/** \brief 循环函数缓存表添加
+ *
+ * 注意:需要启用缓存表
+ * \param hruntime_function const hruntime_function_t* 运行时函数
+ * \return bool 是否成功
+ *
+ */
+bool hruntime_function_loop_cache_table_add(const hruntime_function_t * hruntime_function);
+
+/** \brief 循环函数缓存表删除
+ *
+ * 注意:需要启用缓存表
+ * \param hruntime_function const hruntime_function_t* 运行时函数
+ * \return bool 是否成功
+ *
+ */
+bool hruntime_function_loop_cache_table_remove(const hruntime_function_t * hruntime_function);
+
+
 /*
  * 定义导出的HRuntimeLoop数据项
  */
+#ifndef HRUNTIME_LOOP_DATA
 #define HRUNTIME_LOOP_DATA(name,priority,entry,usr)
+#endif
 
 /*
  * 定义导出的HRuntimeLoop结构体
  */
+#ifndef HRUNTIME_LOOP_STRUCT
 #define HRUNTIME_LOOP_STRUCT(name,priority,entry,usr) \
     static const hruntime_function_t hruntime_loop_##name = \
     {\
@@ -215,6 +241,7 @@ void hruntime_function_loop_cache_invoke(const hruntime_function_t *array_base,s
         (entry) ,\
         (usr) \
     }
+#endif
 
 #if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
 /*
