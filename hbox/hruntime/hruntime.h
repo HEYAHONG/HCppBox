@@ -206,7 +206,7 @@ void hruntime_function_loop_cache_invoke(const hruntime_function_t *array_base,s
 
 /** \brief 循环函数缓存表添加
  *
- * 注意:需要启用缓存表
+ * 注意:需要启用缓存表,由于内部未加锁，推荐在运行时函数运行时调用
  * \param hruntime_function const hruntime_function_t* 运行时函数
  * \return bool 是否成功
  *
@@ -215,7 +215,7 @@ bool hruntime_function_loop_cache_table_add(const hruntime_function_t * hruntime
 
 /** \brief 循环函数缓存表删除
  *
- * 注意:需要启用缓存表
+ * 注意:需要启用缓存表,由于内部未加锁，推荐在运行时函数运行时调用
  * \param hruntime_function const hruntime_function_t* 运行时函数
  * \return bool 是否成功
  *
