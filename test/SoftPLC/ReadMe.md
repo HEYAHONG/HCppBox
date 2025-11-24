@@ -42,4 +42,5 @@ make install
 #  目录说明
 
 - [blink](blink)：闪灯程序
+- [trafic_light](trafic_light)：交通灯程序
 
