@@ -55,6 +55,7 @@ intptr_t __hdefaults_usercall_return_check(uintptr_t usercall_number,intptr_t re
  *
  */
 #define hdefaults_usercall(usercall_number,...) \
+        do\
         {\
             const hdefaults_api_table_t *api_table=hdefaults_get_api_table();\
             intptr_t hdefaults_usercall_ret_value=0;\
@@ -63,7 +64,7 @@ intptr_t __hdefaults_usercall_return_check(uintptr_t usercall_number,intptr_t re
                     hdefaults_usercall_ret_value=api_table->usercall((uintptr_t)(usercall_number),##__VA_ARGS__);\
             }\
             hdefaults_usercall_return_check(usercall_number,hdefaults_usercall_ret_value);\
-        }
+        } while(0)
 
 #ifdef __cplusplus
 #define HDEFAULTS_USERCALL_DECLARE(NAME) \
