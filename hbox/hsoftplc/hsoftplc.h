@@ -115,11 +115,12 @@ struct hsoftplc_variable_symbol
 
 /** \brief 软件PLC解析变量符号
  *
+ * \param variable_symbol hsoftplc_variable_symbol_t * 变量符号，不可为NULL
  * \param variable_name_or_iec_addr const char* C语言变量名称或者IEC地址
- * \return hsoftplc_variable_symbol_t 变量符号，当失败时变量位置为'\0'字符
+ * \return hsoftplc_variable_symbol_t * 变量符号，当失败时返回NULL
  *
  */
-hsoftplc_variable_symbol_t hsoftplc_parse_variable_symbol(const char *variable_name_or_iec_addr);
+hsoftplc_variable_symbol_t * hsoftplc_parse_variable_symbol(hsoftplc_variable_symbol_t * variable_symbol,const char *variable_name_or_iec_addr);
 
 #ifdef __cplusplus
 }

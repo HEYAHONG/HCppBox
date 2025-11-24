@@ -287,12 +287,15 @@ bool hsoftplc_get_variable_name_from_iec_addr(hsoftplc_variable_name_t variable_
     return ret;
 }
 
-hsoftplc_variable_symbol_t hsoftplc_parse_variable_symbol(const char *variable_name_or_iec_addr)
+hsoftplc_variable_symbol_t * hsoftplc_parse_variable_symbol(hsoftplc_variable_symbol_t * variable_symbol,const char *variable_name_or_iec_addr)
 {
-    hsoftplc_variable_symbol_t ret= {0};
-    if(variable_name_or_iec_addr==NULL)
+    if(variable_symbol == NULL || variable_name_or_iec_addr==NULL)
     {
-        return ret;
+        return NULL;
+    }
+    {
+        hsoftplc_variable_symbol_t zero_variable_symbol= {0};
+        (*variable_symbol)=zero_variable_symbol;
     }
     size_t base_offset=0;
     if(variable_name_or_iec_addr[0]=='%')
@@ -308,50 +311,50 @@ hsoftplc_variable_symbol_t hsoftplc_parse_variable_symbol(const char *variable_n
     else
     {
         //错误的参数
-        return ret;
+        return NULL;
     }
-    ret.variable_location=variable_name_or_iec_addr[base_offset];
-    if(ret.variable_location == '\0')
+    variable_symbol->variable_location=variable_name_or_iec_addr[base_offset];
+    if(variable_symbol->variable_location == '\0')
     {
-        return ret;
+        return NULL;
     }
-    ret.variable_size=variable_name_or_iec_addr[base_offset+1];
-    if(ret.variable_size == '\0')
+    variable_symbol->variable_size=variable_name_or_iec_addr[base_offset+1];
+    if(variable_symbol->variable_size == '\0')
     {
-        ret.variable_location = '\0';
-        return ret;
+        variable_symbol->variable_location = '\0';
+        return NULL;
     }
     size_t address_offset=base_offset+2;
-    if(ret.variable_size >= '0' && ret.variable_size <= '9')
+    if(variable_symbol->variable_size >= '0' && variable_symbol->variable_size <= '9')
     {
         //省略变量大小,默认为1位
-        ret.variable_size='X';
+        variable_symbol->variable_size='X';
         address_offset=base_offset+1;
     }
 
-    ret.variable_address[0]=ret.buffer;
-    ret.buffer[sizeof(ret.buffer)-1]='\0';
-    for(size_t i=0; i<sizeof(ret.buffer)-1; i++)
+    variable_symbol->variable_address[0]=variable_symbol->buffer;
+    variable_symbol->buffer[sizeof(variable_symbol->buffer)-1]='\0';
+    for(size_t i=0; i<sizeof(variable_symbol->buffer)-1; i++)
     {
-        ret.buffer[i]=variable_name_or_iec_addr[i+address_offset];
-        if(ret.buffer[i] == '\0')
+        variable_symbol->buffer[i]=variable_name_or_iec_addr[i+address_offset];
+        if(variable_symbol->buffer[i] == '\0')
         {
             break;
         }
-        if(ret.buffer[i] == '.' || ret.buffer[i] == '_')
+        if(variable_symbol->buffer[i] == '.' || variable_symbol->buffer[i] == '_')
         {
-            ret.buffer[i]='\0';
-            ret.buffer[i+1]='\0';
-            for(size_t j=0; j<sizeof(ret.variable_address)/sizeof(ret.variable_address[0]); j++)
+            variable_symbol->buffer[i]='\0';
+            variable_symbol->buffer[i+1]='\0';
+            for(size_t j=0; j<sizeof(variable_symbol->variable_address)/sizeof(variable_symbol->variable_address[0]); j++)
             {
-                if(ret.variable_address[j]==NULL)
+                if(variable_symbol->variable_address[j]==NULL)
                 {
-                    ret.variable_address[j]=&ret.buffer[i+1];
+                    variable_symbol->variable_address[j]=&variable_symbol->buffer[i+1];
                     break;
                 }
             }
         }
     }
 
-    return ret;
+    return variable_symbol;
 }
