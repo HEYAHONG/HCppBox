@@ -12,4 +12,4 @@
 
 OpenPLC工程见[OpenPLC](OpenPLC)，可使用**[OpenPLC_Editor](https://github.com/thiagoralves/OpenPLC_Editor.git)**打开该目录。
 
-注意:如需更新ST程序，请可能需要删除ST程序中的调试信息。
+注意:如需更新ST程序，可能需要删除ST程序中的调试信息。
