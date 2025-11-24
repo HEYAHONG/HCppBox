@@ -1419,6 +1419,8 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hruntime_loop_enable_softwaretimer),(uintptr_t)&hruntime_loop_enable_softwaretimer},
     {hdefaults_str(hruntime_function_array_invoke),(uintptr_t)&hruntime_function_array_invoke},
     {hdefaults_str(hruntime_function_loop_cache_invoke),(uintptr_t)&hruntime_function_loop_cache_invoke},
+    {hdefaults_str(hruntime_function_loop_cache_table_add),(uintptr_t)&hruntime_function_loop_cache_table_add},
+    {hdefaults_str(hruntime_function_loop_cache_table_remove),(uintptr_t)&hruntime_function_loop_cache_table_remove},
     {hdefaults_str(hruntime_symbol_find),(uintptr_t)&hruntime_symbol_find},
     {hdefaults_str(hruntime_symbol_dynamic_find),(uintptr_t)&hruntime_symbol_dynamic_find},
     {hdefaults_str(hruntime_symbol_dynamic_table_register),(uintptr_t)&hruntime_symbol_dynamic_table_register},
@@ -1741,6 +1743,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hsoftplc_get_located_all_variables),(uintptr_t)&hsoftplc_get_located_all_variables},
     {hdefaults_str(hsoftplc_get_iec_addr_from_variable_name),(uintptr_t)&hsoftplc_get_iec_addr_from_variable_name},
     {hdefaults_str(hsoftplc_get_variable_name_from_iec_addr),(uintptr_t)&hsoftplc_get_variable_name_from_iec_addr},
+    {hdefaults_str(hsoftplc_parse_variable_symbol),(uintptr_t)&hsoftplc_parse_variable_symbol},
 //huuid.c
     {hdefaults_str(huuid_null_uuid),(uintptr_t)&huuid_null_uuid},
     {hdefaults_str(huuid_clear),(uintptr_t)&huuid_clear},
