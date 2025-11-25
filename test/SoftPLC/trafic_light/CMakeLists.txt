@@ -54,7 +54,7 @@ target_link_libraries(trafic_light trafic_light_st_plc)
 hcppbox_enable(trafic_light)
 
 #dll(用于其它程序加载)
-file(GLOB PLC_DLL_C_FILES  plc_dll.c)
+file(GLOB PLC_DLL_C_FILES  plc_dll.cpp)
 add_library(plc SHARED ${PLC_DLL_C_FILES})
 target_link_libraries(plc trafic_light_st_plc)
 hcppbox_enable(plc)

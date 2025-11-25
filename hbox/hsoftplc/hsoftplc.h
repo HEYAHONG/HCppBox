@@ -145,7 +145,8 @@ struct hsoftplc_public_interface
 
 #ifdef __cplusplus
 #define HSOFTPLC_EXPORT_INTERFACE() \
-extern "C" hsoftplc_public_interface_t hsoftplc_interface =\
+extern "C" hsoftplc_public_interface_t hsoftplc_interface;\
+hsoftplc_public_interface_t hsoftplc_interface =\
 HSOFTPLC_PUBLIC_INTERFACE_INIT_DATA
 #else
 #define HSOFTPLC_EXPORT_INTERFACE() \
