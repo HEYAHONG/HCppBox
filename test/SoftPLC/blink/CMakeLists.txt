@@ -7,6 +7,9 @@ project(SoftPLC C CXX ASM)
 set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fs/)
 
 
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+    add_compile_options(-fPIC )
+endif()
 if(MSVC)
     add_compile_options(-utf-8 )
 endif()
@@ -18,6 +21,7 @@ if(NOT MATIEC_IEC2C_FOUND)
 else()
     message(STATUS "iec2c: ${IEC2C}")
 endif()
+
 
 #添加C语言头文件
 include_directories(
@@ -50,3 +54,12 @@ file(GLOB BLINK_C_FILES  *.cpp *.h *.c)
 add_executable(blink ${BLINK_C_FILES})
 target_link_libraries(blink blink_st_plc)
 hcppbox_enable(blink)
+
+#dll(用于其它程序加载)
+file(GLOB PLC_DLL_C_FILES  plc_dll.c)
+add_library(plc SHARED ${PLC_DLL_C_FILES})
+target_link_libraries(plc blink_st_plc)
+hcppbox_enable(plc)
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+    target_link_libraries(plc -static-libgcc -static-libstdc++ )
+endif()
