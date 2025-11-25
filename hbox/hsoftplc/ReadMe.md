@@ -13,6 +13,23 @@
 
 宏定义可由hdefaults组件引入，也可以在C编译器的命令行上定义。
 
+# 动态链接库支持
+
+在实际应用中，软件PLC常使用动态链接库作为PLC逻辑的可执行文件,可方便传输。
+
+本组件提供接口导出功能，使用方法如下:
+
+```c
+#include "hbox.h"
+
+/*
+ * 导出动态链接库接口
+ */
+HSOFTPLC_EXPORT_INTERFACE();
+```
+
+用户使用时，只需要获取`hsoftplc_interface`符号（类型为`hsoftplc_public_interface_t`）的地址，然后调用相关函数运行PLC逻辑即可。
+
 # 注意
 
 - 本组件默认不开启，需要用户在构建软件PLC时手动启用。
