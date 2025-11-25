@@ -16,6 +16,13 @@
 #define realloc hrealloc
 
 #ifndef  H3RDPARTY_USING_SYSTEM_CJSON
+/*
+ * 隐藏cJSON符号
+ */
+#ifndef  CJSON_HIDE_SYMBOLS
+#define  CJSON_HIDE_SYMBOLS 1
+#endif
+
 #include "3rdparty/cJSON/cJSON_Utils.c"
 #endif // H3RDPARTY_USING_SYSTEM_CJSON
 

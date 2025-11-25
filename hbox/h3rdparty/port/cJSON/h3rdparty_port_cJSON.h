@@ -13,6 +13,10 @@
  * 引入cJSON库
  */
 #ifndef H3RDPARTY_USING_SYSTEM_CJSON
+/*
+ * 隐藏cJSON符号
+ */
+#define  CJSON_HIDE_SYMBOLS 1
 #include "h3rdparty/3rdparty/cJSON/cJSON.h"
 #include "h3rdparty/3rdparty/cJSON/cJSON_Utils.h"
 #else
