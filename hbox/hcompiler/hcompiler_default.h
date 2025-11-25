@@ -98,32 +98,57 @@
 #endif //__SECTION
 
 /*
-未使用，通常用于消除编译器警告(未使用的参数)
-*/
+ *未使用，通常用于消除编译器警告(未使用的参数)
+ */
 #ifndef UNUSED
 #define UNUSED(x) ((void)x)
 #endif // UNUSED
 
 /*
-标识IO输入,一般定义为volatile,通常用于嵌入式
-*/
+ *标识IO输入,一般定义为volatile,通常用于嵌入式
+ */
 #ifndef __IO_I
 #define __IO_I volatile
 #endif // __IO_I
 
 /*
-标识IO输出,一般定义为volatile,通常用于嵌入式
-*/
+ *标识IO输出,一般定义为volatile,通常用于嵌入式
+ */
 #ifndef __IO_O
 #define __IO_O volatile
 #endif // __IO_O
 
 /*
-标识IO输入输出,,一般定义为volatile,通常用于嵌入式
-*/
+ *标识IO输入输出,,一般定义为volatile,通常用于嵌入式
+ */
 #ifndef __IO
 #define __IO volatile
 #endif // __IO
 
+/*
+ * 动态连接库导出
+ */
+#ifndef __DLLEXPORT
+#define __DLLEXPORT
+#endif // __DLLEXPORT
+
+
+/*
+ * 动态连接库导入
+ */
+#ifndef __DLLIMPORT
+#define __DLLIMPORT
+#endif // __DLLIMPORT
+
+/*
+ * 动态链接库导出导入设置
+ */
+#ifndef __DLLSPEC
+#ifndef HCOMPILER_DLLSPEC_IMPORT
+#define __DLLSPEC __DLLEXPORT
+#else
+#define __DLLSPEC __DLLIMPORT
+#endif // HCOMPILER_DLLSPEC_IMPORT
+#endif // __DLLSPEC
 
 #endif

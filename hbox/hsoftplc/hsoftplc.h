@@ -10,6 +10,7 @@
 #define __HSOFTPLC_H__
 #include "stdlib.h"
 #include "stdbool.h"
+#include "hcompiler.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -145,12 +146,12 @@ struct hsoftplc_public_interface
 
 #ifdef __cplusplus
 #define HSOFTPLC_EXPORT_INTERFACE() \
-extern "C" hsoftplc_public_interface_t hsoftplc_interface;\
-hsoftplc_public_interface_t hsoftplc_interface =\
+extern "C" __DLLEXPORT hsoftplc_public_interface_t  hsoftplc_interface;\
+__DLLEXPORT hsoftplc_public_interface_t  hsoftplc_interface =\
 HSOFTPLC_PUBLIC_INTERFACE_INIT_DATA
 #else
 #define HSOFTPLC_EXPORT_INTERFACE() \
-hsoftplc_public_interface_t hsoftplc_interface =\
+__DLLEXPORT hsoftplc_public_interface_t hsoftplc_interface =\
 HSOFTPLC_PUBLIC_INTERFACE_INIT_DATA
 #endif // __cplusplus
 

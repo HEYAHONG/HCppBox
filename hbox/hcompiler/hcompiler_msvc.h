@@ -9,6 +9,19 @@
 #ifndef __HCOMPILER_MSVC_H__
 #define __HCOMPILER_MSVC_H__
 
+/*
+ * 动态连接库导出
+ */
+#ifndef __DLLEXPORT
+#define __DLLEXPORT  __declspec( dllexport )
+#endif // __DLLEXPORT
 
+
+/*
+ * 动态连接库导入
+ */
+#ifndef __DLLIMPORT
+#define __DLLIMPORT  __declspec( dllimport )
+#endif // __DLLIMPORT
 
 #endif

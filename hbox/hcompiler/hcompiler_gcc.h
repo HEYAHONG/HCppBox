@@ -61,4 +61,29 @@
 #define __SECTION(x)                          __attribute__((section(x)))
 #endif
 
+
+#if defined(_WIN32) || defined(WIN32) || defined (__WIN32__)
+
+#ifndef __DLLEXPORT
+#define __DLLEXPORT  __declspec( dllexport ) __attribute__((visibility("default")))
+#endif // __DLLEXPORT
+
+
+#ifndef __DLLIMPORT
+#define __DLLIMPORT  __declspec( dllimport )
+#endif // __DLLIMPORT
+
+#else
+
+#ifndef __DLLEXPORT
+#define __DLLEXPORT  __attribute__((visibility("default")))
+#endif // __DLLEXPORT
+
+#ifndef __DLLIMPORT
+#define __DLLIMPORT
+#endif // __DLLIMPORT
+
 #endif
+
+#endif // __HCOMPILER_GCC_H__
+
