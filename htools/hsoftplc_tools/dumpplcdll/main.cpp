@@ -1,18 +1,7 @@
-#include "HCPPBox.h"
 #include "hbox.h"
-#include "hrc.h"
-#include "stdlib.h"
-#include "stdio.h"
 #include <string>
-#include <codecvt>
-#include <iostream>
-#include <locale>
-#include <set>
-#include <fstream>
-#include <algorithm>
-#include "stdio.h"
-#include "stdlib.h"
-#include "sstream"
+#include <hrc.h>
+
 
 
 static int cmd_help(int argc,const char *argv[]);

@@ -6,3 +6,4 @@ add_custom_target(dumpplcdll_tool  ${CMAKE_COMMAND} -E make_directory dumpplcdll
                                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
                                     USES_TERMINAL)
 add_dependencies(hsoftplc_tools dumpplcdll_tool)
+message(STATUS "Enable dumpplcdll_tool!" )
