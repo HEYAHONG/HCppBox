@@ -19,10 +19,10 @@ extern "C"
 typedef struct hed25519_ed25519_pt hed25519_ed25519_pt_t;
 struct hed25519_ed25519_pt
 {
-    hed25519_f25519_t		x;
-    hed25519_f25519_t		y;
-    hed25519_f25519_t		t;
-    hed25519_f25519_t		z;
+    hed25519_f25519_t       x;
+    hed25519_f25519_t       y;
+    hed25519_f25519_t       t;
+    hed25519_f25519_t       z;
 };
 
 extern const hed25519_ed25519_pt_t hed25519_ed25519_base;
@@ -30,12 +30,12 @@ extern const hed25519_ed25519_pt_t hed25519_ed25519_base;
 void hed25519_ed25519_project(hed25519_ed25519_pt_t *p,const hed25519_f25519_t x, const hed25519_f25519_t y);
 void hed25519_ed25519_unproject(hed25519_f25519_t x, hed25519_f25519_t y,const hed25519_ed25519_pt_t *p);
 
-#define HED25519_ED25519_PACK_SIZE	HED25519_F25519_SIZE
+#define HED25519_ED25519_PACK_SIZE  HED25519_F25519_SIZE
 
 void hed25519_ed25519_pack(hed25519_f25519_t c, const hed25519_f25519_t x, const hed25519_f25519_t y);
 uint8_t hed25519_ed25519_try_unpack(hed25519_f25519_t x, hed25519_f25519_t y, const hed25519_f25519_t c);
 
-#define HED25519_ED25519_EXPONENT_SIZE	HED25519_F25519_SIZE
+#define HED25519_ED25519_EXPONENT_SIZE  HED25519_F25519_SIZE
 
 static inline void hed25519_ed25519_prepare(hed25519_f25519_t e)
 {
@@ -44,7 +44,7 @@ static inline void hed25519_ed25519_prepare(hed25519_f25519_t e)
     e[31] |= 0x40;
 }
 
-static inline void hed25519_ed25519_copy(hed25519_ed25519_pt_t *dst,	const hed25519_ed25519_pt_t *src)
+static inline void hed25519_ed25519_copy(hed25519_ed25519_pt_t *dst,    const hed25519_ed25519_pt_t *src)
 {
     memcpy(dst, src, sizeof(*dst));
 }

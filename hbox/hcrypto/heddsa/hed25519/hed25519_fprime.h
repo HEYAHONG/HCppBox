@@ -16,7 +16,7 @@ extern "C"
 {
 #endif // __cplusplus
 
-#define HED25519_FPRIME_SIZE		(32)
+#define HED25519_FPRIME_SIZE        (32)
 
 typedef uint8_t hed25519_fprime_t[HED25519_FPRIME_SIZE];
 

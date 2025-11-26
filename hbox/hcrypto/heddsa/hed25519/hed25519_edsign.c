@@ -8,7 +8,7 @@
  **************************************************************/
 #include "hed25519_edsign.h"
 
-#define HED25519_EXPANDED_SIZE		(64)
+#define HED25519_EXPANDED_SIZE      (64)
 
 static const hed25519_fprime_t hed25519_ed25519_order=
 {

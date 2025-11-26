@@ -21,7 +21,7 @@ extern "C"
 #include "hed25519/hed25519_f25519.h"
 #include "hed25519/hed25519_ed25519.h"
 #include "hed25519/hed25519_edsign.h"
-
+#include "hed25519/hed25519_file.h"
 
 #ifdef __cplusplus
 }

@@ -18,7 +18,7 @@ extern "C"
 {
 #endif // __cplusplus
 
-#define HED25519_EDSIGN_SECRET_KEY_SIZE		(32)
+#define HED25519_EDSIGN_SECRET_KEY_SIZE     (32)
 
 /*
  * 私钥可使用随机数填充
@@ -27,13 +27,13 @@ typedef uint8_t hed25519_edsign_secret_key_t[HED25519_EDSIGN_SECRET_KEY_SIZE];
 
 void hed25519_edsign_sec_generate(hed25519_edsign_secret_key_t secret);
 
-#define HED25519_EDSIGN_PUBLIC_KEY_SIZE		(32)
+#define HED25519_EDSIGN_PUBLIC_KEY_SIZE     (32)
 
 typedef uint8_t hed25519_edsign_public_key_t[HED25519_EDSIGN_PUBLIC_KEY_SIZE];
 
 void hed25519_edsign_sec_to_pub(hed25519_sha512_config_t  *cfg,hed25519_edsign_public_key_t pub, const hed25519_edsign_public_key_t secret);
 
-#define HED25519_EDSIGN_SIGNATURE_SIZE		(64)
+#define HED25519_EDSIGN_SIGNATURE_SIZE      (64)
 
 typedef uint8_t hed25519_edsign_signature_t[HED25519_EDSIGN_SIGNATURE_SIZE];
 
