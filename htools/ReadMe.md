@@ -15,4 +15,7 @@
 
 - [hgui_tools](hgui_tools):hgui组件所使用的工具。
 - [hnet_tools](hnet_tools):hnet组件所使用的工具。
+- [hcrypto_tools](hcrypto_tools):hcrypto组件所使用的工具。
+- [hsimulator_tools](hsimulator_tools)：hsimulator组件所使用的工具
+- [hsoftplc_tools](hsoftplc_tools)：hsoftplc组件所使用的工具
 - [common](common):公共代码
