@@ -224,20 +224,20 @@ static int dumpplcdll(void)
         exit(-1);
     }
 
-    hsoftplc_public_interface_t *interface=(hsoftplc_public_interface_t *)hdlsym(dll_handle,"hsoftplc_interface");
-    if(interface == NULL)
+    hsoftplc_public_interface_t *hsoftplc_interface=(hsoftplc_public_interface_t *)hdlsym(dll_handle,"hsoftplc_interface");
+    if(hsoftplc_interface == NULL)
     {
         fprintf(stderr,"get interface failed!\r\n");
         exit(-1);
     }
 
-    if(interface->interface_length != sizeof(*interface) || interface->interface_get_located_all_variables == NULL)
+    if(hsoftplc_interface->interface_length != sizeof(*hsoftplc_interface) || hsoftplc_interface->interface_get_located_all_variables == NULL)
     {
         fprintf(stderr,"check interface failed!\r\n");
         exit(-1);
     }
 
-    interface->interface_get_located_all_variables([](const char *name,void *var,void *usr)
+    hsoftplc_interface->interface_get_located_all_variables([](const char *name,void *var,void *usr)
     {
         hsoftplc_variable_name_t iec_addr;
         hsoftplc_variable_name_t variable_name;
