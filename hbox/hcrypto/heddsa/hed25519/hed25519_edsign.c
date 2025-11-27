@@ -130,6 +130,102 @@ void hed25519_edsign_sign(hed25519_edsign_signature_t signature,hed25519_sha512_
     memcpy(signature + 32, s, 32);
 }
 
+
+static void hed25519_generate_k2(hed25519_sha512_config_t  *cfg,uint8_t *k, const uint8_t *kgen_key,hed25519_edsign_sign2_callback_t cb, void *usr)
+{
+    hed25519_sha512_context_t s;
+
+    hed25519_sha512_starts(cfg,&s);
+    hed25519_sha512_update(cfg,&s, kgen_key, 32);
+    if(cb != NULL)
+    {
+        uint8_t buffer[4096];
+        size_t  offset=0;
+        while(true)
+        {
+            int byte_read=cb(usr,offset,buffer,sizeof(buffer));
+            if(byte_read > 0)
+            {
+                hed25519_sha512_update(cfg,&s, buffer, byte_read);
+                offset+=byte_read;
+                if(byte_read!=sizeof(buffer))
+                {
+                    /*
+                     * 到达尾部
+                     */
+                    break;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    hed25519_save_hash(cfg,&s, k);
+}
+
+static void hed25519_hash_message2(hed25519_sha512_config_t  *cfg,uint8_t *z, const uint8_t *r, const uint8_t *a,hed25519_edsign_sign2_callback_t cb, void *usr)
+{
+    hed25519_sha512_context_t s;
+
+    hed25519_sha512_starts(cfg,&s);
+    hed25519_sha512_update(cfg,&s, r, 32);
+    hed25519_sha512_update(cfg,&s, a, 32);
+    if(cb != NULL)
+    {
+        uint8_t buffer[4096];
+        size_t  offset=0;
+        while(true)
+        {
+            int byte_read=cb(usr,offset,buffer,sizeof(buffer));
+            if(byte_read > 0)
+            {
+                hed25519_sha512_update(cfg,&s, buffer, byte_read);
+                offset+=byte_read;
+                if(byte_read!=sizeof(buffer))
+                {
+                    /*
+                     * 到达尾部
+                     */
+                    break;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    hed25519_save_hash(cfg,&s, z);
+}
+
+void hed25519_edsign_sign2(hed25519_edsign_signature_t signature,hed25519_sha512_config_t  *cfg,const hed25519_edsign_public_key_t pub,const hed25519_edsign_secret_key_t secret,hed25519_edsign_sign2_callback_t cb, void *usr)
+{
+    uint8_t expanded[HED25519_EXPANDED_SIZE];
+    uint8_t e[HED25519_FPRIME_SIZE];
+    uint8_t s[HED25519_FPRIME_SIZE];
+    uint8_t k[HED25519_FPRIME_SIZE];
+    uint8_t z[HED25519_FPRIME_SIZE];
+
+    hed25519_expand_key(cfg,expanded, secret);
+
+    /* Generate k and R = kB */
+    hed25519_generate_k2(cfg,k, expanded + 32, cb, usr);
+    hed25519_sm_pack(signature, k);
+
+    /* Compute z = H(R, A, M) */
+    hed25519_hash_message2(cfg,z, signature, pub, cb, usr);
+
+    /* Obtain e */
+    hed25519_fprime_from_bytes(e, expanded, 32, hed25519_ed25519_order);
+
+    /* Compute s = ze + k */
+    hed25519_fprime_mul(s, z, e, hed25519_ed25519_order);
+    hed25519_fprime_add(s, k, hed25519_ed25519_order);
+    memcpy(signature + 32, s, 32);
+}
+
 void hed25519_edsign_verify_init(hed25519_edsign_verify_state_t *st,hed25519_sha512_config_t  *cfg,const hed25519_edsign_signature_t sig,const hed25519_edsign_public_key_t pub)
 {
     if(st==NULL)

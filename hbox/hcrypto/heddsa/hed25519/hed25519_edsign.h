@@ -39,6 +39,9 @@ typedef uint8_t hed25519_edsign_signature_t[HED25519_EDSIGN_SIGNATURE_SIZE];
 
 void hed25519_edsign_sign(hed25519_edsign_signature_t signature,hed25519_sha512_config_t  *cfg,const hed25519_edsign_public_key_t pub,const hed25519_edsign_secret_key_t secret,const void *message, size_t len);
 
+typedef int (*hed25519_edsign_sign2_callback_t)(void *usr,size_t offset,void *buffer,size_t buffer_length);
+
+void hed25519_edsign_sign2(hed25519_edsign_signature_t signature,hed25519_sha512_config_t  *cfg,const hed25519_edsign_public_key_t pub,const hed25519_edsign_secret_key_t secret,hed25519_edsign_sign2_callback_t cb, void *usr);
 
 typedef struct hed25519_edsign_verify_state hed25519_edsign_verify_state_t;
 struct hed25519_edsign_verify_state
