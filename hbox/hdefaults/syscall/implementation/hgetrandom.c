@@ -30,6 +30,10 @@
 #include <sys/random.h>
 #endif
 
+#if defined(HDEFAULTS_OS_WINDOWS)
+#include "wincrypt.h"
+#endif
+
 #if defined(HGETRANDOM)
 extern hgetrandom_ssize_t HGETRANDOM(void *buffer, size_t length,unsigned int flags);
 #endif // defined
@@ -41,6 +45,18 @@ HDEFAULTS_USERCALL_DEFINE3(hgetrandom,HDEFAULTS_SYSCALL_HGETRANDOM,hgetrandom_ss
     ret=HGETRANDOM(buffer,length,flags);
 #elif defined(HDEFAULTS_OS_UNIX) && !(defined(HDEFAULTS_OS_ANDROID)) && (!defined(HDEFAULTS_LIBC_UCLIBC))
     ret=getrandom(buffer,length,flags);
+#elif defined(HDEFAULTS_OS_WINDOWS)
+    {
+        HCRYPTPROV hCryptProv;
+        if(CryptAcquireContext(&hCryptProv,NULL,NULL,PROV_RSA_FULL,CRYPT_VERIFYCONTEXT))
+        {
+            if(CryptGenRandom(hCryptProv,length,(BYTE *)buffer))
+            {
+                ret=length;
+            }
+            CryptReleaseContext(hCryptProv,0);
+        }
+    }
 #else
     {
         static bool is_random_init=false;
