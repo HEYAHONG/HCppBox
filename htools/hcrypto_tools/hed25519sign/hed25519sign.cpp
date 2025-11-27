@@ -101,7 +101,12 @@ static void check_args(int argc,char *argv[])
 
     if(help->count > 0)
     {
-        local_fprintf(stdout,"Usage: %s [Commands] [Options]\r\n",argv[0]);
+        const char *banner="";
+        if(RCGetHandle("banner")!=NULL)
+        {
+            banner=(const char *)RCGetHandle("banner");
+        }
+        local_fprintf(stdout,"%s\r\nUsage: %s [Commands] [Options]\r\n",banner,argv[0]);
         arg_print_glossary(stdout,argtable,"  %-25s %s\n");
         hexit(0);
     }
