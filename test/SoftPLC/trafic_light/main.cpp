@@ -4,72 +4,7 @@
 #include <thread>
 #include HSOFTPLC_IEC_BASE_TYPE_HEADER
 
-static bool plc_get_qx0_0(void)
-{
-    /*
-     * 获取%QX0.0
-     */
-    hsoftplc_variable_name_t variable_name;
-    hsoftplc_get_variable_name_from_iec_addr(variable_name,"%QX0.0");
-    IEC_BOOL *var=(IEC_BOOL *)hsoftplc_get_located_variables(variable_name);
-    if(var!=NULL)
-    {
-        return (*var)!=0;
-    }
-    return false;
-}
-
-static bool plc_get_qx0_1(void)
-{
-    /*
-     * 获取%QX0.1
-     */
-    hsoftplc_variable_name_t variable_name;
-    hsoftplc_get_variable_name_from_iec_addr(variable_name,"%QX0.1");
-    IEC_BOOL *var=(IEC_BOOL *)hsoftplc_get_located_variables(variable_name);
-    if(var!=NULL)
-    {
-        return (*var)!=0;
-    }
-    return false;
-}
-
-static bool plc_get_qx0_2(void)
-{
-    /*
-     * 获取%QX0.2
-     */
-    hsoftplc_variable_name_t variable_name;
-    hsoftplc_get_variable_name_from_iec_addr(variable_name,"%QX0.2");
-    IEC_BOOL *var=(IEC_BOOL *)hsoftplc_get_located_variables(variable_name);
-    if(var!=NULL)
-    {
-        return (*var)!=0;
-    }
-    return false;
-}
-
-static bool plc_get_qx0_3(void)
-{
-    /*
-     * 获取%QX0.3
-     */
-    hsoftplc_variable_name_t variable_name;
-    hsoftplc_get_variable_name_from_iec_addr(variable_name,"%QX0.3");
-    IEC_BOOL *var=(IEC_BOOL *)hsoftplc_get_located_variables(variable_name);
-    if(var!=NULL)
-    {
-        return (*var)!=0;
-    }
-    return false;
-}
-
-
-static uint8_t last_trafic_light_flag=0;
-static uint8_t get_current_trafic_light_flag(void)
-{
-    return (plc_get_qx0_0()?(0x1):(0x0)) | (plc_get_qx0_1()?(0x2):(0x0)) | (plc_get_qx0_2()?(0x4):(0x0)) | (plc_get_qx0_3()?(0x8):(0x0));
-}
+std::map<hsoftplc_database_key_t,hsoftplc_database_value_cache_t> plc_variable_cache;
 
 static void hsoftplc_callback(hsoftplc_callback_type_t cb_type)
 {
@@ -104,27 +39,44 @@ static void hsoftplc_callback(hsoftplc_callback_type_t cb_type)
     break;
     case HSOFTPLC_CALLBACK_TYPE_CONFIG_INIT_END:
     {
+        hsoftplc_get_located_all_variables([](const char *name,void *var,void *usr)
+        {
+            hsoftplc_database_key_t key=hsoftplc_database_key_get_from_variable_name(name);
+            hsoftplc_database_value_cache_init(&plc_variable_cache[key],name,var);
+        },NULL);
         hprintf("config init end!\r\n");
-        //打印输出状态
-        hprintf("%%QX0.0=%-08s,%%QX0.1=%-08s,%%QX0.2=%-08s,%%QX0.3=%-08s tick=%u\r\n",(plc_get_qx0_0())?"true":"false",(plc_get_qx0_1())?"true":"false",(plc_get_qx0_2())?"true":"false",(plc_get_qx0_3())?"true":"false",(unsigned)hdefaults_tick_get());
+        hprintf("\r\n");
     }
     break;
     case HSOFTPLC_CALLBACK_TYPE_CONFIG_RUN_BEGIN:
     {
-        /*
-         * 记录交通灯标志
-         */
-        last_trafic_light_flag=get_current_trafic_light_flag();
+
     }
     break;
     case HSOFTPLC_CALLBACK_TYPE_CONFIG_RUN_END:
     {
-        /*
-         * 判断交通灯标志
-         */
-        if((get_current_trafic_light_flag())!=last_trafic_light_flag)
+        bool is_update=false;
+        hsoftplc_get_located_all_variables([](const char *name,void *var,void *usr)
         {
-            hprintf("%%QX0.0=%-08s,%%QX0.1=%-08s,%%QX0.2=%-08s,%%QX0.3=%-08s tick=%u\r\n",(plc_get_qx0_0())?"true":"false",(plc_get_qx0_1())?"true":"false",(plc_get_qx0_2())?"true":"false",(plc_get_qx0_3())?"true":"false",(unsigned)hdefaults_tick_get());
+            hsoftplc_variable_name_t iec_addr;
+            hsoftplc_get_iec_addr_from_variable_name(iec_addr,name);
+            hsoftplc_database_key_t key=hsoftplc_database_key_get_from_variable_name(iec_addr);
+            hsoftplc_database_value_cache_update(&plc_variable_cache[key],iec_addr,[](const hsoftplc_database_value_cache_t *cache,const char *variable_name,void *usr)
+            {
+                if(usr!=NULL)
+                {
+                    (*(bool *)usr)=true;
+                }
+                if(cache!=NULL && variable_name!=NULL)
+                {
+                    hprintf("%-16s=%08X%08X\r\n",variable_name,(uint32_t)(cache->value1 >> 32),(uint32_t)cache->value1);
+                }
+            },usr);
+        },&is_update);
+        if(is_update)
+        {
+            hprintf("tick=%u\r\n",(unsigned)hdefaults_tick_get());
+            hprintf("\r\n");
         }
     }
     break;
