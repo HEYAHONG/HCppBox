@@ -42,3 +42,12 @@ find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 
+include(GNUInstallDirs)
+if(DEFINED HTOOLS_INSTALL_DIR)
+install(TARGETS ${PROJECT_NAME}
+       RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
+       LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+       ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+       )
+endif()
+

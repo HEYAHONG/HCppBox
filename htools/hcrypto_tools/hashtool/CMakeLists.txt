@@ -102,3 +102,12 @@ add_executable(hsm3sum  hsm3sum.cpp)
 hcppbox_enable(hsm3sum)
 hrc_enable(hsm3sum)
 target_link_libraries(hsm3sum  ${CMAKE_THREAD_LIBS_INIT})
+
+include(GNUInstallDirs)
+if(DEFINED HTOOLS_INSTALL_DIR)
+install(TARGETS hmd4sum hmd5sum hsha1sum  hsha224sum hsha256sum hsha384sum hsha512sum hsha3sum224 hsha3sum256 hsha3sum384 hsha3sum512 hripemd160sum hsm3sum
+       RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
+       LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+       ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+       )
+endif()

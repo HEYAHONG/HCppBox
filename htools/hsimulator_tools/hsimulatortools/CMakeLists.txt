@@ -102,3 +102,11 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../common/  common  EXCLUDE_FROM
 hcppbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})
 
+include(GNUInstallDirs)
+if(DEFINED HTOOLS_INSTALL_DIR)
+install(TARGETS ${PROJECT_NAME}
+       RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
+       LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+       ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+       )
+endif()

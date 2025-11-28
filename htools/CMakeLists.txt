@@ -1,4 +1,8 @@
 
+if(NOT DEFINED HTOOLS_INSTALL_DIR)
+    set(HTOOLS_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/htools)
+endif()
+
 add_subdirectory(hgui_tools)
 
 add_subdirectory(hnet_tools)

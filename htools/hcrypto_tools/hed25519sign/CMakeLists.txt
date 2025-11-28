@@ -30,3 +30,12 @@ add_executable(hed25519sign  hed25519sign.cpp)
 hcppbox_enable(hed25519sign)
 hrc_enable(hed25519sign)
 target_link_libraries(hed25519sign  ${CMAKE_THREAD_LIBS_INIT})
+
+include(GNUInstallDirs)
+if(DEFINED HTOOLS_INSTALL_DIR)
+install(TARGETS hed25519sign
+       RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
+       LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+       ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+       )
+endif()

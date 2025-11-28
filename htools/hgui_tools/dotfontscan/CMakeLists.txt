@@ -42,3 +42,13 @@ include(FindPkgConfig)
 pkg_check_modules(FREETYPE2 IMPORTED_TARGET REQUIRED freetype2)
 target_link_libraries(${PROJECT_NAME}  PkgConfig::FREETYPE2)
 
+
+include(GNUInstallDirs)
+if(DEFINED HTOOLS_INSTALL_DIR)
+install(TARGETS ${PROJECT_NAME}
+       RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
+       LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+       ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+       )
+endif()
+
