@@ -110,7 +110,7 @@ struct hsoftplc_variable_symbol
     hsoftplc_variable_name_t buffer;                /**< 存储数据的缓冲 */
     char            variable_location;              /**< 位置：通常为I（输入）、Q（输出）、M（内存） */
     char            variable_size;                  /**< 大小：通常为X（1位）、B（8位）、W（16位）、D（32位）、L（64位） */
-    const char *    variable_address[3];            /**< 地址：通常为数字字符串 */
+    const char *    variable_address[3];            /**< 地址：通常为数字字符串,通常为无符号整数。一般情况下， variable_address[1]若不为空，其范围应当在[0,7],variable_address[2]若不为空，其范围应当在[1,16]*/
 };
 
 
@@ -124,36 +124,6 @@ struct hsoftplc_variable_symbol
 hsoftplc_variable_symbol_t * hsoftplc_parse_variable_symbol(hsoftplc_variable_symbol_t * variable_symbol,const char *variable_name_or_iec_addr);
 
 
-struct hsoftplc_public_interface;
-typedef struct hsoftplc_public_interface hsoftplc_public_interface_t;                                           /**< 软件PLC接口，用于导出动态链接库 */
-struct hsoftplc_public_interface
-{
-    size_t interface_length;                                                                                    /**< 接口大小，用于校验 */
-    void (*interface_init)(void);                                                                               /**< 接口初始化 */
-    void (*interface_loop)(void);                                                                               /**< 接口循环 */
-    hsoftplc_callback_t (*interface_set_callback)(hsoftplc_callback_t cb);                                      /**< 接口设置回调 */
-    size_t (*interface_get_located_all_variables)(hsoftplc_located_variable_enum_callback_t cb,void *usr);      /**< 接口枚举变量 */
-};
-
-#define HSOFTPLC_PUBLIC_INTERFACE_INIT_DATA     \
-    {\
-        sizeof(hsoftplc_public_interface_t),\
-        hsoftplc_init,\
-        hsoftplc_loop,\
-        hsoftplc_set_callback,\
-        hsoftplc_get_located_all_variables,\
-    }\
-
-#ifdef __cplusplus
-#define HSOFTPLC_EXPORT_INTERFACE() \
-extern "C" __DLLEXPORT hsoftplc_public_interface_t  hsoftplc_interface;\
-__DLLEXPORT hsoftplc_public_interface_t  hsoftplc_interface =\
-HSOFTPLC_PUBLIC_INTERFACE_INIT_DATA
-#else
-#define HSOFTPLC_EXPORT_INTERFACE() \
-__DLLEXPORT hsoftplc_public_interface_t hsoftplc_interface =\
-HSOFTPLC_PUBLIC_INTERFACE_INIT_DATA
-#endif // __cplusplus
 
 #ifdef __cplusplus
 }
