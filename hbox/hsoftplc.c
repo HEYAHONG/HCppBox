@@ -9,5 +9,6 @@
 #include "hsoftplc.h"
 
 #include "hsoftplc/hsoftplc.c"
+#include "hsoftplc/hsoftplc_dll.c"
 #include "hsoftplc/hsoftplc_database.c"
 

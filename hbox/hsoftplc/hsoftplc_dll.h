@@ -10,6 +10,10 @@
 #define __HSOFTPLC_DLL_H__
 
 #include "hsoftplc.h"
+/*
+ * 引入libdl包装
+ */
+#include "hdefaults/libdl/hdefaults_libdl_port.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -47,7 +51,28 @@ __DLLEXPORT hsoftplc_public_interface_t hsoftplc_interface =\
 HSOFTPLC_PUBLIC_INTERFACE_INIT_DATA
 #endif // __cplusplus
 
+struct hsoftplc_dll_import_handle;
+typedef struct hsoftplc_dll_import_handle hsoftplc_dll_import_handle_t;
+struct hsoftplc_dll_import_handle
+{
+    void *                          dll_handle;             /**< 动态链接库句柄 */
+    hsoftplc_public_interface_t*    hsoftplc_interface;     /**< 软件PLC接口 */
+};
 
+/** \brief 软件PLC动态链接库装载
+ *
+ * \param dll_path const char* 动态链接库路径
+ * \return hsoftplc_dll_import_handle_t dll导入句柄，失败时 软件PLC接口 为NULL
+ *
+ */
+hsoftplc_dll_import_handle_t hsoftplc_dll_load(const char *dll_path);
+
+/** \brief 软件PLC动态链接库卸载
+ *
+ * \param handle hsoftplc_dll_import_handle_t* dll导入句柄
+ *
+ */
+void hsoftplc_dll_unload(hsoftplc_dll_import_handle_t *handle);
 
 #ifdef __cplusplus
 }

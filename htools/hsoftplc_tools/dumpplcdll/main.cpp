@@ -33,7 +33,7 @@ static struct
 
 static void print_help(int argc,const char *argv[])
 {
-     const size_t cmd_max_len=8;
+    const size_t cmd_max_len=8;
     const size_t usage_max_len=32;
     {
         //打印banner
@@ -206,27 +206,20 @@ static int check_arg(int argc,const char *argv[])
 
 static int dumpplcdll(void)
 {
-    void * dll_handle=hdlopen(dll_path.c_str(),HRTLD_NOW);
-    if(dll_handle == NULL)
-    {
-        fprintf(stderr,"load %s failed!\r\n",dll_path.c_str());
-        exit(-1);
-    }
-
-    hsoftplc_public_interface_t *hsoftplc_interface=(hsoftplc_public_interface_t *)hdlsym(dll_handle,"hsoftplc_interface");
-    if(hsoftplc_interface == NULL)
+    hsoftplc_dll_import_handle_t handle=hsoftplc_dll_load(dll_path.c_str());
+    if(handle.hsoftplc_interface == NULL)
     {
         fprintf(stderr,"get interface failed!\r\n");
         exit(-1);
     }
 
-    if(hsoftplc_interface->interface_length != sizeof(*hsoftplc_interface) || hsoftplc_interface->interface_get_located_all_variables == NULL)
+    if(handle.hsoftplc_interface->interface_get_located_all_variables == NULL)
     {
         fprintf(stderr,"check interface failed!\r\n");
         exit(-1);
     }
 
-    hsoftplc_interface->interface_get_located_all_variables([](const char *name,void *var,void *usr)
+    handle.hsoftplc_interface->interface_get_located_all_variables([](const char *name,void *var,void *usr)
     {
         hsoftplc_variable_name_t iec_addr;
         hsoftplc_variable_name_t variable_name;
@@ -234,7 +227,7 @@ static int dumpplcdll(void)
         hsoftplc_get_variable_name_from_iec_addr(variable_name,iec_addr);
         hsoftplc_variable_symbol_t variable_symbol;
         hsoftplc_parse_variable_symbol(&variable_symbol,name);
-        for(size_t i=0;i<sizeof(variable_symbol.variable_address)/sizeof(variable_symbol.variable_address[0]);i++)
+        for(size_t i=0; i<sizeof(variable_symbol.variable_address)/sizeof(variable_symbol.variable_address[0]); i++)
         {
             if(variable_symbol.variable_address[i]==NULL)
             {
@@ -245,7 +238,7 @@ static int dumpplcdll(void)
     }
     ,NULL);
 
-    hdlclose(dll_handle);
+    hsoftplc_dll_unload(&handle);
     return 0;
 }
 
