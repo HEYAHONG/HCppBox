@@ -1,0 +1,7 @@
+if(EXISTS plc_mod.lst)
+file(READ  plc_mod.lst PLC_MOD_OBJECT_LIST)
+file(WRITE plc_mod.lst "")
+foreach(PLC_MOD_OBJECT ${PLC_MOD_OBJECT_LIST})
+file(APPEND plc_mod.lst "${PLC_MOD_OBJECT}\r\n")
+endforeach()
+endif()

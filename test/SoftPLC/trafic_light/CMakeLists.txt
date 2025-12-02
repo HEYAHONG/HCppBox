@@ -61,3 +61,20 @@ hcppbox_enable(plc)
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     target_link_libraries(plc  -static-libgcc -static-libstdc++ )
 endif()
+
+
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+file(GLOB PLC_OBJECT_C_FILES  ${CMAKE_CURRENT_SOURCE_DIR}/trafic_light/Config*.c ${CMAKE_CURRENT_SOURCE_DIR}/trafic_light/Res*.c )
+add_library(plc_object OBJECT ${PLC_OBJECT_C_FILES})
+target_compile_options(plc_object PUBLIC -fPIC )
+file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/plc_mod.lst
+                          CONTENT "$<TARGET_OBJECTS:plc_object>")
+file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/plc_mod.cmake
+                          INPUT ${CMAKE_CURRENT_SOURCE_DIR}/plc_mod.cmake.in)
+#创建可重定位文件用于运行时直接加载
+add_custom_target(plc_mod ALL
+                                  COMMAND  cmake -P ${CMAKE_BINARY_DIR}/plc_mod.cmake && ${CMAKE_LINKER}  --relocatable -o plc.mod  @${CMAKE_BINARY_DIR}/plc_mod.lst
+                                  DEPENDS plc_object
+                                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                 )
+endif()
