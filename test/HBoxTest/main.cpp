@@ -3712,7 +3712,7 @@ static int hcrypto_test(int argc,const char *argv[])
              * cksum需要将长度(小端模式，高位的0省略)附在末尾
              */
             uint32_t cksum_datalen=sizeof(data)-1;
-            uint8_t cksum_data[cksum_datalen+1];
+            uint8_t cksum_data[(sizeof(data)-1)+1];
             memset(cksum_data,0,sizeof(cksum_data));
             memcpy(cksum_data,data,cksum_datalen);
             cksum_data[cksum_datalen+0]=((cksum_datalen>>0)&0xFF);
