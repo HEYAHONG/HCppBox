@@ -3707,6 +3707,7 @@ static int hcrypto_test(int argc,const char *argv[])
         //CRC32校验测试(不含末尾\0字符)
         printf("hcrypto crc32:data=%s,crc=%08X,check %s\r\n",(char *)data,hcrc_crc32_calculate(NULL,data,sizeof(data)-1),hcrc_crc32_check(NULL,data,sizeof(data)-1,0x5F28EC9B)?"ok":"failed");
         printf("hcrypto crc32/mpeg-2:data=%s,crc=%08X,check %s\r\n",(char *)data,hcrc_crc32_calculate(&hcrc_crc32_mpeg_2,data,sizeof(data)-1),hcrc_crc32_check(&hcrc_crc32_mpeg_2,data,sizeof(data)-1,0x5B3E29FC)?"ok":"failed");
+        printf("hcrypto crc32/bzip2:data=%s,crc=%08X,check %s\r\n",(char *)data,hcrc_crc32_calculate(&hcrc_crc32_bzip2,data,sizeof(data)-1),hcrc_crc32_check(&hcrc_crc32_bzip2,data,sizeof(data)-1,0xA4C1D603)?"ok":"failed");
         {
             /*
              * cksum需要将长度(小端模式，高位的0省略)附在末尾
@@ -3718,6 +3719,9 @@ static int hcrypto_test(int argc,const char *argv[])
             cksum_data[cksum_datalen+0]=((cksum_datalen>>0)&0xFF);
             printf("hcrypto crc32/cksum:data=%s,crc=%08X,check %s\r\n",(char *)data,hcrc_crc32_calculate(&hcrc_crc32_cksum,cksum_data,sizeof(cksum_data)),hcrc_crc32_check(&hcrc_crc32_cksum,cksum_data,sizeof(cksum_data),3215378238)?"ok":"failed");
         }
+        printf("hcrypto crc32/32c:data=%s,crc=%08X,check %s\r\n",(char *)data,hcrc_crc32_calculate(&hcrc_crc32_32c,data,sizeof(data)-1),hcrc_crc32_check(&hcrc_crc32_32c,data,sizeof(data)-1,0x83BCF66A)?"ok":"failed");
+        printf("hcrypto crc32/32d:data=%s,crc=%08X,check %s\r\n",(char *)data,hcrc_crc32_calculate(&hcrc_crc32_32d,data,sizeof(data)-1),hcrc_crc32_check(&hcrc_crc32_32d,data,sizeof(data)-1,0xF5CD04A9)?"ok":"failed");
+        printf("hcrypto crc32/32q:data=%s,crc=%08X,check %s\r\n",(char *)data,hcrc_crc32_calculate(&hcrc_crc32_32q,data,sizeof(data)-1),hcrc_crc32_check(&hcrc_crc32_32q,data,sizeof(data)-1,0x9A4D8BCF)?"ok":"failed");
         //CRC8 查表法
         printf("hcrypto crc8(fast):data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_fast_calculate(data,sizeof(data)-1),hcrc_crc8_fast_check(data,sizeof(data)-1,0xA0)?"ok":"failed");
         //CRC16 Modbus 查表法

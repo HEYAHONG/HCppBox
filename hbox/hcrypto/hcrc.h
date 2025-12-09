@@ -264,9 +264,13 @@ struct hcrc_crc32
     bool    refout;     /**< 输出结果是否按位反转（在异或之前） */
 };
 
-extern const hcrc_crc32_t hcrc_crc32_default; /**< 默认CRC32校验 */
+extern const hcrc_crc32_t hcrc_crc32_default; /**< 默认CRC32校验,CRC-32/ISO-HDLC,CRC-32,CRC-32/ADCCP,CRC-32/V-42,CRC-32/XZ,PKZIP */
 extern const hcrc_crc32_t hcrc_crc32_mpeg_2;  /**< CRC32/MPEG-2 */
-extern const hcrc_crc32_t hcrc_crc32_cksum;   /**< CRC32/CKSUM,Coreutils的CKSUM使用的CRC32 */
+extern const hcrc_crc32_t hcrc_crc32_bzip2;   /**< CRC-32/BZIP2,CRC-32/AAL5,CRC-32/DECT-B,B-CRC-32 */
+extern const hcrc_crc32_t hcrc_crc32_cksum;   /**< CRC32/CKSUM,Coreutils的CKSUM使用的CRC32,CRC-32/POSIX */
+extern const hcrc_crc32_t hcrc_crc32_32c;     /**< CRC-32/ISCSI,CRC-32/BASE91-C,CRC-32/CASTAGNOLI,CRC-32/INTERLAKEN,CRC-32C */
+extern const hcrc_crc32_t hcrc_crc32_32d;     /**< CRC-32/BASE91-D,CRC-32D */
+extern const hcrc_crc32_t hcrc_crc32_32q;     /**< CRC-32/AIXM,CRC-32Q */
 
 typedef uint32_t hcrc_crc32_context_t;        /**< crc32上下文 */
 

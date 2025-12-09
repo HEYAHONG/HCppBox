@@ -447,11 +447,47 @@ const hcrc_crc32_t hcrc_crc32_mpeg_2=
     false
 };
 
+ const hcrc_crc32_t hcrc_crc32_bzip2=
+ {
+    0xFFFFFFFF,
+    0x04C11DB7,
+    0xFFFFFFFF,
+    false,
+    false
+ };
+
 const hcrc_crc32_t hcrc_crc32_cksum=
 {
     0x00000000,
     0x04C11DB7,
     0xFFFFFFFF,
+    false,
+    false
+};
+
+const hcrc_crc32_t hcrc_crc32_32c=
+{
+    0xFFFFFFFF,
+    0x1EDC6F41,
+    0xFFFFFFFF,
+    true,
+    true
+};
+
+const hcrc_crc32_t hcrc_crc32_32d=
+{
+    0xFFFFFFFF,
+    0xA833982B,
+    0xFFFFFFFF,
+    true,
+    true
+};
+
+const hcrc_crc32_t hcrc_crc32_32q=
+{
+    0x00000000,
+    0x814141AB,
+    0x00000000,
     false,
     false
 };
