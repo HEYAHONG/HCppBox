@@ -396,7 +396,7 @@ uint16_t hcrc_crc16_finish(const hcrc_crc16_t *config,hcrc_crc16_context_t ctx)
          */
         if(config->refout)
         {
-            uint8_t temp=0;
+            uint16_t temp=0;
             for(size_t i=0; i < sizeof(crc)*8 ; i++)
             {
                 if(crc & (1U << (i)))
@@ -443,6 +443,15 @@ const hcrc_crc32_t hcrc_crc32_mpeg_2=
     0xFFFFFFFF,
     0x04C11DB7,
     0x00000000,
+    false,
+    false
+};
+
+const hcrc_crc32_t hcrc_crc32_cksum=
+{
+    0x00000000,
+    0x04C11DB7,
+    0xFFFFFFFF,
     false,
     false
 };
@@ -563,7 +572,7 @@ uint32_t hcrc_crc32_finish(const hcrc_crc32_t *config,hcrc_crc32_context_t ctx)
          */
         if(config->refout)
         {
-            uint8_t temp=0;
+            uint32_t temp=0;
             for(size_t i=0; i < sizeof(crc)*8 ; i++)
             {
                 if(crc & (1U << (i)))

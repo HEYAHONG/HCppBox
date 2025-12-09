@@ -211,6 +211,7 @@ struct hcrc_crc32
 
 extern const hcrc_crc32_t hcrc_crc32_default; /**< 默认CRC32校验 */
 extern const hcrc_crc32_t hcrc_crc32_mpeg_2;  /**< CRC32/MPEG-2 */
+extern const hcrc_crc32_t hcrc_crc32_cksum;   /**< CRC32/CKSUM,Coreutils的CKSUM使用的CRC32 */
 
 typedef uint32_t hcrc_crc32_context_t;        /**< crc32上下文 */
 
