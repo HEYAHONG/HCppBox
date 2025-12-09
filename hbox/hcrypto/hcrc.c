@@ -640,9 +640,16 @@ static const uint8_t hcrc_crc8_fast_table[256]=
     0xE6,0xE1,0xE8,0xEF,0xFA,0xFD,0xF4,0xF3
 };
 
-uint8_t hcrc_crc8_fast_calculate(const uint8_t *data,size_t datalen)
+hcrc_crc8_context_t hcrc_crc8_fast_starts(void)
 {
-    uint8_t crc=0;//crc8初始值
+    return 0;
+}
+
+
+
+hcrc_crc8_context_t hcrc_crc8_fast_update(hcrc_crc8_context_t ctx,const uint8_t *data,size_t datalen)
+{
+    uint8_t  crc=ctx;
     if(data!=NULL && datalen > 0)
     {
         for(size_t i=0; i<datalen; i++)
@@ -652,6 +659,20 @@ uint8_t hcrc_crc8_fast_calculate(const uint8_t *data,size_t datalen)
         }
     }
     return crc;
+}
+
+
+uint8_t hcrc_crc8_fast_finish(hcrc_crc8_context_t ctx)
+{
+    uint8_t  crc=ctx;
+    return crc;
+}
+
+uint8_t hcrc_crc8_fast_calculate(const uint8_t *data,size_t datalen)
+{
+    hcrc_crc8_context_t ctx=hcrc_crc8_fast_starts();
+    ctx=hcrc_crc8_fast_update(ctx,data,datalen);
+    return hcrc_crc8_fast_finish(ctx);
 }
 
 bool hcrc_crc8_fast_check(const uint8_t *data,size_t datalen,uint8_t check)
@@ -695,9 +716,15 @@ static const uint16_t hcrc_crc16_modbus_table[256]=
     0x8201,0x42C0,0x4380,0x8341,0x4100,0x81C1,0x8081,0x4040
 };
 
-uint16_t hcrc_crc16_modbus_calculate(const uint8_t *data,size_t datalen)
+hcrc_crc16_context_t hcrc_crc16_modbus_starts(void)
 {
-    uint16_t crc=0xFFFF;//modbus初始值
+    return 0xFFFF;
+}
+
+
+hcrc_crc16_context_t hcrc_crc16_modbus_update(hcrc_crc16_context_t ctx,const uint8_t *data,size_t datalen)
+{
+    uint16_t crc=ctx;
     if(data!=NULL && datalen > 0)
     {
         for(size_t i=0; i<datalen; i++)
@@ -707,6 +734,20 @@ uint16_t hcrc_crc16_modbus_calculate(const uint8_t *data,size_t datalen)
         }
     }
     return crc;
+}
+
+
+uint16_t hcrc_crc16_modbus_finish(hcrc_crc16_context_t ctx)
+{
+    uint16_t crc=ctx;
+    return crc;
+}
+
+uint16_t hcrc_crc16_modbus_calculate(const uint8_t *data,size_t datalen)
+{
+    hcrc_crc16_context_t ctx=hcrc_crc16_modbus_starts();
+    ctx=hcrc_crc16_modbus_update(ctx,data,datalen);
+    return hcrc_crc16_modbus_finish(ctx);
 }
 
 bool hcrc_crc16_modbus_check(const uint8_t *data,size_t datalen,uint16_t check)
@@ -750,9 +791,15 @@ static const uint32_t hcrc_crc32_fast_table[256]=
     0xB3667A2E,0xC4614AB8,0x5D681B02,0x2A6F2B94,0xB40BBE37,0xC30C8EA1,0x5A05DF1B,0x2D02EF8D
 };
 
-uint32_t hcrc_crc32_fast_calculate(const uint8_t *data,size_t datalen)
+hcrc_crc32_context_t hcrc_crc32_fast_starts(void)
 {
-    uint32_t crc=0xFFFFFFFF;//crc32初始值
+    return 0xFFFFFFFF;
+}
+
+
+hcrc_crc32_context_t hcrc_crc32_fast_update(hcrc_crc32_context_t ctx,const uint8_t *data,size_t datalen)
+{
+    uint32_t crc=ctx;
     if(data!=NULL && datalen > 0)
     {
         for(size_t i=0; i<datalen; i++)
@@ -761,8 +808,22 @@ uint32_t hcrc_crc32_fast_calculate(const uint8_t *data,size_t datalen)
             crc= (crc>>8)^hcrc_crc32_fast_table[((uint32_t)current_data ^ crc)&0xFF];
         }
     }
-    crc ^= 0xFFFFFFFF;//输出值异或
     return crc;
+}
+
+
+uint32_t hcrc_crc32_fast_finish(hcrc_crc32_context_t ctx)
+{
+    uint32_t crc=ctx;
+    crc ^= 0xFFFFFFFF;
+    return crc;
+}
+
+uint32_t hcrc_crc32_fast_calculate(const uint8_t *data,size_t datalen)
+{
+    hcrc_crc32_context_t ctx= hcrc_crc32_fast_starts();
+    ctx=hcrc_crc32_fast_update(ctx,data,datalen);
+    return hcrc_crc32_fast_finish(ctx);
 }
 
 bool hcrc_crc32_fast_check(const uint8_t *data,size_t datalen,uint32_t check)

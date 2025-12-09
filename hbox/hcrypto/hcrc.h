@@ -87,6 +87,34 @@ uint8_t hcrc_crc8_calculate(const hcrc_crc8_t *config,const uint8_t *data,size_t
  */
 bool hcrc_crc8_check(const hcrc_crc8_t *config,const uint8_t *data,size_t datalen,uint8_t check);
 
+
+/** \brief CRC8开始(查表法)
+ *
+ * \return hcrc_crc8_context_t CRC8上下文
+ *
+ */
+hcrc_crc8_context_t hcrc_crc8_fast_starts(void);
+
+
+/** \brief CRC8更新(查表法)
+ *
+ * \param ctx hcrc_crc8_context_t  CRC8上下文
+ * \param data const uint8_t* 数据
+ * \param datalen size_t 数据长度
+ * \return hcrc_crc8_context_t 更新后的上下文
+ *
+ */
+hcrc_crc8_context_t hcrc_crc8_fast_update(hcrc_crc8_context_t ctx,const uint8_t *data,size_t datalen);
+
+
+/** \brief CRC8完成(查表法)
+ *
+ * \param ctx hcrc_crc8_context_t CRC8上下文
+ * \return uint8_t CRC8
+ *
+ */
+uint8_t hcrc_crc8_fast_finish(hcrc_crc8_context_t ctx);
+
 /** \brief crc8 计算(查表法)
  *
  * \param data const uint8_t* 数据指针
@@ -180,6 +208,33 @@ uint16_t hcrc_crc16_calculate(const hcrc_crc16_t *config,const uint8_t *data,siz
 bool hcrc_crc16_check(const hcrc_crc16_t *config,const uint8_t *data,size_t datalen,uint16_t check);
 
 
+/** \brief CRC16/modbus开始(查表法)
+ *
+ * \return hcrc_crc16_context_t CRC16上下文
+ *
+ */
+hcrc_crc16_context_t hcrc_crc16_modbus_starts(void);
+
+
+/** \brief CRC16/modbus更新(查表法)
+ *
+ * \param ctx hcrc_crc16_context_t  CRC16上下文
+ * \param data const uint16_t* 数据
+ * \param datalen size_t 数据长度
+ * \return hcrc_crc16_context_t 更新后的上下文
+ *
+ */
+hcrc_crc16_context_t hcrc_crc16_modbus_update(hcrc_crc16_context_t ctx,const uint8_t *data,size_t datalen);
+
+
+/** \brief CRC16/modbus完成(查表法)
+ *
+ * \param ctx hcrc_crc16_context_t CRC16上下文
+ * \return uint16_t CRC16
+ *
+ */
+uint16_t hcrc_crc16_modbus_finish(hcrc_crc16_context_t ctx);
+
 /** \brief crc16/modbus 计算(查表法)
  *
  * \param data const uint8_t* 数据指针
@@ -265,6 +320,34 @@ uint32_t hcrc_crc32_calculate(const hcrc_crc32_t *config,const uint8_t *data,siz
  *
  */
 bool hcrc_crc32_check(const hcrc_crc32_t *config,const uint8_t *data,size_t datalen,uint32_t check);
+
+/** \brief CRC32开始(查表法)
+ *
+ * \return hcrc_crc32_context_t CRC32上下文
+ *
+ */
+hcrc_crc32_context_t hcrc_crc32_fast_starts(void);
+
+
+/** \brief CRC32更新(查表法)
+ *
+ * \param ctx hcrc_crc32_context_t  CRC32上下文
+ * \param data const uint32_t* 数据
+ * \param datalen size_t 数据长度
+ * \return hcrc_crc32_context_t 更新后的上下文
+ *
+ */
+hcrc_crc32_context_t hcrc_crc32_fast_update(hcrc_crc32_context_t ctx,const uint8_t *data,size_t datalen);
+
+
+/** \brief CRC32完成(查表法)
+ *
+ * \param ctx hcrc_crc32_context_t CRC32上下文
+ * \return uint32_t CRC32
+ *
+ */
+uint32_t hcrc_crc32_fast_finish(hcrc_crc32_context_t ctx);
+
 
 /** \brief crc32 计算(查表法)
  *
