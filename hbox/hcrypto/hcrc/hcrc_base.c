@@ -653,9 +653,9 @@ uint32_t hcrc_crc32_table(const hcrc_crc32_t *config,uint8_t index)
             uint32_t temp=0;
             for(size_t i=0; i < sizeof(poly)*8 ; i++)
             {
-                if(poly & (1U << (i)))
+                if(poly & (1UL << (i)))
                 {
-                    temp |= (1U << (sizeof(poly)*8-1-i));
+                    temp |= (1UL << (sizeof(poly)*8-1-i));
                 }
             }
             poly=temp;
@@ -685,9 +685,9 @@ hcrc_crc32_context_t hcrc_crc32_update(const hcrc_crc32_t *config,hcrc_crc32_con
             uint32_t temp=0;
             for(size_t i=0; i < sizeof(poly)*8 ; i++)
             {
-                if(poly & (1U << (i)))
+                if(poly & (1UL << (i)))
                 {
-                    temp |= (1U << (sizeof(poly)*8-1-i));
+                    temp |= (1UL << (sizeof(poly)*8-1-i));
                 }
             }
             poly=temp;
@@ -752,9 +752,9 @@ uint32_t hcrc_crc32_finish(const hcrc_crc32_t *config,hcrc_crc32_context_t ctx)
             uint32_t temp=0;
             for(size_t i=0; i < sizeof(crc)*8 ; i++)
             {
-                if(crc & (1U << (i)))
+                if(crc & (1UL << (i)))
                 {
-                    temp |= (1U << (sizeof(crc)*8-1-i));
+                    temp |= (1UL << (sizeof(crc)*8-1-i));
                 }
             }
             crc=temp;
@@ -779,4 +779,244 @@ uint32_t hcrc_crc32_calculate(const hcrc_crc32_t *config,const uint8_t *data,siz
 bool hcrc_crc32_check(const hcrc_crc32_t *config,const uint8_t *data,size_t datalen,uint32_t check)
 {
     return check==hcrc_crc32_calculate(config,data,datalen);
+}
+
+
+const hcrc_crc64_t hcrc_crc64_default=
+{
+    0x0000000000000000ull,
+    0x42F0E1EBA9EA3693ull,
+    0x0000000000000000ull,
+    false,
+    false
+};
+
+const hcrc_crc64_t hcrc_crc64_we=
+{
+    0xffffffffffffffffull,
+    0x42F0E1EBA9EA3693ull,
+    0xffffffffffffffffull,
+    false,
+    false
+};
+
+const hcrc_crc64_t hcrc_crc64_wev2=
+{
+    0xffffffffffffffffull,
+    0x42F0E1EBA9EA3693ull,
+    0xffffffffffffffffull,
+    true,
+    true
+};
+
+const hcrc_crc64_t hcrc_crc64_iso=
+{
+    0xffffffffffffffffull,
+    0x0000000000000001bull,
+    0xffffffffffffffffull,
+    true,
+    true
+};
+
+hcrc_crc64_context_t hcrc_crc64_starts(const hcrc_crc64_t *config)
+{
+    if(config==NULL)
+    {
+        config=&hcrc_crc64_default;
+    }
+    return config->init;
+}
+
+
+/*
+ * 此函数可优化
+ */
+static uint64_t hcrc_crc64_table_reversal(const hcrc_crc64_t *config,uint8_t index,uint64_t poly_reversal)
+{
+    if(config==NULL)
+    {
+        config=&hcrc_crc64_default;
+    }
+    uint64_t crc=index;
+    for(size_t i=0; i<8; i++)
+    {
+        if((crc&0x1)>0)
+        {
+            crc = ((crc >> 1)^poly_reversal);
+        }
+        else
+        {
+            crc = (crc >> 1);
+        }
+    }
+    return crc;
+}
+
+/*
+ * 此函数可优化
+ */
+static uint64_t hcrc_crc64_table_normal(const hcrc_crc64_t *config,uint8_t index)
+{
+    if(config==NULL)
+    {
+        config=&hcrc_crc64_default;
+    }
+    uint64_t crc=0;
+    uint64_t temp=index;
+    temp <<=((sizeof(temp)-sizeof(index))*8);
+    uint64_t poly=config->poly;
+    for(size_t i=0; i<8; i++)
+    {
+        if(((crc^temp)&0x8000000000000000ull)>0)
+        {
+            crc = ((crc << 1)^poly);
+        }
+        else
+        {
+            crc = (crc << 1);
+        }
+        temp <<=1;
+    }
+    return crc;
+}
+
+uint64_t hcrc_crc64_table(const hcrc_crc64_t *config,uint8_t index)
+{
+    if(config==NULL)
+    {
+        config=&hcrc_crc64_default;
+    }
+    if(config->refin && config->refout)
+    {
+        uint64_t poly=config->poly;
+        {
+            uint64_t temp=0;
+            for(size_t i=0; i < sizeof(poly)*8 ; i++)
+            {
+                if(poly & (1ULL << (i)))
+                {
+                    temp |= (1ULL << (sizeof(poly)*8-1-i));
+                }
+            }
+            poly=temp;
+        }
+        return hcrc_crc64_table_reversal(config,index,poly);
+    }
+    else
+    {
+        return hcrc_crc64_table_normal(config,index);
+    }
+}
+
+hcrc_crc64_context_t hcrc_crc64_update(const hcrc_crc64_t *config,hcrc_crc64_context_t ctx,const uint8_t *data,size_t datalen)
+{
+    if(config==NULL)
+    {
+        config=&hcrc_crc64_default;
+    }
+    uint64_t crc=ctx;
+    if(config->refin && config->refout)
+    {
+        uint64_t poly=config->poly;
+        /*
+         * 反转表达式
+         */
+        {
+            uint64_t temp=0;
+            for(size_t i=0; i < sizeof(poly)*8 ; i++)
+            {
+                if(poly & (1ULL << (i)))
+                {
+                    temp |= (1ULL << (sizeof(poly)*8-1-i));
+                }
+            }
+            poly=temp;
+        }
+
+        if(data!=NULL && datalen > 0)
+        {
+            for(size_t i=0; i<datalen; i++)
+            {
+                uint8_t current_data=data[i];
+                crc = (crc >> sizeof(current_data)*8) ^ hcrc_crc64_table_reversal(config,(crc ^ ((uint64_t)current_data)),poly);
+            }
+        }
+
+    }
+    else
+    {
+        if(data!=NULL && datalen > 0)
+        {
+            for(size_t i=0; i<datalen; i++)
+            {
+                uint8_t current_data=data[i];
+                /*
+                 * 输入数据反转
+                 */
+                if(config->refin)
+                {
+                    uint8_t temp=0;
+                    for(size_t i=0; i < sizeof(current_data)*8 ; i++)
+                    {
+                        if(current_data & (1U << (i)))
+                        {
+                            temp |= (1U << (sizeof(current_data)*8-1-i));
+                        }
+                    }
+                    current_data=temp;
+                }
+
+                crc=(crc << sizeof(current_data)*8) ^ hcrc_crc64_table_normal(config,(crc>>((sizeof(crc)-sizeof(current_data))*8) ^ ((uint64_t)current_data)));
+            }
+        }
+
+    }
+
+    return crc;
+}
+
+uint64_t hcrc_crc64_finish(const hcrc_crc64_t *config,hcrc_crc64_context_t ctx)
+{
+    if(config==NULL)
+    {
+        config=&hcrc_crc64_default;
+    }
+    uint64_t crc=ctx;
+    if(!(config->refin && config->refout))
+    {
+        /*
+         * 输出结果反转
+         */
+        if(config->refout)
+        {
+            uint64_t temp=0;
+            for(size_t i=0; i < sizeof(crc)*8 ; i++)
+            {
+                if(crc & (1ULL << (i)))
+                {
+                    temp |= (1ULL << (sizeof(crc)*8-1-i));
+                }
+            }
+            crc=temp;
+        }
+    }
+
+    /*
+    * 异或输出
+    */
+    crc ^= config->xorout;
+
+    return crc;
+}
+
+uint64_t hcrc_crc64_calculate(const hcrc_crc64_t *config,const uint8_t *data,size_t datalen)
+{
+    hcrc_crc64_context_t ctx=hcrc_crc64_starts(config);
+    ctx=hcrc_crc64_update(config,ctx,data,datalen);
+    return hcrc_crc64_finish(config,ctx);
+}
+
+bool hcrc_crc64_check(const hcrc_crc64_t *config,const uint8_t *data,size_t datalen,uint64_t check)
+{
+    return check==hcrc_crc64_calculate(config,data,datalen);
 }

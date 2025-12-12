@@ -260,6 +260,86 @@ bool hcrc_crc32_check(const hcrc_crc32_t *config,const uint8_t *data,size_t data
 uint32_t hcrc_crc32_table(const hcrc_crc32_t *config,uint8_t index);
 
 
+typedef struct hcrc_crc64 hcrc_crc64_t;
+struct hcrc_crc64
+{
+    uint64_t init;      /**< 初始值 */
+    uint64_t poly;      /**< 表达式，不包含表达式最高位 */
+    uint64_t xorout;    /**< 输出结果值异或 */
+    bool    refin;      /**< 输入数据是否按位反转 */
+    bool    refout;     /**< 输出结果是否按位反转（在异或之前） */
+};
+
+extern const hcrc_crc64_t hcrc_crc64_default;       /**< CRC64-ECMA182 */
+extern const hcrc_crc64_t hcrc_crc64_we;            /**< CRC64-WE,输入输出无反转 */
+extern const hcrc_crc64_t hcrc_crc64_wev2;          /**< CRC64-WEV2,输入输出反转 */
+extern const hcrc_crc64_t hcrc_crc64_iso;           /**< CRC64-ISO,输入输出反转 */
+
+
+
+typedef uint64_t hcrc_crc64_context_t;        /**< crc64上下文 */
+
+/** \brief CRC64开始
+ *
+ * \param config const hcrc_crc64_t* CRC64配置（注意:开始、更新、完成需要使用同一个配置）
+ * \return hcrc_crc64_context_t CRC64上下文
+ *
+ */
+hcrc_crc64_context_t hcrc_crc64_starts(const hcrc_crc64_t *config);
+
+
+/** \brief CRC64更新
+ *
+ * \param config const hcrc_crc64_t* CRC64配置（注意:开始、更新、完成需要使用同一个配置）
+ * \param ctx hcrc_crc64_context_t  CRC64上下文
+ * \param data const uint64_t* 数据
+ * \param datalen size_t 数据长度
+ * \return hcrc_crc64_context_t 更新后的上下文
+ *
+ */
+hcrc_crc64_context_t hcrc_crc64_update(const hcrc_crc64_t *config,hcrc_crc64_context_t ctx,const uint8_t *data,size_t datalen);
+
+
+/** \brief CRC64完成
+ *
+ * \param config const hcrc_crc64_t* CRC64配置（注意:开始、更新、完成需要使用同一个配置）
+ * \param ctx hcrc_crc64_context_t CRC64上下文
+ * \return uint64_t CRC64
+ *
+ */
+uint64_t hcrc_crc64_finish(const hcrc_crc64_t *config,hcrc_crc64_context_t ctx);
+
+/** \brief crc64 计算
+ *
+ * \param config const hcrc_crc64_t * CRC64配置
+ * \param data const uint8_t* 数据指针
+ * \param datalen size_t 数据长度
+ * \return uint64_t 校验结果
+ *
+ */
+uint64_t hcrc_crc64_calculate(const hcrc_crc64_t *config,const uint8_t *data,size_t datalen);
+
+/** \brief crc64 校验
+ *
+ * \param config const hcrc_crc64_t * CRC64配置
+ * \param data const uint8_t* 数据指针
+ * \param datalen size_t 数据长度
+ * \param check uint64_t 校验值
+ * \return bool 是否校验成功
+ *
+ */
+bool hcrc_crc64_check(const hcrc_crc64_t *config,const uint8_t *data,size_t datalen,uint64_t check);
+
+
+/** \brief crc64 查找表
+ *
+ * \param config const hcrc_crc64_t* CRC64配置
+ * \param index uint8_t 引索
+ * \return uint64_t 值
+ *
+ */
+uint64_t hcrc_crc64_table(const hcrc_crc64_t *config,uint8_t index);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
