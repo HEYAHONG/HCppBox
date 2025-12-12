@@ -368,6 +368,36 @@ bool hruntime_symbol_dynamic_table_unregister(const hruntime_symbol_t *table_sta
  */
 const hruntime_symbol_t *hruntime_symbol_dynamic_find(const char *name);
 
+
+typedef enum
+{
+    HRUNTIME_SYMBOL_ENUM_TYPE_TABLE=                (1UL << 0),             /**< 默认符号表 */
+    HRUNTIME_SYMBOL_ENUM_TYPE_TABLE_DYNAMIC=        (1UL << 1),             /**< 动态符号表 */
+    HRUNTIME_SYMBOL_ENUM_TYPE_TABLE_SECTION=        (1UL << 2),             /**< 节（由链接脚本指定）符号表 */
+    HRUNTIME_SYMBOL_ENUM_TYPE_TABLE_ALL=            (0xFFFFFFFF)            /**< 所有支持的符号表 */
+} hruntime_symbol_enum_type_t;
+
+/** \brief 符号枚举回调
+ *
+ * \param type hruntime_symbol_enum_type_t 当前类型
+ * \param symbol const hruntime_symbol_t*
+ * \param usr void* 用户参数
+ *
+ */
+typedef void  (*hruntime_symbol_enum_callback_t)(hruntime_symbol_enum_type_t type,const hruntime_symbol_t * symbol,void *usr);
+
+
+
+/** \brief 符号枚举
+ *
+ * \param type uint32_t 类型(必须为hruntime_symbol_enum_type_t或者其组合)
+ * \param callback hruntime_symbol_enum_callback_t 回调
+ * \param usr void* 用户参数
+ * \return size_t 成功枚举的个数
+ *
+ */
+size_t hruntime_symbol_enum(uint32_t type,hruntime_symbol_enum_callback_t callback,void *usr);
+
 #if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
 /*
  * armcc/armclang,使用名称为HRuntimeSymbol的section
