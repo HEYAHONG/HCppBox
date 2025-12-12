@@ -84,6 +84,15 @@ uint8_t hcrc_crc8_calculate(const hcrc_crc8_t *config,const uint8_t *data,size_t
  */
 bool hcrc_crc8_check(const hcrc_crc8_t *config,const uint8_t *data,size_t datalen,uint8_t check);
 
+/** \brief crc8 查找表
+ *
+ * \param config const hcrc_crc8_t* CRC8配置
+ * \param index uint8_t 引索
+ * \return uint8_t 值
+ *
+ */
+uint8_t hcrc_crc8_table(const hcrc_crc8_t *config,uint8_t index);
+
 
 typedef struct hcrc_crc16 hcrc_crc16_t;
 struct hcrc_crc16
@@ -159,6 +168,16 @@ uint16_t hcrc_crc16_calculate(const hcrc_crc16_t *config,const uint8_t *data,siz
 bool hcrc_crc16_check(const hcrc_crc16_t *config,const uint8_t *data,size_t datalen,uint16_t check);
 
 
+/** \brief crc16 查找表
+ *
+ * \param config const hcrc_crc16_t* CRC16配置
+ * \param index uint8_t 引索
+ * \return uint16_t 值
+ *
+ */
+uint16_t hcrc_crc16_table(const hcrc_crc16_t *config,uint8_t index);
+
+
 typedef struct hcrc_crc32 hcrc_crc32_t;
 struct hcrc_crc32
 {
@@ -229,6 +248,16 @@ uint32_t hcrc_crc32_calculate(const hcrc_crc32_t *config,const uint8_t *data,siz
  *
  */
 bool hcrc_crc32_check(const hcrc_crc32_t *config,const uint8_t *data,size_t datalen,uint32_t check);
+
+
+/** \brief crc32 查找表
+ *
+ * \param config const hcrc_crc32_t* CRC32配置
+ * \param index uint8_t 引索
+ * \return uint32_t 值
+ *
+ */
+uint32_t hcrc_crc32_table(const hcrc_crc32_t *config,uint8_t index);
 
 
 #ifdef __cplusplus
