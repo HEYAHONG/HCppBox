@@ -50,6 +50,7 @@
 
 - [hcrc.h](hcrc.h)
 - [hcrc.c](hcrc.c)
+- [hcrc](hcrc)
 
 # 对称加密
 
