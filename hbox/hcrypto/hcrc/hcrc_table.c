@@ -1,13 +1,14 @@
 /***************************************************************
- * Name:      hcrc.c
+ * Name:      hcrc_table.c
  * Purpose:   实现hcrc接口
  * Author:    HYH (hyhsystem.cn)
- * Created:   2025-04-13
+ * Created:   2025-12-13
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "hcrc.h"
+#include "hcrc_table.h"
 
-#include "hcrc/hcrc_base.c"
-#include "hcrc/hcrc_table_legacy.c"
-#include "hcrc/hcrc_table.c"
+/*
+ * 引入hcrctablegenerate生成的查表法CRC源代码
+ */
+#include "crcgen/hcrc_table.c"

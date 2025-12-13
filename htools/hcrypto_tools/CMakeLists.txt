@@ -17,3 +17,10 @@ add_custom_target(hed25519sign_tool  ${CMAKE_COMMAND} -E make_directory hed25519
                                     USES_TERMINAL)
 add_dependencies(hcrypto_tools hed25519sign_tool)
 message(STATUS "Enable hed25519sign_tool!" )
+
+#添加hcrctablegenerate工具构建
+add_custom_target(hcrctablegenerate_tool  ${CMAKE_COMMAND} -E make_directory hcrctablegenerate && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/hcrctablegenerate/ -B hcrctablegenerate && ${CMAKE_COMMAND} --build hcrctablegenerate -t install
+                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+                                    USES_TERMINAL)
+add_dependencies(hcrypto_tools hcrctablegenerate_tool)
+message(STATUS "Enable hcrctablegenerate_tool!" )
