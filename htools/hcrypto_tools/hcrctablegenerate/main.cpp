@@ -10,6 +10,7 @@
 #include "vector"
 #include "string.h"
 #include "fstream"
+#include "algorithm"
 
 static void show_banner()
 {
