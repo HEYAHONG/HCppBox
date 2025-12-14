@@ -22,13 +22,36 @@ static void show_banner()
 
 static std::string destination_dir_name=".";
 static bool        is_output_internal_crctable=true;
+static size_t      custom_crc_bits=32;
+static std::string custom_crc_name="custom_crc";
+static uint64_t    custom_crc_init=0;
+static uint64_t    custom_crc_poly=0;
+static uint64_t    custom_crc_xorout=0;
+static bool        custom_crc_refin=false;
+static bool        custom_crc_refout=false;
 static void check_args(int argc,char *argv[])
 {
     struct arg_file * destdir=NULL;
+    struct arg_lit  * nointernalcrc=NULL;
+    struct arg_int  * crcbits=NULL;
+    struct arg_str  * crcname=NULL;
+    struct arg_str  * crcinit=NULL;
+    struct arg_str  * crcpoly=NULL;
+    struct arg_str  * crcxorout=NULL;
+    struct arg_lit  * crcrefin=NULL;
+    struct arg_lit  * crcrefout=NULL;
     struct arg_lit  * help=NULL;
     void *argtable[]=
     {
         destdir=arg_file0("D","dest","dir",                 "destination dir"),
+        nointernalcrc=arg_lit0("N","no-internal-crc",       "don't generate internal crc"),
+        crcbits=arg_int0("b","bits","8/16/32/64",           "custom crc bits(8/16/32/64)"),
+        crcname=arg_str0("n","name","[str]",                "custom crc name"),
+        crcinit=arg_str0("I","init","[hex]",                "custom crc init(hex)"),
+        crcpoly=arg_str0("P","poly","[hex]",                "custom crc poly(hex)"),
+        crcxorout=arg_str0("X","xorout","[hex]",            "custom crc xorout(hex)"),
+        crcrefin=arg_lit0("i","refin",                      "custom crc refin"),
+        crcrefout=arg_lit0("o","refout",                    "custom crc refout"),
         help=arg_lit0("H","help",                           "print this help and exit"),
         arg_end(20)
     };
@@ -74,6 +97,79 @@ static void check_args(int argc,char *argv[])
         }
     }
 
+    if(nointernalcrc->count > 0)
+    {
+        is_output_internal_crctable=false;
+    }
+
+    if(crcbits->count >0)
+    {
+        custom_crc_bits=crcbits->ival[0];
+    }
+
+    if(custom_crc_bits!=8 && custom_crc_bits!=16 && custom_crc_bits!=32 && custom_crc_bits!=64)
+    {
+        hfprintf(stderr,"only support 8/16/32/64,current is %d!\r\n",custom_crc_bits);
+        hexit(-1);
+    }
+
+    if(crcname->count > 0)
+    {
+        custom_crc_name=crcname->sval[0];
+    }
+
+    {
+        /*
+         * 处理名称字符串，只允许小写字母、数字、下划线,开头不得为数字。
+         */
+        if(custom_crc_name.length() == 0)
+        {
+            custom_crc_name="custom_crc";
+        }
+        for(auto it=custom_crc_name.begin(); it!=custom_crc_name.end(); it++)
+        {
+            if(!(('0' <= (*it) && '9' >= (*it)) || ('a' <= (*it) && 'z' >= (*it))))
+            {
+                if('A' <= (*it) && 'Z' >= (*it))
+                {
+                    (*it)=std::tolower(*it);
+                }
+                else
+                {
+                    (*it)='_';
+                }
+            }
+        }
+        if(custom_crc_name.c_str()[0] >= '0' && custom_crc_name.c_str()[0] <= '9')
+        {
+            custom_crc_name=std::string("crc_")+custom_crc_name;
+        }
+    }
+
+    if(crcinit->count > 0)
+    {
+        custom_crc_init=std::strtoull(crcinit->sval[0],NULL,16);
+    }
+
+    if(crcpoly->count > 0)
+    {
+        custom_crc_poly=std::strtoull(crcpoly->sval[0],NULL,16);
+    }
+
+    if(crcxorout->count > 0)
+    {
+        custom_crc_xorout=std::strtoull(crcxorout->sval[0],NULL,16);
+    }
+
+    if(crcrefin->count > 0)
+    {
+        custom_crc_refin=true;
+    }
+
+    if(crcrefout->count > 0)
+    {
+        custom_crc_refout=true;
+    }
 
     arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
 }
@@ -574,7 +670,7 @@ static void output_crc32_table(std::string basename,hcrc_crc32_t config)
     {
         std::stringstream ss;
         c_source_begin(basename,c_header_name,ss);
-         {
+        {
             {
                 ss<<"static uint32_t " <<  "__"<<basename << "_table" << "_data[]=" <<std::endl;
                 ss<<"{"<<std::endl;
@@ -1103,6 +1199,90 @@ static void  output_internal_crctable(int argc,char *argv[])
     }
 }
 
+static void output_custom_crc(int argc,char *argv[])
+{
+    if(custom_crc_poly == 0)
+    {
+        //多项式为0,不生成crc
+        return;
+    }
+
+    std::string name=custom_crc_name;
+    std::cout << "generate " << name <<std::endl;
+    if(custom_crc_bits==8)
+    {
+        std::cout << "type is crc8" << std::endl;
+        hcrc_crc8_t config= {0};
+        {
+            config.init=custom_crc_init;
+            config.poly=custom_crc_poly;
+            config.xorout=custom_crc_xorout;
+            config.refin=custom_crc_refin;
+            config.refout=custom_crc_refout;
+        }
+        std::cout << "init=" << std::showbase << std::hex << (int)config.init<<std::endl;
+        std::cout << "poly=" << std::showbase << std::hex << (int)config.poly<<std::endl;
+        std::cout << "xorout=" << std::showbase << std::hex << (int)config.xorout<<std::endl;
+        std::cout << "refin=" <<  (const char *)(config.refin?"true":"false") <<std::endl;
+        std::cout << "refout=" << (const char *)(config.refin?"true":"false") <<std::endl;
+        output_crc8_table(name,config);
+    }
+    else if(custom_crc_bits==16)
+    {
+        std::cout << "type is crc16" << std::endl;
+        hcrc_crc16_t config= {0};
+        {
+            config.init=custom_crc_init;
+            config.poly=custom_crc_poly;
+            config.xorout=custom_crc_xorout;
+            config.refin=custom_crc_refin;
+            config.refout=custom_crc_refout;
+        }
+        std::cout << "init=" << std::showbase << std::hex << config.init<<std::endl;
+        std::cout << "poly=" << std::showbase << std::hex << config.poly<<std::endl;
+        std::cout << "xorout=" << std::showbase << std::hex << config.xorout<<std::endl;
+        std::cout << "refin=" <<  (const char *)(config.refin?"true":"false") <<std::endl;
+        std::cout << "refout=" << (const char *)(config.refin?"true":"false") <<std::endl;
+        output_crc16_table(name,config);
+    }
+    else if(custom_crc_bits==32)
+    {
+        std::cout << "type is crc32" << std::endl;
+        hcrc_crc32_t config= {0};
+        {
+            config.init=custom_crc_init;
+            config.poly=custom_crc_poly;
+            config.xorout=custom_crc_xorout;
+            config.refin=custom_crc_refin;
+            config.refout=custom_crc_refout;
+        }
+        std::cout << "init=" << std::showbase << std::hex << config.init<<std::endl;
+        std::cout << "poly=" << std::showbase << std::hex << config.poly<<std::endl;
+        std::cout << "xorout=" << std::showbase << std::hex << config.xorout<<std::endl;
+        std::cout << "refin=" <<  (const char *)(config.refin?"true":"false") <<std::endl;
+        std::cout << "refout=" << (const char *)(config.refin?"true":"false") <<std::endl;
+        output_crc32_table(name,config);
+    }
+    else if(custom_crc_bits==64)
+    {
+        std::cout << "type is crc64" << std::endl;
+        hcrc_crc64_t config= {0};
+        {
+            config.init=custom_crc_init;
+            config.poly=custom_crc_poly;
+            config.xorout=custom_crc_xorout;
+            config.refin=custom_crc_refin;
+            config.refout=custom_crc_refout;
+        }
+        std::cout << "init=" << std::showbase << std::hex << config.init<<std::endl;
+        std::cout << "poly=" << std::showbase << std::hex << config.poly<<std::endl;
+        std::cout << "xorout=" << std::showbase << std::hex << config.xorout<<std::endl;
+        std::cout << "refin=" <<  (const char *)(config.refin?"true":"false") <<std::endl;
+        std::cout << "refout=" << (const char *)(config.refin?"true":"false") <<std::endl;
+        output_crc64_table(name,config);
+    }
+
+}
 
 int main(int argc,char *argv[])
 {
@@ -1112,6 +1292,7 @@ int main(int argc,char *argv[])
 
     output_internal_crctable(argc,argv);
 
+    output_custom_crc(argc,argv);
 
     return 0;
 }
