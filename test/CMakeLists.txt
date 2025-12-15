@@ -25,6 +25,11 @@ if(MSVC)
     add_compile_options(-utf-8 )
 endif()
 
+if(NOT DEFINED TEST_INSTALL_DIR)
+    set(TEST_INSTALL_DIR ${CMAKE_BINARY_DIR}/test)
+endif()
+
+
 file(GLOB TESTS *)
 foreach(TEST ${TESTS})
 	if(IS_DIRECTORY ${TEST})
@@ -32,6 +37,13 @@ foreach(TEST ${TESTS})
             file(RELATIVE_PATH TESTNAME ${CMAKE_CURRENT_SOURCE_DIR}/ ${TEST})
             message(STATUS "Add Test ${TESTNAME}")
             add_subdirectory(${TEST})
+            if(DEFINED TEST_INSTALL_DIR)
+                install(    TARGETS ${TESTNAME}
+                            RUNTIME DESTINATION ${TEST_INSTALL_DIR}/bin
+                            LIBRARY DESTINATION ${TEST_INSTALL_DIR}/lib
+                            ARCHIVE DESTINATION ${TEST_INSTALL_DIR}/lib
+                       )
+            endif()
         endif()
 	endif()
 endforeach()
