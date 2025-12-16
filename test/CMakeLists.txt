@@ -25,6 +25,8 @@ if(MSVC)
     add_compile_options(-utf-8 )
 endif()
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake.in ${CMAKE_BINARY_DIR}/toolchain.cmake @ONLY)
+
 if(NOT DEFINED TEST_INSTALL_DIR)
     set(TEST_INSTALL_DIR ${CMAKE_BINARY_DIR}/test)
 endif()
@@ -64,7 +66,7 @@ foreach(SOFTPLC ${SOFTPLCS})
         if(EXISTS "${SOFTPLC}/CMakeLists.txt")
             file(RELATIVE_PATH SOFTPLCNAME ${CMAKE_CURRENT_SOURCE_DIR}/SoftPLC ${SOFTPLC})
             message(STATUS "Add SoftPLC ${SOFTPLCNAME}")
-            add_custom_target(${SOFTPLCNAME}_softplc ALL  ${CMAKE_COMMAND} -E make_directory ${SOFTPLCNAME}-softplc  && ${CMAKE_COMMAND} -DSOFTPLC_INSTALL_DIR=${SOFTPLC_INSTALL_DIR}  -S ${SOFTPLC} -B ${SOFTPLCNAME}-softplc && ${CMAKE_COMMAND} --build ${SOFTPLCNAME}-softplc  -t install
+            add_custom_target(${SOFTPLCNAME}_softplc ALL  ${CMAKE_COMMAND} -E make_directory ${SOFTPLCNAME}-softplc  && ${CMAKE_COMMAND} -DCMAKE_TOOLCHAIN_FILE=${CMAKE_BINARY_DIR}/toolchain.cmake  -DSOFTPLC_INSTALL_DIR=${SOFTPLC_INSTALL_DIR}  -S ${SOFTPLC} -B ${SOFTPLCNAME}-softplc && ${CMAKE_COMMAND} --build ${SOFTPLCNAME}-softplc  -t install
                                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
                                     USES_TERMINAL)
         endif()

@@ -30,6 +30,9 @@ ${CMAKE_CURRENT_SOURCE_DIR}/trafic_light
 #启用hsoftplc组件
 add_compile_options( -DHSOFTPLC=1 )
 
+#设置HCppBox使用纯C++
+set(HCPPBOX_USE_PURE_CPLUSPLUS TRUE)
+
 #添加HCppBox库
 add_subdirectory(../../../ HCppBox EXCLUDE_FROM_ALL)
 
