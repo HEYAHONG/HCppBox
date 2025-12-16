@@ -88,8 +88,10 @@ install(TARGETS blink plc
        LIBRARY DESTINATION ${SOFTPLC_INSTALL_DIR}/blink/lib
        ARCHIVE DESTINATION ${SOFTPLC_INSTALL_DIR}/blink/lib
        )
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 install(FILES ${CMAKE_BINARY_DIR}/plc.mod
        DESTINATION ${SOFTPLC_INSTALL_DIR}/blink/bin
        )
+endif()
 endif()
 
