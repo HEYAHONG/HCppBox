@@ -48,3 +48,23 @@ foreach(TEST ${TESTS})
 	endif()
 endforeach()
 
+if(NOT MSVC)
+
+if(NOT DEFINED SOFTPLC_INSTALL_DIR)
+    set(SOFTPLC_INSTALL_DIR ${TEST_INSTALL_DIR}/SoftPLC)
+endif()
+
+file(GLOB SOFTPLCS SoftPLC/*)
+foreach(SOFTPLC ${SOFTPLCS})
+    if(IS_DIRECTORY ${SOFTPLC})
+        if(EXISTS "${SOFTPLC}/CMakeLists.txt")
+            file(RELATIVE_PATH SOFTPLCNAME ${CMAKE_CURRENT_SOURCE_DIR}/SoftPLC ${SOFTPLC})
+            message(STATUS "Add SoftPLC ${SOFTPLCNAME}")
+            add_custom_target(${SOFTPLCNAME}_softplc ALL  ${CMAKE_COMMAND} -E make_directory ${SOFTPLCNAME}-softplc  && ${CMAKE_COMMAND} -DSOFTPLC_INSTALL_DIR=${SOFTPLC_INSTALL_DIR}  -S ${SOFTPLC} -B ${SOFTPLCNAME}-softplc && ${CMAKE_COMMAND} --build ${SOFTPLCNAME}-softplc  -t install
+                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+                                    USES_TERMINAL)
+        endif()
+    endif()
+endforeach()
+
+endif()

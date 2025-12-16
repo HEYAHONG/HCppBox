@@ -78,3 +78,17 @@ add_custom_target(plc_mod ALL
                                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                                  )
 endif()
+
+
+#安装相关文件到对应目录
+include(GNUInstallDirs)
+if(DEFINED SOFTPLC_INSTALL_DIR)
+install(TARGETS trafic_light plc
+       RUNTIME DESTINATION ${SOFTPLC_INSTALL_DIR}/trafic_light/bin
+       LIBRARY DESTINATION ${SOFTPLC_INSTALL_DIR}/trafic_light/lib
+       ARCHIVE DESTINATION ${SOFTPLC_INSTALL_DIR}/trafic_light/lib
+       )
+install(FILES ${CMAKE_BINARY_DIR}/plc.mod
+       DESTINATION ${SOFTPLC_INSTALL_DIR}/trafic_light/bin
+       )
+endif()
