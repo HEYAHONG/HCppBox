@@ -54,6 +54,10 @@ if(NOT DEFINED SOFTPLC_INSTALL_DIR)
     set(SOFTPLC_INSTALL_DIR ${TEST_INSTALL_DIR}/SoftPLC)
 endif()
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/../hbox/cmake/FindMATIEC.cmake)
+
+if(MATIEC_IEC2C_FOUND)
+
 file(GLOB SOFTPLCS SoftPLC/*)
 foreach(SOFTPLC ${SOFTPLCS})
     if(IS_DIRECTORY ${SOFTPLC})
@@ -66,5 +70,7 @@ foreach(SOFTPLC ${SOFTPLCS})
         endif()
     endif()
 endforeach()
+
+endif()
 
 endif()
