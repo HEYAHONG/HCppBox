@@ -6,7 +6,7 @@ project(SoftPLC C CXX ASM)
 #设定HRC文件系统目录为fs
 set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fs/)
 
-if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+if(NOT MSVC)
     add_compile_options(-fPIC )
 endif()
 if(MSVC)
