@@ -1,11 +1,13 @@
 #include "hbox.h"
 #include <string>
+#include <fstream>
 #include <hrc.h>
 
 
 
 static int cmd_help(int argc,const char *argv[]);
 static int cmd_dll(int argc,const char *argv[]);
+static int cmd_relocatable(int argc,const char *argv[]);
 static struct
 {
     const char * cmd;
@@ -28,6 +30,13 @@ static struct
         cmd_dll,
         "--dll / -d",
         "dll path"
+    },
+    {
+        "--relocatable",
+        "-r",
+        cmd_relocatable,
+        "--relocatable / -r",
+        "relocatable path"
     }
 };
 
@@ -146,6 +155,46 @@ static int cmd_dll(int argc,const char *argv[])
     return 0;
 }
 
+static std::string relocatable_path;
+static int cmd_relocatable(int argc,const char *argv[])
+{
+    for(int i=0; i<argc; i++)
+    {
+        {
+            char temp[4096]= {0};
+            const char *para=NULL;
+            strcat(temp,argv[i]);
+            for(size_t k=0; k<strlen(temp); k++)
+            {
+                if(temp[k]=='=')
+                {
+                    temp[k]='\0';
+                    para=&temp[k+1];
+                    break;
+                }
+            }
+            if(strcmp("--relocatable",temp)==0)
+            {
+                if(para!=NULL)
+                {
+                    relocatable_path=para;
+                    break;
+                }
+            }
+            if(strcmp("-r",argv[i])==0)
+            {
+                if((i+1)<argc)
+                {
+                    relocatable_path=argv[i+1];
+                    break;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
 static void arg_parse(int argc,const char *argv[])
 {
     {
@@ -194,9 +243,9 @@ static void arg_parse(int argc,const char *argv[])
 
 static int check_arg(int argc,const char *argv[])
 {
-    if(dll_path.empty())
+    if(dll_path.empty() && relocatable_path.empty())
     {
-        fprintf(stderr,"must specify dll path!\r\n");
+        fprintf(stderr,"must specify dll path or relocatable path!\r\n");
         print_help(argc,argv);
         exit(-1);
     }
@@ -206,6 +255,12 @@ static int check_arg(int argc,const char *argv[])
 
 static int dumpplcdll(void)
 {
+
+    if(dll_path.empty())
+    {
+        return 0;
+    }
+
     hsoftplc_dll_import_handle_t handle=hsoftplc_dll_load(dll_path.c_str());
     if(handle.hsoftplc_interface == NULL)
     {
@@ -242,6 +297,118 @@ static int dumpplcdll(void)
     return 0;
 }
 
+static int dumpplcrelocatable(void)
+{
+    if(relocatable_path.empty())
+    {
+        return 0;
+    }
+
+    std::string filedata;
+
+    {
+        std::fstream file;
+        file.open(relocatable_path.c_str(),std::ios::in | std::ios::binary);
+        if(file.is_open())
+        {
+            filedata=std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+            file.close();
+        }
+    }
+
+    {
+
+        //尝试coff
+        auto cofffileread=[](hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length)->size_t
+        {
+            if(input==NULL || input->usr==NULL || buffer==NULL)
+            {
+                return 0;
+            }
+            std::string &filedata=*(std::string *)input->usr;
+            if(filedata.length() > address)
+            {
+                size_t byte_to_read=buffer_length;
+                if(byte_to_read > filedata.length()-address)
+                {
+                    byte_to_read=filedata.length()-address;
+                }
+                memcpy(buffer,&filedata.c_str()[address],byte_to_read);
+                return byte_to_read;
+            }
+            return 0;
+        };
+        hcoff_file_input_t cofffile;
+        hcoff_file_input_init(&cofffile,cofffileread,&filedata);
+        hcoff_fileheader_t fileheader;
+        if(hcoff_fileheader_read(&fileheader,(uint8_t *)filedata.c_str(),filedata.length()) && hcoff_fileheader_is_relocatable_object_file(&fileheader))
+        {
+            for(size_t i=0; i<fileheader.f_nsyms; i++)
+            {
+                if(hcoff_symbol_is_symbol(i,&cofffile))
+                {
+                    hcoff_symbol_entry_t symbol_entry;
+                    if(hcoff_symbol_entry_read(&symbol_entry,i,&cofffile))
+                    {
+                        if(symbol_entry.e_sclass==HCOFF_SYMBOL_ENTRY_E_SCLASS_EXT && ((int16_t)symbol_entry.e_scnum)==0)
+                        {
+                            /*
+                             * 外部符号
+                             */
+                            char namebuf[4096];
+                            hcoff_symbol_entry_name_read(&symbol_entry,&cofffile,namebuf,sizeof(namebuf)-1);
+                            if(namebuf[0]!='_' || namebuf[1]!='_')
+                            {
+                                /*
+                                 * 下划线前缀
+                                 */
+                                continue;
+                            }
+                            if(!(namebuf[2]=='Q' || namebuf[2]=='I' || namebuf[2]=='M'))
+                            {
+                                /*
+                                 * 位置
+                                 */
+                                continue;
+                            }
+                            if(!(namebuf[3]=='X' || namebuf[3]=='B' || namebuf[3]=='W' ||  namebuf[3]=='D' || namebuf[3]=='L' || ('0' <= namebuf[3] && '9' >= namebuf[3])))
+                            {
+                                /*
+                                 * 位宽
+                                 */
+                                continue;
+                            }
+
+                            {
+                                /*
+                                 * 打印符号信息
+                                 */
+                                hsoftplc_variable_name_t iec_addr;
+                                hsoftplc_variable_name_t variable_name;
+                                hsoftplc_get_iec_addr_from_variable_name(iec_addr,namebuf);
+                                hsoftplc_get_variable_name_from_iec_addr(variable_name,iec_addr);
+                                hsoftplc_variable_symbol_t variable_symbol;
+                                hsoftplc_parse_variable_symbol(&variable_symbol,namebuf);
+                                for(size_t i=0; i<sizeof(variable_symbol.variable_address)/sizeof(variable_symbol.variable_address[0]); i++)
+                                {
+                                    if(variable_symbol.variable_address[i]==NULL)
+                                    {
+                                        variable_symbol.variable_address[i]="";
+                                    }
+                                }
+                                printf("%s %c %c %s %s %s\r\n",iec_addr,variable_symbol.variable_location,variable_symbol.variable_size,variable_symbol.variable_address[0],variable_symbol.variable_address[1],variable_symbol.variable_address[2]);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
 int main(int argc,const char *argv[])
 {
     arg_parse(argc,argv);
@@ -249,6 +416,8 @@ int main(int argc,const char *argv[])
     check_arg(argc,argv);
 
     dumpplcdll();
+
+    dumpplcrelocatable();
 
     return 0;
 }
