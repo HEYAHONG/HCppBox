@@ -16,7 +16,9 @@ extern "C"
 {
 #endif // __cplusplus
 
-
+/*
+ * ELF标识引索定义
+ */
 #define HELF_EI_MAG0        0   /* Magic number, byte 0. */
 #define HELF_EI_MAG1        1   /* Magic number, byte 1. */
 #define HELF_EI_MAG2        2   /* Magic number, byte 2. */
@@ -213,29 +215,29 @@ bool helf_file_input_32_bits_header_get(helf_file_input_t *input_file,helf_elf32
 typedef struct helf_elf32_program_header helf_elf32_program_header_t;
 struct helf_elf32_program_header
 {
-    uint32_t	p_type;		    /* Identifies program segment type */
-    uint32_t	p_offset;		/* Segment file offset */
-    uint32_t	p_vaddr;		/* Segment virtual address */
-    uint32_t	p_paddr;		/* Segment physical address */
-    uint32_t	p_filesz;		/* Segment size in file */
-    uint32_t	p_memsz;		/* Segment size in memory */
-    uint32_t	p_flags;		/* Segment flags */
-    uint32_t	p_align;		/* Segment alignment, file & memory */
+    uint32_t    p_type;         /* Identifies program segment type */
+    uint32_t    p_offset;       /* Segment file offset */
+    uint32_t    p_vaddr;        /* Segment virtual address */
+    uint32_t    p_paddr;        /* Segment physical address */
+    uint32_t    p_filesz;       /* Segment size in file */
+    uint32_t    p_memsz;        /* Segment size in memory */
+    uint32_t    p_flags;        /* Segment flags */
+    uint32_t    p_align;        /* Segment alignment, file & memory */
 };
 
 typedef struct helf_elf32_section_header helf_elf32_section_header_t;
 struct helf_elf32_section_header
 {
-    uint32_t	sh_name;		    /* Section name, index in string tbl */
-    uint32_t	sh_type;		    /* Type of section */
-    uint32_t	sh_flags;		    /* Miscellaneous section attributes */
-    uint32_t	sh_addr;		    /* Section virtual addr at execution */
-    uint32_t	sh_offset;		    /* Section file offset */
-    uint32_t	sh_size;		    /* Size of section in bytes */
-    uint32_t	sh_link;		    /* Index of another section */
-    uint32_t	sh_info;		    /* Additional section information */
-    uint32_t	sh_addralign;	    /* Section alignment */
-    uint32_t	sh_entsize;		    /* Entry size if section holds table */
+    uint32_t    sh_name;            /* Section name, index in string tbl */
+    uint32_t    sh_type;            /* Type of section */
+    uint32_t    sh_flags;           /* Miscellaneous section attributes */
+    uint32_t    sh_addr;            /* Section virtual addr at execution */
+    uint32_t    sh_offset;          /* Section file offset */
+    uint32_t    sh_size;            /* Size of section in bytes */
+    uint32_t    sh_link;            /* Index of another section */
+    uint32_t    sh_info;            /* Additional section information */
+    uint32_t    sh_addralign;       /* Section alignment */
+    uint32_t    sh_entsize;         /* Entry size if section holds table */
 };
 
 typedef struct helf_elf32_symbol_header helf_elf32_symbol_header_t;
@@ -248,6 +250,29 @@ struct helf_elf32_symbol_header
     uint8_t   st_other;               /* Symbol visibility */
     uint16_t  st_shndx;               /* Section index */
 };
+
+typedef struct helf_elf32_symbol_info helf_elf32_symbol_info_t;
+struct helf_elf32_symbol_info
+{
+    uint16_t si_boundto;        /* Direct bindings, symbol bound to */
+    uint16_t si_flags;          /* Per symbol flags */
+};
+
+typedef struct helf_elf32_rel helf_elf32_rel_t;
+struct helf_elf32_rel
+{
+    uint32_t    r_offset;       /* Address */
+    uint32_t    r_info;         /* Relocation type and symbol index */
+};
+
+typedef struct helf_elf32_rela helf_elf32_rela_t;
+struct helf_elf32_rela
+{
+    uint32_t    r_offset;       /* Address */
+    uint32_t    r_info;         /* Relocation type and symbol index */
+    int32_t     r_addend;       /* Addend */
+};
+
 
 /** \brief ELF文件是否为64位
  *
@@ -279,29 +304,29 @@ struct helf_elf64_file_header
 typedef struct helf_elf64_program_header helf_elf64_program_header_t;
 struct helf_elf64_program_header
 {
-    uint32_t	p_type;		    /* Identifies program segment type */
-    uint32_t	p_flags;		/* Segment flags */
-    uint64_t	p_offset;		/* Segment file offset */
-    uint64_t	p_vaddr;		/* Segment virtual address */
-    uint64_t	p_paddr;		/* Segment physical address */
-    uint64_t	p_filesz;		/* Segment size in file */
-    uint64_t	p_memsz;		/* Segment size in memory */
-    uint64_t	p_align;		/* Segment alignment, file & memory */
+    uint32_t    p_type;         /* Identifies program segment type */
+    uint32_t    p_flags;        /* Segment flags */
+    uint64_t    p_offset;       /* Segment file offset */
+    uint64_t    p_vaddr;        /* Segment virtual address */
+    uint64_t    p_paddr;        /* Segment physical address */
+    uint64_t    p_filesz;       /* Segment size in file */
+    uint64_t    p_memsz;        /* Segment size in memory */
+    uint64_t    p_align;        /* Segment alignment, file & memory */
 };
 
 typedef struct helf_elf64_section_header helf_elf64_section_header_t;
 struct helf_elf64_section_header
 {
-    uint32_t	sh_name;		/* Section name, index in string tbl */
-    uint32_t	sh_type;		/* Type of section */
-    uint64_t	sh_flags;		/* Miscellaneous section attributes */
-    uint64_t	sh_addr;		/* Section virtual addr at execution */
-    uint64_t	sh_offset;		/* Section file offset */
-    uint64_t	sh_size;		/* Size of section in bytes */
-    uint32_t	sh_link;		/* Index of another section */
-    uint32_t	sh_info;		/* Additional section information */
-    uint64_t	sh_addralign;	/* Section alignment */
-    uint64_t	sh_entsize;		/* Entry size if section holds table */
+    uint32_t    sh_name;        /* Section name, index in string tbl */
+    uint32_t    sh_type;        /* Type of section */
+    uint64_t    sh_flags;       /* Miscellaneous section attributes */
+    uint64_t    sh_addr;        /* Section virtual addr at execution */
+    uint64_t    sh_offset;      /* Section file offset */
+    uint64_t    sh_size;        /* Size of section in bytes */
+    uint32_t    sh_link;        /* Index of another section */
+    uint32_t    sh_info;        /* Additional section information */
+    uint64_t    sh_addralign;   /* Section alignment */
+    uint64_t    sh_entsize;     /* Entry size if section holds table */
 };
 
 typedef struct helf_elf64_symbol_header helf_elf64_symbol_header_t;
@@ -313,6 +338,28 @@ struct helf_elf64_symbol_header
     uint16_t st_shndx;                /* Section index */
     uint64_t st_value;                /* Symbol value */
     uint64_t st_size;                 /* Symbol size */
+};
+
+typedef struct helf_elf64_symbol_info helf_elf64_symbol_info_t;
+struct helf_elf64_symbol_info
+{
+    uint16_t si_boundto;        /* Direct bindings, symbol bound to */
+    uint16_t si_flags;          /* Per symbol flags */
+};
+
+typedef struct helf_elf64_rel helf_elf64_rel_t;
+struct helf_elf64_rel
+{
+    uint64_t    r_offset;       /* Address */
+    uint64_t    r_info;         /* Relocation type and symbol index */
+};
+
+typedef struct helf_elf64_rela helf_elf64_rela_t;
+struct helf_elf64_rela
+{
+    uint64_t    r_offset;       /* Address */
+    uint64_t    r_info;         /* Relocation type and symbol index */
+    int64_t     r_addend;       /* Addend */
 };
 
 /** \brief ELF读取64位头
@@ -439,6 +486,197 @@ bool helf_file_input_64_bits_header_get(helf_file_input_t *input_file,helf_elf64
 #define HELF_EM_ALPHA_STD   41              /* Digital Alpha (standard value). */
 #define HELF_EM_ALPHA       0x9026          /* Alpha (written in the absence of an ABI) */
 
+
+/*
+ * p_type
+ */
+#define HELF_PT_NULL            0               /* Program header table entry unused */
+#define HELF_PT_LOAD            1               /* Loadable program segment */
+#define HELF_PT_DYNAMIC         2               /* Dynamic linking information */
+#define HELF_PT_INTERP          3               /* Program interpreter */
+#define HELF_PT_NOTE            4               /* Auxiliary information */
+#define HELF_PT_SHLIB           5               /* Reserved */
+#define HELF_PT_PHDR            6               /* Entry for header table itself */
+#define HELF_PT_TLS             7               /* Thread-local storage segment */
+#define HELF_PT_NUM             8               /* Number of defined types */
+#define HELF_PT_LOOS            0x60000000      /* Start of OS-specific */
+#define HELF_PT_GNU_EH_FRAME    0x6474e550      /* GCC .eh_frame_hdr segment */
+#define HELF_PT_GNU_STACK       0x6474e551      /* Indicates stack executability */
+#define HELF_PT_GNU_RELRO       0x6474e552      /* Read-only after relocation */
+#define HELF_PT_LOSUNW          0x6ffffffa
+#define HELF_PT_SUNWBSS         0x6ffffffa      /* Sun Specific segment */
+#define HELF_PT_SUNWSTACK       0x6ffffffb      /* Stack segment */
+#define HELF_PT_HISUNW          0x6fffffff
+#define HELF_PT_HIOS            0x6fffffff      /* End of OS-specific */
+#define HELF_PT_LOPROC          0x70000000      /* Start of processor-specific */
+#define HELF_PT_HIPROC          0x7fffffff      /* End of processor-specific */
+
+/*
+ * p_flags
+ */
+#define HELF_PF_X           (1 << 0)    /* Segment is executable */
+#define HELF_PF_W           (1 << 1)    /* Segment is writable */
+#define HELF_PF_R           (1 << 2)    /* Segment is readable */
+#define HELF_PF_MASKOS      0x0ff00000  /* OS-specific */
+#define HELF_PF_MASKPROC    0xf0000000  /* Processor-specific */
+
+/* Legal values for note segment descriptor types for core files. */
+#define HELF_NT_PRSTATUS            1               /* Contains copy of prstatus struct */
+#define HELF_NT_FPREGSET            2               /* Contains copy of fpregset struct */
+#define HELF_NT_PRPSINFO            3               /* Contains copy of prpsinfo struct */
+#define HELF_NT_PRXREG              4               /* Contains copy of prxregset struct */
+#define HELF_NT_TASKSTRUCT          4               /* Contains copy of task structure */
+#define HELF_NT_PLATFORM            5               /* String from sysinfo(SI_PLATFORM) */
+#define HELF_NT_AUXV                6               /* Contains copy of auxv array */
+#define HELF_NT_GWINDOWS            7               /* Contains copy of gwindows struct */
+#define HELF_NT_ASRS                8               /* Contains copy of asrset struct */
+#define HELF_NT_PSTATUS             10              /* Contains copy of pstatus struct */
+#define HELF_NT_PSINFO              13              /* Contains copy of psinfo struct */
+#define HELF_NT_PRCRED              14              /* Contains copy of prcred struct */
+#define HELF_NT_UTSNAME             15              /* Contains copy of utsname struct */
+#define HELF_NT_LWPSTATUS           16              /* Contains copy of lwpstatus struct */
+#define HELF_NT_LWPSINFO            17              /* Contains copy of lwpinfo struct */
+#define HELF_NT_PRFPXREG            20              /* Contains copy of fprxregset struct */
+#define HELF_NT_PRXFPREG            0x46e62b7f      /* Contains copy of user_fxsr_struct */
+#define HELF_NT_PPC_VMX             0x100           /* PowerPC Altivec/VMX registers */
+#define HELF_NT_PPC_SPE             0x101           /* PowerPC SPE/EVR registers */
+#define HELF_NT_PPC_VSX             0x102           /* PowerPC VSX registers */
+#define HELF_NT_386_TLS             0x200           /* i386 TLS slots (struct user_desc) */
+#define HELF_NT_386_IOPERM          0x201           /* x86 io permission bitmap (1=deny) */
+#define HELF_NT_X86_XSTATE          0x202           /* x86 extended state using xsave */
+
+/*
+ * sh_type
+ */
+#define HELF_SHT_NULL           0           /* Section header table entry unused */
+#define HELF_SHT_PROGBITS       1           /* Program data */
+#define HELF_SHT_SYMTAB         2           /* Symbol table */
+#define HELF_SHT_STRTAB         3           /* String table */
+#define HELF_SHT_RELA           4           /* Relocation entries with addends */
+#define HELF_SHT_HASH           5           /* Symbol hash table */
+#define HELF_SHT_DYNAMIC        6           /* Dynamic linking information */
+#define HELF_SHT_NOTE           7           /* Notes */
+#define HELF_SHT_NOBITS         8           /* Program space with no data (bss) */
+#define HELF_SHT_REL            9           /* Relocation entries, no addends */
+#define HELF_SHT_SHLIB          10          /* Reserved */
+#define HELF_SHT_DYNSYM         11          /* Dynamic linker symbol table */
+#define HELF_SHT_INIT_ARRAY     14          /* Array of constructors */
+#define HELF_SHT_FINI_ARRAY     15          /* Array of destructors */
+#define HELF_SHT_PREINIT_ARRAY  16          /* Array of pre-constructors */
+#define HELF_SHT_GROUP          17          /* Section group */
+#define HELF_SHT_SYMTAB_SHNDX   18          /* Extended section indeces */
+#define HELF_SHT_NUM            19          /* Number of defined types.  */
+#define HELF_SHT_LOOS           0x60000000  /* Start OS-specific.  */
+#define HELF_SHT_GNU_ATTRIBUTES 0x6ffffff5  /* Object attributes.  */
+#define HELF_SHT_GNU_HASH       0x6ffffff6  /* GNU-style hash table.  */
+#define HELF_SHT_GNU_LIBLIST    0x6ffffff7  /* Prelink library list */
+#define HELF_SHT_CHECKSUM       0x6ffffff8  /* Checksum for DSO content.  */
+#define HELF_SHT_LOSUNW         0x6ffffffa  /* Sun-specific low bound.  */
+#define HELF_SHT_SUNW_move      0x6ffffffa
+#define HELF_SHT_SUNW_COMDAT    0x6ffffffb
+#define HELF_SHT_SUNW_syminfo   0x6ffffffc
+#define HELF_SHT_GNU_verdef     0x6ffffffd  /* Version definition section.  */
+#define HELF_SHT_GNU_verneed    0x6ffffffe  /* Version needs section.  */
+#define HELF_SHT_GNU_versym     0x6fffffff  /* Version symbol table.  */
+#define HELF_SHT_HISUNW         0x6fffffff  /* Sun-specific high bound.  */
+#define HELF_SHT_HIOS           0x6fffffff  /* End OS-specific type */
+#define HELF_SHT_LOPROC         0x70000000  /* Start of processor-specific */
+#define HELF_SHT_HIPROC         0x7fffffff  /* End of processor-specific */
+#define HELF_SHT_LOUSER         0x80000000  /* Start of application-specific */
+#define HELF_SHT_HIUSER         0x8fffffff  /* End of application-specific */
+
+
+/*
+ * sh_flags
+ */
+#define HELF_SHF_WRITE              (1 << 0)    /* Writable */
+#define HELF_SHF_ALLOC              (1 << 1)    /* Occupies memory during execution */
+#define HELF_SHF_EXECINSTR          (1 << 2)    /* Executable */
+#define HELF_SHF_MERGE              (1 << 4)    /* Might be merged */
+#define HELF_SHF_STRINGS            (1 << 5)    /* Contains nul-terminated strings */
+#define HELF_SHF_INFO_LINK          (1 << 6)    /* `sh_info' contains SHT index */
+#define HELF_SHF_LINK_ORDER         (1 << 7)    /* Preserve order after combining */
+#define HELF_SHF_OS_NONCONFORMING   (1 << 8)    /* Non-standard OS specific handling  required */
+#define HELF_SHF_GROUP              (1 << 9)    /* Section is member of a group.  */
+#define HELF_SHF_TLS                (1 << 10)   /* Section hold thread-local data.  */
+#define HELF_SHF_MASKOS             0x0ff00000  /* OS-specific.  */
+#define HELF_SHF_MASKPROC           0xf0000000  /* Processor-specific */
+#define HELF_SHF_ORDERED            (1 << 30)   /* Special ordering requirement  (Solaris).  */
+#define HELF_SHF_EXCLUDE            (1 << 31)   /* Section is excluded unless  referenced or allocated (Solaris).*/
+
+/*
+ *si_boundto.
+ */
+#define HELF_SYMINFO_BT_SELF        0xffff  /* Symbol bound to self */
+#define HELF_SYMINFO_BT_PARENT      0xfffe  /* Symbol bound to parent */
+#define HELF_SYMINFO_BT_LOWRESERVE  0xff00  /* Beginning of reserved entries */
+
+/*
+ * si_flags.
+ */
+#define HELF_SYMINFO_FLG_DIRECT     0x0001  /* Direct bound symbol */
+#define HELF_SYMINFO_FLG_PASSTHRU   0x0002  /* Pass-thru symbol for translator */
+#define HELF_SYMINFO_FLG_COPY       0x0004  /* Symbol is a copy-reloc */
+#define HELF_SYMINFO_FLG_LAZYLOAD   0x0008  /* Symbol bound to object to be lazy
+
+
+/* How to extract and insert information held in the st_info field.  */
+#define HELF_ELF32_ST_BIND(val)             (((unsigned char) (val)) >> 4)
+#define HELF_ELF32_ST_TYPE(val)             ((val) & 0xf)
+#define HELF_ELF32_ST_INFO(bind, type)      (((bind) << 4) + ((type) & 0xf))
+
+/* Both Elf32_Sym and Elf64_Sym use the same one-byte st_info field.  */
+#define HELF_ELF64_ST_BIND(val)             HELF_ELF32_ST_BIND (val)
+#define HELF_ELF64_ST_TYPE(val)             HELF_ELF32_ST_TYPE (val)
+#define HELF_ELF64_ST_INFO(bind, type)      HELF_ELF32_ST_INFO ((bind), (type))
+
+/* Legal values for ST_BIND subfield of st_info (symbol binding).  */
+#define HELF_STB_LOCAL          0       /* Local symbol */
+#define HELF_STB_GLOBAL         1       /* Global symbol */
+#define HELF_STB_WEAK           2       /* Weak symbol */
+#define HELF_STB_NUM            3       /* Number of defined types.  */
+#define HELF_STB_LOOS           10      /* Start of OS-specific */
+#define HELF_STB_GNU_UNIQUE     10      /* Unique symbol.  */
+#define HELF_STB_HIOS           12      /* End of OS-specific */
+#define HELF_STB_LOPROC         13      /* Start of processor-specific */
+#define HELF_STB_HIPROC         15      /* End of processor-specific */
+
+/* Legal values for ST_TYPE subfield of st_info (symbol type).  */
+#define HELF_STT_NOTYPE         0       /* Symbol type is unspecified */
+#define HELF_STT_OBJECT         1       /* Symbol is a data object */
+#define HELF_STT_FUNC           2       /* Symbol is a code object */
+#define HELF_STT_SECTION        3       /* Symbol associated with a section */
+#define HELF_STT_FILE           4       /* Symbol's name is file name */
+#define HELF_STT_COMMON         5       /* Symbol is a common data object */
+#define HELF_STT_TLS            6       /* Symbol is thread-local data object*/
+#define HELF_STT_NUM            7       /* Number of defined types.  */
+#define HELF_STT_LOOS           10      /* Start of OS-specific */
+#define HELF_STT_GNU_IFUNC      10      /* Symbol is indirect code object */
+#define HELF_STT_HIOS           12      /* End of OS-specific */
+#define HELF_STT_LOPROC         13      /* Start of processor-specific */
+#define HELF_STT_HIPROC         15      /* End of processor-specific */
+
+
+/* How to extract and insert information held in the st_other field.  */
+#define HELF_ELF32_ST_VISIBILITY(o) ((o) & 0x03)
+
+/* For ELF64 the definitions are the same.  */
+#define HELF_ELF64_ST_VISIBILITY(o) HELF_ELF32_ST_VISIBILITY (o)
+
+/* Symbol visibility specification encoded in the st_other field.  */
+#define HELF_STV_DEFAULT    0       /* Default symbol visibility rules */
+#define HELF_STV_INTERNAL   1       /* Processor specific hidden class */
+#define HELF_STV_HIDDEN     2       /* Sym unavailable in other modules */
+#define HELF_STV_PROTECTED  3       /* Not preemptible, not exported */
+
+/* How to extract and insert information held in the r_info field.  */
+#define HELF_ELF32_R_SYM(val)               ((val) >> 8)
+#define HELF_ELF32_R_TYPE(val)              ((val) & 0xff)
+#define HELF_ELF32_R_INFO(sym, type)        (((sym) << 8) + ((type) & 0xff))
+
+#define HELF_ELF64_R_SYM(i)                 ((i) >> 32)
+#define HELF_ELF64_R_TYPE(i)                ((i) & 0xffffffff)
+#define HELF_ELF64_R_INFO(sym,type)         ((((uint64_t) (sym)) << 32) + (type))
 
 
 #ifdef __cplusplus
