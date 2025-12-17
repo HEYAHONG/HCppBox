@@ -317,7 +317,6 @@ static int dumpplcrelocatable(void)
     }
 
     {
-
         //尝试coff
         auto cofffileread=[](hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length)->size_t
         {
@@ -357,6 +356,22 @@ static int dumpplcrelocatable(void)
                              */
                             char namebuf[4096];
                             hcoff_symbol_entry_name_read(&symbol_entry,&cofffile,namebuf,sizeof(namebuf)-1);
+                            {
+                                /*
+                                 * 编译器有时会添加一个下划线，需要去除.
+                                 */
+                                if(namebuf[0]=='_' && namebuf[1]=='_' &&  namebuf[2]=='_')
+                                {
+                                    for(size_t i=0;i < (sizeof(namebuf)-1-1);i++)
+                                    {
+                                        namebuf[i]=namebuf[i+1];
+                                        if(namebuf[i]=='\0')
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
                             if(namebuf[0]!='_' || namebuf[1]!='_')
                             {
                                 /*
@@ -403,7 +418,60 @@ static int dumpplcrelocatable(void)
                     }
                 }
             }
+            /*
+             * 已作为coff读取，直接返回
+             */
+            return 0;
         }
+    }
+
+    {
+        //尝试elf
+        auto elffileread=[](helf_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length)->size_t
+        {
+            if(input==NULL || input->usr==NULL || buffer==NULL)
+            {
+                return 0;
+            }
+            std::string &filedata=*(std::string *)input->usr;
+            if(filedata.length() > address)
+            {
+                size_t byte_to_read=buffer_length;
+                if(byte_to_read > filedata.length()-address)
+                {
+                    byte_to_read=filedata.length()-address;
+                }
+                memcpy(buffer,&filedata.c_str()[address],byte_to_read);
+                return byte_to_read;
+            }
+            return 0;
+        };
+        helf_file_input_t elffile;
+        helf_file_input_init(&elffile,elffileread,&filedata);
+
+        /*
+         * 32位elf
+         */
+        {
+            helf_elf32_file_header_t fileheader;
+            if(helf_file_input_32_bits_header_get(&elffile,&fileheader))
+            {
+                return 0;
+            }
+        }
+
+        /*
+         * 64位elf
+         */
+        {
+            helf_elf64_file_header_t fileheader;
+            if(helf_file_input_64_bits_header_get(&elffile,&fileheader))
+            {
+                return 0;
+            }
+        }
+
+
     }
 
     return 0;

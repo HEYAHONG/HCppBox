@@ -210,6 +210,15 @@ bool helf_file_input_32_bits_header_get(helf_file_input_t *input_file,helf_elf32
 #undef HELF_READ_16
 #undef HELF_READ_32
     }
+    {
+        /*
+         * 检查文件头
+         */
+        if(!helf_is_elf(header->e_ident) || header->e_ehsize < sizeof(*header))
+        {
+            return false;
+        }
+    }
     return ret;
 }
 
@@ -332,6 +341,15 @@ bool helf_file_input_64_bits_header_get(helf_file_input_t *input_file,helf_elf64
 #undef HELF_READ_16
 #undef HELF_READ_32
 #undef HELF_READ_64
+    }
+    {
+        /*
+         * 检查文件头
+         */
+        if(!helf_is_elf(header->e_ident) || header->e_ehsize < sizeof(*header))
+        {
+            return false;
+        }
     }
     return ret;
 }
