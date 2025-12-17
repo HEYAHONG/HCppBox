@@ -498,6 +498,20 @@ bool helf_file_input_32_bits_section_header_symtab_get(helf_file_input_t *input_
     return ret;
 }
 
+size_t helf_file_input_32_bits_symbol_count_get(helf_file_input_t *input_file)
+{
+    helf_elf32_section_header_t symbol_section_header;
+    if(helf_file_input_32_bits_section_header_symtab_get(input_file,&symbol_section_header))
+    {
+        size_t symbol_size=symbol_section_header.sh_entsize;
+        if(symbol_size!=0)
+        {
+            return symbol_section_header.sh_size/symbol_size;
+        }
+    }
+    return 0;
+}
+
 bool helf_file_input_is_64_bits(helf_file_input_t *input_file)
 {
     bool ret=false;
@@ -913,4 +927,18 @@ bool helf_file_input_64_bits_section_header_symtab_get(helf_file_input_t *input_
         }
     }
     return ret;
+}
+
+size_t helf_file_input_64_bits_symbol_count_get(helf_file_input_t *input_file)
+{
+    helf_elf64_section_header_t symbol_section_header;
+    if(helf_file_input_64_bits_section_header_symtab_get(input_file,&symbol_section_header))
+    {
+        size_t symbol_size=symbol_section_header.sh_entsize;
+        if(symbol_size!=0)
+        {
+            return symbol_section_header.sh_size/symbol_size;
+        }
+    }
+    return 0;
 }

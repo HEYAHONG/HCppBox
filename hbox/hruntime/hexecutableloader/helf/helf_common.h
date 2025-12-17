@@ -301,8 +301,8 @@ bool helf_file_input_32_bits_section_header_strtab_get(helf_file_input_t *input_
 bool helf_file_input_32_bits_section_header_symtab_get(helf_file_input_t *input_file,helf_elf32_section_header_t *sectionheader);
 
 
-typedef struct helf_elf32_symbol_header helf_elf32_symbol_header_t;
-struct helf_elf32_symbol_header
+typedef struct helf_elf32_symbol helf_elf32_symbol_t;
+struct helf_elf32_symbol
 {
     uint32_t  st_name;                /* Symbol name (string tbl index) */
     uint32_t  st_value;               /* Symbol value */
@@ -311,6 +311,14 @@ struct helf_elf32_symbol_header
     uint8_t   st_other;               /* Symbol visibility */
     uint16_t  st_shndx;               /* Section index */
 };
+
+/** \brief  ELF读取符号表符号个数
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \return  size_t 符号表符号个数
+ *
+ */
+size_t helf_file_input_32_bits_symbol_count_get(helf_file_input_t *input_file);
 
 typedef struct helf_elf32_symbol_info helf_elf32_symbol_info_t;
 struct helf_elf32_symbol_info
@@ -458,8 +466,8 @@ bool helf_file_input_64_bits_section_header_strtab_get(helf_file_input_t *input_
  */
 bool helf_file_input_64_bits_section_header_symtab_get(helf_file_input_t *input_file,helf_elf64_section_header_t *sectionheader);
 
-typedef struct helf_elf64_symbol_header helf_elf64_symbol_header_t;
-struct helf_elf64_symbol_header
+typedef struct helf_elf64_symbol helf_elf64_symbol_t;
+struct helf_elf64_symbol
 {
     uint32_t st_name;                 /* Symbol name (string tbl index) */
     uint8_t st_info;                  /* Symbol type and binding */
@@ -468,6 +476,15 @@ struct helf_elf64_symbol_header
     uint64_t st_value;                /* Symbol value */
     uint64_t st_size;                 /* Symbol size */
 };
+
+/** \brief  ELF读取符号表符号个数
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \return  size_t 符号表符号个数
+ *
+ */
+size_t helf_file_input_64_bits_symbol_count_get(helf_file_input_t *input_file);
+
 
 typedef struct helf_elf64_symbol_info helf_elf64_symbol_info_t;
 struct helf_elf64_symbol_info
