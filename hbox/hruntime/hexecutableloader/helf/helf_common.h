@@ -225,6 +225,17 @@ struct helf_elf32_program_header
     uint32_t    p_align;        /* Segment alignment, file & memory */
 };
 
+/** \brief  ELF读取32位程序头
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param index size_t 引索，从0开始
+ * \param programheader helf_elf32_program_header_t* 程序头
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_32_bits_program_header_get(helf_file_input_t *input_file,size_t index,helf_elf32_program_header_t *programheader);
+
+
 typedef struct helf_elf32_section_header helf_elf32_section_header_t;
 struct helf_elf32_section_header
 {
@@ -239,6 +250,56 @@ struct helf_elf32_section_header
     uint32_t    sh_addralign;       /* Section alignment */
     uint32_t    sh_entsize;         /* Entry size if section holds table */
 };
+
+/** \brief  ELF读取32位节头
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param index size_t 引索，从0开始
+ * \param sectionheader helf_elf32_section_header_t* 节头
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_32_bits_section_header_get(helf_file_input_t *input_file,size_t index,helf_elf32_section_header_t *sectionheader);
+
+/** \brief  ELF读取32位节头字符串表节头
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param sectionheader helf_elf32_section_header_t* 节头
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_32_bits_section_header_shstr_get(helf_file_input_t *input_file,helf_elf32_section_header_t *sectionheader);
+
+
+/** \brief ELF读取节名称
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param sectionheader const helf_elf32_section_header_t* 待读取节名称的节头
+ * \param namebuf char * 名称缓冲
+ * \param namebuf_length size_t 名称缓冲长度
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_32_bits_section_header_name_get(helf_file_input_t *input_file,const helf_elf32_section_header_t *sectionheader,char *namebuf,size_t namebuf_length);
+
+/** \brief  ELF读取32位字符串表节头(.strtab)
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param sectionheader helf_elf32_section_header_t* 节头
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_32_bits_section_header_strtab_get(helf_file_input_t *input_file,helf_elf32_section_header_t *sectionheader);
+
+/** \brief  ELF读取32位符号表节头(.symtab)
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param sectionheader helf_elf32_section_header_t* 节头
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_32_bits_section_header_symtab_get(helf_file_input_t *input_file,helf_elf32_section_header_t *sectionheader);
+
 
 typedef struct helf_elf32_symbol_header helf_elf32_symbol_header_t;
 struct helf_elf32_symbol_header
@@ -301,6 +362,15 @@ struct helf_elf64_file_header
     uint16_t        e_shstrndx;         /* Section header string table index */
 };
 
+/** \brief ELF读取64位头
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param header helf_elf64_file_header_t* 64位文件头
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_64_bits_header_get(helf_file_input_t *input_file,helf_elf64_file_header_t *header);
+
 typedef struct helf_elf64_program_header helf_elf64_program_header_t;
 struct helf_elf64_program_header
 {
@@ -313,6 +383,17 @@ struct helf_elf64_program_header
     uint64_t    p_memsz;        /* Segment size in memory */
     uint64_t    p_align;        /* Segment alignment, file & memory */
 };
+
+/** \brief  ELF读取64位程序头
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param index size_t 引索，从0开始
+ * \param programheader helf_elf64_program_header_t* 程序头
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_64_bits_program_header_get(helf_file_input_t *input_file,size_t index,helf_elf64_program_header_t *programheader);
+
 
 typedef struct helf_elf64_section_header helf_elf64_section_header_t;
 struct helf_elf64_section_header
@@ -328,6 +409,54 @@ struct helf_elf64_section_header
     uint64_t    sh_addralign;   /* Section alignment */
     uint64_t    sh_entsize;     /* Entry size if section holds table */
 };
+
+/** \brief  ELF读取64位节头
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param index size_t 引索，从0开始
+ * \param sectionheader helf_elf64_section_header_t* 程序头
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_64_bits_section_header_get(helf_file_input_t *input_file,size_t index,helf_elf64_section_header_t *sectionheader);
+
+/** \brief  ELF读取64位节头字符串表节头
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param sectionheader helf_elf64_section_header_t* 程序头
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_64_bits_section_header_shstr_get(helf_file_input_t *input_file,helf_elf64_section_header_t *sectionheader);
+
+/** \brief ELF读取节名称
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param sectionheader const helf_elf64_section_header_t* 待读取节名称的节头
+ * \param namebuf char * 名称缓冲
+ * \param namebuf_length size_t 名称缓冲长度
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_64_bits_section_header_name_get(helf_file_input_t *input_file,const helf_elf64_section_header_t *sectionheader,char *namebuf,size_t namebuf_length);
+
+/** \brief  ELF读取64位字符串表节头(.strtab)
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param sectionheader helf_elf64_section_header_t* 节头
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_64_bits_section_header_strtab_get(helf_file_input_t *input_file,helf_elf64_section_header_t *sectionheader);
+
+/** \brief  ELF读取64位符号表节头(.symtab)
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param sectionheader helf_elf64_section_header_t* 节头
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_64_bits_section_header_symtab_get(helf_file_input_t *input_file,helf_elf64_section_header_t *sectionheader);
 
 typedef struct helf_elf64_symbol_header helf_elf64_symbol_header_t;
 struct helf_elf64_symbol_header
@@ -362,14 +491,7 @@ struct helf_elf64_rela
     int64_t     r_addend;       /* Addend */
 };
 
-/** \brief ELF读取64位头
- *
- * \param input_file helf_file_input_t* 输入文件
- * \param header helf_elf64_file_header_t* 64位文件头
- * \return bool 是否读取成功
- *
- */
-bool helf_file_input_64_bits_header_get(helf_file_input_t *input_file,helf_elf64_file_header_t *header);
+
 
 /*
  * e_type
