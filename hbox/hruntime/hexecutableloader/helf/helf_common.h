@@ -798,7 +798,7 @@ struct helf_elf64_rela
 #define HELF_SYMINFO_FLG_DIRECT     0x0001  /* Direct bound symbol */
 #define HELF_SYMINFO_FLG_PASSTHRU   0x0002  /* Pass-thru symbol for translator */
 #define HELF_SYMINFO_FLG_COPY       0x0004  /* Symbol is a copy-reloc */
-#define HELF_SYMINFO_FLG_LAZYLOAD   0x0008  /* Symbol bound to object to be lazy
+#define HELF_SYMINFO_FLG_LAZYLOAD   0x0008  /* Symbol bound to object to be lazy */
 
 
 /* How to extract and insert information held in the st_info field.  */
