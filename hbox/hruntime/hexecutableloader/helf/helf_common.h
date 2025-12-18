@@ -235,6 +235,16 @@ struct helf_elf32_program_header
  */
 bool helf_file_input_32_bits_program_header_get(helf_file_input_t *input_file,size_t index,helf_elf32_program_header_t *programheader);
 
+typedef struct helf_elf32_dynamic helf_elf32_dynamic_t;
+struct helf_elf32_dynamic
+{
+    int32_t d_tag;              /* Dynamic entry type */
+    union
+    {
+        uint32_t d_val;         /* Integer value */
+        uint32_t d_ptr;         /* Address value */
+    }   d_un;
+};
 
 typedef struct helf_elf32_section_header helf_elf32_section_header_t;
 struct helf_elf32_section_header
@@ -422,6 +432,17 @@ struct helf_elf64_program_header
  *
  */
 bool helf_file_input_64_bits_program_header_get(helf_file_input_t *input_file,size_t index,helf_elf64_program_header_t *programheader);
+
+typedef struct helf_elf64_dynamic helf_elf64_dynamic_t;
+struct helf_elf64_dynamic
+{
+    int64_t d_tag;              /* Dynamic entry type */
+    union
+    {
+        uint64_t d_val;         /* Integer value */
+        uint64_t d_ptr;         /* Address value */
+    }   d_un;
+};
 
 
 typedef struct helf_elf64_section_header helf_elf64_section_header_t;
@@ -668,6 +689,13 @@ struct helf_elf64_rela
 #define HELF_EM_ALPHA       0x9026          /* Alpha (written in the absence of an ABI) */
 
 
+/* Special value for e_phnum.  This indicates that the real number of
+ * program headers is too large to fit into e_phnum.  Instead the real
+ * value is in the field sh_info of section 0.
+ */
+
+#define HELF_PN_XNUM        0xffff
+
 /*
  * p_type
  */
@@ -725,6 +753,142 @@ struct helf_elf64_rela
 #define HELF_NT_386_TLS             0x200           /* i386 TLS slots (struct user_desc) */
 #define HELF_NT_386_IOPERM          0x201           /* x86 io permission bitmap (1=deny) */
 #define HELF_NT_X86_XSTATE          0x202           /* x86 extended state using xsave */
+
+/* Legal values for the note segment descriptor types for object files.  */
+#define HELF_NT_VERSION 1       /* Contains a version string.  */
+
+/*
+ * Legal values for d_tag (dynamic entry type).
+ */
+#define HELF_DT_NULL            0                   /* Marks end of dynamic section */
+#define HELF_DT_NEEDED          1                   /* Name of needed library */
+#define HELF_DT_PLTRELSZ        2                   /* Size in bytes of PLT relocs */
+#define HELF_DT_PLTGOT          3                   /* Processor defined value */
+#define HELF_DT_HASH            4                   /* Address of symbol hash table */
+#define HELF_DT_STRTAB          5                   /* Address of string table */
+#define HELF_DT_SYMTAB          6                   /* Address of symbol table */
+#define HELF_DT_RELA            7                   /* Address of Rela relocs */
+#define HELF_DT_RELASZ          8                   /* Total size of Rela relocs */
+#define HELF_DT_RELAENT         9                   /* Size of one Rela reloc */
+#define HELF_DT_STRSZ           10                  /* Size of string table */
+#define HELF_DT_SYMENT          11                  /* Size of one symbol table entry */
+#define HELF_DT_INIT            12                  /* Address of init function */
+#define HELF_DT_FINI            13                  /* Address of termination function */
+#define HELF_DT_SONAME          14                  /* Name of shared object */
+#define HELF_DT_RPATH           15                  /* Library search path (deprecated) */
+#define HELF_DT_SYMBOLIC        16                  /* Start symbol search here */
+#define HELF_DT_REL             17                  /* Address of Rel relocs */
+#define HELF_DT_RELSZ           18                  /* Total size of Rel relocs */
+#define HELF_DT_RELENT          19                  /* Size of one Rel reloc */
+#define HELF_DT_PLTREL          20                  /* Type of reloc in PLT */
+#define HELF_DT_DEBUG           21                  /* For debugging; unspecified */
+#define HELF_DT_TEXTREL         22                  /* Reloc might modify .text */
+#define HELF_DT_JMPREL          23                  /* Address of PLT relocs */
+#define HELF_DT_BIND_NOW        24                  /* Process relocations of object */
+#define HELF_DT_INIT_ARRAY      25                  /* Array with addresses of init fct */
+#define HELF_DT_FINI_ARRAY      26                  /* Array with addresses of fini fct */
+#define HELF_DT_INIT_ARRAYSZ    27                  /* Size in bytes of HELF_DT_INIT_ARRAY */
+#define HELF_DT_FINI_ARRAYSZ    28                  /* Size in bytes of HELF_DT_FINI_ARRAY */
+#define HELF_DT_RUNPATH         29                  /* Library search path */
+#define HELF_DT_FLAGS           30                  /* Flags for the object being loaded */
+#define HELF_DT_ENCODING        32                  /* Start of encoded range */
+#define HELF_DT_PREINIT_ARRAY   32                  /* Array with addresses of preinit fct*/
+#define HELF_DT_PREINIT_ARRAYSZ 33                  /* size in bytes of HELF_DT_PREINIT_ARRAY */
+#define HELF_DT_NUM             34                  /* Number used */
+#define HELF_DT_LOOS            0x6000000d          /* Start of OS-specific */
+#define HELF_DT_HIOS            0x6ffff000          /* End of OS-specific */
+#define HELF_DT_LOPROC          0x70000000          /* Start of processor-specific */
+#define HELF_DT_HIPROC          0x7fffffff          /* End of processor-specific */
+
+/* HELF_DT_* entries which fall between HELF_DT_VALRNGHI & HELF_DT_VALRNGLO use the Dyn.d_un.d_val field of the Elf*_Dyn structure.  This follows Sun's approach.  */
+#define HELF_DT_VALRNGLO        0x6ffffd00
+#define HELF_DT_GNU_PRELINKED   0x6ffffdf5          /* Prelinking timestamp */
+#define HELF_DT_GNU_CONFLICTSZ  0x6ffffdf6          /* Size of conflict section */
+#define HELF_DT_GNU_LIBLISTSZ   0x6ffffdf7          /* Size of library list */
+#define HELF_DT_CHECKSUM        0x6ffffdf8
+#define HELF_DT_PLTPADSZ        0x6ffffdf9
+#define HELF_DT_MOVEENT         0x6ffffdfa
+#define HELF_DT_MOVESZ          0x6ffffdfb
+#define HELF_DT_FEATURE_1       0x6ffffdfc          /* Feature selection (DTF_*).  */
+#define HELF_DT_POSFLAG_1       0x6ffffdfd          /* Flags for HELF_DT_* entries, effecting   the following HELF_DT_* entry.  */
+#define HELF_DT_SYMINSZ         0x6ffffdfe          /* Size of syminfo table (in bytes) */
+#define HELF_DT_SYMINENT        0x6ffffdff          /* Entry size of syminfo */
+#define HELF_DT_VALRNGHI        0x6ffffdff
+#define HELF_DT_VALTAGIDX(tag)  (HELF_DT_VALRNGHI - (tag))  /* Reverse order! */
+#define HELF_DT_VALNUM 12
+
+/* HELF_DT_* entries which fall between HELF_DT_ADDRRNGHI & HELF_DT_ADDRRNGLO use the Dyn.d_un.d_ptr field of the Elf*_Dyn structure. If any adjustment is made to the ELF object after it has been built these entries will need to be adjusted.  */
+#define HELF_DT_ADDRRNGLO       0x6ffffe00
+#define HELF_DT_GNU_HASH        0x6ffffef5          /* GNU-style hash table.  */
+#define HELF_DT_TLSDESC_PLT     0x6ffffef6
+#define HELF_DT_TLSDESC_GOT     0x6ffffef7
+#define HELF_DT_GNU_CONFLICT    0x6ffffef8          /* Start of conflict section */
+#define HELF_DT_GNU_LIBLIST     0x6ffffef9          /* Library list */
+#define HELF_DT_CONFIG          0x6ffffefa          /* Configuration information.  */
+#define HELF_DT_DEPAUDIT        0x6ffffefb          /* Dependency auditing.  */
+#define HELF_DT_AUDIT           0x6ffffefc          /* Object auditing.  */
+#define HELF_DT_PLTPAD          0x6ffffefd          /* PLT padding.  */
+#define HELF_DT_MOVETAB         0x6ffffefe          /* Move table.  */
+#define HELF_DT_SYMINFO         0x6ffffeff          /* Syminfo table.  */
+#define HELF_DT_ADDRRNGHI       0x6ffffeff
+#define HELF_DT_ADDRTAGIDX(tag) (HELF_DT_ADDRRNGHI - (tag)) /* Reverse order! */
+#define HELF_DT_ADDRNUM 11
+
+/* The versioning entry types.  The next are defined as part of the GNU extension.  */
+#define HELF_DT_VERSYM          0x6ffffff0
+
+#define HELF_DT_RELACOUNT       0x6ffffff9
+#define HELF_DT_RELCOUNT        0x6ffffffa
+
+/* These were chosen by Sun.  */
+#define HELF_DT_FLAGS_1             0x6ffffffb                      /* State flags, see HELF_DF_1_* below.  */
+#define HELF_DT_VERDEF              0x6ffffffc                      /* Address of version definition table */
+#define HELF_DT_VERDEFNUM           0x6ffffffd                      /* Number of version definitions */
+#define HELF_DT_VERNEED             0x6ffffffe                      /* Address of table with needed versions */
+#define HELF_DT_VERNEEDNUM          0x6fffffff                      /* Number of needed versions */
+#define HELF_DT_VERSIONTAGIDX(tag)  (HELF_DT_VERNEEDNUM - (tag))    /* Reverse order! */
+#define HELF_DT_VERSIONTAGNUM 16
+
+/* Sun added these machine-independent extensions in the "processor-specific" range.  Be compatible.  */
+#define HELF_DT_AUXILIARY           0x7ffffffd                      /* Shared object to load before self */
+#define HELF_DT_FILTER              0x7fffffff                      /* Shared object to get values from */
+#define HELF_DT_EXTRATAGIDX(tag)    ((uint32_t)-((int32_t) (tag) <<1>>1)-1)
+#define HELF_DT_EXTRANUM            3
+
+/* Values of `d_un.d_val' in the HELF_DT_FLAGS entry.  */
+#define HELF_DF_ORIGIN              0x00000001              /* Object may use HELF_DF_ORIGIN */
+#define HELF_DF_SYMBOLIC            0x00000002              /* Symbol resolutions starts here */
+#define HELF_DF_TEXTREL             0x00000004              /* Object contains text relocations */
+#define HELF_DF_BIND_NOW            0x00000008              /* No lazy binding for this object */
+#define HELF_DF_STATIC_TLS          0x00000010              /* Module uses the static TLS model */
+
+/* State flags selectable in the `d_un.d_val' element of the HELF_DT_FLAGS_1 entry in the dynamic section.  */
+#define HELF_DF_1_NOW               0x00000001              /* Set RTLD_NOW for this object.  */
+#define HELF_DF_1_GLOBAL            0x00000002              /* Set RTLD_GLOBAL for this object.  */
+#define HELF_DF_1_GROUP             0x00000004              /* Set RTLD_GROUP for this object.  */
+#define HELF_DF_1_NODELETE          0x00000008              /* Set RTLD_NODELETE for this object.*/
+#define HELF_DF_1_LOADFLTR          0x00000010              /* Trigger filtee loading at runtime.*/
+#define HELF_DF_1_INITFIRST         0x00000020              /* Set RTLD_INITFIRST for this object*/
+#define HELF_DF_1_NOOPEN            0x00000040              /* Set RTLD_NOOPEN for this object.  */
+#define HELF_DF_1_ORIGIN            0x00000080              /* $ORIGIN must be handled.  */
+#define HELF_DF_1_DIRECT            0x00000100              /* Direct binding enabled.  */
+#define HELF_DF_1_TRANS             0x00000200
+#define HELF_DF_1_INTERPOSE         0x00000400              /* Object is used to interpose.  */
+#define HELF_DF_1_NODEFLIB          0x00000800              /* Ignore default lib search path.  */
+#define HELF_DF_1_NODUMP            0x00001000              /* Object can't be dldump'ed.  */
+#define HELF_DF_1_CONFALT           0x00002000              /* Configuration alternative created.*/
+#define HELF_DF_1_ENDFILTEE         0x00004000              /* Filtee terminates filters search. */
+#define HELF_DF_1_DISPRELDNE        0x00008000              /* Disp reloc applied at build time. */
+#define HELF_DF_1_DISPRELPND        0x00010000              /* Disp reloc applied at run-time.  */
+
+/* Flags for the feature selection in HELF_DT_FEATURE_1.  */
+#define HELF_DTF_1_PARINIT          0x00000001
+#define HELF_DTF_1_CONFEXP          0x00000002
+
+/* Flags in the HELF_DT_POSFLAG_1 entry effecting only the next HELF_DT_* entry.  */
+#define HELF_DF_P1_LAZYLOAD         0x00000001              /* Lazyload following object.  */
+#define HELF_DF_P1_GROUPPERM        0x00000002              /* Symbols from next object are not  generally available.  */
+
 
 /*
  * sh_type

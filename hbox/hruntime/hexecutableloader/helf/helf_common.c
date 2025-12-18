@@ -1077,7 +1077,7 @@ typedef struct
 
 bool helf_file_input_64_bits_symbol_get(helf_file_input_t *input_file,size_t index,helf_elf64_symbol_t *symbol)
 {
-     bool ret=false;
+    bool ret=false;
     if(input_file==NULL || symbol==NULL)
     {
         return ret;
@@ -1114,12 +1114,12 @@ bool helf_file_input_64_bits_symbol_get(helf_file_input_t *input_file,size_t ind
 #define HELF_READ_16(v,a) v=a[0]*(1ULL << 8)+a[1]*(1ULL << 0)
 #define HELF_READ_32(v,a) v=a[0]*(1ULL << 24)+a[1]*(1ULL << 16)+a[2]*(1ULL << 8)+a[3]*(1ULL << 0)
 #define HELF_READ_64(v,a) v=a[0]*(1ULL << 56)+a[1]*(1ULL << 48)+a[2]*(1ULL << 40)+a[3]*(1ULL << 32)+a[4]*(1ULL << 24)+a[5]*(1ULL << 16)+a[6]*(1ULL << 8)+a[7]*(1ULL << 0)
-            HELF_READ_32(symbol->st_name,symbol_bytes.st_name);
-            HELF_READ_8(symbol->st_info,symbol_bytes.st_info);
-            HELF_READ_8(symbol->st_other,symbol_bytes.st_other);
-            HELF_READ_16(symbol->st_shndx,symbol_bytes.st_shndx);
-            HELF_READ_64(symbol->st_value,symbol_bytes.st_value);
-            HELF_READ_64(symbol->st_size,symbol_bytes.st_size);
+        HELF_READ_32(symbol->st_name,symbol_bytes.st_name);
+        HELF_READ_8(symbol->st_info,symbol_bytes.st_info);
+        HELF_READ_8(symbol->st_other,symbol_bytes.st_other);
+        HELF_READ_16(symbol->st_shndx,symbol_bytes.st_shndx);
+        HELF_READ_64(symbol->st_value,symbol_bytes.st_value);
+        HELF_READ_64(symbol->st_size,symbol_bytes.st_size);
 #undef HELF_READ_8
 #undef HELF_READ_16
 #undef HELF_READ_32
@@ -1140,12 +1140,12 @@ bool helf_file_input_64_bits_symbol_get(helf_file_input_t *input_file,size_t ind
 #define HELF_READ_16(v,a) v=a[1]*(1ULL << 8)+a[0]*(1ULL << 0)
 #define HELF_READ_32(v,a) v=a[3]*(1ULL << 24)+a[2]*(1ULL << 16)+a[1]*(1ULL << 8)+a[0]*(1ULL << 0)
 #define HELF_READ_64(v,a) v=a[7]*(1ULL << 56)+a[6]*(1ULL << 48)+a[5]*(1ULL << 40)+a[4]*(1ULL << 32)+a[3]*(1ULL << 24)+a[2]*(1ULL << 16)+a[1]*(1ULL << 8)+a[0]*(1ULL << 0)
-            HELF_READ_32(symbol->st_name,symbol_bytes.st_name);
-            HELF_READ_8(symbol->st_info,symbol_bytes.st_info);
-            HELF_READ_8(symbol->st_other,symbol_bytes.st_other);
-            HELF_READ_16(symbol->st_shndx,symbol_bytes.st_shndx);
-            HELF_READ_64(symbol->st_value,symbol_bytes.st_value);
-            HELF_READ_64(symbol->st_size,symbol_bytes.st_size);
+        HELF_READ_32(symbol->st_name,symbol_bytes.st_name);
+        HELF_READ_8(symbol->st_info,symbol_bytes.st_info);
+        HELF_READ_8(symbol->st_other,symbol_bytes.st_other);
+        HELF_READ_16(symbol->st_shndx,symbol_bytes.st_shndx);
+        HELF_READ_64(symbol->st_value,symbol_bytes.st_value);
+        HELF_READ_64(symbol->st_size,symbol_bytes.st_size);
 #undef HELF_READ_8
 #undef HELF_READ_16
 #undef HELF_READ_32
