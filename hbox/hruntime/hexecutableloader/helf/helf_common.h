@@ -320,6 +320,27 @@ struct helf_elf32_symbol
  */
 size_t helf_file_input_32_bits_symbol_count_get(helf_file_input_t *input_file);
 
+/** \brief  ELF读取符号
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param index size_t 引索，从0开始
+ * \param symbol helf_elf32_symbol_t* 符号
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_32_bits_symbol_get(helf_file_input_t *input_file,size_t index,helf_elf32_symbol_t *symbol);
+
+/** \brief ELF读取符号名称
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param symbol const helf_elf32_symbol_t* 待读取名称的符号
+ * \param namebuf char * 名称缓冲
+ * \param namebuf_length size_t 名称缓冲长度
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_32_bits_symbol_name_get(helf_file_input_t *input_file,const helf_elf32_symbol_t *symbol,char *namebuf,size_t namebuf_length);
+
 typedef struct helf_elf32_symbol_info helf_elf32_symbol_info_t;
 struct helf_elf32_symbol_info
 {
@@ -484,6 +505,27 @@ struct helf_elf64_symbol
  *
  */
 size_t helf_file_input_64_bits_symbol_count_get(helf_file_input_t *input_file);
+
+/** \brief  ELF读取符号
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param index size_t 引索，从0开始
+ * \param symbol helf_elf64_symbol_t* 符号
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_64_bits_symbol_get(helf_file_input_t *input_file,size_t index,helf_elf64_symbol_t *symbol);
+
+/** \brief ELF读取符号名称
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param symbol const helf_elf64_symbol_t* 待读取名称的符号
+ * \param namebuf char * 名称缓冲
+ * \param namebuf_length size_t 名称缓冲长度
+ * \return bool 是否读取成功
+ *
+ */
+bool helf_file_input_64_bits_symbol_name_get(helf_file_input_t *input_file,const helf_elf64_symbol_t *symbol,char *namebuf,size_t namebuf_length);
 
 
 typedef struct helf_elf64_symbol_info helf_elf64_symbol_info_t;

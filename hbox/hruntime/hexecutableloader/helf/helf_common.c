@@ -512,6 +512,127 @@ size_t helf_file_input_32_bits_symbol_count_get(helf_file_input_t *input_file)
     return 0;
 }
 
+
+typedef struct
+{
+    uint8_t   st_name[4];                /* Symbol name (string tbl index) */
+    uint8_t   st_value[4];               /* Symbol value */
+    uint8_t   st_size[4];                /* Symbol size */
+    uint8_t   st_info[1];                /* Symbol type and binding */
+    uint8_t   st_other[1];               /* Symbol visibility */
+    uint8_t   st_shndx[2];               /* Section index */
+} helf_elf32_symbol_bytes_t;
+
+bool helf_file_input_32_bits_symbol_get(helf_file_input_t *input_file,size_t index,helf_elf32_symbol_t *symbol)
+{
+    bool ret=false;
+    if(input_file==NULL || symbol==NULL)
+    {
+        return ret;
+    }
+    helf_elf32_section_header_t symbol_section_header;
+    if(!helf_file_input_32_bits_section_header_symtab_get(input_file,&symbol_section_header))
+    {
+        return ret;
+    }
+
+    if(symbol_section_header.sh_entsize < sizeof(*symbol) || index*symbol_section_header.sh_entsize >= symbol_section_header.sh_size)
+    {
+        return ret;
+    }
+
+    helf_elf32_symbol_bytes_t symbol_bytes;
+    if(helf_file_input_read(input_file,index*symbol_section_header.sh_entsize+symbol_section_header.sh_offset,&symbol_bytes,sizeof(symbol_bytes)) < sizeof(symbol_bytes))
+    {
+        return ret;
+    }
+    ret=true;
+    if(helf_file_input_is_big_endian(input_file))
+    {
+#ifdef HELF_READ_8
+#undef HELF_READ_8
+#endif // HELF_READ_8
+#ifdef HELF_READ_16
+#undef HELF_READ_16
+#endif // HELF_READ_16
+#ifdef HELF_READ_32
+#undef HELF_READ_32
+#endif // HELF_READ_32
+#define HELF_READ_8(v,a)  v=a[0]
+#define HELF_READ_16(v,a) v=a[0]*(1ULL << 8)+a[1]*(1ULL << 0)
+#define HELF_READ_32(v,a) v=a[0]*(1ULL << 24)+a[1]*(1ULL << 16)+a[2]*(1ULL << 8)+a[3]*(1ULL << 0)
+        HELF_READ_32(symbol->st_name,symbol_bytes.st_name);
+        HELF_READ_32(symbol->st_value,symbol_bytes.st_value);
+        HELF_READ_32(symbol->st_size,symbol_bytes.st_size);
+        HELF_READ_8(symbol->st_info,symbol_bytes.st_info);
+        HELF_READ_8(symbol->st_other,symbol_bytes.st_other);
+        HELF_READ_16(symbol->st_shndx,symbol_bytes.st_shndx);
+#undef HELF_READ_8
+#undef HELF_READ_16
+#undef HELF_READ_32
+    }
+    else
+    {
+#ifdef HELF_READ_8
+#undef HELF_READ_8
+#endif // HELF_READ_8
+#ifdef HELF_READ_16
+#undef HELF_READ_16
+#endif // HELF_READ_16
+#ifdef HELF_READ_32
+#undef HELF_READ_32
+#endif // HELF_READ_32
+#define HELF_READ_8(v,a)  v=a[0]
+#define HELF_READ_16(v,a) v=a[1]*(1ULL << 8)+a[0]*(1ULL << 0)
+#define HELF_READ_32(v,a) v=a[3]*(1ULL << 24)+a[2]*(1ULL << 16)+a[1]*(1ULL << 8)+a[0]*(1ULL << 0)
+        HELF_READ_32(symbol->st_name,symbol_bytes.st_name);
+        HELF_READ_32(symbol->st_value,symbol_bytes.st_value);
+        HELF_READ_32(symbol->st_size,symbol_bytes.st_size);
+        HELF_READ_8(symbol->st_info,symbol_bytes.st_info);
+        HELF_READ_8(symbol->st_other,symbol_bytes.st_other);
+        HELF_READ_16(symbol->st_shndx,symbol_bytes.st_shndx);
+#undef HELF_READ_8
+#undef HELF_READ_16
+#undef HELF_READ_32
+    }
+
+
+    return ret;
+}
+
+bool helf_file_input_32_bits_symbol_name_get(helf_file_input_t *input_file,const helf_elf32_symbol_t *symbol,char *namebuf,size_t namebuf_length)
+{
+    bool ret=false;
+    if(input_file==NULL || symbol ==NULL || namebuf == NULL || namebuf_length == 0)
+    {
+        return ret;
+    }
+    helf_elf32_section_header_t strtab_header;
+    if(!helf_file_input_32_bits_section_header_strtab_get(input_file,&strtab_header))
+    {
+        return ret;
+    }
+    ret=true;
+    for(size_t i=0 ; i<namebuf_length; i++)
+    {
+        char buff=0;
+        if(helf_file_input_read(input_file,strtab_header.sh_offset+symbol->st_name+i,&buff,sizeof(buff)) == sizeof(buff))
+        {
+            namebuf[i]=buff;
+        }
+        else
+        {
+            break;
+        }
+        if(buff=='\0')
+        {
+            break;
+        }
+    }
+
+    return ret;
+}
+
 bool helf_file_input_is_64_bits(helf_file_input_t *input_file)
 {
     bool ret=false;
@@ -941,4 +1062,129 @@ size_t helf_file_input_64_bits_symbol_count_get(helf_file_input_t *input_file)
         }
     }
     return 0;
+}
+
+
+typedef struct
+{
+    uint8_t st_name[4];                 /* Symbol name (string tbl index) */
+    uint8_t st_info[1];                  /* Symbol type and binding */
+    uint8_t st_other[1];                 /* Symbol visibility */
+    uint8_t st_shndx[2];                 /* Section index */
+    uint8_t st_value[8];                 /* Symbol value */
+    uint8_t st_size[8];                  /* Symbol size */
+} helf_elf64_symbol_bytes_t;
+
+bool helf_file_input_64_bits_symbol_get(helf_file_input_t *input_file,size_t index,helf_elf64_symbol_t *symbol)
+{
+     bool ret=false;
+    if(input_file==NULL || symbol==NULL)
+    {
+        return ret;
+    }
+    helf_elf64_section_header_t symbol_section_header;
+    if(!helf_file_input_64_bits_section_header_symtab_get(input_file,&symbol_section_header))
+    {
+        return ret;
+    }
+
+    if(symbol_section_header.sh_entsize < sizeof(*symbol) || index*symbol_section_header.sh_entsize >= symbol_section_header.sh_size)
+    {
+        return ret;
+    }
+
+    helf_elf64_symbol_bytes_t symbol_bytes;
+    if(helf_file_input_read(input_file,index*symbol_section_header.sh_entsize+symbol_section_header.sh_offset,&symbol_bytes,sizeof(symbol_bytes)) < sizeof(symbol_bytes))
+    {
+        return ret;
+    }
+    ret=true;
+    if(helf_file_input_is_big_endian(input_file))
+    {
+#ifdef HELF_READ_8
+#undef HELF_READ_8
+#endif // HELF_READ_8
+#ifdef HELF_READ_16
+#undef HELF_READ_16
+#endif // HELF_READ_16
+#ifdef HELF_READ_32
+#undef HELF_READ_32
+#endif // HELF_READ_32
+#define HELF_READ_8(v,a)  v=a[0]
+#define HELF_READ_16(v,a) v=a[0]*(1ULL << 8)+a[1]*(1ULL << 0)
+#define HELF_READ_32(v,a) v=a[0]*(1ULL << 24)+a[1]*(1ULL << 16)+a[2]*(1ULL << 8)+a[3]*(1ULL << 0)
+#define HELF_READ_64(v,a) v=a[0]*(1ULL << 56)+a[1]*(1ULL << 48)+a[2]*(1ULL << 40)+a[3]*(1ULL << 32)+a[4]*(1ULL << 24)+a[5]*(1ULL << 16)+a[6]*(1ULL << 8)+a[7]*(1ULL << 0)
+            HELF_READ_32(symbol->st_name,symbol_bytes.st_name);
+            HELF_READ_8(symbol->st_info,symbol_bytes.st_info);
+            HELF_READ_8(symbol->st_other,symbol_bytes.st_other);
+            HELF_READ_16(symbol->st_shndx,symbol_bytes.st_shndx);
+            HELF_READ_64(symbol->st_value,symbol_bytes.st_value);
+            HELF_READ_64(symbol->st_size,symbol_bytes.st_size);
+#undef HELF_READ_8
+#undef HELF_READ_16
+#undef HELF_READ_32
+#undef HELF_READ_64
+    }
+    else
+    {
+#ifdef HELF_READ_8
+#undef HELF_READ_8
+#endif // HELF_READ_8
+#ifdef HELF_READ_16
+#undef HELF_READ_16
+#endif // HELF_READ_16
+#ifdef HELF_READ_32
+#undef HELF_READ_32
+#endif // HELF_READ_32
+#define HELF_READ_8(v,a)  v=a[0]
+#define HELF_READ_16(v,a) v=a[1]*(1ULL << 8)+a[0]*(1ULL << 0)
+#define HELF_READ_32(v,a) v=a[3]*(1ULL << 24)+a[2]*(1ULL << 16)+a[1]*(1ULL << 8)+a[0]*(1ULL << 0)
+#define HELF_READ_64(v,a) v=a[7]*(1ULL << 56)+a[6]*(1ULL << 48)+a[5]*(1ULL << 40)+a[4]*(1ULL << 32)+a[3]*(1ULL << 24)+a[2]*(1ULL << 16)+a[1]*(1ULL << 8)+a[0]*(1ULL << 0)
+            HELF_READ_32(symbol->st_name,symbol_bytes.st_name);
+            HELF_READ_8(symbol->st_info,symbol_bytes.st_info);
+            HELF_READ_8(symbol->st_other,symbol_bytes.st_other);
+            HELF_READ_16(symbol->st_shndx,symbol_bytes.st_shndx);
+            HELF_READ_64(symbol->st_value,symbol_bytes.st_value);
+            HELF_READ_64(symbol->st_size,symbol_bytes.st_size);
+#undef HELF_READ_8
+#undef HELF_READ_16
+#undef HELF_READ_32
+#undef HELF_READ_64
+    }
+
+
+    return ret;
+}
+
+bool helf_file_input_64_bits_symbol_name_get(helf_file_input_t *input_file,const helf_elf64_symbol_t *symbol,char *namebuf,size_t namebuf_length)
+{
+    bool ret=false;
+    if(input_file==NULL || symbol ==NULL || namebuf == NULL || namebuf_length == 0)
+    {
+        return ret;
+    }
+    helf_elf64_section_header_t strtab_header;
+    if(!helf_file_input_64_bits_section_header_strtab_get(input_file,&strtab_header))
+    {
+        return ret;
+    }
+    ret=true;
+    for(size_t i=0 ; i<namebuf_length; i++)
+    {
+        char buff=0;
+        if(helf_file_input_read(input_file,strtab_header.sh_offset+symbol->st_name+i,&buff,sizeof(buff)) == sizeof(buff))
+        {
+            namebuf[i]=buff;
+        }
+        else
+        {
+            break;
+        }
+        if(buff=='\0')
+        {
+            break;
+        }
+    }
+
+    return ret;
 }

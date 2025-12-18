@@ -362,7 +362,7 @@ static int dumpplcrelocatable(void)
                                  */
                                 if(namebuf[0]=='_' && namebuf[1]=='_' &&  namebuf[2]=='_')
                                 {
-                                    for(size_t i=0;i < (sizeof(namebuf)-1-1);i++)
+                                    for(size_t i=0; i < (sizeof(namebuf)-1-1); i++)
                                     {
                                         namebuf[i]=namebuf[i+1];
                                         if(namebuf[i]=='\0')
@@ -456,6 +456,70 @@ static int dumpplcrelocatable(void)
             helf_elf32_file_header_t fileheader;
             if(helf_file_input_32_bits_header_get(&elffile,&fileheader))
             {
+                size_t symbol_count=helf_file_input_32_bits_symbol_count_get(&elffile);
+                for(size_t i=0; i<symbol_count; i++)
+                {
+                    helf_elf32_symbol_t symbol;
+                    if(!helf_file_input_32_bits_symbol_get(&elffile,i,&symbol))
+                    {
+                        continue;
+                    }
+
+                    if(symbol.st_shndx==0 && HELF_ELF32_ST_BIND(symbol.st_info)==HELF_STB_GLOBAL && HELF_ELF32_ST_TYPE(symbol.st_info)==HELF_STT_NOTYPE)
+                    {
+                        /*
+                         * 全局未定义符号
+                         */
+                        char namebuf[4096]= {0};
+                        if(!helf_file_input_32_bits_symbol_name_get(&elffile,&symbol,namebuf,sizeof(namebuf)-1))
+                        {
+                            continue;
+                        }
+
+                        if(namebuf[0]!='_' || namebuf[1]!='_')
+                        {
+                            /*
+                             * 下划线前缀
+                             */
+                            continue;
+                        }
+                        if(!(namebuf[2]=='Q' || namebuf[2]=='I' || namebuf[2]=='M'))
+                        {
+                            /*
+                             * 位置
+                             */
+                            continue;
+                        }
+                        if(!(namebuf[3]=='X' || namebuf[3]=='B' || namebuf[3]=='W' ||  namebuf[3]=='D' || namebuf[3]=='L' || ('0' <= namebuf[3] && '9' >= namebuf[3])))
+                        {
+                            /*
+                             * 位宽
+                             */
+                            continue;
+                        }
+
+                        {
+                            /*
+                             * 打印符号信息
+                             */
+                            hsoftplc_variable_name_t iec_addr;
+                            hsoftplc_variable_name_t variable_name;
+                            hsoftplc_get_iec_addr_from_variable_name(iec_addr,namebuf);
+                            hsoftplc_get_variable_name_from_iec_addr(variable_name,iec_addr);
+                            hsoftplc_variable_symbol_t variable_symbol;
+                            hsoftplc_parse_variable_symbol(&variable_symbol,namebuf);
+                            for(size_t i=0; i<sizeof(variable_symbol.variable_address)/sizeof(variable_symbol.variable_address[0]); i++)
+                            {
+                                if(variable_symbol.variable_address[i]==NULL)
+                                {
+                                    variable_symbol.variable_address[i]="";
+                                }
+                            }
+                            printf("%s %c %c %s %s %s\r\n",iec_addr,variable_symbol.variable_location,variable_symbol.variable_size,variable_symbol.variable_address[0],variable_symbol.variable_address[1],variable_symbol.variable_address[2]);
+                        }
+                    }
+
+                }
                 return 0;
             }
         }
@@ -467,6 +531,69 @@ static int dumpplcrelocatable(void)
             helf_elf64_file_header_t fileheader;
             if(helf_file_input_64_bits_header_get(&elffile,&fileheader))
             {
+                size_t symbol_count=helf_file_input_64_bits_symbol_count_get(&elffile);
+                for(size_t i=0; i<symbol_count; i++)
+                {
+                    helf_elf64_symbol_t symbol;
+                    if(!helf_file_input_64_bits_symbol_get(&elffile,i,&symbol))
+                    {
+                        continue;
+                    }
+
+                    if(symbol.st_shndx==0 && HELF_ELF64_ST_BIND(symbol.st_info)==HELF_STB_GLOBAL && HELF_ELF64_ST_TYPE(symbol.st_info)==HELF_STT_NOTYPE)
+                    {
+                        /*
+                         * 全局未定义符号
+                         */
+                        char namebuf[4096]= {0};
+                        if(!helf_file_input_64_bits_symbol_name_get(&elffile,&symbol,namebuf,sizeof(namebuf)-1))
+                        {
+                            continue;
+                        }
+
+                        if(namebuf[0]!='_' || namebuf[1]!='_')
+                        {
+                            /*
+                             * 下划线前缀
+                             */
+                            continue;
+                        }
+                        if(!(namebuf[2]=='Q' || namebuf[2]=='I' || namebuf[2]=='M'))
+                        {
+                            /*
+                             * 位置
+                             */
+                            continue;
+                        }
+                        if(!(namebuf[3]=='X' || namebuf[3]=='B' || namebuf[3]=='W' ||  namebuf[3]=='D' || namebuf[3]=='L' || ('0' <= namebuf[3] && '9' >= namebuf[3])))
+                        {
+                            /*
+                             * 位宽
+                             */
+                            continue;
+                        }
+
+                        {
+                            /*
+                             * 打印符号信息
+                             */
+                            hsoftplc_variable_name_t iec_addr;
+                            hsoftplc_variable_name_t variable_name;
+                            hsoftplc_get_iec_addr_from_variable_name(iec_addr,namebuf);
+                            hsoftplc_get_variable_name_from_iec_addr(variable_name,iec_addr);
+                            hsoftplc_variable_symbol_t variable_symbol;
+                            hsoftplc_parse_variable_symbol(&variable_symbol,namebuf);
+                            for(size_t i=0; i<sizeof(variable_symbol.variable_address)/sizeof(variable_symbol.variable_address[0]); i++)
+                            {
+                                if(variable_symbol.variable_address[i]==NULL)
+                                {
+                                    variable_symbol.variable_address[i]="";
+                                }
+                            }
+                            printf("%s %c %c %s %s %s\r\n",iec_addr,variable_symbol.variable_location,variable_symbol.variable_size,variable_symbol.variable_address[0],variable_symbol.variable_address[1],variable_symbol.variable_address[2]);
+                        }
+                    }
+                }
                 return 0;
             }
         }
