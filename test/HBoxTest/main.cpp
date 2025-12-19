@@ -3727,6 +3727,7 @@ static int hcrypto_test(int argc,const char *argv[])
         printf("hcrypto crc64/we:data=%s,crc=%016" PRIx64 ",check %s\r\n",(char *)data,hcrc_crc64_calculate(&hcrc_crc64_we,data,sizeof(data)-1),hcrc_crc64_check(&hcrc_crc64_we,data,sizeof(data)-1,0xBBEE2D6E4B37C965)?"ok":"failed");
         printf("hcrypto crc64/wev2:data=%s,crc=%016" PRIx64 ",check %s\r\n",(char *)data,hcrc_crc64_calculate(&hcrc_crc64_wev2,data,sizeof(data)-1),hcrc_crc64_check(&hcrc_crc64_wev2,data,sizeof(data)-1,0xD6F5D2691C7AFDB2)?"ok":"failed");
         printf("hcrypto crc64/iso:data=%s,crc=%016" PRIx64 ",check %s\r\n",(char *)data,hcrc_crc64_calculate(&hcrc_crc64_iso,data,sizeof(data)-1),hcrc_crc64_check(&hcrc_crc64_iso,data,sizeof(data)-1,0x47D82963990956C7)?"ok":"failed");
+        printf("hcrypto cksum:data=%s,crc=%08X,check %s\r\n",(char *)data,hcrc_cksum_calculate(data,sizeof(data)-1),hcrc_cksum_check(data,sizeof(data)-1,3215378238)?"ok":"failed");
         //CRC8 查表法
         printf("hcrypto crc8(fast):data=%s,crc8=%02X,check %s\r\n",(char *)data,hcrc_crc8_fast_calculate(data,sizeof(data)-1),hcrc_crc8_fast_check(data,sizeof(data)-1,0xA0)?"ok":"failed");
         //CRC16 Modbus 查表法

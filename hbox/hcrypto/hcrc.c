@@ -11,3 +11,4 @@
 #include "hcrc/hcrc_base.c"
 #include "hcrc/hcrc_table_legacy.c"
 #include "hcrc/hcrc_table.c"
+#include "hcrc/hcrc_cksum.c"

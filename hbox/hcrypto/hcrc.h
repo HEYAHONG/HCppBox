@@ -17,6 +17,7 @@
 #include "hcrc/hcrc_base.h"
 #include "hcrc/hcrc_table_legacy.h"
 #include "hcrc/hcrc_table.h"
+#include "hcrc/hcrc_cksum.h"
 
 
 #endif // __HCRC_INCLUDE_H__
