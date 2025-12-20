@@ -18,6 +18,7 @@
 - [FreeRTOS](www.freertos.org):FreeRTOS操作系统
 - [mini-rv32ima](https://github.com/cnlohr/mini-rv32ima.git):C语言编写的极小的RISC-V模拟器
 - [matiec](https://github.com/thiagoralves/matiec.git):IEC 61131-3 编译器，注意:本库仅集成matiec编译器的内置库的C语言头文件,而非编译本身。
+- [uriparser](https://github.com/uriparser/uriparser.git):RFC 3986 兼容的URI解析库
 
  提供的配置宏定义如下：
 
@@ -34,6 +35,7 @@
 |            `H3RDPARTY_USING_SYSTEM_TLSF`             |           使用系统tlsf           |          链接到系统的tlsf时,可使用此宏定义防止冲突           |
 |           `H3RDPARTY_USING_SYSTEM_LIBFDT`            |          使用系统libfdt          |         链接到系统的libfdt时,可使用此宏定义防止冲突          |
 |                  `FREERTOS_KERNEL`                   |       启用FreeRTOS内核代码       | 若启用FreeRTOS内核代码，必须完成FreeRTOS的移植，否则将编译不过。 |
+|          `H3RDPARTY_USING_SYSTEM_URIPARSER`          |        使用系统uriparser         |        链接到系统的uriparser时,可使用此宏定义防止冲突        |
 
 # nanopb
 
@@ -209,3 +211,15 @@ IEC 61131-3编译器，可将IEC 61131-3中定义的编程语言（通常用于P
 一般情况下，PLC的编程更加注重控制逻辑的实现，一般称为组态。
 
 matiec编译器生成的C语言文件编译时需要指定库的头文件路径，此时可使用本库内置的头文件路径（**需要手动指定**），见[3rdparty/matiec_c_header/](3rdparty/matiec_c_header/)
+
+# uriparser
+
+RFC 3986 兼容的URI解析库
+
+若要使用相应库功能，请使用以下代码：
+
+```c++
+#include H3RDPARTY_URIPARSER_URI_HEADER
+```
+
+注意:此库需要根据使用情况添加C语言文件(h3rdparty_uriparser_*.c),某些C文件可能在某些场景下不能正常编译。

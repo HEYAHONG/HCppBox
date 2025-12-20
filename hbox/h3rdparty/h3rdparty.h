@@ -29,7 +29,7 @@
 #include "h3rdparty/port/libfdt/h3rdparty_port_libfdt.h"
 #include "h3rdparty/port/FreeRTOS/h3rdparty_port_FreeRTOS.h"
 #include "h3rdparty/port/mini-rv32ima/h3rdparty_port_mini_rv32ima.h"
-
+#include "h3rdparty/port/uriparser/h3rdparty_port_uriparser.h"
 
 
 #endif // __H3RDPARTY_H__
