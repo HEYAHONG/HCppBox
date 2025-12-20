@@ -374,7 +374,7 @@ typedef enum
     HRUNTIME_SYMBOL_ENUM_TYPE_TABLE=                (1UL << 0),             /**< 默认符号表 */
     HRUNTIME_SYMBOL_ENUM_TYPE_TABLE_DYNAMIC=        (1UL << 1),             /**< 动态符号表 */
     HRUNTIME_SYMBOL_ENUM_TYPE_TABLE_SECTION=        (1UL << 2),             /**< 节（由链接脚本指定）符号表 */
-    HRUNTIME_SYMBOL_ENUM_TYPE_TABLE_ALL=            (0xFFFFFFFF)            /**< 所有支持的符号表 */
+    HRUNTIME_SYMBOL_ENUM_TYPE_TABLE_ALL=            (HRUNTIME_SYMBOL_ENUM_TYPE_TABLE | HRUNTIME_SYMBOL_ENUM_TYPE_TABLE_DYNAMIC | HRUNTIME_SYMBOL_ENUM_TYPE_TABLE_SECTION)            /**< 所有支持的符号表 */
 } hruntime_symbol_enum_type_t;
 
 /** \brief 符号枚举回调
