@@ -41,7 +41,7 @@ extern void config_init__(void);
 extern void config_run__(unsigned long tick);
 
 /*
- * matiec生成的节拍间隔(us)
+ * matiec生成的节拍间隔(ns)
  */
 extern unsigned long long common_ticktime__;
 extern unsigned long greatest_tick_count__;
@@ -111,15 +111,18 @@ void hsoftplc_init(void)
 }
 
 
-
 void hsoftplc_loop(void)
 {
 #if defined(HSOFTPLC)
+#if defined(HSOFTPLC_LOOP_CHECK_TIMEOUT)
+    if(HSOFTPLC_LOOP_CHECK_TIMEOUT(common_ticktime__))
+    {
+#else
     static hdefaults_tick_t last_tick=0;
     if(hdefaults_tick_get()-last_tick > common_ticktime__/1000000)
     {
         last_tick=hdefaults_tick_get();
-
+#endif
         {
             /*
              * 更新__CURRENT_TIME
