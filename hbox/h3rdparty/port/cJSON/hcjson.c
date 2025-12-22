@@ -77,7 +77,7 @@ hcjson_bool_t  hcjson_print_preallocated(hcjson_t *item, char *buffer, const int
 
 void  hcjson_delete(hcjson_t *item)
 {
-    return cJSON_Delete((cJSON *)item);
+    cJSON_Delete((cJSON *)item);
 }
 
 
