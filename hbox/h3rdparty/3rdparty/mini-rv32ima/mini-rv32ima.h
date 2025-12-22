@@ -424,6 +424,12 @@ MINIRV32_STEPPROTO
 							case 0x105: //WFI (Wait for interrupts)
 								CSR( mstatus ) |= 8;    //Enable interrupts
 								CSR( extraflags ) |= 4; //Infor environment we want to go to sleep.
+
+								if( CSR( cyclel ) > cycle ) CSR( cycleh )++;
+								SETCSR( cyclel, cycle );
+
+								MINIRV32_POSTEXEC( pc, ir, trap );
+
 								SETCSR( pc, pc + 4 );
 								return 1;
 							default:
