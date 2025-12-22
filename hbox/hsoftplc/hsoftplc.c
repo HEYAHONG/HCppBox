@@ -127,10 +127,28 @@ void hsoftplc_loop(void)
             /*
              * 更新__CURRENT_TIME
              */
+#if   defined(HSOFTPLC_LOOP_CURRENT_TIME)
+            uint64_t tv_sec=0;
+            uint64_t tv_nsec=0;
+            HSOFTPLC_LOOP_CURRENT_TIME(tv_sec,tv_nsec);
+            update_current_time(tv_sec,tv_nsec);
+#elif !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETTIMEOFDAY)
             hgettimeofday_timeval_t tv;
             hgettimeofday_timezone_t tz;
             hgettimeofday(&tv,&tz);
             update_current_time(tv.tv_sec,tv.tv_usec*1000);
+#else
+            static hgettimeofday_timeval_t tv={0};
+            {
+                static hdefaults_tick_t last_tv_tick=0;
+                hdefaults_tick_t current_tv_tick=hdefaults_tick_get();
+                tv.tv_usec+=(current_tv_tick-last_tv_tick)*1000;
+                last_tv_tick=current_tv_tick;
+                tv.tv_sec+=tv.tv_usec/1000000;
+                tv.tv_usec=tv.tv_usec%1000000;
+            }
+            update_current_time(tv.tv_sec,tv.tv_usec*1000);
+#endif
         }
 
         {
