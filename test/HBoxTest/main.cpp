@@ -17,6 +17,9 @@
 #include H3RDPARTY_LIBFDT_HEADER
 #include H3RDPARTY_MINI_RV32IMA_HEADER
 #include H3RDPARTY_MINI_RV32IMA_64MB_DTB_HEADER
+#include H3RDPARTY_NANOPB_PB_HEADER
+#include H3RDPARTY_NANOPB_PB_ENCODE_HEADER
+#include H3RDPARTY_NANOPB_PB_DECODE_HEADER
 
 static int hcompiler_test(int argc,const char *argv[]);
 static int hdefaults_test(int argc,const char *argv[]);

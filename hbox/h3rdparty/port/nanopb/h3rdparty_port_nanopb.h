@@ -33,9 +33,7 @@
 #define H3RDPARTY_NANOPB_PB_DECODE_HEADER "h3rdparty/3rdparty/nanopb/pb_decode.h"
 #endif
 #endif
-#include H3RDPARTY_NANOPB_PB_HEADER
-#include H3RDPARTY_NANOPB_PB_ENCODE_HEADER
-#include H3RDPARTY_NANOPB_PB_DECODE_HEADER
+
 
 
 
