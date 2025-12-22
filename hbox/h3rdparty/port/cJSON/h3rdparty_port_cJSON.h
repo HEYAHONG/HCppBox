@@ -10,20 +10,20 @@
 #define __H3RDPARTY_PORT_CJSON_H_INCLUDE__
 
 /*
- * 引入cJSON库
+ * cJSON库
  */
 #ifndef H3RDPARTY_USING_SYSTEM_CJSON
-/*
- * 隐藏cJSON符号
- */
-#define  CJSON_HIDE_SYMBOLS 1
-#include "h3rdparty/3rdparty/cJSON/cJSON.h"
-#include "h3rdparty/3rdparty/cJSON/cJSON_Utils.h"
+#define  H3RDPARTY_CJSON_CJSON_HEADER       "h3rdparty/3rdparty/cJSON/cJSON.h"
+#define  H3RDPARTY_CJSON_CJSONUTILS_HEADER  "h3rdparty/3rdparty/cJSON/cJSON_Utils.h"
 #else
-#include "cJSON.h"
-#include "cJSON_Utils.h"
+#define  H3RDPARTY_CJSON_CJSON_HEADER        "cJSON.h"
+#define  H3RDPARTY_CJSON_CJSONUTILS_HEADER   "cJSON_Utils.h"
 #endif
 
 
+/*
+ * 引入hcjson头文件(符合hbox命名风格)
+ */
+#include "hcjson.h"
 
 #endif // __H3RDPARTY_PORT_CJSON_H_INCLUDE__

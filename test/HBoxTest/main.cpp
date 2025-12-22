@@ -2531,22 +2531,22 @@ static int h3rdparty_test(int argc,const char *argv[])
     {
         //cJSON测试
         printf("h3rdparty_test:cJSON start!\r\n");
-        cJSON * root=cJSON_Parse("{\"cJSON\":\"Testing\"}");
+        hcjson_t * root=hcjson_parse("{\"cJSON\":\"Testing\"}");
         if(root!=NULL)
         {
-            cJSON_AddBoolToObject(root,"bool",true);
-            cJSON_AddNullToObject(root,"null");
-            cJSON_AddNumberToObject(root,"number",12345);
-            cJSON_AddStringToObject(root,"string","ok");
+            hcjson_add_bool_to_object(root,"bool",true);
+            hcjson_add_null_to_object(root,"null");
+            hcjson_add_number_to_object(root,"number",12345);
+            hcjson_add_string_to_object(root,"string","ok");
             {
                 char buffer[4096];
                 buffer[0]='\0';
-                if(cJSON_PrintPreallocated(root,buffer,sizeof(buffer),true))
+                if(hcjson_print_preallocated(root,buffer,sizeof(buffer),true))
                 {
                     printf("%s\r\n",buffer);
                 }
             }
-            cJSON_Delete(root);
+            hcjson_delete(root);
         }
         printf("h3rdparty_test:cJSON end!\r\n");
     }
