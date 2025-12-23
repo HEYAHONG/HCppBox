@@ -389,7 +389,7 @@ char*  hcjson_set_valuestring(hcjson_t *object, const char *valuestring)
     return cJSON_SetValuestring((cJSON *)object,valuestring);
 }
 
-void hcjson_array_for_each(void (*on_element)(hcjson_t *),hcjson_t * const array)
+void hcjson_array_for_each(void (*on_element)(hcjson_t *,void *usr),hcjson_t * const array,void *usr)
 {
     if(on_element==NULL)
     {
@@ -399,7 +399,7 @@ void hcjson_array_for_each(void (*on_element)(hcjson_t *),hcjson_t * const array
         cJSON *element=NULL;
         cJSON_ArrayForEach(element, ((cJSON *const)array))
         {
-            on_element((hcjson_t *)element);
+            on_element((hcjson_t *)element,usr);
         }
     }
 }

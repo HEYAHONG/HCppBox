@@ -155,7 +155,7 @@ hcjson_bool_t hcjson_set_bool_value(hcjson_t * object,bool boolValue);
 char*  hcjson_set_valuestring(hcjson_t *object, const char *valuestring);
 
 
-void hcjson_array_for_each(void (*on_element)(hcjson_t *),hcjson_t * const array);
+void hcjson_array_for_each(void (*on_element)(hcjson_t *,void *usr),hcjson_t * const array,void *usr);
 
 
 void *  hcjson_malloc(size_t size);
