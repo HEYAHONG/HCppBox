@@ -2519,8 +2519,8 @@ static int hsimulator_test(int argc,const char *argv[])
 }
 
 //导入main_entry消息定义及实现
-#include "pbinc/main_entry.pb.h"
-#include "pbinc/main_entry.pb.c"
+#include "h3rdparty/port/nanopb/pbinc/main_entry/main_entry.pb.c"
+#include "h3rdparty/port/nanopb/pbinc/main_entry/main_entry.pb.h"
 
 //测试paho.mqtt.embedded-c头文件引入功能
 #include H3RDPARTY_PAHO_MQTT_EMBEDDED_C_PACKET_HEADER
