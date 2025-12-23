@@ -12,6 +12,13 @@
 #include "stdarg.h"
 #include "hdefaults.h"
 
+/** \brief 初始化第三方库
+ *
+ *
+ */
+void h3rdparty_init(void);
+
+
 /*
  *  此模块引入第三方库
  */
