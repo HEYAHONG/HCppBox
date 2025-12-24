@@ -32,6 +32,6 @@
 #endif // H3RDPARTY_USING_SYSTEM_ZLIB
 
 
-
+#include "hzlib.h"
 
 #endif // __H3RDPARTY_PORT_ZLIB_H_INCLUDE__

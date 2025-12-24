@@ -6,6 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+#include "hdefaults.h"
 #include "hpb_msg_main_entry.h"
 #include H3RDPARTY_NANOPB_PB_HEADER
 #include H3RDPARTY_NANOPB_PB_ENCODE_HEADER

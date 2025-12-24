@@ -2601,7 +2601,7 @@ static int h3rdparty_test(int argc,const char *argv[])
         bool is_compress_success=false;
         unsigned long data_compress_length=sizeof(data_compress);
         {
-            if(Z_OK==compress2(data_compress,&data_compress_length,(const uint8_t *)data,strlen(data),Z_BEST_COMPRESSION))
+            if(hzlib_compress2(data_compress,&data_compress_length,(const uint8_t *)data,strlen(data),9))
             {
                 printf("h3rdparty_test:zlib compress success!data_compress_length=%d\r\n",(int)data_compress_length);
                 is_compress_success=true;
@@ -2611,7 +2611,7 @@ static int h3rdparty_test(int argc,const char *argv[])
         unsigned long data_uncompress_length=sizeof(data_uncompress);
         if(is_compress_success)
         {
-            if(Z_OK==uncompress(data_uncompress,&data_uncompress_length,(const uint8_t *)data_compress,data_uncompress_length))
+            if(hzlib_uncompress(data_uncompress,&data_uncompress_length,(const uint8_t *)data_compress,data_uncompress_length))
             {
                 printf("h3rdparty_test:zlib uncompress success!data_uncompress_length=%d\r\n",(int)data_uncompress_length);
             }

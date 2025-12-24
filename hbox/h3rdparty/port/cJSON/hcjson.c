@@ -6,6 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+#include "hdefaults.h"
 #include "hcjson.h"
 #ifndef H3RDPARTY_USING_SYSTEM_CJSON
 /*
