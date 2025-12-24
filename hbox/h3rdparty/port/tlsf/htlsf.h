@@ -55,6 +55,12 @@ int htlsf_check(htlsf_t tlsf);
 int htlsf_check_pool(htlsf_pool_t pool);
 
 
+htlsf_t htlsfheap_set_default(htlsf_t tlsf_heap);
+htlsf_t htlsfheap_get_default(void);
+
+void * htlsfheap_malloc(size_t bytes);
+void   htlsfheap_free(void *ptr);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

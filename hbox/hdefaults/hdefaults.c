@@ -94,6 +94,9 @@ static hdefaults_tick_t do_hdefaults_tick_get(void)
 #endif // HDEFAULTS_TICK_GET
 }
 
+#ifdef USING_HTLSFHEAP
+extern void * htlsfheap_malloc(size_t bytes);
+#endif // USING_HTLSFHEAP
 #ifdef USING_HMEMORYHEAP
 extern void* hmemoryheap_malloc(size_t nBytes);
 #endif // USING_HMEMORYHEAP
@@ -112,13 +115,17 @@ static void * do_hdefaults_malloc(size_t nBytes,void *usr)
     return pvPortMalloc(nBytes);
 #elif defined(__RTTHREAD__)
     return rt_malloc(nBytes);
+#elif defined(USING_HTLSFHEAP)
+    return htlsfheap_malloc(nBytes);
 #elif defined(USING_HMEMORYHEAP)
     return hmemoryheap_malloc(nBytes);
 #else
     return malloc(nBytes);
 #endif
 }
-
+#ifdef USING_HTLSFHEAP
+extern void   htlsfheap_free(void *ptr);
+#endif // USING_HTLSFHEAP
 #ifdef USING_HMEMORYHEAP
 extern void hmemoryheap_free(void*);
 #endif // USING_HMEMORYHEAP
@@ -137,6 +144,8 @@ static void do_hdefaults_free(void *ptr,void *usr)
     vPortFree(ptr);
 #elif defined(__RTTHREAD__)
     rt_free(ptr);
+#elif defined(USING_HTLSFHEAP)
+    htlsfheap_free(ptr);
 #elif defined(USING_HMEMORYHEAP)
     hmemoryheap_free(ptr);
 #else

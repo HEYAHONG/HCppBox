@@ -175,3 +175,71 @@ int htlsf_check_pool(htlsf_pool_t pool)
     htlsf_mutex_unlock();
     return ret;
 }
+
+
+static htlsf_t htlsf_default_heap=NULL;
+htlsf_t htlsfheap_set_default(htlsf_t tlsf_heap)
+{
+    htlsf_t ret=htlsf_default_heap;
+    htlsf_default_heap=tlsf_heap;
+    return ret;
+}
+
+
+/*
+ *  TLSF的额外开销在3KB（见TLSF库的说明）左右，推荐至少8KB区域用于TLSF的堆
+ */
+#ifdef USING_HTLSFHEAP
+#ifndef HTLSFHEAP_DEFAULT_POOL_SIZE
+#define HTLSFHEAP_DEFAULT_POOL_SIZE 8192
+#else
+#if     (HTLSFHEAP_DEFAULT_POOL_SIZE) < 8192
+#undef  HTLSFHEAP_DEFAULT_POOL_SIZE
+#define HTLSFHEAP_DEFAULT_POOL_SIZE  8192
+#endif
+#endif
+#endif // USING_HTLSFHEAP
+
+#if HTLSFHEAP_DEFAULT_POOL_SIZE > 8192
+static uint64_t htlsfheap_default_pool_bytes[(HTLSFHEAP_DEFAULT_POOL_SIZE+sizeof(uint64_t)-1)/sizeof(uint64_t)]= {0};
+static bool htlsfheap_is_default_pool_init=false;
+static void htlsfheap_check_default_pool(void)
+{
+    if(htlsf_default_heap==NULL)
+    {
+        if(!htlsfheap_is_default_pool_init)
+        {
+            htlsf_default_heap=htlsf_create_with_pool( htlsfheap_default_pool_bytes,sizeof( htlsfheap_default_pool_bytes));
+            htlsfheap_is_default_pool_init=true;
+        }
+    }
+}
+
+#endif // HTLSFHEAP_DEFAULT_POOL_SIZE
+
+htlsf_t htlsfheap_get_default(void)
+{
+#if HTLSFHEAP_DEFAULT_POOL_SIZE > 8192
+    htlsfheap_check_default_pool();
+#endif // HTLSFHEAP_DEFAULT_POOL_SIZE
+    return htlsf_default_heap;
+}
+
+void * htlsfheap_malloc(size_t bytes)
+{
+    htlsf_t tlsf_heap=htlsfheap_get_default();
+    if(tlsf_heap==NULL)
+    {
+        return NULL;
+    }
+    return htlsf_malloc(tlsf_heap,bytes);
+}
+void   htlsfheap_free(void *ptr)
+{
+    htlsf_t tlsf_heap=htlsfheap_get_default();
+    if(tlsf_heap==NULL)
+    {
+        return;
+    }
+    return htlsf_free(tlsf_heap,ptr);
+}
