@@ -22,6 +22,7 @@
 #endif
 #endif
 
+#include "htlsf.h"
 
 
 #endif // __H3RDPARTY_PORT_TLSF_H_INCLUDE__
