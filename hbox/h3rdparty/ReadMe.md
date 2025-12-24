@@ -41,7 +41,7 @@
 
 嵌入式系统Protocol Buffers。
 
-本组件预定义一些Protocol Buffers，可用于测试。具体见[pbinc](pbinc)。
+本组件预定义一些Protocol Buffers，可用于测试。具体见[pbinc](port/nanopb/pbinc/)。
 
 使用nanopb时，需要先使用Protocol Buffers消息文件(`.proto`文件)通过`nanopb_generator`工具生成`.pb.h`与`.pb.c`文件。
 
