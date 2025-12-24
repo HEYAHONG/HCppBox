@@ -2633,7 +2633,7 @@ static int h3rdparty_test(int argc,const char *argv[])
         data_compress_length=sizeof(data_compress);
         data_uncompress_length=sizeof(data_uncompress);
         {
-            if(0!=(data_compress_length=LZ4_compress_default((const char *)data,(char *)data_compress,strlen(data),data_compress_length)))
+            if(0!=(data_compress_length=hlz4_compress((const char *)data,(char *)data_compress,strlen(data),data_compress_length)))
             {
                 printf("h3rdparty_test:lz4 compress success!data_compress_length=%d\r\n",(int)data_compress_length);
                 is_compress_success=true;
@@ -2641,7 +2641,7 @@ static int h3rdparty_test(int argc,const char *argv[])
         }
         if(is_compress_success)
         {
-            if(0!=(data_uncompress_length=LZ4_decompress_safe((const char *)data_compress,(char *)data_uncompress,data_compress_length,data_uncompress_length)))
+            if(0!=(data_uncompress_length=hlz4_decompress((const char *)data_compress,(char *)data_uncompress,data_compress_length,data_uncompress_length)))
             {
                 printf("h3rdparty_test:lz4 uncompress success!data_compress_length=%d\r\n",(int)data_uncompress_length);
                 is_compress_success=true;

@@ -41,6 +41,6 @@
 #endif
 
 
-
+#include "hlz4.h"
 
 #endif // __H3RDPARTY_PORT_LZ4_H_INCLUDE__
