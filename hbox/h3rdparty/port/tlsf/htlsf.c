@@ -241,5 +241,5 @@ void   htlsfheap_free(void *ptr)
     {
         return;
     }
-    return htlsf_free(tlsf_heap,ptr);
+    htlsf_free(tlsf_heap,ptr);
 }
