@@ -148,11 +148,17 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
 //h3rdparty/h3rdparty_lz4_lz4file.c
 //h3rdparty/h3rdparty_lz4_lz4frame.c
 //h3rdparty/h3rdparty_lz4_lz4hc.c
+//h3rdparty/h3rdparty_lz4_port.c
+    {hdefaults_str(hlz4_compress),(uintptr_t)&hlz4_compress},
+    {hdefaults_str(hlz4_decompress),(uintptr_t)&hlz4_decompress},
 //h3rdparty/h3rdparty_lz4_xxhash.c
 //h3rdparty/h3rdparty_mqtt_packet.c
 //h3rdparty/h3rdparty_pb_common.c
 //h3rdparty/h3rdparty_pb_decode.c
 //h3rdparty/h3rdparty_pb_encode.c
+//h3rdparty/h3rdparty_pb_port_msg_main_entry.c
+    {hdefaults_str(hnanopb_msg_main_entry_encode),(uintptr_t)&hnanopb_msg_main_entry_encode},
+    {hdefaults_str(hnanobp_msg_main_entry_decode),(uintptr_t)&hnanobp_msg_main_entry_decode},
 //h3rdparty/h3rdparty_printf.c
     {hdefaults_str(hprintf_set_callback),(uintptr_t)&hprintf_set_callback},
     {hdefaults_str(hprintf),(uintptr_t)&hprintf},
@@ -164,6 +170,32 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
     {hdefaults_str(hvfctprintf),(uintptr_t)&hvfctprintf},
 //h3rdparty/h3rdparty_softfloat.c
 //h3rdparty/h3rdparty_softfp.c
+//h3rdparty/h3rdparty_tlsf_port.c
+    {hdefaults_str(htlsf_set_lock),(uintptr_t)&htlsf_set_lock},
+    {hdefaults_str(htlsf_create),(uintptr_t)&htlsf_create},
+    {hdefaults_str(htlsf_create_with_pool),(uintptr_t)&htlsf_create_with_pool},
+    {hdefaults_str(htlsf_destroy),(uintptr_t)&htlsf_destroy},
+    {hdefaults_str(htlsf_get_pool),(uintptr_t)&htlsf_get_pool},
+    {hdefaults_str(htlsf_add_pool),(uintptr_t)&htlsf_add_pool},
+    {hdefaults_str(htlsf_remove_pool),(uintptr_t)&htlsf_remove_pool},
+    {hdefaults_str(htlsf_malloc),(uintptr_t)&htlsf_malloc},
+    {hdefaults_str(htlsf_memalign),(uintptr_t)&htlsf_memalign},
+    {hdefaults_str(htlsf_realloc),(uintptr_t)&htlsf_realloc},
+    {hdefaults_str(htlsf_free),(uintptr_t)&htlsf_free},
+    {hdefaults_str(htlsf_block_size),(uintptr_t)&htlsf_block_size},
+    {hdefaults_str(htlsf_size),(uintptr_t)&htlsf_size},
+    {hdefaults_str(htlsf_align_size),(uintptr_t)&htlsf_align_size},
+    {hdefaults_str(htlsf_block_size_min),(uintptr_t)&htlsf_block_size_min},
+    {hdefaults_str(htlsf_block_size_max),(uintptr_t)&htlsf_block_size_max},
+    {hdefaults_str(htlsf_pool_overhead),(uintptr_t)&htlsf_pool_overhead},
+    {hdefaults_str(htlsf_alloc_overhead),(uintptr_t)&htlsf_alloc_overhead},
+    {hdefaults_str(htlsf_walk_pool),(uintptr_t)&htlsf_walk_pool},
+    {hdefaults_str(htlsf_check),(uintptr_t)&htlsf_check},
+    {hdefaults_str(htlsf_check_pool),(uintptr_t)&htlsf_check_pool},
+    {hdefaults_str(htlsfheap_set_default),(uintptr_t)&htlsfheap_set_default},
+    {hdefaults_str(htlsfheap_get_default),(uintptr_t)&htlsfheap_get_default},
+    {hdefaults_str(htlsfheap_malloc),(uintptr_t)&htlsfheap_malloc},
+    {hdefaults_str(htlsfheap_free),(uintptr_t)&htlsfheap_free},
 //h3rdparty/h3rdparty_tlsf_tlsf.c
 //h3rdparty/h3rdparty_uriparser_UriCommon.c
 //h3rdparty/h3rdparty_uriparser_UriCompare.c
@@ -206,6 +238,11 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
 //h3rdparty/h3rdparty_zlib_inffast.c
 //h3rdparty/h3rdparty_zlib_inflate.c
 //h3rdparty/h3rdparty_zlib_inftrees.c
+//h3rdparty/h3rdparty_zlib_port.c
+    {hdefaults_str(hzlib_compress),(uintptr_t)&hzlib_compress},
+    {hdefaults_str(hzlib_compress2),(uintptr_t)&hzlib_compress2},
+    {hdefaults_str(hzlib_uncompress),(uintptr_t)&hzlib_uncompress},
+    {hdefaults_str(hzlib_uncompress2),(uintptr_t)&hzlib_uncompress2},
 //h3rdparty/h3rdparty_zlib_trees.c
 //h3rdparty/h3rdparty_zlib_uncompr.c
 //h3rdparty/h3rdparty_zlib_zutil.c
