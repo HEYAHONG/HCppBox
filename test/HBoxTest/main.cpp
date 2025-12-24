@@ -2518,9 +2518,6 @@ static int hsimulator_test(int argc,const char *argv[])
     return 0;
 }
 
-//导入main_entry消息定义及实现
-#include "h3rdparty/port/nanopb/pbinc/main_entry/main_entry.pb.c"
-#include "h3rdparty/port/nanopb/pbinc/main_entry/main_entry.pb.h"
 
 //测试paho.mqtt.embedded-c头文件引入功能
 #include H3RDPARTY_PAHO_MQTT_EMBEDDED_C_PACKET_HEADER
@@ -2559,38 +2556,7 @@ static int h3rdparty_test(int argc,const char *argv[])
         {
             uint8_t buffer[4096]= {0};
             //数据长度
-            size_t buffer_length=0;
-            {
-                //消息编码（序列化）
-                printf("h3rdparty_test:nanopb encode!\r\n");
-                MainEntry message=MainEntry_init_zero;
-                message.argc=argc;
-                message.argv.funcs.encode=[] (pb_ostream_t *stream, const pb_field_t *field, void * const *arg)->bool
-                {
-                    const char **argv=(const char **)*arg;
-                    if(stream!=NULL && field->tag == MainEntry_argv_tag)
-                    {
-                        for(size_t i=0; argv[i]!=NULL; i++)
-                        {
-                            if (!pb_encode_tag_for_field(stream, field))
-                            {
-                                return false;
-                            }
-                            if(!pb_encode_string(stream,(const pb_byte_t *)argv[i],strlen(argv[i])))
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    return true;
-                };
-                message.argv.arg=(void *)argv;
-                pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
-                if(pb_encode(&stream, MainEntry_fields, &message))
-                {
-                    buffer_length=stream.bytes_written;
-                }
-            }
+            size_t buffer_length=hnanopb_msg_main_entry_encode(buffer,sizeof(buffer),argc,argv);
             {
                 for(size_t i=0; i<buffer_length; i++)
                 {
@@ -2605,27 +2571,24 @@ static int h3rdparty_test(int argc,const char *argv[])
             {
                 //消息解码（反序列化）
                 printf("h3rdparty_test:nanopb decode!\r\n");
-                MainEntry message=MainEntry_init_zero;
-                message.argc=argc;
-                message.argv.funcs.decode=[] (pb_istream_t *stream, const pb_field_t *field, void **arg)->bool
+                hnanobp_msg_main_entry_decode(buffer,buffer_length,[](int argc,void *usr) -> bool
                 {
-                    if(stream!=NULL && field->tag == MainEntry_argv_tag)
-                    {
-                        uint8_t buff[4096]= {0};
-                        if(sizeof(buff) < stream->bytes_left)
-                        {
-                            return false;
-                        }
-                        pb_read(stream,buff,stream->bytes_left);
-                        printf("argv:%s\r\n",(char *)buff);
-                    }
+                    printf("argc:%d\r\n",argc);
                     return true;
-                };
-                pb_istream_t stream = pb_istream_from_buffer(buffer, buffer_length);
-                if(pb_decode(&stream, MainEntry_fields, &message))
+                },[](void *ctx,hnanobp_msg_main_entry_argv_read_t readfunc,size_t length,void *usr)->bool
                 {
-                    printf("argc=%d\r\n",message.argc);
-                }
+                    char buffer[4096]={0};
+                    if(readfunc==NULL)
+                    {
+                        return false;
+                    }
+                    if(!readfunc(ctx,buffer,sizeof(buffer)-1))
+                    {
+                        return false;
+                    }
+                    printf("argv(length=%d):%s\r\n",(int)length,buffer);
+                    return true;
+                },NULL);
             }
         }
         printf("h3rdparty_test:nanopb end!\r\n");

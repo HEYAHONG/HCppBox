@@ -35,6 +35,10 @@
 #endif
 
 
+/*
+ * 已经移植的消息
+ */
+#include "hpb_msg_main_entry.h"
 
 
 #endif // __H3RDPARTY_PORT_NANOPB_H_INCLUDE__
