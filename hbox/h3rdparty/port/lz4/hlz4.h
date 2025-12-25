@@ -28,6 +28,18 @@ extern "C"
  */
 int hlz4_compress(const char* src, char* dst, int src_length, int dst_length);
 
+/** \brief LZ4压缩(高压缩率模式，解压方式同hlz4_compress)
+ *
+ * \param src const char* 源数据
+ * \param dst char* 目标缓冲区
+ * \param src_length int 源长度
+ * \param dst_length int 目标缓冲区长度
+ * \param level int 压缩级别
+ * \return int 若成功，返回已使用的目标缓冲区长度
+ *
+ */
+int hlz4_compress_hc(const char* src, char* dst, int src_length, int dst_length,int level);
+
 /** \brief LZ4解压
  *
  * \param src const char* 源数据
