@@ -13,6 +13,8 @@
 #include H3RDPARTY_NANOPB_PB_DECODE_HEADER
 #include "pbinc/main_entry/main_entry.pb.h"
 #include "pbinc/main_entry/main_entry.pb.c"
+#include "pbinc/main_entry/main_entry_with_env.pb.h"
+#include "pbinc/main_entry/main_entry_with_env.pb.c"
 
 
 static bool hnanopb_msg_main_entry_encode_argv(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
@@ -75,7 +77,7 @@ typedef struct
     void *usr;
 }   hnanopb_msg_main_entry_decode_argv_arg_t;
 
-static bool hnanopb_msg_main_entry_decode_argv (pb_istream_t *stream, const pb_field_t *field, void **arg)
+static bool hnanopb_msg_main_entry_decode_argv(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
     hnanopb_msg_main_entry_decode_argv_arg_t *argv_arg=(hnanopb_msg_main_entry_decode_argv_arg_t *)*arg;
     if(stream!=NULL && field->tag == MainEntry_argv_tag)
@@ -105,6 +107,125 @@ bool hnanobp_msg_main_entry_decode(const void *buffer,size_t buffer_length,hnano
     message.argv.arg=(void *)&argv_arg;
     pb_istream_t stream = pb_istream_from_buffer(buffer, buffer_length);
     if(pb_decode(&stream, MainEntry_fields, &message))
+    {
+        ret=true;
+        if(ret && argc_cb!=NULL)
+        {
+            ret=argc_cb(message.argc,usr);
+        }
+    }
+
+    return ret;
+}
+
+static bool hnanopb_msg_main_entry_with_envp_encode_argv(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
+{
+    const char **argv=(const char **)*arg;
+    if(stream!=NULL && argv!=NULL && field->tag == MainEntryWithEnv_argv_tag)
+    {
+        for(size_t i=0; argv[i]!=NULL; i++)
+        {
+            if (!pb_encode_tag_for_field(stream, field))
+            {
+                return false;
+            }
+            if(!pb_encode_string(stream,(const pb_byte_t *)argv[i],hstrlen(argv[i])))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+};
+
+static bool hnanopb_msg_main_entry_with_envp_encode_envp(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
+{
+    const char **envp=(const char **)*arg;
+    if(stream!=NULL && envp!=NULL && field->tag == MainEntryWithEnv_envp_tag)
+    {
+        for(size_t i=0; envp[i]!=NULL; i++)
+        {
+            if (!pb_encode_tag_for_field(stream, field))
+            {
+                return false;
+            }
+            if(!pb_encode_string(stream,(const pb_byte_t *)envp[i],hstrlen(envp[i])))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+};
+
+size_t hnanopb_msg_main_entry_with_envp_encode(void *buffer,size_t buffer_length,int argc,const char *argv[],const char *envp[])
+{
+    size_t ret=0;
+    if(buffer==NULL || buffer_length==0)
+    {
+        return ret;
+    }
+    MainEntryWithEnv message=MainEntryWithEnv_init_zero;
+    message.argc=argc;
+    message.argv.funcs.encode= hnanopb_msg_main_entry_with_envp_encode_argv;
+    message.argv.arg=(void *)argv;
+    message.envp.funcs.encode= hnanopb_msg_main_entry_with_envp_encode_envp;
+    message.envp.arg=(void *)envp;
+    pb_ostream_t stream = pb_ostream_from_buffer(buffer, buffer_length);
+    if(pb_encode(&stream, MainEntryWithEnv_fields, &message))
+    {
+        ret=stream.bytes_written;
+    }
+    return ret;
+}
+
+static bool hnanopb_msg_main_entry_with_envp_decode_argv(pb_istream_t *stream, const pb_field_t *field, void **arg)
+{
+    hnanopb_msg_main_entry_decode_argv_arg_t *argv_arg=(hnanopb_msg_main_entry_decode_argv_arg_t *)*arg;
+    if(stream!=NULL && field->tag == MainEntryWithEnv_argv_tag)
+    {
+        if(argv_arg!=NULL && argv_arg->argv_cb!=NULL)
+        {
+            return argv_arg->argv_cb(stream,hnanobp_msg_main_entry_argv_read,stream->bytes_left,argv_arg->usr);
+        }
+    }
+    return true;
+};
+
+static bool hnanopb_msg_main_entry_with_envp_decode_envp(pb_istream_t *stream, const pb_field_t *field, void **arg)
+{
+    hnanopb_msg_main_entry_decode_argv_arg_t *argv_arg=(hnanopb_msg_main_entry_decode_argv_arg_t *)*arg;
+    if(stream!=NULL && field->tag == MainEntryWithEnv_envp_tag)
+    {
+        if(argv_arg!=NULL && argv_arg->argv_cb!=NULL)
+        {
+            return argv_arg->argv_cb(stream,hnanobp_msg_main_entry_argv_read,stream->bytes_left,argv_arg->usr);
+        }
+    }
+    return true;
+};
+
+bool hnanobp_msg_main_entry_with_envp_decode(const void *buffer,size_t buffer_length,hnanobp_msg_main_entry_with_envp_on_argc_read_t  argc_cb,hnanobp_msg_main_entry_with_envp_on_argv_read_t argv_cb,hnanobp_msg_main_entry_with_envp_on_envp_read_t envp_cb,void *usr)
+{
+    bool ret=false;
+    if(buffer==NULL || buffer_length==0)
+    {
+        return ret;
+    }
+    MainEntryWithEnv message=MainEntryWithEnv_init_zero;
+    message.argc=0;
+    message.argv.funcs.decode=hnanopb_msg_main_entry_with_envp_decode_argv;
+    hnanopb_msg_main_entry_decode_argv_arg_t argv_arg= {0};
+    argv_arg.argv_cb=argv_cb;
+    argv_arg.usr=usr;
+    message.argv.arg=(void *)&argv_arg;
+    message.envp.funcs.decode=hnanopb_msg_main_entry_with_envp_decode_envp;
+    hnanopb_msg_main_entry_decode_argv_arg_t envp_arg= {0};
+    envp_arg.argv_cb=envp_cb;
+    envp_arg.usr=usr;
+    message.envp.arg=(void *)&envp_arg;
+    pb_istream_t stream = pb_istream_from_buffer(buffer, buffer_length);
+    if(pb_decode(&stream, MainEntryWithEnv_fields, &message))
     {
         ret=true;
         if(ret && argc_cb!=NULL)

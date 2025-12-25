@@ -14,8 +14,6 @@ Protocol Buffers可配合[MQTT](https://mqtt.org/)应用于物联网应用，通
 - `.pb.h`:nanopb所用到的头文件。可在多个文件包含。注意:此文件只适用于nanopb。
 - `.pb.c`:nanopb所用到的C语言源代码文件。只能在一处C语言源代码文件中包含。注意:此文件只适用于于nanopb。
 
- C语言源代码包含时需要添加目录名`pbinc`，如包含`main_entry.pb.h`的代码为`#include "pbinc/main_entry.pb.h"`。
-
 # 列表
 
 ## [main_entry](main_entry)

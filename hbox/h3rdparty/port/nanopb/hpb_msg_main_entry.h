@@ -69,6 +69,37 @@ typedef bool (*hnanobp_msg_main_entry_on_argv_read_t)(void *ctx,hnanobp_msg_main
  */
 bool hnanobp_msg_main_entry_decode(const void *buffer,size_t buffer_length,hnanobp_msg_main_entry_on_argc_read_t  argc_cb,hnanobp_msg_main_entry_on_argv_read_t argv_cb,void *usr);
 
+
+/** \brief 编码main_entry消息(带envp变量)
+ *
+ * \param buffer void* 待写入的缓冲
+ * \param buffer_length size_t  待写入的缓冲长度
+ * \param argc int main_entry的argc字段
+ * \param argv[] const char* main_entry的argv字段
+ * \param envp[] const char* main_entry的envp字段
+ * \return size_t 已写入的字节
+ *
+ */
+size_t hnanopb_msg_main_entry_with_envp_encode(void *buffer,size_t buffer_length,int argc,const char *argv[],const char *envp[]);
+
+#define hnanobp_msg_main_entry_with_envp_on_argc_read_t hnanobp_msg_main_entry_on_argc_read_t
+#define hnanobp_msg_main_entry_with_envp_on_argv_read_t hnanobp_msg_main_entry_on_argv_read_t
+#define hnanobp_msg_main_entry_with_envp_on_envp_read_t hnanobp_msg_main_entry_on_argv_read_t
+
+/** \brief  解码main_entry消息(带envp变量)
+ *
+ * \param buffer const void* 待写入的缓冲
+ * \param buffer_length size_t 待写入的缓冲长度
+ * \param argc_cb hnanobp_msg_main_entry_with_envp_on_argc_read_t  解码argc回调
+ * \param argv_cb hnanobp_msg_main_entry_with_envp_on_argv_read_t  解码argv回调
+ * \param envp_cb hnanobp_msg_main_entry_with_envp_on_envp_read_t  解码envp回调
+ * \param usr void*
+ * \return bool
+ *
+ */
+bool hnanobp_msg_main_entry_with_envp_decode(const void *buffer,size_t buffer_length,hnanobp_msg_main_entry_with_envp_on_argc_read_t  argc_cb,hnanobp_msg_main_entry_with_envp_on_argv_read_t argv_cb,hnanobp_msg_main_entry_with_envp_on_envp_read_t envp_cb,void *usr);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

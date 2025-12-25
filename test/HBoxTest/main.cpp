@@ -58,8 +58,10 @@ static int (*test_cb[])(int,const char *[])=
     hcrypto_test
 };
 
-int main(int argc,const char *argv[])
+static const char **main_envp=NULL;
+int main(int argc,const char *argv[],const char *envp[])
 {
+    main_envp=envp;
     //关闭缓冲，便于调试
     setbuf(stdout,NULL);
     for(size_t i=0; i<(sizeof(test_cb)/sizeof(test_cb[0])); i++)
@@ -2554,9 +2556,9 @@ static int h3rdparty_test(int argc,const char *argv[])
     {
         printf("h3rdparty_test:nanopb start!\r\n");
         {
-            uint8_t buffer[4096]= {0};
+            uint8_t buffer[32*1024]= {0};
             //数据长度
-            size_t buffer_length=hnanopb_msg_main_entry_encode(buffer,sizeof(buffer),argc,argv);
+            size_t buffer_length=hnanopb_msg_main_entry_with_envp_encode(buffer,sizeof(buffer),argc,argv,main_envp);
             {
                 for(size_t i=0; i<buffer_length; i++)
                 {
@@ -2571,7 +2573,7 @@ static int h3rdparty_test(int argc,const char *argv[])
             {
                 //消息解码（反序列化）
                 printf("h3rdparty_test:nanopb decode!\r\n");
-                hnanobp_msg_main_entry_decode(buffer,buffer_length,[](int argc,void *usr) -> bool
+                hnanobp_msg_main_entry_with_envp_decode(buffer,buffer_length,[](int argc,void *usr) -> bool
                 {
                     printf("argc:%d\r\n",argc);
                     return true;
@@ -2587,6 +2589,19 @@ static int h3rdparty_test(int argc,const char *argv[])
                         return false;
                     }
                     printf("argv(length=%d):%s\r\n",(int)length,buffer);
+                    return true;
+                },[](void *ctx,hnanobp_msg_main_entry_argv_read_t readfunc,size_t length,void *usr)->bool
+                {
+                    char buffer[4096]={0};
+                    if(readfunc==NULL)
+                    {
+                        return false;
+                    }
+                    if(!readfunc(ctx,buffer,sizeof(buffer)-1))
+                    {
+                        return false;
+                    }
+                    printf("envp(length=%d):%s\r\n",(int)length,buffer);
                     return true;
                 },NULL);
             }

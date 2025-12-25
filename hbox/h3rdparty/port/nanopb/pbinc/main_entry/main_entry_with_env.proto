@@ -1,0 +1,9 @@
+
+syntax = "proto3"; 
+
+
+message MainEntryWithEnv{
+    int32               argc = 1;
+    repeated string     argv = 2;
+    repeated string     envp = 3;
+}
