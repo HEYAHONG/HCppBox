@@ -3,7 +3,7 @@
 #include <thread>
 #include <string>
 #include <vector>
-#include H3RDPARTY_LIBQRENCODE_HEADER
+
 
 #ifdef __unix__
 #include <termios.h>
@@ -262,7 +262,7 @@ static void show_banner()
 {
     std::string banner;
     {
-        QRcode *qr=QRcode_encodeString8bit("http://hyhsystem.cn",0,QR_ECLEVEL_M);
+        hlibqrencode_qrcode_t *qr=hlibqrencode_encode_string_8bit("http://hyhsystem.cn",0,HLIBQRENCODE_QR_ECLEVEL_M);
         if(qr!=NULL)
         {
             for(size_t i=0; i<qr->width; i++)
@@ -295,7 +295,7 @@ static void show_banner()
                 banner+="\r\n";
             }
             banner+="\r\n";
-            QRcode_free(qr);
+            hlibqrencode_free(qr);
         }
         banner+="https://hyhsystem.cn\r\n";
     }

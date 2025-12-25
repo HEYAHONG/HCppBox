@@ -139,6 +139,14 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
 //h3rdparty/h3rdparty_libqrencode_mask.c
 //h3rdparty/h3rdparty_libqrencode_mmask.c
 //h3rdparty/h3rdparty_libqrencode_mqrspec.c
+//h3rdparty/h3rdparty_libqrencode_port.c
+    {hdefaults_str(hlibqrencode_encode_string),(uintptr_t)&hlibqrencode_encode_string},
+    {hdefaults_str(hlibqrencode_encode_string_8bit),(uintptr_t)&hlibqrencode_encode_string_8bit},
+    {hdefaults_str(hlibqrencode_encode_string_MQR),(uintptr_t)&hlibqrencode_encode_string_MQR},
+    {hdefaults_str(hlibqrencode_encode_string8bit_MQR),(uintptr_t)&hlibqrencode_encode_string8bit_MQR},
+    {hdefaults_str(hlibqrencode_encode_data),(uintptr_t)&hlibqrencode_encode_data},
+    {hdefaults_str(hlibqrencode_encode_data_MQR),(uintptr_t)&hlibqrencode_encode_data_MQR},
+    {hdefaults_str(hlibqrencode_free),(uintptr_t)&hlibqrencode_free},
 //h3rdparty/h3rdparty_libqrencode_qrencode.c
 //h3rdparty/h3rdparty_libqrencode_qrinput.c
 //h3rdparty/h3rdparty_libqrencode_qrspec.c

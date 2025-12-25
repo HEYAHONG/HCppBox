@@ -22,5 +22,6 @@
 #endif
 #endif
 
+#include "hlibqrencode.h"
 
 #endif // __H3RDPARTY_PORT_QRENCODE_H_INCLUDE__

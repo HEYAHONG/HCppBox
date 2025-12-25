@@ -7,7 +7,6 @@
 #include <thread>
 #include <chrono>
 
-#include H3RDPARTY_LIBQRENCODE_HEADER
 
 static const size_t w=128;//宽
 static const size_t h=64;//高
@@ -202,7 +201,7 @@ static  const hgui_scene1_screen_base_t qrcode_screen=
                     };
                     hgui_gui_dotfont_show_ascii_string(&hgui_gui_dotfont_ascii_0806,"https://hyhsystem.cn",(w-6*20)/2,6*h/8-4,w,draw_pixel,NULL);
                     {
-                        QRcode *qr=QRcode_encodeString8bit("http://hyhsystem.cn",0,QR_ECLEVEL_M);
+                        hlibqrencode_qrcode_t *qr=hlibqrencode_encode_string_8bit("http://hyhsystem.cn",0,HLIBQRENCODE_QR_ECLEVEL_M);
                         if(qr!=NULL)
                         {
                             for(size_t i=0; i<qr->width; i++)
@@ -219,7 +218,7 @@ static  const hgui_scene1_screen_base_t qrcode_screen=
                                     }
                                 }
                             }
-                            QRcode_free(qr);
+                            hlibqrencode_free(qr);
                         }
                     }
                 }
