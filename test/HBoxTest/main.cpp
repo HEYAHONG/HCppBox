@@ -2529,6 +2529,32 @@ static int h3rdparty_test(int argc,const char *argv[])
     printf("h3rdparty_test:start!\r\n");
 
     h3rdparty_init();
+    {
+        printf("h3rdparty_test:libfdt start!\r\n");
+        hlibfdt_traverse_node(default64mbdtb,[](const void *fdt,int offset,const char *name,int depth,void *usr)
+        {
+            if(name==NULL||name[0]=='\0')
+            {
+                name="/";
+            }
+            printf("node=%s,depth=%d,property start\r\n",name,depth);
+            hlibfdt_traverse_node_property(fdt,offset,[](const void *fdt,int offset,const char *name,const uint8_t *value,size_t value_length,void *usr)
+            {
+                if(value==NULL || value_length==0)
+                {
+                    printf("\t%s\r\n",name);
+                }
+                else
+                {
+                    char buffer[4096]= {0};
+                    hbase16_encode(buffer,sizeof(buffer)-1,value,value_length);
+                    printf("\t%s:%s\r\n",name,buffer);
+                }
+            },NULL);
+            printf("node=%s,depth=%d,property end\r\n",name,depth);
+        },NULL);
+        printf("h3rdparty_test:libfdt end!\r\n");
+    }
 
     {
         //cJSON测试

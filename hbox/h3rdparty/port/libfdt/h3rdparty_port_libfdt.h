@@ -22,6 +22,7 @@
 #endif
 #endif
 
+#include "hlibfdt.h"
 
 
 #endif // __H3RDPARTY_PORT_LIBFDT_H_INCLUDE__
