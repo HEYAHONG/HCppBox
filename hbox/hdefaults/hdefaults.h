@@ -27,6 +27,8 @@
 //定义硬件架构(支持部分常用架构)
 #include "hdefaults_arch.h"
 
+//定义平台(支持部分常用平台)
+#include "hdefaults_platform.h"
 
 //定义操作系统
 #include "hdefaults_os.h"

@@ -75,6 +75,11 @@
 #define HDEFAULTS_ARCH_WASM64 1
 #endif
 #endif
+#elif defined(__XTENSA__)
+#include "hdefaults_arch_xtensa.h"
+#ifndef HDEFAULTS_ARCH_XTENSA
+#define HDEFAULTS_ARCH_XTENSA 1
+#endif
 #endif
 
 

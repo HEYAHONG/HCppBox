@@ -51,6 +51,8 @@
 |   `HDEFAULTS_ARCH_WASM`    | 架构为WASM                       |                                                              |
 |  `HDEFAULTS_ARCH_WASM32`   | 架构为WASM(32位)                 | 通常也会定义`HDEFAULTS_ARCH_WASM`                            |
 |  `HDEFAULTS_ARCH_WASM64`   | 架构为WASM(64位)                 | 通常也会定义`HDEFAULTS_ARCH_WASM`                            |
+|  `HDEFAULTS_ARCH_XTENSA`   | 架构为XTENSA                     |                                                              |
+|  `HDEFAULTS_PLATFORM_ESP`  | 平台为ESP                        |                                                              |
 |  `HDEFAULTS_OS_RTTHREAD`   | 处于RT-Thread中                  |                                                              |
 |    `HDEFAULTS_OS_NUTTX`    | 处于NuttX中                      |                                                              |
 |   `HDEFAULTS_OS_WINDOWS`   | 处于Windows中                    |                                                              |
