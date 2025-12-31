@@ -23,18 +23,24 @@
 /*
  * ESP-IDF有完善的C++支持，无需重载
  */
+#ifndef HCPPRT_NO_NEW_AND_DELETE_OVERRIDE
 #define HCPPRT_NO_NEW_AND_DELETE_OVERRIDE 1
+#endif
 
 /*
- * ESP-IDF自带cJSON，故而默认使用系统cJSON
+ * 某些版本ESP-IDF自带cJSON，故而默认使用系统cJSON
  */
-#define H3RDPARTY_USING_SYSTEM_CJSON 1
+#ifndef H3RDPARTY_USING_SYSTEM_CJSO
+//#define H3RDPARTY_USING_SYSTEM_CJSON 1
+#endif
 
 /*
- * ESP-IDF(非ESP8266版本)自带tlsf,故而默认使用系统tlsf。注意：需要手动添加包含路径,或者不编译tlsf第三方移植代码且不使用任何tlsf相关功能
+ * 某些版本ESP-IDF(非ESP8266版本)自带tlsf,故而默认使用系统tlsf。注意：需要手动添加包含路径,或者不编译tlsf第三方移植代码且不使用任何tlsf相关功能
  */
 #ifndef CONFIG_IDF_TARGET_ESP8266
-#define H3RDPARTY_USING_SYSTEM_TLSF 1
+#ifndef H3RDPARTY_USING_SYSTEM_TLSF
+//#define H3RDPARTY_USING_SYSTEM_TLSF 1
+#endif
 #endif
 
 #endif
