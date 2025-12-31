@@ -21,6 +21,11 @@
 #include "sdkconfig.h"
 
 /*
+ * ESP-IDF有完善的C++支持，无需重载
+ */
+#define HCPPRT_NO_NEW_AND_DELETE_OVERRIDE 1
+
+/*
  * ESP-IDF自带cJSON，故而默认使用系统cJSON
  */
 #define H3RDPARTY_USING_SYSTEM_CJSON 1
