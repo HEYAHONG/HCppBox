@@ -178,7 +178,7 @@ typedef enum
     HS_MCS_51_SFR_P3=0xb0,          /* Port #3 */
     HS_MCS_51_SFR_IP=0xb8,          /* Interrupt Priority */
     HS_MCS_51_SFR_IE=0xa8,          /* Interrupt Enable */
-    HS_MCS_51_SFR_TMOD=	0x89,       /* Timer MODe */
+    HS_MCS_51_SFR_TMOD= 0x89,       /* Timer MODe */
     HS_MCS_51_SFR_TCON=0x88,        /* Timer CONtrol */
     HS_MCS_51_SFR_T2CON=0xc8,       /* Timer #2 CONtrol */
     HS_MCS_51_SFR_TH0=0x8c,         /* Timer #0 High byte */
@@ -218,7 +218,7 @@ typedef enum
     HS_MCS_51_SFR_PMR=0xc4,         /* */
     HS_MCS_51_SFR_MCON=0xc6,        /* */
     HS_MCS_51_SFR_TA=0xc7,          /* */
-    HS_MCS_51_SFR_T2MOD	=0xc9,      /* */
+    HS_MCS_51_SFR_T2MOD =0xc9,      /* */
     HS_MCS_51_SFR_COR=0xce,         /* */
     HS_MCS_51_SFR_PSW1=0xd1,        /* */
     HS_MCS_51_SFR_MCNT0=0xd1,

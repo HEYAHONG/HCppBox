@@ -63,6 +63,46 @@ bool hs_mcs_51_rom_read(hs_mcs_51_rom_t rom,uint32_t addr,uint8_t *data);
  */
 void hs_mcs_51_rom_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr,hs_mcs_51_rom_t *rom);
 
+struct hs_mcs_51_rom_v2;
+typedef struct hs_mcs_51_rom_v2 hs_mcs_51_rom_v2_t;
+
+struct hs_mcs_51_rom_v2
+{
+    size_t (*rom_read)(hs_mcs_51_rom_v2_t *rom,uint8_t *buffer,size_t buffer_length);   /**< 读取回调 */
+    unsigned char psbank_addr;                                                          /**< 程序PSBANK寄存器地址，默认为C8051F120的PSBANK地址*/
+    void *usr;                                                                          /**< 用户参数 */
+};
+
+/** \brief MCS-51 ROM初始化参数
+ *
+ *
+ */
+#define HS_MCS_51_ROM_V2_INITIALIZER {NULL,HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS,NULL}
+
+/** \brief MCS-51 ROM读取（V2）
+ *
+ * \param rom hs_mcs_51_rom_v2_t    MCS-51 ROM(V2)
+ * \param addr uint32_t             地址
+ * \param data uint8_t*             数据指针
+ * \return bool 是否读取成功
+ *
+ */
+bool hs_mcs_51_rom_v2_read(hs_mcs_51_rom_v2_t rom,uint32_t addr,uint8_t *data);
+
+/** \brief  MCS-51 ROM(V2)总线IO操作(一般由总线上的主设备(如CPU)调用)，注意：此操作不能在RAM操作之前调用
+ *
+  * \param core hs_mcs_51_core_t*       MCS-51内核指针，见hs_mcs_51_io_t。
+ * \param address uint16_t              地址，见hs_mcs_51_io_t。
+ * \param opt hs_mcs_51_io_opt_t        IO操作选项，见hs_mcs_51_io_t。
+ * \param data uint8_t*                 数据长度，见hs_mcs_51_io_t。
+ * \param length uint16_t               数据长度，见hs_mcs_51_io_t。
+ * \param usr void*                     用户指针，见hs_mcs_51_io_t。
+ * \param rom hs_mcs_51_rom_v2_t*       MCS-51 ROM(V2)指针,当指针为空时将跳转至复位地址。
+ *
+ */
+void hs_mcs_51_rom_v2_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr,hs_mcs_51_rom_v2_t *rom);
+
+
 
 /*
  *  helloworld程序(见rom/helloworld目录)

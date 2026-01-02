@@ -121,6 +121,104 @@ void hs_mcs_51_rom_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t
     }
 }
 
+bool hs_mcs_51_rom_v2_read(hs_mcs_51_rom_v2_t rom,uint32_t addr,uint8_t *data)
+{
+    if(rom.rom_read==NULL || data==NULL)
+    {
+        return false;
+    }
+
+    return sizeof(*data)==rom.rom_read(&rom,data,sizeof(*data));
+}
+
+void hs_mcs_51_rom_v2_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr,hs_mcs_51_rom_v2_t *rom)
+{
+    if(opt==HS_MCS_51_IO_RESET)
+    {
+        if(rom!=NULL)
+        {
+            {
+                //超过2个Bank
+                uint8_t psbank_addr=HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS;
+                if(rom->psbank_addr >= 0x80)
+                {
+                    psbank_addr=rom->psbank_addr;
+                }
+                uint8_t psbank_val=0x11;
+                if(psbank_addr==HS_MCS_51_ROM_PSBANK_CC2530_SFR_ADDRESS)
+                {
+                    //对于CC2530而言，PSBANK为FMAP寄存器，不区分常数与指令，因此常数访问同指令访问
+                    psbank_val=0x01;
+                }
+                //常数Bank与指令Bank选择1
+                hs_mcs_51_sfr_write(core,(hs_mcs_51_sfr_addr_t)psbank_addr, psbank_val);
+            }
+        }
+    }
+
+    if(opt==HS_MCS_51_IO_READ_ROM)
+    {
+        if(rom!=NULL)
+        {
+            //使用size_t用作临时地址
+            size_t address_size_t=address;
+
+            if((rom->rom_read!=NULL))
+            {
+                //使用size_t用作地址,16位地址在地址映射后可能溢出
+                size_t address=address_size_t;
+
+                //进行地址映射
+                {
+                    //超过2个Bank(未超过64KB不启用PSBANK)
+                    uint8_t psbank_addr=HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS;
+                    if(rom->psbank_addr >= 0x80)
+                    {
+                        psbank_addr=rom->psbank_addr;
+                    }
+                    uint8_t psbank_val=0x11;
+                    hs_mcs_51_sfr_read(core,(hs_mcs_51_sfr_addr_t)psbank_addr,&psbank_val);
+                    if(address >= 0x8000)
+                    {
+                        //访问高地址，需要进行Bank选择,低地址永远访问Bank0
+
+                        address-=0x8000;
+                        if(psbank_addr==HS_MCS_51_ROM_PSBANK_CC2530_SFR_ADDRESS)
+                        {
+                            //对于CC2530而言，PSBANK为FMAP寄存器，不区分常数与指令，因此常数访问同指令访问
+                            psbank_val&=0x0F;
+                            psbank_val+=(psbank_val<<4);
+                        }
+                        if(length == 1)
+                        {
+                            //常数访问
+                            address+=(((psbank_val&0xF0)>>4)*0x8000);
+                        }
+                        else
+                        {
+                            //指令访问
+                            address+=((psbank_val&0xF)*0x8000);
+                        }
+                    }
+                }
+
+
+                //读取数据
+                {
+                    rom->rom_read(rom,data,length);
+                    //成功读取数据或指令
+                    return;
+                }
+            }
+        }
+        {
+            //失败跳转至0地址
+            uint8_t ljmp_zero[]= {0x02,0x00,0x00};
+            memcpy(data,ljmp_zero,(length>sizeof(ljmp_zero))?(sizeof(ljmp_zero)):(length));
+        }
+    }
+}
+
 /*
 *  helloworld程序(见rom/helloworld目录)
 */
