@@ -2347,7 +2347,7 @@ static int hsimulator_test(int argc,const char *argv[])
         //测试MCS-51 Core,足够存下hs_mcs_51_core_t
         uint8_t mcs_51[4096]= {0};
         static hs_mcs_51_serial_t   mcs_51_uart;
-        static hs_mcs_51_rom_t      mcs_51_rom=HS_MCS_51_ROM_INITIALIZER;
+        static hs_mcs_51_rom_v2_t   mcs_51_rom=HS_MCS_51_ROM_V2_INITIALIZER;
         static hs_mcs_51_ram_model_huge_t mcs_51_ram;
         static hs_mcs_51_pin_t    mcs_51_pin;
         static hs_mcs_51_timer_t  mcs_51_timer;
@@ -2373,7 +2373,7 @@ static int hsimulator_test(int argc,const char *argv[])
             //RAM操作(注意：此操作前不应当有外设操作)
             hs_mcs_51_ram_model_huge_bus_io(core,opt,address,data,length,usr,&mcs_51_ram);
             //ROM操作
-            hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&mcs_51_rom);
+            hs_mcs_51_rom_v2_bus_io(core,opt,address,data,length,usr,&mcs_51_rom);
             //处理串口外设
             hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&mcs_51_uart);
             //处理PIN
@@ -2386,8 +2386,8 @@ static int hsimulator_test(int argc,const char *argv[])
 
         {
             printf("hsimulator mcs_51_core(helloworld) loading!\r\n");
-            mcs_51_rom=hs_mcs_51_rom_helloworld;
-            printf("hsimulator mcs_51_core(helloworld) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(mcs_51_rom.code,mcs_51_rom.len),(int)hs_mcs_51_disassembly_code_instruction_type_count(mcs_51_rom.code,mcs_51_rom.len));
+            mcs_51_rom=hs_mcs_51_rom_v2_helloworld;
+            printf("hsimulator mcs_51_core(helloworld) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(hs_mcs_51_rom_helloworld.code,hs_mcs_51_rom_helloworld.len),(int)hs_mcs_51_disassembly_code_instruction_type_count(hs_mcs_51_rom_helloworld.code,hs_mcs_51_rom_helloworld.len));
             printf("hsimulator mcs_51_core(helloworld) start!\r\n");
             hs_mcs_51_core_tick(core,10000);
             {
@@ -2417,8 +2417,8 @@ static int hsimulator_test(int argc,const char *argv[])
         {
             printf("hsimulator mcs_51_core(helloworld_stdio) loading!\r\n");
             hs_mcs_51_core_reset(core);
-            mcs_51_rom=hs_mcs_51_rom_helloworld_stdio;
-            printf("hsimulator mcs_51_core(helloworld_stdio) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(mcs_51_rom.code,mcs_51_rom.len),(int)hs_mcs_51_disassembly_code_instruction_type_count(mcs_51_rom.code,mcs_51_rom.len));
+            mcs_51_rom=hs_mcs_51_rom_v2_helloworld_stdio;
+            printf("hsimulator mcs_51_core(helloworld_stdio) instruction_count=%d,instruction_type_count=%d!\r\n",(int)hs_mcs_51_disassembly_code_instruction_count(hs_mcs_51_rom_helloworld_stdio.code,hs_mcs_51_rom_helloworld_stdio.len),(int)hs_mcs_51_disassembly_code_instruction_type_count(hs_mcs_51_rom_helloworld_stdio.code,hs_mcs_51_rom_helloworld_stdio.len));
             printf("hsimulator mcs_51_core(helloworld_stdio) start!\r\n");
             hs_mcs_51_core_tick(core,10000);
             {

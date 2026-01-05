@@ -128,7 +128,7 @@ bool hs_mcs_51_rom_v2_read(hs_mcs_51_rom_v2_t rom,uint32_t addr,uint8_t *data)
         return false;
     }
 
-    return sizeof(*data)==rom.rom_read(&rom,data,sizeof(*data));
+    return sizeof(*data)==rom.rom_read(&rom,addr,data,sizeof(*data));
 }
 
 void hs_mcs_51_rom_v2_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint16_t address,uint8_t *data,uint16_t length,void *usr,hs_mcs_51_rom_v2_t *rom)
@@ -169,13 +169,10 @@ void hs_mcs_51_rom_v2_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint1
                 size_t address=address_size_t;
 
                 //进行地址映射
+                if(rom->psbank_addr >= 0x80)
                 {
-                    //超过2个Bank(未超过64KB不启用PSBANK)
-                    uint8_t psbank_addr=HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS;
-                    if(rom->psbank_addr >= 0x80)
-                    {
-                        psbank_addr=rom->psbank_addr;
-                    }
+                    //设定了psbank(未设定psbank不启用PSBANK)
+                    uint8_t psbank_addr=rom->psbank_addr;
                     uint8_t psbank_val=0x11;
                     hs_mcs_51_sfr_read(core,(hs_mcs_51_sfr_addr_t)psbank_addr,&psbank_val);
                     if(address >= 0x8000)
@@ -205,9 +202,11 @@ void hs_mcs_51_rom_v2_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint1
 
                 //读取数据
                 {
-                    rom->rom_read(rom,data,length);
-                    //成功读取数据或指令
-                    return;
+                    if(length==rom->rom_read(rom,address,data,length))
+                    {
+                        //成功读取数据或指令
+                        return;
+                    }
                 }
             }
         }
@@ -217,6 +216,30 @@ void hs_mcs_51_rom_v2_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint1
             memcpy(data,ljmp_zero,(length>sizeof(ljmp_zero))?(sizeof(ljmp_zero)):(length));
         }
     }
+}
+
+size_t hs_mcs_51_rom_v2_rom_read_from_legacy_rom(hs_mcs_51_rom_v2_t *rom,size_t addr,uint8_t *buffer,size_t buffer_length)
+{
+    if(rom==NULL || buffer == NULL || buffer_length == 0)
+    {
+        return 0;
+    }
+    const hs_mcs_51_rom_t *rom_legacy=(const hs_mcs_51_rom_t *)rom->usr;
+    if(rom_legacy==NULL || rom_legacy->code == NULL || rom_legacy->len==0)
+    {
+        return 0;
+    }
+    if(rom_legacy->len < addr)
+    {
+        return 0;
+    }
+    size_t bytes_to_read=buffer_length;
+    if(bytes_to_read > (rom_legacy->len - addr))
+    {
+        bytes_to_read=(rom_legacy->len - addr);
+    }
+    memcpy(buffer,&rom_legacy->code[addr],bytes_to_read);
+    return bytes_to_read;
 }
 
 /*
@@ -297,6 +320,13 @@ const hs_mcs_51_rom_t hs_mcs_51_rom_helloworld=
     hs_mcs_51_rom_helloworld_bin,
     hs_mcs_51_rom_helloworld_len,
     HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS
+};
+
+const hs_mcs_51_rom_v2_t hs_mcs_51_rom_v2_helloworld=
+{
+    hs_mcs_51_rom_v2_rom_read_from_legacy_rom,
+    HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS,
+    (void *)&hs_mcs_51_rom_helloworld
 };
 
 /*
@@ -510,4 +540,11 @@ const hs_mcs_51_rom_t hs_mcs_51_rom_helloworld_stdio=
     hs_mcs_51_rom_helloworld_stdio_bin,
     hs_mcs_51_rom_helloworld_stdio_len,
     HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS
+};
+
+const hs_mcs_51_rom_v2_t hs_mcs_51_rom_v2_helloworld_stdio=
+{
+    hs_mcs_51_rom_v2_rom_read_from_legacy_rom,
+    HS_MCS_51_ROM_PSBANK_C8051F120_SFR_ADDRESS,
+    (void *)&hs_mcs_51_rom_helloworld_stdio
 };

@@ -68,9 +68,9 @@ typedef struct hs_mcs_51_rom_v2 hs_mcs_51_rom_v2_t;
 
 struct hs_mcs_51_rom_v2
 {
-    size_t (*rom_read)(hs_mcs_51_rom_v2_t *rom,uint8_t *buffer,size_t buffer_length);   /**< 读取回调 */
-    unsigned char psbank_addr;                                                          /**< 程序PSBANK寄存器地址，默认为C8051F120的PSBANK地址*/
-    void *usr;                                                                          /**< 用户参数 */
+    size_t (*rom_read)(hs_mcs_51_rom_v2_t *rom,size_t address,uint8_t *buffer,size_t buffer_length);    /**< 读取回调 */
+    unsigned char psbank_addr;                                                                          /**< 程序PSBANK寄存器地址，默认为C8051F120的PSBANK地址*/
+    void *usr;                                                                                          /**< 用户参数 */
 };
 
 /** \brief MCS-51 ROM初始化参数
@@ -104,15 +104,29 @@ void hs_mcs_51_rom_v2_bus_io(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uint1
 
 
 
+/** \brief MCS-51 ROM(V2)读取ROM
+ *
+ * \param rom hs_mcs_51_rom_v2_t*   MCS-51 ROM(V2)指针,usr成员必须是非空的hs_mcs_51_rom_t指针
+ * \param addr size_t               地址
+ * \param buffer uint8_t*           缓冲区
+ * \param buffer_length size_t      缓冲区长度
+ * \return size_t                   已读取的长度
+ *
+ */
+size_t hs_mcs_51_rom_v2_rom_read_from_legacy_rom(hs_mcs_51_rom_v2_t *rom,size_t addr,uint8_t *buffer,size_t buffer_length);
+
+
 /*
  *  helloworld程序(见rom/helloworld目录)
  */
 extern const hs_mcs_51_rom_t hs_mcs_51_rom_helloworld;
+extern const hs_mcs_51_rom_v2_t hs_mcs_51_rom_v2_helloworld;
 
 /*
  *  helloworld_stdio程序(见rom/helloworld_stdio目录)
  */
 extern const hs_mcs_51_rom_t hs_mcs_51_rom_helloworld_stdio;
+extern const hs_mcs_51_rom_v2_t hs_mcs_51_rom_v2_helloworld_stdio;
 
 #ifdef __cplusplus
 }
