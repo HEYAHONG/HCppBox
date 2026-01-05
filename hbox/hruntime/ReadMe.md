@@ -24,8 +24,9 @@
 |        `HRUNTIME_USING_SYMBOL_TABLE`         |   启用符号表   |      一般情况下，符号表与符号段任选其一即可实现符号查找      |
 |          `HRUNTIME_NO_SYMBOL_TABLE`          |  不启用符号表  | 优先级较`HRUNTIME_USING_SYMBOL_TABLE`高。可有效减少生成的可执行文件大小 |
 |    `HRUNTIME_USING_SYMBOL_DYNAMIC_TABLE`     | 启用动态符号表 |        启用动态符号表后，符号查找时优先查找动态符号表        |
-|         `HRUNTIME_NO_SOFTWARETIMER`          |  无软件定时器  |         此选项通常用于减小代码，若启用则相关代码无效         |
-|          `HRUNTIME_NO_SOFTWATCHDOG`          |  无软件看门狗  |         此选项通常用于减小代码，若启用则相关代码无效         |
+|         `HRUNTIME_NO_SOFTWARETIMER`          |  无软件定时器  | 此选项通常用于减小代码，若启用则相关代码无效。未定义此选项时默认由`hruntime`自动运行软件定时器 |
+|          `HRUNTIME_NO_SOFTWATCHDOG`          |  无软件看门狗  | 此选项通常用于减小代码，若启用则相关代码无效。未定义此选项时默认由`hruntime`自动运行喂狗 |
+|            `HRUNTIME_NO_SOFTPLC`             |  无软件`PLC`   | 此选项通常用于自行实现软件`PLC`的初始化及循环，未定义此选项时默认由`hruntime`自动运行软件`PLC` |
 
 ## hstacklesscoroutine
 

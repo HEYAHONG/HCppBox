@@ -111,7 +111,7 @@ void hruntime_init()
         }
     }
 
-#if defined(HSOFTPLC)
+#if defined(HSOFTPLC) && !defined(HRUNTIME_NO_SOFTPLC)
     hsoftplc_init();
 #endif
 
@@ -208,7 +208,7 @@ void hruntime_loop()
     }
 #endif
 
-#if defined(HSOFTPLC)
+#if defined(HSOFTPLC) && !defined(HRUNTIME_NO_SOFTPLC)
     hsoftplc_loop();
 #endif
 
