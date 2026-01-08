@@ -219,3 +219,33 @@
 | 宏定义    | 说明               | 备注                    |
 | --------- | ------------------ | ----------------------- |
 | `HMEMSET` | 用户实现的`memset` | 参数与返回值同`hmemset` |
+
+# posix标准
+
+某些函数不属于C标准，但属于posix标准，也在此目录包装。
+
+## `setenv`
+
+设置环境变量。
+
+可外部配置的宏定义如下:
+
+| 宏定义    | 说明               | 备注                    |
+| --------- | ------------------ | ----------------------- |
+| `HSETENV` | 用户实现的`setenv` | 参数与返回值同`hsetenv` |
+
+## `unsetenv`
+
+设置环境变量。
+
+可外部配置的宏定义如下:
+
+| 宏定义      | 说明                 | 备注                      |
+| ----------- | -------------------- | ------------------------- |
+| `HUNSETENV` | 用户实现的`unsetenv` | 参数与返回值同`hunsetenv` |
+
+# 参考资源
+
+- [https://www.cppreference.com/](https://www.cppreference.com/)
+- [https://pubs.opengroup.org/onlinepubs/9699919799/](https://pubs.opengroup.org/onlinepubs/9699919799/)
+

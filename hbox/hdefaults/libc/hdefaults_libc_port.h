@@ -37,6 +37,14 @@ extern "C"
 #include "wrapper/hstrlen.h"
 #include "wrapper/hmemset.h"
 
+
+/*
+ * posix标准中的函数
+ */
+#include "wrapper/posix/hsetenv.h"
+#include "wrapper/posix/hunsetenv.h"
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

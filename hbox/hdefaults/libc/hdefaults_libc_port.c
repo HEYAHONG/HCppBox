@@ -39,3 +39,10 @@
 #include "wrapper/hstrlen.c"
 #include "wrapper/hmemset.c"
 
+
+/*
+ * posix标准中的函数
+ */
+#include "wrapper/posix/hsetenv.c"
+#include "wrapper/posix/hunsetenv.c"
+
