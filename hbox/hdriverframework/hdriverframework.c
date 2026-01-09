@@ -63,7 +63,7 @@ bool hdriverframework_driver_base_match_of_compatible(hdriverframework_driver_ba
     const char **of_compatible=hdriverframework_driver_base_get_of_compatible(drv);
     if(of_compatible!=NULL && of_compatible_string!=NULL)
     {
-        for(size_t i=0;of_compatible[i]!=NULL;i++)
+        for(size_t i=0; of_compatible[i]!=NULL; i++)
         {
             if(0==strcmp(of_compatible_string,of_compatible[i]))
             {
@@ -87,7 +87,7 @@ size_t hdriverframework_driver_base_vm_read(hdriverframework_driver_base_t *drv,
 
 size_t hdriverframework_driver_base_vm_write(hdriverframework_driver_base_t *drv,const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,const uint8_t *data,size_t length)
 {
-     size_t ret=0;
+    size_t ret=0;
     if(drv!=NULL && drv->process!=NULL)
     {
         drv->process(drv,HDRIVERFRAMEWORK_OP_VM_WRITE,&ret,map_item,address,data,length);
@@ -114,5 +114,50 @@ size_t hdriverframework_driver_base_getminvmopsize(hdriverframework_driver_base_
     {
         drv->process(drv,HDRIVERFRAMEWORK_OP_GET_MIN_VM_OP_SIZE,&ret);
     }
+    return ret;
+}
+
+void * hdriverframework_driver_base_getusr(hdriverframework_driver_base_t *drv)
+{
+    void *ret=NULL;
+    if(drv!=NULL)
+    {
+        ret=drv->usr;
+    }
+    return ret;
+}
+
+void hdriverframework_driver_base_setusr(hdriverframework_driver_base_t *drv,void * usr)
+{
+    if(drv!=NULL)
+    {
+        drv->usr=usr;
+    }
+}
+
+bool hdriverframework_driver_base_getregister(hdriverframework_driver_base_t *drv,size_t index,hdriverframework_driver_base_register_t *regval)
+{
+    bool ret=false;
+#if     HDRIVERFRAMEWORK_DRIVER_BASE_REGISTER_NUMBER  >= (8)
+    if((drv!=NULL) && (index < (sizeof(drv->registers)/sizeof(drv->registers[0]))) &&(regval !=NULL))
+    {
+        ret=true;
+        (*regval)=drv->registers[index];
+    }
+#endif // HDRIVERFRAMEWORK_DRIVER_BASE_REGISTER_NUMBER
+    return ret;
+}
+
+
+bool hdriverframework_driver_base_setregister(hdriverframework_driver_base_t *drv,size_t index,hdriverframework_driver_base_register_t regval)
+{
+    bool ret=false;
+#if     HDRIVERFRAMEWORK_DRIVER_BASE_REGISTER_NUMBER  >= (8)
+    if((drv!=NULL) && (index < (sizeof(drv->registers)/sizeof(drv->registers[0]))))
+    {
+        ret=true;
+        drv->registers[index]=regval;
+    }
+#endif // HDRIVERFRAMEWORK_DRIVER_BASE_REGISTER_NUMBER
     return ret;
 }

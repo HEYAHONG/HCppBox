@@ -13,6 +13,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "hmemory.h"
+#include "hdefaults.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -164,11 +165,29 @@ typedef struct hdriverframework_driver_base hdriverframework_driver_base_t;
  */
 typedef int (*hdriverframework_driver_base_process_t)(hdriverframework_driver_base_t *drv,int op,...);
 
+/*
+ * 基础驱动寄存器数量(最少8个)
+ */
+#ifndef HDRIVERFRAMEWORK_DRIVER_BASE_REGISTER_NUMBER
+#if defined(HDEFAULTS_OS_UNIX) || defined(HDEFAULTS_OS_WINDOWS)
+#define  HDRIVERFRAMEWORK_DRIVER_BASE_REGISTER_NUMBER    (1024)
+#else
+#define  HDRIVERFRAMEWORK_DRIVER_BASE_REGISTER_NUMBER    (8)
+#endif
+#endif
+
+#if     HDRIVERFRAMEWORK_DRIVER_BASE_REGISTER_NUMBER  >= (8)
+typedef uintptr_t hdriverframework_driver_base_register_t;
+#endif
+
 
 struct hdriverframework_driver_base
 {
-    hdriverframework_driver_base_process_t process;     /**< 驱动处理函数，所有的请求均通过此函数完成请求 */
-    void * usr;                                         /**< 用户参数供用户自行使用 */
+    hdriverframework_driver_base_process_t process;                                                      /**< 驱动处理函数，所有的请求均通过此函数完成请求 */
+    void * usr;                                                                                          /**< 用户参数，一般情况下，由最底层的移植使用，供用户自行使用 */
+#if     HDRIVERFRAMEWORK_DRIVER_BASE_REGISTER_NUMBER  >= (8)
+    hdriverframework_driver_base_register_t registers[HDRIVERFRAMEWORK_DRIVER_BASE_REGISTER_NUMBER];     /**< 驱动寄存器,每个寄存器均可用于存储指针或者其它参数，与用户参数不同，驱动寄存器可由不同的抽象级别（由具体的驱动确定）使用，用于防止多个抽象级别同时使用用户参数而冲突 */
+#endif
 };
 
 enum
@@ -282,6 +301,46 @@ size_t hdriverframework_driver_base_getmaxvmopsize(hdriverframework_driver_base_
  *
  */
 size_t hdriverframework_driver_base_getminvmopsize(hdriverframework_driver_base_t *drv);
+
+
+/** \brief 获取用户参数
+ *
+ * \param drv hdriverframework_driver_base_t* 驱动指针
+ * \return void  * 用户参数，失败返回NULL
+ *
+ */
+void * hdriverframework_driver_base_getusr(hdriverframework_driver_base_t *drv);
+
+
+/** \brief 设置用户参数
+ *
+ * \param drv hdriverframework_driver_base_t* 驱动指针
+ * \param usr void* 用户参数
+ *
+ */
+void hdriverframework_driver_base_setusr(hdriverframework_driver_base_t *drv,void * usr);
+
+
+/** \brief 获取驱动寄存器值
+ *
+ * \param drv hdriverframework_driver_base_t* 驱动指针
+ * \param index size_t 引索
+ * \param regval hdriverframework_driver_base_register_t* 寄存器值指针
+ * \return bool  是否成功
+ *
+ */
+bool hdriverframework_driver_base_getregister(hdriverframework_driver_base_t *drv,size_t index,hdriverframework_driver_base_register_t *regval);
+
+
+/** \brief  设置驱动寄存器值
+ *
+ * \param drv hdriverframework_driver_base_t* 驱动指针
+ * \param index size_t 引索
+ * \param regval hdriverframework_driver_base_register_t 寄存器值指针
+ * \return bool  是否成功
+ *
+ */
+bool hdriverframework_driver_base_setregister(hdriverframework_driver_base_t *drv,size_t index,hdriverframework_driver_base_register_t regval);
 
 #ifdef __cplusplus
 }
