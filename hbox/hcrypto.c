@@ -30,4 +30,5 @@
 #include "hcrypto/hecdsa.c"
 #include "hcrypto/heddsa.c"
 #include "hcrypto/hrsa.c"
+#include "hcrypto/hrng.c"
 

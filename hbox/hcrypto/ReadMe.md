@@ -146,3 +146,12 @@
 - [hrsa.h](hrsa.h)
 - [hrsa.c](hrsa.c)
 - [hrsa](hrsa)
+
+# 随机数生成
+
+## RNG
+
+-  [hrng.h](hrng.h)
+- [hrng.c](hrng.c)
+- [hrng](hrng)
+

@@ -36,6 +36,7 @@ extern "C"
 #include "hcrypto/hecdsa.h"
 #include "hcrypto/heddsa.h"
 #include "hcrypto/hrsa.h"
+#include "hcrypto/hrng.h"
 
 
 #ifdef __cplusplus

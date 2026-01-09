@@ -12,6 +12,7 @@
  * hsyscall
  */
 #include "hsyscall/time/hsyscall_time.c"
+#include "hsyscall/random/hsyscall_random.c"
 
 /*
  * 包装
@@ -197,6 +198,17 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
 
 void hdefaults_syscall_init(void)
 {
+
+#if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETRANDOM) && !defined(HGETRANDOM)
+    {
+        //使用当前时间作为随机数种子
+        hgettimeofday_timeval_t tv= {0};
+        hgettimeofday(&tv,NULL);
+        {
+            hrng_linearcongruential_rand48_srand(tv.tv_sec*1000000+tv.tv_usec);
+        }
+    }
+#endif
 
 }
 

@@ -116,6 +116,7 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
 //h3rdparty/h3rdparty_cjsonutils.c
 //h3rdparty/h3rdparty_common.c
     {hdefaults_str(h3rdparty_init),(uintptr_t)&h3rdparty_init},
+    {hdefaults_str(h3rdparty_loop),(uintptr_t)&h3rdparty_loop},
 //h3rdparty/h3rdparty_freebsd_elf_header.c
 //h3rdparty/h3rdparty_freertos_kernel_croutine.c
 //h3rdparty/h3rdparty_freertos_kernel_event_groups.c
@@ -131,10 +132,16 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
 //h3rdparty/h3rdparty_libfdt_fdt_empty_tree.c
 //h3rdparty/h3rdparty_libfdt_fdt_overlay.c
 //h3rdparty/h3rdparty_libfdt_fdt_ro.c
+    {hdefaults_str(fdt_node_offset_by_phandle),(uintptr_t)&fdt_node_offset_by_phandle},
 //h3rdparty/h3rdparty_libfdt_fdt_rw.c
 //h3rdparty/h3rdparty_libfdt_fdt_strerror.c
 //h3rdparty/h3rdparty_libfdt_fdt_sw.c
 //h3rdparty/h3rdparty_libfdt_fdt_wip.c
+//h3rdparty/h3rdparty_libfdt_port.c
+    {hdefaults_str(hlibfdt_check),(uintptr_t)&hlibfdt_check},
+    {hdefaults_str(hlibfdt_traverse_node),(uintptr_t)&hlibfdt_traverse_node},
+    {hdefaults_str(hlibfdt_traverse_node_property),(uintptr_t)&hlibfdt_traverse_node_property},
+    {hdefaults_str(hlibfdt_get_phandle),(uintptr_t)&hlibfdt_get_phandle},
 //h3rdparty/h3rdparty_libqrencode_bitstream.c
 //h3rdparty/h3rdparty_libqrencode_mask.c
 //h3rdparty/h3rdparty_libqrencode_mmask.c
@@ -158,6 +165,7 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
 //h3rdparty/h3rdparty_lz4_lz4hc.c
 //h3rdparty/h3rdparty_lz4_port.c
     {hdefaults_str(hlz4_compress),(uintptr_t)&hlz4_compress},
+    {hdefaults_str(hlz4_compress_hc),(uintptr_t)&hlz4_compress_hc},
     {hdefaults_str(hlz4_decompress),(uintptr_t)&hlz4_decompress},
 //h3rdparty/h3rdparty_lz4_xxhash.c
 //h3rdparty/h3rdparty_mqtt_packet.c
@@ -167,6 +175,8 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
 //h3rdparty/h3rdparty_pb_port_msg_main_entry.c
     {hdefaults_str(hnanopb_msg_main_entry_encode),(uintptr_t)&hnanopb_msg_main_entry_encode},
     {hdefaults_str(hnanobp_msg_main_entry_decode),(uintptr_t)&hnanobp_msg_main_entry_decode},
+    {hdefaults_str(hnanopb_msg_main_entry_with_envp_encode),(uintptr_t)&hnanopb_msg_main_entry_with_envp_encode},
+    {hdefaults_str(hnanobp_msg_main_entry_with_envp_decode),(uintptr_t)&hnanobp_msg_main_entry_with_envp_decode},
 //h3rdparty/h3rdparty_printf.c
     {hdefaults_str(hprintf_set_callback),(uintptr_t)&hprintf_set_callback},
     {hdefaults_str(hprintf),(uintptr_t)&hprintf},
