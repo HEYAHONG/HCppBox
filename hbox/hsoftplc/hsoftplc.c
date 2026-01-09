@@ -148,7 +148,7 @@ void hsoftplc_loop(void)
                 /*
                  * 使用hsyscall扩展的系统调用
                  */
-                hsyscall_gettimeofday(&tv,NULL)
+                hsyscall_gettimeofday(&tv,NULL);
             }
             update_current_time(tv.tv_sec,tv.tv_usec*1000);
 #endif
