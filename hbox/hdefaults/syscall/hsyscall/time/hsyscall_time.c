@@ -6,6 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+#include "hdefaults.h"
 #include "hsyscall_time.h"
 
 
