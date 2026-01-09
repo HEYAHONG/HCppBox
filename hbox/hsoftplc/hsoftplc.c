@@ -22,6 +22,11 @@
 #include "hdefaults/hdefaults_baseapi.h"
 
 /*
+ * 引入hsyscall_gettimeofday
+ */
+#include "hdefaults/syscall/hsyscall/time/hsyscall_time.h"
+
+/*
  * 引入hgettimeofday
  */
 #include "hdefaults/syscall/wrapper/hgettimeofday.h"
@@ -138,14 +143,12 @@ void hsoftplc_loop(void)
             hgettimeofday(&tv,&tz);
             update_current_time(tv.tv_sec,tv.tv_usec*1000);
 #else
-            static hgettimeofday_timeval_t tv={0};
+            hgettimeofday_timeval_t tv={0};
             {
-                static hdefaults_tick_t last_tv_tick=0;
-                hdefaults_tick_t current_tv_tick=hdefaults_tick_get();
-                tv.tv_usec+=(current_tv_tick-last_tv_tick)*1000;
-                last_tv_tick=current_tv_tick;
-                tv.tv_sec+=tv.tv_usec/1000000;
-                tv.tv_usec=tv.tv_usec%1000000;
+                /*
+                 * 使用hsyscall扩展的系统调用
+                 */
+                hsyscall_gettimeofday(&tv,NULL)
             }
             update_current_time(tv.tv_sec,tv.tv_usec*1000);
 #endif
