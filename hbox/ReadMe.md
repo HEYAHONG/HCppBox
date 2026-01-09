@@ -8,6 +8,12 @@ hbox意为HYH的工具箱。
 
 ![HBox_Structure](../doc/HBox_Structure.png)
 
+默认情况下，调用层次如下：
+
+- C++语言组件(如`hcpprt_init`、`hcpprt_loop`):C++组件为可选组件。若支持C++则应当使用C++组件(其内部自动调用C语言组件，用户无需重复调用)，否则应当直接使用C语言组件。
+- C语言组件(如`hruntime_init`、`hruntime_loop`)：C语言组件中，由[hruntime](hruntime)组件管理运行时，其它组件的初始化及循环调用默认情况下均由[hruntime](hruntime)管理，也可使用宏定义单独管理某个组件的调用。
+- OS/裸机（如C运行库、系统调用）:一般情况下由[hdefaults](hdefaults)组件管理。
+
 # 硬件要求
 
 主要支持32位及更高位宽的硬件平台,包括但不限于嵌入式硬件平台:
