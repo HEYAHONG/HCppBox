@@ -11,6 +11,11 @@
 
 void h3rdparty_init(void)
 {
-    
+
+}
+
+void h3rdparty_loop(void)
+{
+
 }
 

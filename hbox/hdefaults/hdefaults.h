@@ -56,4 +56,16 @@
 //libdl移植
 #include "libdl/hdefaults_libdl_port.h"
 
+/** \brief hdefaults组件初始化
+ *  注意：默认由hruntime调用
+ *
+ */
+void hdefaults_init(void);
+
+/** \brief hdefaults组件循环
+ *  注意：默认由hruntime调用
+ *
+ */
+void  hdefaults_loop(void);
+
 #endif // HDEFAULTS_H_INCLUDED

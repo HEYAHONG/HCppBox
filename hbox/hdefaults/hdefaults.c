@@ -16,3 +16,15 @@
 #include "libc/hdefaults_libc_port.c"
 #include "libdl/hdefaults_libdl_port.c"
 
+extern void hdefaults_syscall_init(void);
+void hdefaults_init(void)
+{
+    hdefaults_syscall_init();
+}
+
+void hdefaults_syscall_loop(void);
+void  hdefaults_loop(void)
+{
+    hdefaults_syscall_loop();
+}
+

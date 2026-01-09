@@ -13,10 +13,16 @@
 #include "hdefaults.h"
 
 /** \brief 初始化第三方库
- *
+ *  注意：默认由hruntime组件调用
  *
  */
 void h3rdparty_init(void);
+
+/** \brief 循环第三方库
+ *  注意：默认由hruntime组件调用
+ *
+ */
+void h3rdparty_loop(void);
 
 
 /*

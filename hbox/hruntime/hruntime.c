@@ -70,10 +70,17 @@ void hruntime_init_lowlevel()
         return;
     }
 
+#ifndef HRUNTIME_NO_H3RDPARTY
     /*
      * 初始化第三方库
      */
     h3rdparty_init();
+#endif // HRUNTIME_NO_H3RDPARTY
+
+
+#ifndef HRUNTIME_NO_HDEFAULTS
+    hdefaults_init();
+#endif // HRUNTIME_NO_HDEFAULTS
 
     //标记初始化完成
     hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOWLEVEL_INIT_DONE);
@@ -197,16 +204,17 @@ void hruntime_loop()
     }
 #endif // HRUNTIME_NO_SOFTWATCHDOG
 
-#if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETTIMEOFDAY) && !defined(HGETTIMEOFDAY)
+#ifndef HRUNTIME_NO_H3RDPARTY
     /*
-     * 调用一次hgettimeofday检查内部变量是否溢出
+     * 第三方库循环
      */
-    {
-        hgettimeofday_timeval_t tv;
-        hgettimeofday_timezone_t tz;
-        hgettimeofday(&tv,&tz);
-    }
-#endif
+    h3rdparty_loop();
+#endif // HRUNTIME_NO_H3RDPARTY
+
+#ifndef HRUNTIME_NO_HDEFAULTS
+    hdefaults_loop();
+#endif // HRUNTIME_NO_HDEFAULTS
+
 
 #if defined(HSOFTPLC) && !defined(HRUNTIME_NO_SOFTPLC)
     hsoftplc_loop();
