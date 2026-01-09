@@ -8,7 +8,14 @@
  **************************************************************/
 #include "hdefaults_syscall.h"
 
+/*
+ * hsyscall
+ */
+#include "hsyscall/time/hsyscall_time.c"
 
+/*
+ * 包装
+ */
 #include "wrapper/hgettimeofday.c"
 #include "wrapper/hsettimeofday.c"
 #include "wrapper/hgetrandom.c"

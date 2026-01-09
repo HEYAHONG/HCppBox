@@ -26,6 +26,10 @@ typedef  intptr_t (*hdefaults_syscall_function_t)(uintptr_t number,va_list va_li
 hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number);
 
 
+
+/*
+ * 系统调用包装
+ */
 #include "wrapper/hgettimeofday.h"
 #include "wrapper/hsettimeofday.h"
 #include "wrapper/hgetrandom.h"
@@ -38,6 +42,13 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number);
 #include "wrapper/hwrite.h"
 #include "wrapper/hlseek.h"
 #include "wrapper/hopen.h"
+
+
+
+/*
+ * hsyscall
+ */
+#include "hsyscall/time/hsyscall_time.h"
 
 #ifdef __cplusplus
 }

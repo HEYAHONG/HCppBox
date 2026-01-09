@@ -17,30 +17,6 @@
 #endif
 
 
-static uint64_t hgettimeofday_tick_offset=0;            //偏移量
-static hdefaults_tick_t hgettimeofday_last_tick=0;       //用于检测hdefaults_tick_t是否溢出
-uint64_t __hgettimeofday_tick_get(void)
-{
-    hdefaults_mutex_lock(NULL);
-    hdefaults_tick_t current_tick=hdefaults_tick_get();
-    if(hgettimeofday_last_tick > current_tick)
-    {
-        hgettimeofday_tick_offset+=(1ULL << (sizeof(hdefaults_tick_t)*8));
-    }
-    hgettimeofday_last_tick=current_tick;
-    hdefaults_mutex_unlock(NULL);
-    return hgettimeofday_tick_offset+current_tick;
-}
-
-void __hgettimeofday_tick_set(uint64_t tick)
-{
-    hdefaults_mutex_lock(NULL);
-    hdefaults_tick_t current_tick=hdefaults_tick_get();
-    hgettimeofday_last_tick=current_tick;
-    hgettimeofday_tick_offset=((uint64_t)tick)-current_tick;
-    hdefaults_mutex_unlock(NULL);
-}
-
 #ifdef HDEFAULTS_SYSCALL_HGETTIMEOFDAY
 
 #if defined(HDEFAULTS_OS_UNIX) || ( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) )
@@ -105,19 +81,7 @@ HDEFAULTS_USERCALL_DEFINE2(hgettimeofday,HDEFAULTS_SYSCALL_HGETTIMEOFDAY,int,hge
     }
 #else
     {
-        uint64_t tick=__hgettimeofday_tick_get();
-        if(tv!=NULL)
-        {
-            tv->tv_sec   = tick/1000;
-            tv->tv_usec  = (tick%1000)*1000;
-        }
-        if(tz!=NULL)
-        {
-            //不支持时区
-            tz->tz_minuteswest=0;
-            tz->tz_dsttime=-1;
-        }
-        ret=0;
+        ret=hsyscall_gettimeofday(tv,tz);
     }
 #endif
     return ret;

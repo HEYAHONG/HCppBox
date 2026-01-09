@@ -12,6 +12,7 @@
 
 - [wrapper](wrapper)：将系统调用包装成函数
 - [implementation](implementation)： 系统调用实现
+- [hsyscall](hsyscall):用于扩展某些环境下（如无操作系统环境）的系统调用
 
 # 系统调用
 

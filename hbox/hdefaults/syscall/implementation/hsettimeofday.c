@@ -24,11 +24,6 @@
 #endif // HDEFAULTS_OS_EMSCRIPTEN
 
 
-/*
- * 此函数在hgettimeofday.c定义
- */
-extern void __hgettimeofday_tick_set(uint64_t tick);
-
 
 #ifdef HDEFAULTS_SYSCALL_HSETTIMEOFDAY
 
@@ -92,17 +87,7 @@ HDEFAULTS_USERCALL_DEFINE2(hsettimeofday,HDEFAULTS_SYSCALL_HSETTIMEOFDAY,int,con
     }
 #else
     {
-        uint64_t tick=0;
-        if(tv!=NULL)
-        {
-            tick=tv->tv_sec*1000+tv->tv_usec/1000;
-            __hgettimeofday_tick_set(tick);
-        }
-        if(tz!=NULL)
-        {
-            //不支持时区
-        }
-        ret=0;
+        ret=hsyscall_settimeofday(tv,tz);
     }
 #endif
     return ret;
