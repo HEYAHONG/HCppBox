@@ -13,6 +13,8 @@ hrng_chacha20_context_t hrng_chacha20_context_default=
 {
     false,
     {
+        {0},
+        {0},
         0
     }
 };

@@ -15,9 +15,9 @@ hrng_linearcongruential_context_t hrng_linearcongruential_context_rand48=
 
 const hrng_linearcongruential_config_t hrng_linearcongruential_config_rand48=
 {
-   0x00000005deece66d,
-   0x000000000000000b,
-   (1ULL<<(48))
+    0x00000005deece66d,
+    0x000000000000000b,
+    (1ULL<<(48))
 };
 
 uint64_t hrng_linearcongruential_update(const hrng_linearcongruential_config_t *cfg,hrng_linearcongruential_context_t *ctx)
