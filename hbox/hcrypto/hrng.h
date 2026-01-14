@@ -16,6 +16,7 @@ extern "C"
 
 #include "hrng/hrng_linearcongruential.h"
 #include "hrng/hrng_chacha20.h"
+#include "hrng/hrng_mt.h"
 
 #ifdef __cplusplus
 }

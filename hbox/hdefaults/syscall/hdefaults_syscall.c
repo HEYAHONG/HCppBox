@@ -205,7 +205,11 @@ void hdefaults_syscall_init(void)
         hgettimeofday_timeval_t tv= {0};
         hgettimeofday(&tv,NULL);
         {
+#if defined(HSYSCALL_GETRANDOM_USING_MT)
+            hrng_mt_srand(NULL,tv.tv_sec*1000000+tv.tv_usec);
+#else
             hrng_linearcongruential_rand48_srand(tv.tv_sec*1000000+tv.tv_usec);
+#endif
         }
     }
 #endif

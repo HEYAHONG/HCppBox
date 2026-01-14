@@ -17,12 +17,25 @@ hgetrandom_ssize_t hsyscall_getrandom (void *buffer, size_t length,unsigned int 
         return  -1;
     }
     uint8_t *data=(uint8_t *)buffer;
+
     /*
-     * 使用rand48填充
+     * 使用不安全的算法填充
      */
     for(size_t i=0; i<length; i++)
     {
+        hdefaults_mutex_lock(NULL);
+#if defined(HSYSCALL_GETRANDOM_USING_MT)
+        /*
+         * 使用梅森旋转法填充
+         */
+        data[i]=hrng_mt_rand(NULL)%0x100;
+#else
+        /*
+         * 使用rand48填充
+         */
         data[i]=hrng_linearcongruential_rand48_rand()%0x100;
+#endif
+        hdefaults_mutex_unlock(NULL);
     }
     /*
      * 更安全的随机数生成算法

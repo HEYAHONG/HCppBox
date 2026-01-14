@@ -10,3 +10,4 @@
 
 #include "hrng/hrng_linearcongruential.c"
 #include "hrng/hrng_chacha20.c"
+#include "hrng/hrng_mt.c"
