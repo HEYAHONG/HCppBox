@@ -11,9 +11,17 @@
 
 
 static hgettimeofday_timeval_t   hsyscall_gettimeofday_current_timeval= {0};
+/*
+ * 此处变量仅用于存储系统时区,不起实际作用，实际系统用户时区由libc（通常可通过环境变量或者配置文件设置）决定
+ */
 static hgettimeofday_timezone_t  hsyscall_gettimeofday_current_timezone= {0};
 static void hsyscall_gettimeofday_update_timeval(void)
 {
+#if defined(HSYSCALL_GETTIMEOFDAY_UPDATE)
+    hdefaults_mutex_lock(NULL);
+    HSYSCALL_GETTIMEOFDAY_UPDATE(&hsyscall_gettimeofday_current_timeval,&hsyscall_gettimeofday_current_timezone);
+    hdefaults_mutex_unlock(NULL);
+#else
     hdefaults_mutex_lock(NULL);
     hgettimeofday_timeval_t old_val=hsyscall_gettimeofday_current_timeval;
     hdefaults_mutex_unlock(NULL);
@@ -29,6 +37,7 @@ static void hsyscall_gettimeofday_update_timeval(void)
         hsyscall_gettimeofday_current_timeval=old_val;
         hdefaults_mutex_unlock(NULL);
     }
+#endif
 }
 int hsyscall_gettimeofday (hgettimeofday_timeval_t *tv, hgettimeofday_timezone_t * tz)
 {
