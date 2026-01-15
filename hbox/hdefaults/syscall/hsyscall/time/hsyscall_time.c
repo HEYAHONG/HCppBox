@@ -71,6 +71,11 @@ int hsyscall_settimeofday (const hsettimeofday_timeval_t *tv,const  hsettimeofda
         hsyscall_gettimeofday_current_timezone=(*tz);
         hdefaults_mutex_unlock(NULL);
     }
+#if defined(HSYSCALL_SETTIMEOFDAY_UPDATE)
+    hdefaults_mutex_lock(NULL);
+    HSYSCALL_SETTIMEOFDAY_UPDATE(&hsyscall_gettimeofday_current_timeval,&hsyscall_gettimeofday_current_timezone);
+    hdefaults_mutex_unlock(NULL);
+#endif
     return 0;
 }
 

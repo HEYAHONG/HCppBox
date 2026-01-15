@@ -219,7 +219,7 @@ void hdefaults_syscall_init(void)
 void hdefaults_syscall_loop(void)
 {
 
-#if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETTIMEOFDAY) && !defined(HGETTIMEOFDAY)
+#if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETTIMEOFDAY) && !defined(HGETTIMEOFDAY) && !defined(HSYSCALL_GETTIMEOFDAY_UPDATE)
     /*
      * 调用一次hgettimeofday更新内部时间
      */
