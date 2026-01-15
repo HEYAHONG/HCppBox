@@ -15,7 +15,14 @@
 #define HDEFAULTS_LIBC_OPTIMIZE_LEVEL     0
 #endif // HDEFAULTS_LIBC_OPTIMIZE_LEVEL
 
+/*
+ * hlibc
+ */
+#include "hlibc/env/hlibc_env.c"
 
+/*
+ * libc包装
+ */
 #include "wrapper/hputchar.c"
 #include "wrapper/hgetchar.c"
 #include "wrapper/hgetenv.c"
@@ -45,4 +52,17 @@
  */
 #include "wrapper/posix/hsetenv.c"
 #include "wrapper/posix/hunsetenv.c"
+
+
+void hdefaults_libc_port_init(void)
+{
+#if HDEFAULTS_LIBC_OPTIMIZE_LEVEL > 0
+    hlibc_env_init();
+#endif // HDEFAULTS_LIBC_OPTIMIZE_LEVEL
+}
+
+void hdefaults_libc_port_loop(void)
+{
+
+}
 

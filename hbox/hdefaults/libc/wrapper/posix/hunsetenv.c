@@ -46,6 +46,7 @@ int hunsetenv(const char *envname)
              */
             return 0;
         }
+        return hlibc_env_unsetenv(envname);
     }
 #endif
     return -1;

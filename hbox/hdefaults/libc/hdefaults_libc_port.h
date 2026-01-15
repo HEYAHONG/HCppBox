@@ -45,6 +45,12 @@ extern "C"
 #include "wrapper/posix/hunsetenv.h"
 
 
+/*
+ * hlibc
+ */
+#include "hlibc/env/hlibc_env.h"
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

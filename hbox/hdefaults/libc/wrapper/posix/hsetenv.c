@@ -53,6 +53,7 @@ int hsetenv(const char *envname, const char *envval, int overwrite)
                 return 0;
             }
         }
+        return hlibc_env_setenv(envname,envval,overwrite);
     }
 #endif
     return -1;

@@ -18,6 +18,8 @@ char * hgetenv(const char *name)
 {
 #if defined(HGETENV)
     return HGETENV(name);
+#elif (HDEFAULTS_LIBC_OPTIMIZE_LEVEL) > 0
+    return hlibc_env_getenv(name);
 #else
     return getenv(name);
 #endif
