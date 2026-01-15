@@ -37,6 +37,15 @@ struct hrng_mt_context
     uint32_t mag01[2];
 };
 
+/*
+ * 上下文初始化参数
+ */
+#define HRNG_MT_CONTEXT_INIT    {\
+                                    {0},\
+                                    HRNG_MT_N+1,\
+                                    {0*HRNG_MT_MATRIX_A,1*HRNG_MT_MATRIX_A}\
+                                };
+
 /** \brief 梅森旋转法设置随机数种子
  * 注意:使用时至少需要设置一次种子
  *

@@ -8,12 +8,7 @@
  **************************************************************/
 #include "hrng_mt.h"
 
-static hrng_mt_context_t hrng_mt_context_default=
-{
-    {0},
-    sizeof(hrng_mt_context_default.mt)/sizeof(hrng_mt_context_default.mt[0])+1,
-    {0*HRNG_MT_MATRIX_A,1*HRNG_MT_MATRIX_A}
-};
+static hrng_mt_context_t hrng_mt_context_default=HRNG_MT_CONTEXT_INIT;
 
 void hrng_mt_srand(hrng_mt_context_t *ctx,uint32_t seed)
 {

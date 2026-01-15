@@ -25,6 +25,19 @@ struct hrng_chacha20_context
     hchacha20_context_t ctx;
 };
 
+/*
+ * 上下文初始化参数
+ */
+#define HRNG_CHACHA20_CONTEXT_INIT   {\
+                                        false,\
+                                        {\
+                                            {0},\
+                                            {0},\
+                                            0\
+                                        }\
+                                    };
+
+
 extern hrng_chacha20_context_t hrng_chacha20_context_default;
 
 /** \brief 使用chacha20算法产生随机数

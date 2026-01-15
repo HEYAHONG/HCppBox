@@ -9,15 +9,7 @@
 #include "hrng_chacha20.h"
 #include "hrng_linearcongruential.h"
 
-hrng_chacha20_context_t hrng_chacha20_context_default=
-{
-    false,
-    {
-        {0},
-        {0},
-        0
-    }
-};
+hrng_chacha20_context_t hrng_chacha20_context_default=HRNG_CHACHA20_CONTEXT_INIT;
 
 const  uint8_t hrng_chacha20_key[32]=
 {
