@@ -56,13 +56,17 @@
 
 void hdefaults_libc_port_init(void)
 {
+#ifndef HDEFAULTS_LIBC_TINY
 #if HDEFAULTS_LIBC_OPTIMIZE_LEVEL > 0
     hlibc_env_init();
 #endif // HDEFAULTS_LIBC_OPTIMIZE_LEVEL
+#endif // HDEFAULTS_LIBC_TINY
 }
 
 void hdefaults_libc_port_loop(void)
 {
+#ifndef HDEFAULTS_LIBC_TINY
 
+#endif // HDEFAULTS_LIBC_TINY
 }
 
