@@ -12,12 +12,12 @@
 #if defined(__STDC_VERSION__) && ((__STDC_VERSION__) >= 201112L)
 
 #if !defined(__STDC_NO_THREADS__)
-#include "threads.h"
+//#include "threads.h"
 #define  HDEFAULTS_LIBC_HAVE_THREAD  1
 #endif
 
 #if !defined(__STDC_NO_ATOMICS__)
-#include "stdatomic.h"
+//#include "stdatomic.h"
 #define  HDEFAULTS_LIBC_HAVE_ATOMICS  1
 #endif
 
