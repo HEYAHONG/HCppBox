@@ -60,7 +60,7 @@ uint32_t hrng_mt_rand(hrng_mt_context_t *ctx)
         for (; kk<HRNG_MT_N-1; kk++)
         {
             y = (ctx->mt[kk]&HRNG_MT_UPPER_MASK)|(ctx->mt[kk+1]&HRNG_MT_LOWER_MASK);
-            ctx->mt[kk] = ctx->mt[kk+(HRNG_MT_M-HRNG_MT_N)] ^ (y >> 1) ^ ctx->mag01[y & 0x1UL];
+            ctx->mt[kk] = ctx->mt[kk+HRNG_MT_M-HRNG_MT_N] ^ (y >> 1) ^ ctx->mag01[y & 0x1UL];
         }
         y = (ctx->mt[HRNG_MT_N-1]&HRNG_MT_UPPER_MASK)|(ctx->mt[0]&HRNG_MT_LOWER_MASK);
         ctx->mt[HRNG_MT_N-1] = ctx->mt[HRNG_MT_M-1] ^ (y >> 1) ^ ctx->mag01[y & 0x1UL];
