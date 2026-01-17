@@ -15,6 +15,11 @@
 #include "stdbool.h"
 #include "stdarg.h"
 
+/*
+ * 通用选项
+ */
+#include "hdefaults_libc_common.h"
+
 //判断Libc
 
 //newlib
