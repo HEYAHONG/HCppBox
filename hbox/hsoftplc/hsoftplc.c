@@ -34,7 +34,7 @@
 /*
  * 引入hstrcmp
  */
-#include "hdefaults/libc/wrapper/hstrcmp.h"
+#include "hdefaults/libc/wrapper/string/hstrcmp.h"
 
 #if defined(HSOFTPLC)
 #include "h3rdparty/3rdparty/matiec_c_header/iec_types_all.h"

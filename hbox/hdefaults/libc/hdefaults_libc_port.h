@@ -14,35 +14,54 @@ extern "C"
 {
 #endif // __cplusplus
 
-#include "wrapper/hputchar.h"
-#include "wrapper/hgetchar.h"
-#include "wrapper/hgetenv.h"
-#include "wrapper/hmalloc.h"
-#include "wrapper/hfree.h"
-#include "wrapper/hcalloc.h"
-#include "wrapper/hrealloc.h"
-#include "wrapper/habort.h"
-#include "wrapper/hexit.h"
-#include "wrapper/hfputs.h"
-#include "wrapper/hvfprintf.h"
-#include "wrapper/hfprintf.h"
-#include "wrapper/hputs.h"
-#include "wrapper/hferror.h"
-#include "wrapper/hfread.h"
-#include "wrapper/hfwrite.h"
-#include "wrapper/htime.h"
-#include "wrapper/hclock.h"
-#include "wrapper/hstrcmp.h"
-#include "wrapper/hstrncmp.h"
-#include "wrapper/hstrlen.h"
-#include "wrapper/hmemset.h"
+/*
+ * stdio
+ */
+#include "wrapper/stdio/hputchar.h"
+#include "wrapper/stdio/hgetchar.h"
+#include "wrapper/stdio/hfputs.h"
+#include "wrapper/stdio/hvfprintf.h"
+#include "wrapper/stdio/hfprintf.h"
+#include "wrapper/stdio/hputs.h"
+#include "wrapper/stdio/hferror.h"
+#include "wrapper/stdio/hfread.h"
+#include "wrapper/stdio/hfwrite.h"
+
+/*
+ * stdlib
+ */
+#include "wrapper/stdlib/hgetenv.h"
+#include "wrapper/stdlib/hmalloc.h"
+#include "wrapper/stdlib/hfree.h"
+#include "wrapper/stdlib/hcalloc.h"
+#include "wrapper/stdlib/hrealloc.h"
+#include "wrapper/stdlib/habort.h"
+#include "wrapper/stdlib/hexit.h"
+
+/*
+ * time
+ */
+#include "wrapper/time/htime.h"
+#include "wrapper/time/hclock.h"
+
+/*
+ * string
+ */
+#include "wrapper/string/hstrcmp.h"
+#include "wrapper/string/hstrncmp.h"
+#include "wrapper/string/hstrlen.h"
+#include "wrapper/string/hmemset.h"
 
 
 /*
  * posix标准中的函数
  */
-#include "wrapper/posix/hsetenv.h"
-#include "wrapper/posix/hunsetenv.h"
+
+/*
+ * stdlib
+ */
+#include "wrapper/posix/stdlib/hsetenv.h"
+#include "wrapper/posix/stdlib/hunsetenv.h"
 
 
 /*
