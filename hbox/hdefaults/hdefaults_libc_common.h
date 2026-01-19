@@ -31,7 +31,7 @@
 
 #if defined(HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE)
 #include "stdatomic.h"
-#define  HDEFAULTS_LIBC_HAVE_ATOMICS  1
+#define  HDEFAULTS_LIBC_HAVE_STDATOMIC  1
 #endif
 
 #endif
