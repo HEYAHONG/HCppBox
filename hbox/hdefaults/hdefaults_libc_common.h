@@ -21,7 +21,7 @@
 #if defined(__STDC_VERSION__) && ((__STDC_VERSION__) >= 201112L)
 
 #if !defined(__STDC_NO_THREADS__)
-#if defined(HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE)
+#if defined(HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE) || defined(HAVE_THREADS_H)
 #include "threads.h"
 #define  HDEFAULTS_LIBC_HAVE_THREADS  1
 #endif
@@ -29,7 +29,7 @@
 
 #if !defined(__STDC_NO_ATOMICS__)
 
-#if defined(HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE)
+#if defined(HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE) || defined(HAVE_STDATOMIC_H)
 #include "stdatomic.h"
 #define  HDEFAULTS_LIBC_HAVE_STDATOMIC  1
 #endif

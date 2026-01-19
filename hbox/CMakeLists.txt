@@ -50,3 +50,15 @@ if(HAVE_FCNTL_H)
 target_compile_definitions(HBox PUBLIC  HAVE_FCNTL_H=1)
 endif()
 
+#查找threads.h
+check_include_file(threads.h HAVE_THREADS_H)
+if(HAVE_THREADS_H)
+target_compile_definitions(HBox PUBLIC  HAVE_THREADS_H=1)
+endif()
+
+#查找stdatomic.h
+check_include_file(stdatomic.h HAVE_STDATOMIC_H)
+if(HAVE_STDATOMIC_H)
+target_compile_definitions(HBox PUBLIC  HAVE_STDATOMIC_H=1)
+endif()
+

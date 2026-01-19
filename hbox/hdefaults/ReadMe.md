@@ -86,6 +86,8 @@
 |    `HAVE_SYS_MMAN_H`     |                 当前环境有`sys/mman.h`头文件                 | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
 |     `HAVE_UNISTD_H`      |                  当前环境有`unistd.h`头文件                  | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
 |      `HAVE_FCNTL_H`      |                  当前环境有`fcntl.h`头文件                   | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
+|     `HAVE_THREADS_H`     |                 当前环境有`threads.h`头文件                  | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
+|    `HAVE_STDATOMIC_H`    |                当前环境有`stdatomic.h`头文件                 | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
 
 # 系统调用
 
