@@ -9,16 +9,31 @@
 #ifndef __HDEFAULTS_LIBC_COMMON_H__
 #define __HDEFAULTS_LIBC_COMMON_H__
 #include "stdlib.h"
+
+#ifndef HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE
+
+#if defined(HDEFAULTS_OS_UNIX) || defined(HDEFAULTS_OS_WINDOWS)
+#define HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE 1
+#endif
+
+#endif // HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE
+
 #if defined(__STDC_VERSION__) && ((__STDC_VERSION__) >= 201112L)
 
 #if !defined(__STDC_NO_THREADS__)
-//#include "threads.h"
-#define  HDEFAULTS_LIBC_HAVE_THREAD  1
+#if defined(HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE)
+#include "threads.h"
+#define  HDEFAULTS_LIBC_HAVE_THREADS  1
+#endif
 #endif
 
 #if !defined(__STDC_NO_ATOMICS__)
-//#include "stdatomic.h"
+
+#if defined(HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE)
+#include "stdatomic.h"
 #define  HDEFAULTS_LIBC_HAVE_ATOMICS  1
+#endif
+
 #endif
 
 #endif
