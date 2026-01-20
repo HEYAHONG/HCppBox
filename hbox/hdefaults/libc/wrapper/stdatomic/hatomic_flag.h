@@ -29,7 +29,7 @@ struct hatomic_flag
 typedef struct hatomic_flag hatomic_flag_t;
 #define HATOMIC_FLAG_INIT   {false}
 #else
-typedef struct atomic_flag hatomic_flag_t;
+typedef atomic_flag hatomic_flag_t;
 #define HATOMIC_FLAG_INIT   ATOMIC_FLAG_INIT
 #endif
 #else
