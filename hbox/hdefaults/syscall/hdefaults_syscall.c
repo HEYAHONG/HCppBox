@@ -12,8 +12,12 @@
  * hsyscall
  */
 #if !defined(HSYSCALL_NO_IMPLEMENTATION)
+#if !defined(HSYSCALL_NO_TIME)
 #include "hsyscall/time/hsyscall_time.c"
+#endif
+#if !defined(HSYSCALL_NO_RANDOM)
 #include "hsyscall/random/hsyscall_random.c"
+#endif
 #endif
 
 /*

@@ -19,8 +19,12 @@
  * hlibc
  */
 #if !defined(HLIBC_NO_IMPLEMENTATION)
+#if !defined(HLIBC_NO_ENV)
 #include "hlibc/env/hlibc_env.c"
+#endif
+#if !defined(HLIBC_NO_ATOMIC_FLAG)
 #include "hlibc/stdatomic/hlibc_atomic_flag.c"
+#endif
 #else
 #ifdef HDEFAULTS_LIBC_TINY
 #undef HDEFAULTS_LIBC_TINY

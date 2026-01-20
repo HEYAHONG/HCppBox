@@ -79,7 +79,7 @@ HDEFAULTS_USERCALL_DEFINE2(hgettimeofday,HDEFAULTS_SYSCALL_HGETTIMEOFDAY,int,hge
         }
         ret=0;
     }
-#elif  !defined(HSYSCALL_NO_IMPLEMENTATION)
+#elif  !defined(HSYSCALL_NO_IMPLEMENTATION) && !defined(HSYSCALL_NO_TIME)
     {
         ret=hsyscall_gettimeofday(tv,tz);
     }

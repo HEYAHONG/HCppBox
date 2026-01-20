@@ -85,7 +85,7 @@ HDEFAULTS_USERCALL_DEFINE2(hsettimeofday,HDEFAULTS_SYSCALL_HSETTIMEOFDAY,int,con
             //不支持时区
         }
     }
-#elif  !defined(HSYSCALL_NO_IMPLEMENTATION)
+#elif  !defined(HSYSCALL_NO_IMPLEMENTATION) && !defined(HSYSCALL_NO_TIME)
     {
         ret=hsyscall_settimeofday(tv,tz);
     }

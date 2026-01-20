@@ -39,7 +39,7 @@ int hsetenv(const char *envname, const char *envval, int overwrite)
         }
     }
     return -1;
-#elif !defined(HLIBC_NO_IMPLEMENTATION)
+#elif !defined(HLIBC_NO_IMPLEMENTATION) && !defined(HLIBC_NO_ENV)
     {
         const char *old_envval=hgetenv(envname);
         if(old_envval!=NULL && old_envval[0]!='\0')

@@ -18,7 +18,7 @@ char * hgetenv(const char *name)
 {
 #if defined(HGETENV)
     return HGETENV(name);
-#elif ((HDEFAULTS_LIBC_OPTIMIZE_LEVEL) > 0) && !defined(HDEFAULTS_LIBC_TINY)
+#elif ((HDEFAULTS_LIBC_OPTIMIZE_LEVEL) > 0) && !defined(HDEFAULTS_LIBC_TINY) && !defined(HLIBC_NO_ENV)
     return hlibc_env_getenv(name);
 #else
     return getenv(name);
