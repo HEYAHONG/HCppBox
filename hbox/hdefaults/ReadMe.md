@@ -32,46 +32,47 @@
 
 提供的宏定义如下:
 
-|           宏定义           | 说明                             | 备注                                                         |
-| :------------------------: | :------------------------------- | :----------------------------------------------------------- |
-|    `hdefaults_xstr(s)`     | 宏函数,将符号s的内容转换为字符串 |                                                              |
-|     `hdefaults_str(s)`     | 宏函数,将符号s转换为字符串       |                                                              |
-|  `HDEFAULTS_BITS_16_OR_8`  | 16位/8位环境                     | 不保证代码在此环境可用                                       |
-|    `HDEFAULTS_BITS_32`     | 32位环境                         |                                                              |
-|    `HDEFAULTS_BITS_64`     | 64位环境                         |                                                              |
-| `HDEFAULTS_BITS_ABOVE_64`  | 高于64位的环境                   | 不保证代码在此环境可用                                       |
-|    `HDEFAULTS_ARCH_X86`    | 架构为x86                        |                                                              |
-|  `HDEFAULTS_ARCH_X86_64`   | 架构为x86_64                     |                                                              |
-|  `HDEFAULTS_ARCH_AARCH64`  | 架构为aarch64                    |                                                              |
-|    `HDEFAULTS_ARCH_ARM`    | 架构为ARM                        |                                                              |
-| `HDEFAULTS_ARCH_ARM_THUMB` | 架构为Thumb                      | 在编译Thumb代码时会定义此宏定义，通常也会定义`HDEFAULTS_ARCH_ARM` |
-|   `HDEFAULTS_ARCH_RISCV`   | 架构为RISCV                      |                                                              |
-|  `HDEFAULTS_ARCH_RISCV32`  | 架构为RISCV(32位)                | 通常也会定义`HDEFAULTS_ARCH_RISCV`                           |
-|  `HDEFAULTS_ARCH_RISCV64`  | 架构为RISCV(64位)                | 通常也会定义`HDEFAULTS_ARCH_RISCV`                           |
-|   `HDEFAULTS_ARCH_WASM`    | 架构为WASM                       |                                                              |
-|  `HDEFAULTS_ARCH_WASM32`   | 架构为WASM(32位)                 | 通常也会定义`HDEFAULTS_ARCH_WASM`                            |
-|  `HDEFAULTS_ARCH_WASM64`   | 架构为WASM(64位)                 | 通常也会定义`HDEFAULTS_ARCH_WASM`                            |
-|  `HDEFAULTS_ARCH_XTENSA`   | 架构为XTENSA                     |                                                              |
-|  `HDEFAULTS_PLATFORM_ESP`  | 平台为ESP                        |                                                              |
-|  `HDEFAULTS_OS_RTTHREAD`   | 处于RT-Thread中                  |                                                              |
-|    `HDEFAULTS_OS_NUTTX`    | 处于NuttX中                      |                                                              |
-|   `HDEFAULTS_OS_WINDOWS`   | 处于Windows中                    |                                                              |
-|    `HDEFAULTS_OS_UNIX`     | 处于UNIX(类UNIX中)               |                                                              |
-|   `HDEFAULTS_OS_FREEBSD`   | 处于FreeBSD中                    | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
-|    `HDEFAULTS_OS_LINUX`    | 处于Linux中                      | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
-|   `HDEFAULTS_OS_ANDROID`   | 处于Android中                    | 通常也会定义`HDEFAULTS_OS_UNIX`、`HDEFAULTS_OS_LINUX`        |
-|   `HDEFAULTS_OS_CYGWIN`    | 处于Cygwin中                     | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
-| `HDEFAULTS_OS_EMSCRIPTEN`  | 处于emscripten中                 | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
-|    `HDEFAULTS_OS_NONE`     | 无操作系统                       | 通常为裸机开发，也可用于某些SDK中裸机应用开发（有操作系统但应用不可见，且无MMU/MPU内存管理的情况）。 |
-|  `HDEFAULTS_LIBC_NEWLIB`   | C库采用Newlib                    | Newlib常用于裸机开发。与常见的C库不同，通常情况下，用作裸机开发时需要用户移植部分系统调用。Newlib也被用于[Cygwin](https://cygwin.com/)与[MSYS2](https://www.msys2.org/)，此环境下无需用户进行移植。 |
-| `HDEFAULTS_LIBC_PICOLIBC`  | C库采用picolibc                  | [picolibc](https://github.com/picolibc/picolibc)是一个为32位/64位嵌入式系统设计的C库。其混合了Newlib与AVR libc,故而一般也会定义`HDEFAULTS_LIBC_NEWLIB`。 |
-|   `HDEFAULTS_LIBC_MINGW`   | C库采用mingw                     | mingw通常采用[mingw-w64](https://www.mingw-w64.org/)版本，常用于Windows(或者兼容环境如[Wine](https://www.winehq.org/))。使用GCC/LLVM编译Windows程序时通常使用此C库。与其作用类似的为MSVC的C库。 |
-|   `HDEFAULTS_LIBC_MSVC`    | C库采用MSVC自带C库。             | 一般用于Windows程序。                                        |
-|   `HDEFAULTS_LIBC_GLIBC`   | C库采用glibc                     | [glibc](https://www.gnu.org/software/libc/)是大多数Linux发行版采用的C库。与其作用类似的为[musl](http://musl.libc.org/)、uClibc。一般在Linux操作系统环境下，若未采用glibc，大概率采用musl或uClibc作为C库。 |
-|   `HDEFAULTS_LIBC_MUSL`    | C库采用musl                      | [musl](http://musl.libc.org/)通常用于轻量级场景（如容器、嵌入式Linux），其体积一般相较glibc小，但其某些行为可能与glibc不同。 |
-|  `HDEFAULTS_LIBC_UCLIBC`   | C库采用uClibc                    | uclibc常采用[uClibc-ng](https://uclibc-ng.org/)版本。uClibc是一个用于嵌入式Linux系统的C库，其体积较小。通常也会定义`HDEFAULTS_LIBC_GLIBC` |
-|  `HDEFAULTS_LIBC_ARMCLIB`  | C库采用ARM Compiler的C库         | ARM Compiler常见于Keil MDK。一般用于ARM架构的MCU开发。       |
-|    `HDEFAULTS_LIBC_ICC`    | C库采用IAR的C库                  | IAR是一种开发工具。ARM IAR可用于ARM架构的MCU开发。           |
+|           宏定义            | 说明                             | 备注                                                         |
+| :-------------------------: | :------------------------------- | :----------------------------------------------------------- |
+|     `hdefaults_xstr(s)`     | 宏函数,将符号s的内容转换为字符串 |                                                              |
+|     `hdefaults_str(s)`      | 宏函数,将符号s转换为字符串       |                                                              |
+|  `HDEFAULTS_BITS_16_OR_8`   | 16位/8位环境                     | 不保证代码在此环境可用                                       |
+|     `HDEFAULTS_BITS_32`     | 32位环境                         |                                                              |
+|     `HDEFAULTS_BITS_64`     | 64位环境                         |                                                              |
+|  `HDEFAULTS_BITS_ABOVE_64`  | 高于64位的环境                   | 不保证代码在此环境可用                                       |
+|    `HDEFAULTS_ARCH_X86`     | 架构为x86                        |                                                              |
+|   `HDEFAULTS_ARCH_X86_64`   | 架构为x86_64                     |                                                              |
+|  `HDEFAULTS_ARCH_AARCH64`   | 架构为aarch64                    |                                                              |
+|    `HDEFAULTS_ARCH_ARM`     | 架构为ARM                        |                                                              |
+| `HDEFAULTS_ARCH_ARM_THUMB`  | 架构为Thumb                      | 在编译Thumb代码时会定义此宏定义，通常也会定义`HDEFAULTS_ARCH_ARM` |
+|   `HDEFAULTS_ARCH_RISCV`    | 架构为RISCV                      |                                                              |
+|  `HDEFAULTS_ARCH_RISCV32`   | 架构为RISCV(32位)                | 通常也会定义`HDEFAULTS_ARCH_RISCV`                           |
+|  `HDEFAULTS_ARCH_RISCV64`   | 架构为RISCV(64位)                | 通常也会定义`HDEFAULTS_ARCH_RISCV`                           |
+|    `HDEFAULTS_ARCH_WASM`    | 架构为WASM                       |                                                              |
+|   `HDEFAULTS_ARCH_WASM32`   | 架构为WASM(32位)                 | 通常也会定义`HDEFAULTS_ARCH_WASM`                            |
+|   `HDEFAULTS_ARCH_WASM64`   | 架构为WASM(64位)                 | 通常也会定义`HDEFAULTS_ARCH_WASM`                            |
+|   `HDEFAULTS_ARCH_XTENSA`   | 架构为XTENSA                     |                                                              |
+|  `HDEFAULTS_PLATFORM_ESP`   | 平台为ESP                        |                                                              |
+|   `HDEFAULTS_OS_RTTHREAD`   | 处于RT-Thread中                  |                                                              |
+|    `HDEFAULTS_OS_NUTTX`     | 处于NuttX中                      |                                                              |
+|   `HDEFAULTS_OS_WINDOWS`    | 处于Windows中                    |                                                              |
+|     `HDEFAULTS_OS_UNIX`     | 处于UNIX(类UNIX中)               |                                                              |
+|   `HDEFAULTS_OS_FREEBSD`    | 处于FreeBSD中                    | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+|    `HDEFAULTS_OS_LINUX`     | 处于Linux中                      | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+|   `HDEFAULTS_OS_ANDROID`    | 处于Android中                    | 通常也会定义`HDEFAULTS_OS_UNIX`、`HDEFAULTS_OS_LINUX`        |
+|    `HDEFAULTS_OS_CYGWIN`    | 处于Cygwin中                     | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+|  `HDEFAULTS_OS_EMSCRIPTEN`  | 处于emscripten中                 | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
+|     `HDEFAULTS_OS_NONE`     | 无操作系统                       | 通常为裸机开发，也可用于某些SDK中裸机应用开发（有操作系统但应用不可见，且无MMU/MPU内存管理的情况）。 |
+|   `HDEFAULTS_LIBC_NEWLIB`   | C库采用Newlib                    | Newlib常用于裸机开发。与常见的C库不同，通常情况下，用作裸机开发时需要用户移植部分系统调用。Newlib也被用于[Cygwin](https://cygwin.com/)与[MSYS2](https://www.msys2.org/)，此环境下无需用户进行移植。 |
+|  `HDEFAULTS_LIBC_PICOLIBC`  | C库采用picolibc                  | [picolibc](https://github.com/picolibc/picolibc)是一个为32位/64位嵌入式系统设计的C库。其混合了Newlib与AVR libc,故而一般也会定义`HDEFAULTS_LIBC_NEWLIB`。 |
+|   `HDEFAULTS_LIBC_MINGW`    | C库采用mingw                     | mingw通常采用[mingw-w64](https://www.mingw-w64.org/)版本，常用于Windows(或者兼容环境如[Wine](https://www.winehq.org/))。使用GCC/LLVM编译Windows程序时通常使用此C库。与其作用类似的为MSVC的C库。 |
+|    `HDEFAULTS_LIBC_MSVC`    | C库采用MSVC自带C库。             | 一般用于Windows程序。                                        |
+|   `HDEFAULTS_LIBC_GLIBC`    | C库采用glibc                     | [glibc](https://www.gnu.org/software/libc/)是大多数Linux发行版采用的C库。与其作用类似的为[musl](http://musl.libc.org/)、uClibc。一般在Linux操作系统环境下，若未采用glibc，大概率采用musl或uClibc作为C库。 |
+|    `HDEFAULTS_LIBC_MUSL`    | C库采用musl                      | [musl](http://musl.libc.org/)通常用于轻量级场景（如容器、嵌入式Linux），其体积一般相较glibc小，但其某些行为可能与glibc不同。 |
+|   `HDEFAULTS_LIBC_UCLIBC`   | C库采用uClibc                    | uclibc常采用[uClibc-ng](https://uclibc-ng.org/)版本。uClibc是一个用于嵌入式Linux系统的C库，其体积较小。通常也会定义`HDEFAULTS_LIBC_GLIBC` |
+|  `HDEFAULTS_LIBC_ARMCLIB`   | C库采用ARM Compiler的C库         | ARM Compiler常见于Keil MDK。一般用于ARM架构的MCU开发。       |
+|    `HDEFAULTS_LIBC_ICC`     | C库采用IAR的C库                  | IAR是一种开发工具。ARM IAR可用于ARM架构的MCU开发。           |
+| `HDEFAULTS_LIBC_ANDROIDNDK` | C库采用android ndk               | 通常用于Android系统                                          |
 
 可外部配置的宏定义如下:
 
