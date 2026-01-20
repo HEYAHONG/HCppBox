@@ -12,7 +12,7 @@
 
 #ifndef HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE
 
-#if defined(HDEFAULTS_OS_UNIX)
+#if defined(HDEFAULTS_OS_UNIX) && !defined(__UCLIBC__)
 #define HDEFAULTS_LIBC_COMMON_AUTO_INCLUDE 1
 #endif
 
