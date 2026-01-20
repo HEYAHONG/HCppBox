@@ -36,6 +36,7 @@ int hunsetenv(const char *envname)
             return 0;
         }
     }
+    return -1;
 #else
     {
         const char *old_envval=hgetenv(envname);
@@ -49,7 +50,6 @@ int hunsetenv(const char *envname)
         return hlibc_env_unsetenv(envname);
     }
 #endif
-    return -1;
 }
 
 

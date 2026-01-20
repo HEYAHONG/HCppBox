@@ -38,6 +38,7 @@ int hsetenv(const char *envname, const char *envval, int overwrite)
             return 0;
         }
     }
+    return -1;
 #else
     {
         const char *old_envval=hgetenv(envname);
@@ -54,7 +55,6 @@ int hsetenv(const char *envname, const char *envval, int overwrite)
         return hlibc_env_setenv(envname,envval,overwrite);
     }
 #endif
-    return -1;
 }
 
 
