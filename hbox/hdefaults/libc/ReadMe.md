@@ -239,6 +239,20 @@
 | `HMEMSET`                    | 用户实现的`memset` | 参数与返回值同`hmemset`                                     |
 | `HDEFAULTS_LIBC_TINY_MEMSET` | 采用精简版memset   | 某些工具链的C库可能有问题，可启用此选项使用内置精简版memset |
 
+## stdatomic
+
+### atomic_flag
+
+原子标志。
+
+可外部配置的宏定义如下:
+
+| 宏定义                               | 说明               | 备注                                                         |
+| ------------------------------------ | ------------------ | ------------------------------------------------------------ |
+| `HATOMIC_FLAG`                       | 原子标志结构体     | 注意:如需使用则需要同时定义`HATOMIC_FLAG_INIT`用于初始化结构体。 |
+| `HATOMIC_FLAG_TEST_AND_SET_EXPLICIT` | 原子标志测试与设置 | 参数与返回值同`hatomic_flag_test_and_set_explicit`           |
+| `HATOMIC_FLAG_CLEAR_EXPLICIT`        | 原子标志清除       | 参数与返回值同`hatomic_flag_clear_explicit`                  |
+
 # posix标准
 
 某些函数不属于C标准，但属于posix标准，也在此目录包装。

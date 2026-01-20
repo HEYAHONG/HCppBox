@@ -19,6 +19,7 @@
  * hlibc
  */
 #include "hlibc/env/hlibc_env.c"
+#include "hlibc/stdatomic/hlibc_atomic_flag.c"
 
 /*
  * libc包装
@@ -62,6 +63,10 @@
 #include "wrapper/string/hstrlen.c"
 #include "wrapper/string/hmemset.c"
 
+/*
+ * stdatomic
+ */
+#include "wrapper/stdatomic/hatomic_flag.c"
 
 /*
  * posix标准中的函数

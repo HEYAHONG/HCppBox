@@ -52,6 +52,11 @@ extern "C"
 #include "wrapper/string/hstrlen.h"
 #include "wrapper/string/hmemset.h"
 
+/*
+ * stdatomic
+ */
+#include "wrapper/stdatomic/hstdatomic_common.h"
+#include "wrapper/stdatomic/hatomic_flag.h"
 
 /*
  * posix标准中的函数
@@ -68,7 +73,7 @@ extern "C"
  * hlibc
  */
 #include "hlibc/env/hlibc_env.h"
-
+#include "hlibc/stdatomic/hlibc_atomic_flag.h"
 
 #ifdef __cplusplus
 }
