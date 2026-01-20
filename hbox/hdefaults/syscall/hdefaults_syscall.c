@@ -11,8 +11,10 @@
 /*
  * hsyscall
  */
+#if !defined(HSYSCALL_NO_IMPLEMENTATION)
 #include "hsyscall/time/hsyscall_time.c"
 #include "hsyscall/random/hsyscall_random.c"
+#endif
 
 /*
  * 包装

@@ -57,10 +57,12 @@ HDEFAULTS_USERCALL_DEFINE3(hgetrandom,HDEFAULTS_SYSCALL_HGETRANDOM,hgetrandom_ss
             CryptReleaseContext(hCryptProv,0);
         }
     }
-#else
+#elif  !defined(HSYSCALL_NO_IMPLEMENTATION)
     {
        ret=hsyscall_getrandom(buffer,length,flags);
     }
+#else
+
 #endif
     return ret;
 }

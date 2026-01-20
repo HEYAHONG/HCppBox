@@ -24,8 +24,10 @@ bool hatomic_flag_test_and_set_explicit(volatile hatomic_flag_t *__object,hmemor
     ret=HATOMIC_FLAG_TEST_AND_SET_EXPLICIT(__object,__order);
 #elif defined(HDEFAULTS_LIBC_HAVE_STDATOMIC)
     ret=atomic_flag_test_and_set_explicit((volatile atomic_flag *)__object,(memory_order)__order);
-#else
+#elif !defined(HLIBC_NO_IMPLEMENTATION)
     ret=hlibc_atomic_flag_test_and_set_explicit(__object,__order);
+#else
+
 #endif
     return ret;
 }
@@ -41,8 +43,10 @@ void hatomic_flag_clear_explicit(volatile hatomic_flag_t *__object, hmemory_orde
     HATOMIC_FLAG_CLEAR_EXPLICIT(__object,__order);
 #elif defined(HDEFAULTS_LIBC_HAVE_STDATOMIC)
     atomic_flag_clear_explicit((volatile atomic_flag *)__object,(memory_order)__order);
-#else
+#elif !defined(HLIBC_NO_IMPLEMENTATION)
     hlibc_atomic_flag_clear_explicit(__object,__order);
+#else
+
 #endif
 
 }

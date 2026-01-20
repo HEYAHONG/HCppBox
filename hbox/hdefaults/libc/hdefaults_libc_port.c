@@ -18,8 +18,15 @@
 /*
  * hlibc
  */
+#if !defined(HLIBC_NO_IMPLEMENTATION)
 #include "hlibc/env/hlibc_env.c"
 #include "hlibc/stdatomic/hlibc_atomic_flag.c"
+#else
+#ifdef HDEFAULTS_LIBC_TINY
+#undef HDEFAULTS_LIBC_TINY
+#endif // HDEFAULTS_LIBC_TINY
+#define HDEFAULTS_LIBC_TINY 1
+#endif
 
 /*
  * libc包装
