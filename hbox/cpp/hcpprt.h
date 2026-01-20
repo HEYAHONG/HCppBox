@@ -134,13 +134,13 @@ public:
 
 hlock &hcpprt_global_lock();
 
-#ifndef HCPPRT_NO_ATOMIC
+
 /*
 简易自旋锁(不区分加锁顺序),利用原子操作实现,注意:不支持递归,不能被HBox中的应用直接使用
 */
 class hspinlock:public hlock
 {
-    std::atomic_flag m_flag=ATOMIC_FLAG_INIT;
+    hatomic_flag_t m_flag = HATOMIC_FLAG_INIT;
 public:
     hspinlock()
     {
@@ -153,14 +153,14 @@ public:
     {
     }
 
-    //默认为空函数,在实时操作系统中可尝试进行上下文切换(当然那样也不能称之为一般的自旋锁了)
+    //默认为空函数,在实时操作系统中可尝试进行上下文切换(当然那样也不能称之为自旋锁了)
     virtual void spin()
     {
     }
 
     virtual void lock() override
     {
-        while(m_flag.test_and_set())
+        while(hatomic_flag_test_and_set(&m_flag))
         {
             spin();
         }
@@ -168,16 +168,17 @@ public:
 
     virtual void unlock() override
     {
-        m_flag.clear();
+        hatomic_flag_clear(&m_flag);
     }
 
     virtual bool try_lock() override
     {
-        return !m_flag.test_and_set();
+        return !hatomic_flag_test_and_set(&m_flag);
     }
 
 };
 
+#ifndef HCPPRT_NO_ATOMIC
 
 /*
 简易可重入自旋锁(不区分加锁顺序),利用原子操作实现,注意:此类不可直接使用，必须实现相应虚函数
@@ -257,7 +258,7 @@ public:
 
 };
 
-#endif // HCPPRT_NO_ATOMIC
+#endif
 
 /*
 提供类似std::locak_guard的功能
