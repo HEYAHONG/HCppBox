@@ -11,24 +11,15 @@
 #include "stdint.h"
 #include "stdbool.h"
 #include "stdlib.h"
+#include "../hsyscall/time/hsyscall_time_common.h"
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
 
-typedef struct hgettimeofday_timezone hgettimeofday_timezone_t;
-struct hgettimeofday_timezone
-{
-    int tz_minuteswest;		/* Minutes west of GMT.  */
-    int tz_dsttime;		/* Nonzero if DST is ever in effect.  */
-};
+typedef htimezone_t hgettimeofday_timezone_t;
 
-typedef struct hgettimeofday_timeval hgettimeofday_timeval_t;
-struct hgettimeofday_timeval
-{
-    uint64_t tv_sec;	/* Seconds.  */
-    uint64_t tv_usec;	/* Microseconds.  */
-};
+typedef htimeval_t hgettimeofday_timeval_t;
 
 
 /** \brief 获取当前时间

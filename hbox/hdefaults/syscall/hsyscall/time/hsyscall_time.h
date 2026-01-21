@@ -8,6 +8,7 @@
  **************************************************************/
 #ifndef __HHSYSCALL_TIME_H__
 #define __HHSYSCALL_TIME_H__
+#include "hsyscall_time_common.h"
 #include "../../wrapper/hgettimeofday.h"
 #include "../../wrapper/hsettimeofday.h"
 #ifdef __cplusplus
