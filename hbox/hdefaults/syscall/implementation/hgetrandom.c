@@ -59,7 +59,7 @@ HDEFAULTS_USERCALL_DEFINE3(hgetrandom,HDEFAULTS_SYSCALL_HGETRANDOM,hgetrandom_ss
     }
 #elif  !defined(HSYSCALL_NO_IMPLEMENTATION) && !defined(HSYSCALL_NO_RANDOM)
     {
-       ret=hsyscall_getrandom(buffer,length,flags);
+        ret=hsyscall_getrandom(buffer,length,flags);
     }
 #else
 

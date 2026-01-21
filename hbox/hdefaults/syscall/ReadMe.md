@@ -190,3 +190,42 @@
 | ---------------------------- | ---------------- | -------------------- |
 | `HOPEN`                      | 用户实现的`open` | 参数与返回值同`open` |
 | `HDEFAULTS_SYSCALL_NO_HOPEN` | 不实现`open`     |                      |
+
+## `clock_getres`
+
+获取时钟精度
+
+当系统支持`clock_getres`时，采用系统的实现。
+
+可外部配置的宏定义如下:
+
+| 宏定义                               | 说明                     | 备注                         |
+| ------------------------------------ | ------------------------ | ---------------------------- |
+| `HCLOCK_GETRES`                      | 用户实现的`clock_getres` | 参数与返回值同`clock_getres` |
+| `HDEFAULTS_SYSCALL_NO_HCLOCK_GETRES` | 不实现`clock_getres`     |                              |
+
+## `clock_gettime`
+
+获取时钟
+
+当系统支持`clock_gettime`时，采用系统的实现。
+
+可外部配置的宏定义如下:
+
+| 宏定义                                | 说明                      | 备注                          |
+| ------------------------------------- | ------------------------- | ----------------------------- |
+| `HCLOCK_GETTIME`                      | 用户实现的`clock_gettime` | 参数与返回值同`clock_gettime` |
+| `HDEFAULTS_SYSCALL_NO_HCLOCK_GETTIME` | 不实现`clock_gettime`     |                               |
+
+## `clock_settime`
+
+设置时钟
+
+当系统支持`clock_settime`时，采用系统的实现。
+
+可外部配置的宏定义如下:
+
+| 宏定义                                | 说明                      | 备注                          |
+| ------------------------------------- | ------------------------- | ----------------------------- |
+| `HCLOCK_SETTIME`                      | 用户实现的`clock_settime` | 参数与返回值同`clock_settime` |
+| `HDEFAULTS_SYSCALL_NO_HCLOCK_SETTIME` | 不实现`clock_settime`     |                               |

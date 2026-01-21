@@ -19,7 +19,11 @@ clock_t hclock(void)
 #if defined(HCLOCK)
     return HCLOCK();
 #elif HDEFAULTS_LIBC_OPTIMIZE_LEVEL > 0
-    return ((uint64_t)hdefaults_tick_get())*CLOCKS_PER_SEC/1000;
+    {
+        htimespec_t tp={0};
+        hclock_gettime(HCLOCK_MONOTONIC,&tp);
+        return tp.tv_sec*CLOCKS_PER_SEC+tp.tv_nsec*CLOCKS_PER_SEC/1000000000;
+    }
 #else
     return clock();
 #endif

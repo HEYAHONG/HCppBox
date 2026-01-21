@@ -35,6 +35,9 @@
 #include "wrapper/hwrite.c"
 #include "wrapper/hlseek.c"
 #include "wrapper/hopen.c"
+#include "wrapper/hclock_getres.c"
+#include "wrapper/hclock_gettime.c"
+#include "wrapper/hclock_settime.c"
 
 
 #ifndef HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
@@ -51,6 +54,9 @@
 #include "implementation/hwrite.c"
 #include "implementation/hlseek.c"
 #include "implementation/hopen.c"
+#include "implementation/hclock_getres.c"
+#include "implementation/hclock_gettime.c"
+#include "implementation/hclock_settime.c"
 
 #endif // HDEFAULTS_SYSCALL_NO_IMPLEMENTATION
 
@@ -102,6 +108,18 @@
 #ifdef HDEFAULTS_SYSCALL_NO_HOPEN
 #undef HDEFAULTS_SYSCALL_HOPEN
 #endif // HDEFAULTS_SYSCALL_NO_HOPEN
+
+#ifdef HDEFAULTS_SYSCALL_NO_HCLOCK_GETRES
+#undef HDEFAULTS_SYSCALL_HCLOCK_GETRES
+#endif // HDEFAULTS_SYSCALL_NO_HCLOCK_GETRES
+
+#ifdef HDEFAULTS_SYSCALL_NO_HCLOCK_GETTIME
+#undef HDEFAULTS_SYSCALL_HCLOCK_GETTIME
+#endif // HDEFAULTS_SYSCALL_NO_HCLOCK_GETTIME
+
+#ifdef HDEFAULTS_SYSCALL_NO_HCLOCK_SETTIME
+#undef HDEFAULTS_SYSCALL_HCLOCK_SETTIME
+#endif // HDEFAULTS_SYSCALL_NO_HCLOCK_SETTIME
 
 hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
 {
@@ -193,6 +211,27 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
     }
     break;
 #endif
+#ifdef HDEFAULTS_SYSCALL_HCLOCK_GETRES
+    case HDEFAULTS_SYSCALL_HCLOCK_GETRES:
+    {
+        ret=__hdefaults_usercall_hclock_getres;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HCLOCK_GETTIME
+    case HDEFAULTS_SYSCALL_HCLOCK_GETTIME:
+    {
+        ret=__hdefaults_usercall_hclock_gettime;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HCLOCK_SETTIME
+    case HDEFAULTS_SYSCALL_HCLOCK_SETTIME:
+    {
+        ret=__hdefaults_usercall_hclock_settime;
+    }
+    break;
+#endif
     default:
     {
     }
@@ -233,6 +272,16 @@ void hdefaults_syscall_loop(void)
         hgettimeofday_timeval_t tv;
         hgettimeofday_timezone_t tz;
         hgettimeofday(&tv,&tz);
+    }
+#endif
+
+#if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HCLOCK_GETTIME) && !defined(HCLOCK_GETTIME)
+    /*
+     * 更新内部单调时钟时间
+     */
+    {
+        htimespec_t tp={0};
+        hclock_gettime(HCLOCK_MONOTONIC,&tp);
     }
 #endif
 

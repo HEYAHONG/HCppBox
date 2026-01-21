@@ -56,7 +56,7 @@ typedef size_t hclockid_t;
 #if defined(CLOCK_MONOTONIC)
 #define HCLOCK_MONOTONIC CLOCK_MONOTONIC
 #else
-#define HCLOCK_MONOTONIC 1
+#define HCLOCK_MONOTONIC (HCLOCK_REALTIME+1)
 #endif
 
 
