@@ -16,6 +16,7 @@ extern "C"
 
 #include "time.h"
 
+
 /** \brief 获取处理器时间（类似节拍），可通过除以CLOCKS_PER_SEC转化为秒数
  *
  * \return clock_t 当前处理器时间
