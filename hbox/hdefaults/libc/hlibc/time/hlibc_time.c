@@ -53,7 +53,7 @@
 /* number of years per era */
 #define HLIBC_TIME_YEARS_PER_ERA                400ULL
 
-htm_t * hgmtime_r (const htime_t *tim_p,htm_t * res)
+htm_t * hlibc_gmtime_r (const htime_t *tim_p,htm_t * res)
 {
     if(tim_p==NULL || res==NULL)
     {
@@ -107,7 +107,7 @@ htm_t * hgmtime_r (const htime_t *tim_p,htm_t * res)
     return (res);
 }
 
-htm_t * hlocaltime_r(const htime_t *tim_p,htm_t * res)
+htm_t * hlibc_localtime_r(const htime_t *tim_p,htm_t * res)
 {
     if(tim_p==NULL || res ==NULL)
     {
@@ -120,7 +120,7 @@ htm_t * hlocaltime_r(const htime_t *tim_p,htm_t * res)
      */
 
     //转换日历
-    hgmtime_r(tim_p,res);
+    hlibc_gmtime_r(tim_p,res);
 
     /*
      * TODO:根据需要添加夏令时标志
@@ -247,7 +247,7 @@ static bool hmktime_time_compare_ge(const htm_t *res1,const htm_t *res2)
     return false;
 }
 
-htime_t hmktime(const htm_t *res)
+htime_t hlibc_mktime(const htm_t *res)
 {
     uint64_t ret=0;
     if(res==NULL)
@@ -264,7 +264,7 @@ htime_t hmktime(const htm_t *res)
     {
         ret|=(1ULL << (HMKTIME_MAX_BITS-1-i));
         htm_t temp_tm= {0};
-        hlocaltime_r(&ret,&temp_tm);
+        hlibc_localtime_r(&ret,&temp_tm);
         if(hmktime_time_compare_eq(&temp_tm,res))
         {
             break;
