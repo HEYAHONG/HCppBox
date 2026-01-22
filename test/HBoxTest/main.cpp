@@ -188,8 +188,7 @@ static int hdefaults_test(int argc,const char *argv[])
 
     {
         htime_t current_time=htime(NULL);
-        htm_t   current_tm= {0};
-        gmtime_r(&current_time,&current_tm);
+        htm_t   current_tm= *gmtime(&current_time);
         htm_t   current_tm2= {0};
         memcpy(&current_tm2,&current_tm,sizeof(htm_t));
         hgmtime_r(&current_time,&current_tm2);
