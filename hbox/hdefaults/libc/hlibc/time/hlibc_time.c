@@ -264,7 +264,8 @@ htime_t hlibc_mktime(const htm_t *res)
     {
         ret|=(1ULL << (HMKTIME_MAX_BITS-1-i));
         htm_t temp_tm= {0};
-        hlibc_localtime_r(&ret,&temp_tm);
+        htime_t temp=ret;
+        hlibc_localtime_r(&temp,&temp_tm);
         if(hmktime_time_compare_eq(&temp_tm,res))
         {
             break;
