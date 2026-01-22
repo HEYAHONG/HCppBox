@@ -27,9 +27,9 @@
 #include "hdefaults/syscall/hsyscall/time/hsyscall_time.h"
 
 /*
- * 引入hgettimeofday
+ * 引入hclock_gettime
  */
-#include "hdefaults/syscall/wrapper/hgettimeofday.h"
+#include "hdefaults/syscall/wrapper/hclock_gettime.h"
 
 /*
  * 引入hstrcmp
@@ -137,20 +137,16 @@ void hsoftplc_loop(void)
             uint64_t tv_nsec=0;
             HSOFTPLC_LOOP_CURRENT_TIME(tv_sec,tv_nsec);
             update_current_time(tv_sec,tv_nsec);
-#elif !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETTIMEOFDAY)
-            hgettimeofday_timeval_t tv;
-            hgettimeofday_timezone_t tz;
-            hgettimeofday(&tv,&tz);
-            update_current_time(tv.tv_sec,tv.tv_usec*1000);
+#elif !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HCLOCK_GETTIME)
+            htimespec_t tp={0};
+            hclock_gettime(HCLOCK_MONOTONIC,&tp);
+            update_current_time(tp.tv_sec,tp.tv_nsec);
+#elif !defined(HSYSCALL_NO_IMPLEMENTATION) && !defined(HSYSCALL_NO_TIME)
+            htimespec_t tp={0};
+            hsyscall_clock_gettime(HCLOCK_MONOTONIC,&tp);
+            update_current_time(tp.tv_sec,tp.tv_nsec);
 #else
-            hgettimeofday_timeval_t tv={0};
-            {
-                /*
-                 * 使用hsyscall扩展的系统调用
-                 */
-                hsyscall_gettimeofday(&tv,NULL);
-            }
-            update_current_time(tv.tv_sec,tv.tv_usec*1000);
+#error      current time must be updated!
 #endif
         }
 
