@@ -10,20 +10,20 @@
 #include "hlibc_time.h"
 
 
-#define HLIBC_TIME_SECSPERMIN   60L
-#define HLIBC_TIME_MINSPERHOUR  60L
-#define HLIBC_TIME_HOURSPERDAY  24L
+#define HLIBC_TIME_SECSPERMIN   60ULL
+#define HLIBC_TIME_MINSPERHOUR  60ULL
+#define HLIBC_TIME_HOURSPERDAY  24ULL
 #define HLIBC_TIME_SECSPERHOUR  (HLIBC_TIME_SECSPERMIN * HLIBC_TIME_MINSPERHOUR)
 #define HLIBC_TIME_SECSPERDAY   (HLIBC_TIME_SECSPERHOUR * HLIBC_TIME_HOURSPERDAY)
-#define HLIBC_TIME_DAYSPERWEEK  7
-#define HLIBC_TIME_MONSPERYEAR  12
+#define HLIBC_TIME_DAYSPERWEEK  7ULL
+#define HLIBC_TIME_MONSPERYEAR  12ULL
 
-#define HLIBC_TIME_YEAR_BASE                        1900
-#define HLIBC_TIME_EPOCH_YEAR                       1970
-#define HLIBC_TIME_EPOCH_WDAY                       4
-#define HLIBC_TIME_EPOCH_YEARS_SINCE_LEAP           2
-#define HLIBC_TIME_EPOCH_YEARS_SINCE_CENTURY        70
-#define HLIBC_TIME_EPOCH_YEARS_SINCE_LEAP_CENTURY   370
+#define HLIBC_TIME_YEAR_BASE                        1900ULL
+#define HLIBC_TIME_EPOCH_YEAR                       1970ULL
+#define HLIBC_TIME_EPOCH_WDAY                       4ULL
+#define HLIBC_TIME_EPOCH_YEARS_SINCE_LEAP           2ULL
+#define HLIBC_TIME_EPOCH_YEARS_SINCE_CENTURY        70ULL
+#define HLIBC_TIME_EPOCH_YEARS_SINCE_LEAP_CENTURY   370ULL
 
 #define hlibc_time_isleap(y) ((((y) % 4) == 0 && ((y) % 100) != 0) || ((y) % 400) == 0)
 
@@ -33,25 +33,25 @@
  * modifying time_t value (which would require 64-bit operations to work
  * correctly) it's enough to adjust the calculated number of days since epoch.
  */
-#define HLIBC_TIME_EPOCH_ADJUSTMENT_DAYS        719468L
+#define HLIBC_TIME_EPOCH_ADJUSTMENT_DAYS        719468ULL
 /* year to which the adjustment was made */
-#define HLIBC_TIME_ADJUSTED_EPOCH_YEAR          0
+#define HLIBC_TIME_ADJUSTED_EPOCH_YEAR          0ULL
 /* 1st March of year 0 is Wednesday */
-#define HLIBC_TIME_ADJUSTED_EPOCH_WDAY          3
+#define HLIBC_TIME_ADJUSTED_EPOCH_WDAY          3ULL
 /* there are 97 leap years in 400-year periods. ((400 - 97) * 365 + 97 * 366) */
-#define HLIBC_TIME_DAYS_PER_ERA                 146097L
+#define HLIBC_TIME_DAYS_PER_ERA                 146097ULL
 /* there are 24 leap years in 100-year periods. ((100 - 24) * 365 + 24 * 366) */
-#define HLIBC_TIME_DAYS_PER_CENTURY             36524L
+#define HLIBC_TIME_DAYS_PER_CENTURY             36524ULL
 /* there is one leap year every 4 years */
-#define HLIBC_TIME_DAYS_PER_4_YEARS             (3 * 365 + 366)
+#define HLIBC_TIME_DAYS_PER_4_YEARS             (3 * 365 + 366ULL)
 /* number of days in a non-leap year */
-#define HLIBC_TIME_DAYS_PER_YEAR                365
+#define HLIBC_TIME_DAYS_PER_YEAR                365ULL
 /* number of days in January */
-#define HLIBC_TIME_DAYS_IN_JANUARY              31
+#define HLIBC_TIME_DAYS_IN_JANUARY              31ULL
 /* number of days in non-leap February */
-#define HLIBC_TIME_DAYS_IN_FEBRUARY             28
+#define HLIBC_TIME_DAYS_IN_FEBRUARY             28ULL
 /* number of years per era */
-#define HLIBC_TIME_YEARS_PER_ERA                400
+#define HLIBC_TIME_YEARS_PER_ERA                400ULL
 
 htm_t * hgmtime_r (const htime_t *tim_p,htm_t * res)
 {
@@ -59,11 +59,11 @@ htm_t * hgmtime_r (const htime_t *tim_p,htm_t * res)
     {
         return NULL;
     }
-    long days=0, rem=0;
+    int64_t days=0, rem=0;
     const htime_t lcltime = *tim_p;
-    int era=0, weekday=0, year=0;
-    unsigned erayear=0, yearday=0, month=0, day=0;
-    unsigned long eraday=0;
+    int64_t era=0, weekday=0, year=0;
+    uint64_t erayear=0, yearday=0, month=0, day=0;
+    uint64_t eraday=0;
 
     days = lcltime / HLIBC_TIME_SECSPERDAY + HLIBC_TIME_EPOCH_ADJUSTMENT_DAYS;
     rem = lcltime % HLIBC_TIME_SECSPERDAY;
@@ -107,4 +107,185 @@ htm_t * hgmtime_r (const htime_t *tim_p,htm_t * res)
     return (res);
 }
 
+htm_t * hlocaltime_r(const htime_t *tim_p,htm_t * res)
+{
+    if(tim_p==NULL || res ==NULL)
+    {
+        return NULL;
+    }
+
+    htime_t local_time=(*tim_p);
+    /*
+     * TODO:处理时区偏移与夏令时
+     */
+
+    //转换日历
+    hgmtime_r(tim_p,res);
+
+    /*
+     * TODO:根据需要添加夏令时标志
+     */
+
+
+    //返回日历
+    return res;
+}
+
+static bool hmktime_time_compare_eq(const htm_t *res1,const htm_t *res2)
+{
+    if(res1!=NULL && res2!=NULL)
+    {
+        if(res1->tm_sec!=res2->tm_sec)
+        {
+            return false;
+        }
+        if(res1->tm_min!=res2->tm_min)
+        {
+            return false;
+        }
+        if(res1->tm_hour!=res2->tm_hour)
+        {
+            return false;
+        }
+        if(res1->tm_mday!=res2->tm_mday)
+        {
+            return false;
+        }
+        if(res1->tm_mon!=res2->tm_mon)
+        {
+            return false;
+        }
+        if(res1->tm_year!=res2->tm_year)
+        {
+            return false;
+        }
+        if(res1->tm_yday!=res2->tm_yday)
+        {
+            return false;
+        }
+        if(res1->tm_wday!=res2->tm_wday)
+        {
+            return false;
+        }
+
+        /*
+        if(res1->tm_isdst!=res2->tm_isdst)
+        {
+            return false;
+        }
+        */
+
+        return true;
+    }
+    return false;
+}
+
+
+static bool hmktime_time_compare_ge(const htm_t *res1,const htm_t *res2)
+{
+    if(res1!=NULL && res2!=NULL)
+    {
+        if(res1->tm_year<res2->tm_year)
+        {
+            return false;
+        }
+        if(res1->tm_year>res2->tm_year)
+        {
+            return true;
+        }
+
+        if(res1->tm_mon<res2->tm_mon)
+        {
+            return false;
+        }
+        if(res1->tm_mon>res2->tm_mon)
+        {
+            return true;
+        }
+
+        if(res1->tm_mday<res2->tm_mday)
+        {
+            return false;
+        }
+        if(res1->tm_mday>res2->tm_mday)
+        {
+            return true;
+        }
+
+        if(res1->tm_hour<res2->tm_hour)
+        {
+            return false;
+        }
+        if(res1->tm_hour>res2->tm_hour)
+        {
+            return true;
+        }
+
+        if(res1->tm_min<res2->tm_min)
+        {
+            return false;
+        }
+        if(res1->tm_min>res2->tm_min)
+        {
+            return true;
+        }
+
+        if(res1->tm_sec<res2->tm_sec)
+        {
+            return false;
+        }
+        if(res1->tm_sec>res2->tm_sec)
+        {
+            return true;
+        }
+
+        /*
+         * 相等也返回true
+         */
+        return true;
+    }
+    return false;
+}
+
+htime_t hmktime(const htm_t *res)
+{
+    uint64_t ret=0;
+    if(res==NULL)
+    {
+        return ret;
+    }
+
+    /*
+     * TODO:检查并修正res中的数据
+     */
+
+#define HMKTIME_MAX_BITS (48) //受限于tm_year,日历并不能处理64位时间
+    for(size_t i=0; i<HMKTIME_MAX_BITS; i++)
+    {
+        ret|=(1ULL << (HMKTIME_MAX_BITS-1-i));
+        htm_t temp_tm= {0};
+        hlocaltime_r(&ret,&temp_tm);
+        if(hmktime_time_compare_eq(&temp_tm,res))
+        {
+            break;
+        }
+        else
+        {
+            if(hmktime_time_compare_ge(&temp_tm,res))
+            {
+                ret&=(~(1ULL <<  (HMKTIME_MAX_BITS-1-i)));
+            }
+            if(i==(HMKTIME_MAX_BITS-1))
+            {
+                ret=0;
+            }
+        }
+    }
+
+    /*
+     * TODO:修正时区与夏令时
+     */
+
+    return (htime_t)ret;
+}
 

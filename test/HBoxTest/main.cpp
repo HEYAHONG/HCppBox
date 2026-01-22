@@ -193,6 +193,9 @@ static int hdefaults_test(int argc,const char *argv[])
         memcpy(&current_tm2,&current_tm,sizeof(htm_t));
         hgmtime_r(&current_time,&current_tm2);
         printf("hdefaults hgmtime_r:%s,time=%lu\r\n",0==memcmp(&current_tm2,&current_tm,sizeof(htm_t))?"ok":"failed",(unsigned long)current_time);
+        htm_t   current_tm3= {0};
+        hlocaltime_r(&current_time,&current_tm3);
+        printf("hdefaults hlocaltime_r,hmktime:%s\r\n",current_time==hmktime(&current_tm3)?"ok":"failed");
     }
 
     {
