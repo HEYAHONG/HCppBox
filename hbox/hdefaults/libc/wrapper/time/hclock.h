@@ -9,12 +9,12 @@
 #ifndef __HCLOCK_H__
 #define __HCLOCK_H__
 
+#include "../../hlibc/time/hlibc_time_common.h"
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
 
-#include "time.h"
 
 
 /** \brief 获取处理器时间（类似节拍），可通过除以CLOCKS_PER_SEC转化为秒数

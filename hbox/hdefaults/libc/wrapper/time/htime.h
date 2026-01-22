@@ -8,13 +8,12 @@
  **************************************************************/
 #ifndef __HTIME_H__
 #define __HTIME_H__
-
+#include "../../hlibc/time/hlibc_time_common.h"
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
 
-#include "time.h"
 
 /** \brief 获取当前时间
  *
