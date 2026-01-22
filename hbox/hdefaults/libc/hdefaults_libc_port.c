@@ -25,6 +25,9 @@
 #if !defined(HLIBC_NO_ATOMIC_FLAG)
 #include "hlibc/stdatomic/hlibc_atomic_flag.c"
 #endif
+#if !defined(HLIBC_NO_TIME)
+#include "hlibc/time/hlibc_time.c"
+#endif
 #else
 #ifdef HDEFAULTS_LIBC_TINY
 #undef HDEFAULTS_LIBC_TINY

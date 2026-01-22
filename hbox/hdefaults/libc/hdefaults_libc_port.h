@@ -74,6 +74,7 @@ extern "C"
  */
 #include "hlibc/env/hlibc_env.h"
 #include "hlibc/stdatomic/hlibc_atomic_flag.h"
+#include "hlibc/time/hlibc_time.h"
 
 #ifdef __cplusplus
 }
