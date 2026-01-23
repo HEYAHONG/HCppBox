@@ -350,11 +350,11 @@ char * hlibc_asctime_r (const htm_t *tim_p,char * result)
     {
         return NULL;
     }
-    static const char day_name[7][3] =
+    static const char day_name[7][4] =
     {
         "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
     };
-    static const char mon_name[12][3] =
+    static const char mon_name[12][4] =
     {
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"

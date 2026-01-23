@@ -46,13 +46,13 @@ static inline int hatomic_int_exchange( volatile hatomic_int_t* obj, int desired
 }
 
 bool hatomic_int_compare_exchange_strong_explicit( volatile hatomic_int_t* obj,int* expected, int desired,hmemory_order_t succ,hmemory_order_t fail );
-static bool  hatomic_int_compare_exchange_strong( volatile hatomic_int_t* obj,int* expected, int desired)
+static inline bool  hatomic_int_compare_exchange_strong( volatile hatomic_int_t* obj,int* expected, int desired)
 {
     return hatomic_int_compare_exchange_strong_explicit(obj,expected,desired,hmemory_order_seq_cst,hmemory_order_seq_cst);
 }
 
 bool hatomic_int_compare_exchange_weak_explicit( volatile hatomic_int_t* obj,int* expected, int desired,hmemory_order_t succ,hmemory_order_t fail );
-static bool  hatomic_int_compare_exchange_weak( volatile hatomic_int_t* obj,int* expected, int desired)
+static inline bool  hatomic_int_compare_exchange_weak( volatile hatomic_int_t* obj,int* expected, int desired)
 {
     return hatomic_int_compare_exchange_weak_explicit(obj,expected,desired,hmemory_order_seq_cst,hmemory_order_seq_cst);
 }
