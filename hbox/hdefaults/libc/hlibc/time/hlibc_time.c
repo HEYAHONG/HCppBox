@@ -315,3 +315,33 @@ hclock_t hlibc_clock(void)
     }
     return ret;
 }
+
+extern int hsprintf(char* buffer, const char* format, ...);
+char * hlibc_asctime_r (const htm_t *tim_p,char * result)
+{
+    if(tim_p==NULL || result==NULL)
+    {
+        return NULL;
+    }
+    static const char day_name[7][3] =
+    {
+        "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+    };
+    static const char mon_name[12][3] =
+    {
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    };
+    hsprintf(result, "%.3s %.3s%3d %.2d:%.2d:%.2d %d\n",day_name[tim_p->tm_wday],mon_name[tim_p->tm_mon],tim_p->tm_mday, tim_p->tm_hour, tim_p->tm_min,tim_p->tm_sec, 1900 + tim_p->tm_year);
+    return result;
+}
+
+char * hlibc_ctime_r(const time_t * tim_p,char * result)
+{
+    if(tim_p==NULL || result==NULL)
+    {
+        return NULL;
+    }
+    htm_t temp={0};
+    return hlibc_asctime_r (hlibc_localtime_r (tim_p, &temp), result);
+}

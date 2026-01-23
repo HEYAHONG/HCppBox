@@ -39,6 +39,16 @@ htime_t hlibc_time(htime_t* arg);
  */
 hclock_t hlibc_clock(void);
 
+/*
+ *  将日历时间转换为文本字符串(缓冲区至少27字节,(年份占4字节时),且缓冲区应当初始化为0)
+ */
+char * hlibc_asctime_r (const htm_t *tim_p,char * result);
+
+/*
+ *  将时间转换为文本字符串(缓冲区至少27字节,(年份占4字节时),且缓冲区应当初始化为0)
+ */
+char * hlibc_ctime_r(const time_t * tim_p,char * result);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
