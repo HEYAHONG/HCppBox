@@ -259,12 +259,24 @@ htime_t hlibc_mktime(const htm_t *res)
      * TODO:检查并修正res中的数据
      */
 
-#define HMKTIME_MAX_BITS (48) //受限于tm_year,日历并不能处理64位时间
+
+/*
+ * 受限于tm_year,日历并不能处理64位时间
+ */
+#define HMKTIME_MAX_BITS ((sizeof(htime_t)*8 >(32))?48:((((htime_t)-1) < 0)?31:32))
+    ret=0;
     for(size_t i=0; i<HMKTIME_MAX_BITS; i++)
     {
         ret|=(1ULL << (HMKTIME_MAX_BITS-1-i));
         htm_t temp_tm= {0};
         htime_t temp=ret;
+        if(temp < 0)
+        {
+            /*
+             * 不支持小于0的时间
+             */
+            ret&=(~(1ULL <<  (HMKTIME_MAX_BITS-1-i)));
+        }
         hlibc_localtime_r(&temp,&temp_tm);
         if(hmktime_time_compare_eq(&temp_tm,res))
         {
