@@ -14,6 +14,7 @@ extern "C"
 {
 #endif // __cplusplus
 
+
 /*
  * stdio
  */
@@ -75,6 +76,11 @@ extern "C"
 #include "hlibc/env/hlibc_env.h"
 #include "hlibc/stdatomic/hlibc_atomic_flag.h"
 #include "hlibc/time/hlibc_time.h"
+
+/*
+ * 非标扩展
+ */
+#include "wrapper/nonstandard/stdatomic/hatomic_int.h"
 
 #ifdef __cplusplus
 }

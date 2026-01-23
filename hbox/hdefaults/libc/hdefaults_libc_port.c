@@ -88,6 +88,10 @@
 #include "wrapper/posix/stdlib/hsetenv.c"
 #include "wrapper/posix/stdlib/hunsetenv.c"
 
+/*
+ * 非标扩展
+ */
+#include "wrapper/nonstandard/stdatomic/hatomic_int.c"
 
 void hdefaults_libc_port_init(void)
 {
