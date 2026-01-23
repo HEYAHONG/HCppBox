@@ -378,8 +378,8 @@ char * hlibc_ctime_r(const time_t * tim_p,char * result)
  */
 static hlibc_time_timezone_info_t hlibc_time_timezone=
 {
-    (int32_t)(-8*HLIBC_TIME_SECSPERHOUR),
-    (int32_t)(-8*HLIBC_TIME_SECSPERHOUR),
+    (int32_t)(-8*(int32_t)HLIBC_TIME_SECSPERHOUR),
+    (int32_t)(-8*(int32_t)HLIBC_TIME_SECSPERHOUR),
     0,
     0
 };
