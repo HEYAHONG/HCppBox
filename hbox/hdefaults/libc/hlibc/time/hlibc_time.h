@@ -25,7 +25,7 @@ htm_t * hlibc_gmtime_r(const htime_t *tim_p,htm_t * res);
 htm_t * hlibc_localtime_r(const htime_t *tim_p,htm_t * res);
 
 /*
- * 将本地日历转换为时间，注意:与C运行库的实现相比，本函数不会修正非法值，将返回0
+ * 将本地日历转换为时间，注意:与C运行库的实现相比，本函数不会修正非法值，将返回(htime_t)-1。
  */
 htime_t hlibc_mktime(const htm_t *res);
 

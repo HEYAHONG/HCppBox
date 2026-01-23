@@ -249,7 +249,7 @@ static bool hmktime_time_compare_ge(const htm_t *res1,const htm_t *res2)
 
 htime_t hlibc_mktime(const htm_t *res)
 {
-    uint64_t ret=0;
+    uint64_t ret=(htime_t)-1;
     if(res==NULL)
     {
         return ret;
