@@ -270,7 +270,7 @@ htime_t hlibc_mktime(const htm_t *res)
         ret|=(1ULL << (HMKTIME_MAX_BITS-1-i));
         htm_t temp_tm= {0};
         htime_t temp=ret;
-        if(temp < 0)
+        if(temp <= 0)
         {
             /*
              * 不支持小于0的时间
