@@ -115,16 +115,35 @@ htm_t * hlibc_localtime_r(const htime_t *tim_p,htm_t * res)
     }
 
     htime_t local_time=(*tim_p);
+
     /*
-     * TODO:处理时区偏移与夏令时
+     * 时区偏移
      */
+    bool is_dst=false;
+    hlibc_time_timezone_info_t * timezone=hlibc_timezone_info_current();
+    if(timezone!=NULL)
+    {
+        if(local_time >= timezone->dst_start && local_time < timezone->dst_end)
+        {
+            local_time-=timezone->dst_offset;
+            is_dst=true;
+        }
+        else
+        {
+            local_time-=timezone->std_offset;
+        }
+    }
 
     //转换日历
-    hlibc_gmtime_r(tim_p,res);
+    hlibc_gmtime_r(&local_time,res);
 
     /*
-     * TODO:根据需要添加夏令时标志
+     * 添加夏令时标志
      */
+    if(is_dst)
+    {
+        res->tm_isdst=1;
+    }
 
 
     //返回日历
@@ -295,10 +314,6 @@ htime_t hlibc_mktime(const htm_t *res)
         }
     }
 
-    /*
-     * TODO:修正时区与夏令时
-     */
-
     return (htime_t)ret;
 }
 
@@ -356,4 +371,30 @@ char * hlibc_ctime_r(const time_t * tim_p,char * result)
     }
     htm_t temp={0};
     return hlibc_asctime_r (hlibc_localtime_r (tim_p, &temp), result);
+}
+
+/*
+ * 全局时区信息，默认东8区，无夏令时
+ */
+static hlibc_time_timezone_info_t hlibc_time_timezone=
+{
+    (int32_t)(-8*HLIBC_TIME_SECSPERHOUR),
+    (int32_t)(-8*HLIBC_TIME_SECSPERHOUR),
+    0,
+    0
+};
+hlibc_time_timezone_info_t *hlibc_timezone_info_global(void)
+{
+    return &hlibc_time_timezone;
+}
+
+hlibc_time_timezone_info_t *hlibc_timezone_info_current(void)
+{
+    hlibc_time_timezone_info_t *ret=hlibc_timezone_info_global();
+
+#if defined(HLIBC_TIME_TIMEZONE_INFO_HOOK)
+    ret=HLIBC_TIME_TIMEZONE_INFO_HOOK(ret);
+#endif
+
+    return ret;
 }

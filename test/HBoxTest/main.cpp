@@ -190,7 +190,7 @@ static int hdefaults_test(int argc,const char *argv[])
         htime_t current_time=htime(NULL);
         htm_t   current_tm= *gmtime(&current_time);
         char    current_time_buffer[32]={0};
-        hlibc_asctime_r(&current_tm,current_time_buffer);
+        hlibc_ctime_r(&current_time,current_time_buffer);
         current_time_buffer[24]='\0';
         printf("hdefaults asctime_r:%s\r\n",current_time_buffer);
         htm_t   current_tm2= {0};

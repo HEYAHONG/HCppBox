@@ -49,6 +49,29 @@ char * hlibc_asctime_r (const htm_t *tim_p,char * result);
  */
 char * hlibc_ctime_r(const time_t * tim_p,char * result);
 
+
+/*
+ * 时区信息，非C语言标准，非posix标准
+ */
+typedef struct hlibc_time_timezone_info hlibc_time_timezone_info_t;
+struct hlibc_time_timezone_info
+{
+    int32_t std_offset;         /**< 标准偏移（值=GMT时间-本地时间）*/
+    int32_t dst_offset;         /**< 夏令时/副偏移（值=GMT时间-本地时间） */
+    htime_t dst_start;          /**< 该年夏令时起始时间(含该时间) */
+    htime_t dst_end;            /**< 该年夏令时结束时间(不含该时间) */
+};
+
+/*
+ *  全局时区信息
+ */
+hlibc_time_timezone_info_t *hlibc_timezone_info_global(void);
+
+/*
+ *  当前时区信息
+ */
+hlibc_time_timezone_info_t *hlibc_timezone_info_current(void);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
