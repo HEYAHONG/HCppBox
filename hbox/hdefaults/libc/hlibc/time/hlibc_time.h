@@ -29,6 +29,15 @@ htm_t * hlibc_localtime_r(const htime_t *tim_p,htm_t * res);
  */
 htime_t hlibc_mktime(const htm_t *res);
 
+/*
+ *  获取时间
+ */
+htime_t hlibc_time(htime_t* arg);
+
+/*
+ *  获取时钟
+ */
+hclock_t hlibc_clock(void);
 
 #ifdef __cplusplus
 }

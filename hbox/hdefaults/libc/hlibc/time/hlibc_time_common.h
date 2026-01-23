@@ -27,6 +27,11 @@ typedef clock_t       hclock_t;
  * htimespec_t已在hsyscall_time_common.h定义
  */
 
+#ifdef CLOCKS_PER_SEC
+#define HCLOCKS_PER_SEC CLOCKS_PER_SEC
+#else
+#define HCLOCKS_PER_SEC (1000)
+#endif // CLOCKS_PER_SEC
 
 #ifdef __cplusplus
 }

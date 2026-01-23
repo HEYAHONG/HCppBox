@@ -278,7 +278,7 @@ htime_t hlibc_mktime(const htm_t *res)
             }
             if(i==(HMKTIME_MAX_BITS-1))
             {
-                ret=0;
+                ret=(uint64_t)-1;
             }
         }
     }
@@ -290,3 +290,28 @@ htime_t hlibc_mktime(const htm_t *res)
     return (htime_t)ret;
 }
 
+htime_t hlibc_time(htime_t* arg)
+{
+    htime_t ret=(htime_t)-1;
+    {
+        htimespec_t tp={0};
+        hclock_gettime(HCLOCK_REALTIME,&tp);
+        ret=tp.tv_sec;
+    }
+    if(arg==NULL)
+    {
+        (*arg)=ret;
+    }
+    return ret;
+}
+
+hclock_t hlibc_clock(void)
+{
+    hclock_t ret=(hclock_t)-1;
+    {
+        htimespec_t tp={0};
+        hclock_gettime(HCLOCK_MONOTONIC,&tp);
+        ret=tp.tv_sec*HCLOCKS_PER_SEC+tp.tv_nsec*HCLOCKS_PER_SEC/1000000000;
+    }
+    return ret;
+}
