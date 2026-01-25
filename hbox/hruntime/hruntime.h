@@ -486,4 +486,6 @@ extern const  hruntime_symbol_t __hruntime_symbol_end[];
 #endif // __cplusplus
 
 
+#include "version/hruntime_version.h"
+
 #endif // __HRUNTIME_H__

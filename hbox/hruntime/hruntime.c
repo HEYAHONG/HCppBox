@@ -810,3 +810,6 @@ size_t hruntime_symbol_enum(uint32_t type,hruntime_symbol_enum_callback_t callba
     }
     return ret;
 }
+
+
+#include "version/hruntime_version.c"
