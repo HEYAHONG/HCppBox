@@ -16,8 +16,6 @@ extern "C"
 
 #include "hdefaults/hdefaults_libc.h"
 
-#if !defined(HDEFAULTS_LIBC_HAVE_STDATOMIC)
-
 enum hmemory_order
 {
         hmemory_order_relaxed = 0,
@@ -28,21 +26,17 @@ enum hmemory_order
         hmemory_order_seq_cst
 };
 
-#else
-
-enum hmemory_order
-{
-        hmemory_order_relaxed = memory_order_relaxed,
-        hmemory_order_consume = memory_order_consume,
-        hmemory_order_acquire = memory_order_acquire,
-        hmemory_order_release = memory_order_release,
-        hmemory_order_acq_rel = memory_order_acq_rel,
-        hmemory_order_seq_cst = memory_order_seq_cst
-};
-
-#endif
 
 typedef enum hmemory_order hmemory_order_t;
+
+
+/** \brief 获取C标准对应的memory_order值
+ *
+ * \param __order hmemory_order_t
+ * \return int C标准的枚举值
+ *
+ */
+int hmemory_order_cstd(hmemory_order_t __order);
 
 #ifdef __cplusplus
 }

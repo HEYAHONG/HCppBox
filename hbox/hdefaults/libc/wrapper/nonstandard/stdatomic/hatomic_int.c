@@ -33,7 +33,7 @@ void hatomic_int_store_explicit( volatile hatomic_int_t* obj,int desired, hmemor
         (*obj)=desired;
         hdefaults_mutex_unlock(NULL);
 #else
-        atomic_store_explicit(obj,desired,(memory_order)order);
+        atomic_store_explicit(obj,desired,(memory_order)hmemory_order_cstd(order));
 #endif
     }
 }
@@ -49,7 +49,7 @@ int hatomic_int_load_explicit( const volatile hatomic_int_t* obj, hmemory_order_
         hdefaults_mutex_unlock(NULL);
         return ret;
 #else
-        return atomic_load_explicit(obj,(memory_order)order);
+        return atomic_load_explicit(obj,(memory_order)hmemory_order_cstd(order));
 #endif
     }
     return 0;
@@ -66,7 +66,7 @@ int hatomic_int_exchange_explicit( volatile hatomic_int_t* obj, int desired, hme
         (*obj)=desired;
         hdefaults_mutex_unlock(NULL);
 #else
-        ret=atomic_exchange_explicit(obj,desired,order);
+        ret=atomic_exchange_explicit(obj,desired,hmemory_order_cstd(order));
 #endif
     }
     return ret;
@@ -90,7 +90,7 @@ bool hatomic_int_compare_exchange_strong_explicit( volatile hatomic_int_t* obj,i
         }
         hdefaults_mutex_unlock(NULL);
 #else
-        ret=atomic_compare_exchange_strong_explicit(obj,expected,desired,(memory_order)succ,(memory_order)fail);
+        ret=atomic_compare_exchange_strong_explicit(obj,expected,desired,(memory_order)hmemory_order_cstd(succ),(memory_order)hmemory_order_cstd(fail));
 #endif
     }
     return ret;
@@ -109,7 +109,7 @@ bool hatomic_int_compare_exchange_weak_explicit( volatile hatomic_int_t* obj,int
         }
         hdefaults_mutex_unlock(NULL);
 #else
-        ret=atomic_compare_exchange_weak_explicit(obj,expected,desired,(memory_order)succ,(memory_order)fail);
+        ret=atomic_compare_exchange_weak_explicit(obj,expected,desired,(memory_order)hmemory_order_cstd(succ),(memory_order)hmemory_order_cstd(fail));
 #endif
     }
     return ret;
@@ -126,7 +126,7 @@ int hatomic_int_fetch_add_explicit( volatile hatomic_int_t* obj, int arg, hmemor
         (*obj)+=arg;
         hdefaults_mutex_unlock(NULL);
 #else
-        ret=atomic_fetch_add_explicit(obj,arg,(memory_order)order);
+        ret=atomic_fetch_add_explicit(obj,arg,(memory_order)hmemory_order_cstd(order));
 #endif
     }
     return ret;
@@ -143,7 +143,7 @@ int hatomic_int_fetch_sub_explicit( volatile hatomic_int_t* obj, int arg, hmemor
         (*obj)-=arg;
         hdefaults_mutex_unlock(NULL);
 #else
-        ret=atomic_fetch_sub_explicit(obj,arg,(memory_order)order);
+        ret=atomic_fetch_sub_explicit(obj,arg,(memory_order)hmemory_order_cstd(order));
 #endif
     }
     return ret;
@@ -160,7 +160,7 @@ int hatomic_int_fetch_or_explicit( volatile hatomic_int_t* obj, int arg, hmemory
         (*obj)|=arg;
         hdefaults_mutex_unlock(NULL);
 #else
-        ret=atomic_fetch_or_explicit(obj,arg,(memory_order)order);
+        ret=atomic_fetch_or_explicit(obj,arg,(memory_order)hmemory_order_cstd(order));
 #endif
     }
     return ret;
@@ -177,7 +177,7 @@ int hatomic_int_fetch_xor_explicit( volatile hatomic_int_t* obj, int arg, hmemor
         (*obj)^=arg;
         hdefaults_mutex_unlock(NULL);
 #else
-        ret=atomic_fetch_xor_explicit(obj,arg,(memory_order)order);
+        ret=atomic_fetch_xor_explicit(obj,arg,(memory_order)hmemory_order_cstd(order));
 #endif
     }
     return ret;
@@ -194,7 +194,7 @@ int hatomic_int_fetch_and_explicit( volatile hatomic_int_t* obj, int arg, hmemor
         (*obj)&=arg;
         hdefaults_mutex_unlock(NULL);
 #else
-        ret=atomic_fetch_and_explicit(obj,arg,(memory_order)order);
+        ret=atomic_fetch_and_explicit(obj,arg,(memory_order)hmemory_order_cstd(order));
 #endif
     }
     return ret;

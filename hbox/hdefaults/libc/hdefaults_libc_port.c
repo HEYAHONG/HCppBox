@@ -80,6 +80,7 @@
 /*
  * stdatomic
  */
+#include "wrapper/stdatomic/hstdatomic_common.c"
 #include "wrapper/stdatomic/hatomic_flag.c"
 
 /*
