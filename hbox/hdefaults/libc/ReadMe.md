@@ -248,11 +248,35 @@
 
 可外部配置的宏定义如下:
 
-| 宏定义                               | 说明               | 备注                                                         |
-| ------------------------------------ | ------------------ | ------------------------------------------------------------ |
-| `HATOMIC_FLAG`                       | 原子标志结构体     | 注意:如需使用则需要同时定义`HATOMIC_FLAG_INIT`用于初始化结构体。 |
-| `HATOMIC_FLAG_TEST_AND_SET_EXPLICIT` | 原子标志测试与设置 | 参数与返回值同`hatomic_flag_test_and_set_explicit`           |
-| `HATOMIC_FLAG_CLEAR_EXPLICIT`        | 原子标志清除       | 参数与返回值同`hatomic_flag_clear_explicit`                  |
+| 宏定义                               | 说明                         | 备注                                                         |
+| ------------------------------------ | ---------------------------- | ------------------------------------------------------------ |
+| `HATOMIC_FLAG`                       | 原子标志结构体               | 注意:如需使用则需要同时定义`HATOMIC_FLAG_INIT`用于初始化结构体。 |
+| `HATOMIC_FLAG_TEST_AND_SET_EXPLICIT` | 用户实现的原子标志测试与设置 | 参数与返回值同`hatomic_flag_test_and_set_explicit`           |
+| `HATOMIC_FLAG_CLEAR_EXPLICIT`        | 用户实现的原子标志清除       | 参数与返回值同`hatomic_flag_clear_explicit`                  |
+
+## threads
+
+### thrd
+
+线程。
+
+注意：
+
+- 某些平台可能不可用。
+
+可外部配置的宏定义如下:
+
+| 宏定义          | 说明                                       | 备注                          |
+| --------------- | ------------------------------------------ | ----------------------------- |
+| `HTHRD_SIZE`    | 管理线程的结构体大小，单位为指针大小的倍数 | 不可小于1                     |
+| `HTHRD_CREATE`  | 用户实现的线程创建                         | 参数与返回值同`hthrd_create`  |
+| `HTHRD_EQUAL`   | 用户实现的线程比较                         | 参数与返回值同`hthrd_equal`   |
+| `HTHRD_CURRENT` | 用户实现的当前线程获取                     | 参数与返回值同`hthrd_current` |
+| `HTHRD_SLEEP`   | 用户实现的线程睡眠                         | 参数与返回值同`hthrd_sleep`   |
+| `HTHRD_YIELD`   | 用户实现的让出事件片                       | 参数与返回值同`hthrd_yield`   |
+| `HTHRD_EXIT`    | 用户实现的线程退出                         | 参数与返回值同`hthrd_exit`    |
+| `HTHRD_DETACH`  | 用户实现的线程detach                       | 参数与返回值同`hthrd_detach`  |
+| `HTHRD_JOIN`    | 用户实现的线程join                         | 参数与返回值同`hthrd_join`    |
 
 # posix标准
 
