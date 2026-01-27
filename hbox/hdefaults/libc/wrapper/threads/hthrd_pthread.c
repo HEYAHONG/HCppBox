@@ -131,9 +131,16 @@ int hthrd_pthread_sleep(const htimespec_t* duration,htimespec_t * remaining)
     return ret;
 }
 
+#if defined(HDEFAULTS_OS_UNIX) && defined(_POSIX_PRIORITY_SCHEDULING)
+#include "sched.h"
+#endif
 void hthrd_pthread_yield(void)
 {
+#if defined(HDEFAULTS_OS_UNIX) && defined(_POSIX_PRIORITY_SCHEDULING)
+    sched_yield();
+#else
     hthrd_pthread_sleep(NULL,NULL);
+#endif
 }
 
 
