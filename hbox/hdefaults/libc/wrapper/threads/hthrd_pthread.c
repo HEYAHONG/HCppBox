@@ -60,6 +60,9 @@ int hthrd_pthread_create(hthrd_t *thr,hthrd_start_t func,void *arg )
         return ret;
     }
 
+    ctx->func=func;
+    ctx->arg=arg;
+
     if (pthread_create((hthrd_pthread_t *)thr, NULL, hthrd_pthread_thread_proc, ctx) == 0)
     {
         ret=hthrd_success;

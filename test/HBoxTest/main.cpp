@@ -189,7 +189,7 @@ static int hdefaults_test(int argc,const char *argv[])
     {
         htime_t current_time=htime(NULL);
         htm_t   current_tm= *gmtime(&current_time);
-        char    current_time_buffer[32]={0};
+        char    current_time_buffer[32]= {0};
         hlibc_ctime_r(&current_time,current_time_buffer);
         current_time_buffer[24]='\0';
         printf("hdefaults asctime_r:%s\r\n",current_time_buffer);
@@ -254,6 +254,25 @@ static int hdefaults_test(int argc,const char *argv[])
         printf("hdefaults libdl:symbol_table unregister!\r\n");
         hruntime_symbol_dynamic_table_unregister(symbol_table,sizeof(symbol_table)/sizeof(symbol_table[0]));
         printf("hdefaults libdl:symbol_table printf=%p\r\n",hdlsym(NULL,"printf"));
+    }
+
+    {
+        hthrd_t th1= {0};
+        auto func=[](void *arg)->int
+        {
+            printf("hdefaults thread(sub):start\r\n");
+            htimespec_t dur={1,0};
+            hthrd_sleep(&dur,NULL);
+            printf("hdefaults thread(sub):end\r\n");
+            return 0;
+        };
+        printf("hdefaults thread:start\r\n");
+        if(hthrd_success==hthrd_create(&th1,func,NULL))
+        {
+             printf("hdefaults thread:wait thread(sub)\r\n");
+             hthrd_join(th1,NULL);
+             printf("hdefaults thread:end\r\n");
+        }
     }
 
     return 0;
