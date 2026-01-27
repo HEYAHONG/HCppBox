@@ -66,7 +66,7 @@ static hdefaults_tick_t do_hdefaults_tick_get(void)
 #ifdef HDEFAULTS_TICK_GET
     return HDEFAULTS_TICK_GET();
 #elif defined(FREERTOS_KERNEL)
-    return xTaskGetTickCount();
+    return ((uint64_t)xTaskGetTickCount())*portTICK_PERIOD_MS;
 #elif defined(HDEFAULTS_OS_RTTHREAD)
     return rt_tick_get_millisecond();
 #elif defined(HDEFAULTS_OS_WINDOWS)
