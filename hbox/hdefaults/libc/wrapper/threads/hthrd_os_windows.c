@@ -60,7 +60,7 @@ int hthrd_windows_create(hthrd_t *thr,hthrd_start_t func,void *arg )
     }
     hthrd_windows_t thr_ctx= {0};
     hthrd_windows_create_context_t *thr_start_ctx=(hthrd_windows_create_context_t *)hmalloc(sizeof(hthrd_windows_create_context_t));
-    if(ctx==NULL)
+    if(thr_start_ctx==NULL)
     {
         return ret;
     }
