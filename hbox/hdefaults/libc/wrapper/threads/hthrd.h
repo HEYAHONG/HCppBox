@@ -40,7 +40,7 @@ struct hthrd
 
 typedef struct hthrd hthrd_t;
 
-typedef int (hthrd_start_t)(void *arg);
+typedef int (*hthrd_start_t)(void *arg);
 
 int hthrd_create(hthrd_t *thr,hthrd_start_t func,void *arg );
 int hthrd_equal(hthrd_t lhs,hthrd_t rhs );

@@ -10,6 +10,10 @@
 #include "hthrd.h"
 #include "stdlib.h"
 
+#if defined(HDEFAULTS_OS_WINDOWS)
+#include "hthrd_os_windows.c"
+#endif
+
 #if defined(HTHRD_CREATE)
 extern int HTHRD_CREATE(hthrd_t *thr,hthrd_start_t func,void *arg )
 #endif
@@ -25,6 +29,8 @@ int hthrd_create(hthrd_t *thr,hthrd_start_t func,void *arg )
         return ret;
     }
     ret=hthrd_code_wrapper(thrd_create((thrd_t *)thr,func,arg));
+#elif defined(HDEFAULTS_OS_WINDOWS)
+    ret=hthrd_windows_create(thr,func,arg);
 #endif
     return ret;
 }
@@ -40,6 +46,8 @@ int hthrd_equal(hthrd_t lhs,hthrd_t rhs )
     ret=HTHRD_EQUAL(lhs,rhs);
 #elif defined(HDEFAULTS_LIBC_HAVE_THREADS)
     ret=thrd_equal(*(thrd_t *)&lhs,*(thrd_t *)&rhs);
+#elif defined(HDEFAULTS_OS_WINDOWS)
+    ret=hthrd_equal(lhs,rhs);
 #endif
     return ret;
 }
@@ -55,6 +63,8 @@ hthrd_t hthrd_current(void)
     ret=HTHRD_CURRENT();
 #elif defined(HDEFAULTS_LIBC_HAVE_THREADS)
     (*(thrd_t *)&ret)=thrd_current();
+#elif defined(HDEFAULTS_OS_WINDOWS)
+    ret=hthrd_windows_current();
 #endif
     return ret;
 }
@@ -84,6 +94,8 @@ int hthrd_sleep(const htimespec_t* duration,htimespec_t * remaining)
             remaining->tv_nsec=rem.tv_nsec;
         }
     }
+#elif defined(HDEFAULTS_OS_WINDOWS)
+    ret=hthrd_windows_sleep(duration,remaining);
 #endif
     return ret;
 }
@@ -97,6 +109,8 @@ void hthrd_yield(void)
     HTHRD_YIELD();
 #elif defined(HDEFAULTS_LIBC_HAVE_THREADS)
     thrd_yield();
+#elif defined(HDEFAULTS_OS_WINDOWS)
+    hthrd_windows_yield();
 #endif
 }
 
@@ -110,6 +124,8 @@ void hthrd_exit(int res)
     HTHRD_EXIT(res);
 #elif defined(HDEFAULTS_LIBC_HAVE_THREADS)
     thrd_exit(res);
+#elif defined(HDEFAULTS_OS_WINDOWS)
+    hthrd_windows_exit(res);
 #endif
 }
 
@@ -123,6 +139,8 @@ int hthrd_detach(hthrd_t thr)
     ret=HTHRD_DETACH(thr);
 #elif defined(HDEFAULTS_LIBC_HAVE_THREADS)
     ret=hthrd_code_wrapper(thrd_detach(*(thrd_t *)&thr));
+#elif defined(HDEFAULTS_OS_WINDOWS)
+    ret=hthrd_windows_detach(thr);
 #endif
     return ret;
 }
@@ -137,6 +155,8 @@ int hthrd_join(hthrd_t thr, int *res)
     ret=HTHRD_JOIN(thr,res);
 #elif defined(HDEFAULTS_LIBC_HAVE_THREADS)
     ret=hthrd_code_wrapper(thrd_join(*(thrd_t *)&thr,res));
+#elif defined(HDEFAULTS_OS_WINDOWS)
+    ret=hthrd_windows_join(thr,res);
 #endif
     return ret;
 }
