@@ -14,6 +14,10 @@
 #include "hthrd_os_windows.c"
 #endif
 
+#if defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
+#include "hthrd_pthread.c"
+#endif
+
 #if defined(HTHRD_CREATE)
 extern int HTHRD_CREATE(hthrd_t *thr,hthrd_start_t func,void *arg )
 #endif
@@ -31,6 +35,8 @@ int hthrd_create(hthrd_t *thr,hthrd_start_t func,void *arg )
     ret=hthrd_code_wrapper(thrd_create((thrd_t *)thr,func,arg));
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=hthrd_windows_create(thr,func,arg);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
+    ret=hthrd_pthread_create(thr,func,arg);
 #endif
     return ret;
 }
@@ -48,6 +54,8 @@ int hthrd_equal(hthrd_t lhs,hthrd_t rhs )
     ret=thrd_equal(*(thrd_t *)&lhs,*(thrd_t *)&rhs);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=hthrd_windows_equal(lhs,rhs);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
+    ret=hthrd_pthread_equal(lhs,rhs);
 #endif
     return ret;
 }
@@ -65,6 +73,8 @@ hthrd_t hthrd_current(void)
     (*(thrd_t *)&ret)=thrd_current();
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=hthrd_windows_current();
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
+    ret=hthrd_pthread_current();
 #endif
     return ret;
 }
@@ -96,6 +106,8 @@ int hthrd_sleep(const htimespec_t* duration,htimespec_t * remaining)
     }
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=hthrd_windows_sleep(duration,remaining);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
+    ret=hthrd_pthread_sleep(duration,remaining);
 #endif
     return ret;
 }
@@ -111,6 +123,8 @@ void hthrd_yield(void)
     thrd_yield();
 #elif defined(HDEFAULTS_OS_WINDOWS)
     hthrd_windows_yield();
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
+    hthrd_pthread_yield();
 #endif
 }
 
@@ -126,6 +140,8 @@ void hthrd_exit(int res)
     thrd_exit(res);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     hthrd_windows_exit(res);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
+    hthrd_pthread_exit(res);
 #endif
 }
 
@@ -141,6 +157,8 @@ int hthrd_detach(hthrd_t thr)
     ret=hthrd_code_wrapper(thrd_detach(*(thrd_t *)&thr));
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=hthrd_windows_detach(thr);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
+    ret=hthrd_pthread_detach(thr);
 #endif
     return ret;
 }
@@ -157,6 +175,8 @@ int hthrd_join(hthrd_t thr, int *res)
     ret=hthrd_code_wrapper(thrd_join(*(thrd_t *)&thr,res));
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=hthrd_windows_join(thr,res);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
+    ret=hthrd_pthread_join(thr,res);
 #endif
     return ret;
 }

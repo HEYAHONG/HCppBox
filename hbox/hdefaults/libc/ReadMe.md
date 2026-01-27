@@ -266,17 +266,19 @@
 
 可外部配置的宏定义如下:
 
-| 宏定义          | 说明                                       | 备注                          |
-| --------------- | ------------------------------------------ | ----------------------------- |
-| `HTHRD_SIZE`    | 管理线程的结构体大小，单位为指针大小的倍数 | 不可小于1                     |
-| `HTHRD_CREATE`  | 用户实现的线程创建                         | 参数与返回值同`hthrd_create`  |
-| `HTHRD_EQUAL`   | 用户实现的线程比较                         | 参数与返回值同`hthrd_equal`   |
-| `HTHRD_CURRENT` | 用户实现的当前线程获取                     | 参数与返回值同`hthrd_current` |
-| `HTHRD_SLEEP`   | 用户实现的线程睡眠                         | 参数与返回值同`hthrd_sleep`   |
-| `HTHRD_YIELD`   | 用户实现的让出事件片                       | 参数与返回值同`hthrd_yield`   |
-| `HTHRD_EXIT`    | 用户实现的线程退出                         | 参数与返回值同`hthrd_exit`    |
-| `HTHRD_DETACH`  | 用户实现的线程detach                       | 参数与返回值同`hthrd_detach`  |
-| `HTHRD_JOIN`    | 用户实现的线程join                         | 参数与返回值同`hthrd_join`    |
+| 宏定义                | 说明                                       | 备注                                         |
+| --------------------- | ------------------------------------------ | -------------------------------------------- |
+| `HTHRD_SIZE`          | 管理线程的结构体大小，单位为指针大小的倍数 | 不可小于1                                    |
+| `HTHRD_CREATE`        | 用户实现的线程创建                         | 参数与返回值同`hthrd_create`                 |
+| `HTHRD_EQUAL`         | 用户实现的线程比较                         | 参数与返回值同`hthrd_equal`                  |
+| `HTHRD_CURRENT`       | 用户实现的当前线程获取                     | 参数与返回值同`hthrd_current`                |
+| `HTHRD_SLEEP`         | 用户实现的线程睡眠                         | 参数与返回值同`hthrd_sleep`                  |
+| `HTHRD_YIELD`         | 用户实现的让出事件片                       | 参数与返回值同`hthrd_yield`                  |
+| `HTHRD_EXIT`          | 用户实现的线程退出                         | 参数与返回值同`hthrd_exit`                   |
+| `HTHRD_DETACH`        | 用户实现的线程detach                       | 参数与返回值同`hthrd_detach`                 |
+| `HTHRD_JOIN`          | 用户实现的线程join                         | 参数与返回值同`hthrd_join`                   |
+| `HTHRD_USING_PTHREAD` | 允许在非unix(类unix)平台使用pthread        | 一般用于某些兼容pthread的环境                |
+| `NANOSLEEP`           | 用户实现的`nanosleep`                      | 用于`pthread`移植，参数与返回值同`nanosleep` |
 
 # posix标准
 

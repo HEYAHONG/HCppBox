@@ -23,7 +23,7 @@ struct hthrd_windows_create_context
 };
 typedef struct hthrd_windows_create_context hthrd_windows_create_context_t;
 
-DWORD WINAPI hthrd_windows_thread_proc(LPVOID lpParameter)
+static DWORD WINAPI hthrd_windows_thread_proc(LPVOID lpParameter)
 {
     hthrd_windows_create_context_t *ctx=(hthrd_windows_create_context_t*)lpParameter;
     if(ctx==NULL)
@@ -60,6 +60,10 @@ int hthrd_windows_create(hthrd_t *thr,hthrd_start_t func,void *arg )
     }
     hthrd_windows_t thr_ctx= {0};
     hthrd_windows_create_context_t *thr_start_ctx=(hthrd_windows_create_context_t *)hmalloc(sizeof(hthrd_windows_create_context_t));
+    if(ctx==NULL)
+    {
+        return ret;
+    }
     thr_start_ctx->func=func;
     thr_start_ctx->arg=arg;
     thr_ctx.hThread=CreateThread(NULL,0,hthrd_windows_thread_proc,thr_start_ctx,0,&thr_ctx.ThreadId);
