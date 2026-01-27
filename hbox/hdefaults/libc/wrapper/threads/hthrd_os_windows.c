@@ -111,7 +111,7 @@ hthrd_t hthrd_windows_current(void)
 {
     hthrd_t ret= {0};
 
-    if(sizeof(hthrd_windows_t) < sizeof(hthrd_t))
+    if(sizeof(hthrd_t) < sizeof(hthrd_windows_t))
     {
         return ret;
     }
