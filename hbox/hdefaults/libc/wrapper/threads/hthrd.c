@@ -47,7 +47,7 @@ int hthrd_equal(hthrd_t lhs,hthrd_t rhs )
 #elif defined(HDEFAULTS_LIBC_HAVE_THREADS)
     ret=thrd_equal(*(thrd_t *)&lhs,*(thrd_t *)&rhs);
 #elif defined(HDEFAULTS_OS_WINDOWS)
-    ret=hthrd_equal(lhs,rhs);
+    ret=hthrd_windows_equal(lhs,rhs);
 #endif
     return ret;
 }
