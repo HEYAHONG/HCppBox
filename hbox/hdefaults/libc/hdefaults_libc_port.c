@@ -28,6 +28,9 @@
 #if !defined(HLIBC_NO_TIME)
 #include "hlibc/time/hlibc_time.c"
 #endif
+#if !defined(HLIBC_NO_THREADS)
+#include "hlibc/threads/hlibc_threads.c"
+#endif
 #else
 #ifdef HDEFAULTS_LIBC_TINY
 #undef HDEFAULTS_LIBC_TINY

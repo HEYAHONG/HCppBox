@@ -83,6 +83,7 @@ extern "C"
 #include "hlibc/env/hlibc_env.h"
 #include "hlibc/stdatomic/hlibc_atomic_flag.h"
 #include "hlibc/time/hlibc_time.h"
+#include "hlibc/threads/hlibc_threads.h"
 
 /*
  * 非标扩展
