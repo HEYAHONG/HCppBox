@@ -202,7 +202,7 @@ int hthrd_freertos_sleep(const htimespec_t* duration,htimespec_t * remaining)
     }
     cur.tv_sec++;
 
-    while(cur.tv_nsec > (portTICK_PERIOD_MS*1000000))
+    while(cur.tv_nsec >= (portTICK_PERIOD_MS*1000000))
     {
         vTaskDelay(1);
         cur.tv_nsec-=(portTICK_PERIOD_MS*1000000);
