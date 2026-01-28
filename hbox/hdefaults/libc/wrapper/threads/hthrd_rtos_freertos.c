@@ -23,9 +23,6 @@
 #include FREERTOS_KERNEL_CROUTINE_HEADER
 #include FREERTOS_KERNEL_LIST_HEADER
 #include FREERTOS_KERNEL_EVENT_GROUPS_HEADER
-#else
-#include “FreeRTOS.h”
-#include “task.h”
 #endif
 
 #ifndef configSUPPORT_STATIC_ALLOCATION

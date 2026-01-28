@@ -15,6 +15,26 @@
 #if !defined(HTHRD_USING_FREERTOS)
 #define  HTHRD_USING_FREERTOS   1
 #endif
+#elif defined(HTHRD_USING_FREERTOS)
+/*
+ * 注意:使用外部FreerTOS内核时，需要在配置文件中包含FreeRTOS.h与task.h
+ */
+#if !defined(configSUPPORT_STATIC_ALLOCATION) || (configSUPPORT_STATIC_ALLOCATION)<(1)
+#undef HTHRD_USING_FREERTOS
+#endif
+
+#if !defined(INCLUDE_xTaskGetCurrentTaskHandle) || (INCLUDE_xTaskGetCurrentTaskHandle)<(1)
+#undef HTHRD_USING_FREERTOS
+#endif
+
+#if !defined(configUSE_TIMERS) || (configUSE_TIMERS)<(1)
+#undef HTHRD_USING_FREERTOS
+#endif
+
+#if defined(HTHRD_USING_FREERTOS)
+#include "hthrd_rtos_freertos.c"
+#endif
+
 #endif
 
 #if defined(HDEFAULTS_OS_WINDOWS)
