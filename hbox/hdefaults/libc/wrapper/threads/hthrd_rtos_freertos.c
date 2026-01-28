@@ -147,6 +147,13 @@ int hthrd_freertos_create(hthrd_t *thr,hthrd_start_t func,void *arg )
              */
             tcb->flags.thread_detach=1;
         }
+        else
+        {
+            /*
+             * 传出TCB
+             */
+            (*(hthrd_freertos_t *)thr)=(hthrd_freertos_t)tcb;
+        }
     }
     else
     {
