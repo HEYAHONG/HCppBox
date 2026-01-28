@@ -129,6 +129,7 @@ hthrd_t hthrd_windows_current(void)
     return ret;
 }
 
+void hthrd_windows_yield(void);
 
 int hthrd_windows_sleep(const htimespec_t* duration,htimespec_t * remaining)
 {
@@ -139,6 +140,8 @@ int hthrd_windows_sleep(const htimespec_t* duration,htimespec_t * remaining)
     {
         current=(*duration);
     }
+
+    hthrd_windows_yield();
 
     while(current.tv_sec--)
     {

@@ -185,6 +185,7 @@ hthrd_t hthrd_freertos_current(void)
     return ret;
 }
 
+void hthrd_freertos_yield(void);
 
 int hthrd_freertos_sleep(const htimespec_t* duration,htimespec_t * remaining)
 {
@@ -195,6 +196,8 @@ int hthrd_freertos_sleep(const htimespec_t* duration,htimespec_t * remaining)
     {
         cur=(*duration);
     }
+
+    hthrd_freertos_yield();
 
     while(cur.tv_sec--)
     {
