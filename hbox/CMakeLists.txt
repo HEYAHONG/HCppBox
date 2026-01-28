@@ -36,6 +36,11 @@ endif()
 find_package(Threads)
 if(Threads_FOUND)
 target_link_libraries(HBox Threads::Threads)
+
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
+target_link_libraries(HBox stdthreads)
+endif()
+
 endif()
 
 #查找sys/mman.h
