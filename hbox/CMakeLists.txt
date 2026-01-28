@@ -32,6 +32,12 @@ target_link_libraries(HBox dl)
 target_compile_definitions(HBox PUBLIC  HAVE_DLFCN_H=1)
 endif()
 
+#查找threads库(c11)
+find_package(Threads)
+if(Threads_FOUND)
+target_link_libraries(HBox Threads::Threads)
+endif()
+
 #查找sys/mman.h
 check_include_file(sys/mman.h HAVE_SYS_MMAN_H)
 if(HAVE_SYS_MMAN_H)
