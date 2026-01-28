@@ -19,6 +19,15 @@
 /*
  * 注意:使用外部FreerTOS内核时，需要在配置文件中包含FreeRTOS.h与task.h
  */
+#if !defined(HTHRD_FREERTOS_FREERTOS_HEADER)
+#define  HTHRD_FREERTOS_FREERTOS_HEADER "FreeRTOS.h"
+#endif
+#include HTHRD_FREERTOS_FREERTOS_HEADER
+#if !defined(HTHRD_FREERTOS_TASK_HEADER)
+#define  HTHRD_FREERTOS_TASK_HEADER "task.h"
+#endif
+#include HTHRD_FREERTOS_TASK_HEADER
+
 #if !defined(configSUPPORT_STATIC_ALLOCATION) || (configSUPPORT_STATIC_ALLOCATION)<(1)
 #undef HTHRD_USING_FREERTOS
 #endif
