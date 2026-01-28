@@ -162,6 +162,11 @@ int hthrd_freertos_equal(hthrd_t lhs,hthrd_t rhs )
 {
     int ret=-1;
 
+    if(sizeof(hthrd_t) < sizeof(hthrd_freertos_t))
+    {
+        return ret;
+    }
+
     if((*(hthrd_freertos_t *)&lhs)==(*(hthrd_freertos_t *)&rhs))
     {
         ret=0;
