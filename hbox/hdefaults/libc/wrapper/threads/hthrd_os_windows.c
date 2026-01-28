@@ -144,6 +144,7 @@ int hthrd_windows_sleep(const htimespec_t* duration,htimespec_t * remaining)
     {
         Sleep(1000);
     }
+    current.tv_sec++;
 
     while(current.tv_nsec > 1000000)
     {

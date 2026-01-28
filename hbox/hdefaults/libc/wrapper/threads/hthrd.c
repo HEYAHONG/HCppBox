@@ -10,6 +10,13 @@
 #include "hthrd.h"
 #include "stdlib.h"
 
+#if defined(FREERTOS_KERNEL)
+#include "hthrd_rtos_freertos.c"
+#if !defined(HTHRD_USING_FREERTOS)
+#define  HTHRD_USING_FREERTOS   1
+#endif
+#endif
+
 #if defined(HDEFAULTS_OS_WINDOWS)
 #include "hthrd_os_windows.c"
 #endif
@@ -37,6 +44,8 @@ int hthrd_create(hthrd_t *thr,hthrd_start_t func,void *arg )
     ret=hthrd_windows_create(thr,func,arg);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
     ret=hthrd_pthread_create(thr,func,arg);
+#elif defined(HTHRD_USING_FREERTOS)
+    ret=hthrd_freertos_create(thr,func,arg);
 #endif
     return ret;
 }
@@ -56,6 +65,8 @@ int hthrd_equal(hthrd_t lhs,hthrd_t rhs )
     ret=hthrd_windows_equal(lhs,rhs);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
     ret=hthrd_pthread_equal(lhs,rhs);
+#elif defined(HTHRD_USING_FREERTOS)
+    ret=hthrd_freertos_equal(lhs,rhs);
 #endif
     return ret;
 }
@@ -75,6 +86,8 @@ hthrd_t hthrd_current(void)
     ret=hthrd_windows_current();
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
     ret=hthrd_pthread_current();
+#elif defined(HTHRD_USING_FREERTOS)
+    ret=hthrd_freertos_current();
 #endif
     return ret;
 }
@@ -108,6 +121,8 @@ int hthrd_sleep(const htimespec_t* duration,htimespec_t * remaining)
     ret=hthrd_windows_sleep(duration,remaining);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
     ret=hthrd_pthread_sleep(duration,remaining);
+#elif defined(HTHRD_USING_FREERTOS)
+    ret=hthrd_freertos_sleep(duration,remaining);
 #endif
     return ret;
 }
@@ -125,6 +140,8 @@ void hthrd_yield(void)
     hthrd_windows_yield();
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
     hthrd_pthread_yield();
+#elif defined(HTHRD_USING_FREERTOS)
+    hthrd_freertos_yield();
 #endif
 }
 
@@ -142,6 +159,8 @@ void hthrd_exit(int res)
     hthrd_windows_exit(res);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
     hthrd_pthread_exit(res);
+#elif defined(HTHRD_USING_FREERTOS)
+    hthrd_freertos_exit(res);
 #endif
 }
 
@@ -159,6 +178,8 @@ int hthrd_detach(hthrd_t thr)
     ret=hthrd_windows_detach(thr);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
     ret=hthrd_pthread_detach(thr);
+#elif defined(HTHRD_USING_FREERTOS)
+    ret=hthrd_freertos_detach(thr);
 #endif
     return ret;
 }
@@ -177,6 +198,8 @@ int hthrd_join(hthrd_t thr, int *res)
     ret=hthrd_windows_join(thr,res);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD)
     ret=hthrd_pthread_join(thr,res);
+#elif defined(HTHRD_USING_FREERTOS)
+    ret=hthrd_freertos_join(thr,res);
 #endif
     return ret;
 }

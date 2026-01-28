@@ -110,7 +110,7 @@ int hthrd_pthread_sleep(const htimespec_t* duration,htimespec_t * remaining)
 {
     int ret=0;
 
-    struct timespec req={0},rem={0};
+    struct timespec req= {0},rem= {0};
     if(duration!=NULL)
     {
         req.tv_sec=duration->tv_sec;
@@ -177,15 +177,15 @@ int hthrd_pthread_join(hthrd_t thr, int *res)
 
     void *value_ptr=NULL;
 
-	if (pthread_join(*(hthrd_pthread_t *)&thr, &value_ptr) != 0)
+    if (pthread_join(*(hthrd_pthread_t *)&thr, &value_ptr) != 0)
     {
         return ret;
     }
-	if (res != NULL)
+    if (res != NULL)
     {
         (*res) = (intptr_t)value_ptr;
     }
-	ret=hthrd_success;
+    ret=hthrd_success;
 
     return ret;
 }
