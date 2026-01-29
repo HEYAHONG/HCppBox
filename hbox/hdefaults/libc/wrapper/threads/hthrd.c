@@ -55,7 +55,7 @@
 #endif
 
 #if defined(HTHRD_CREATE)
-extern int HTHRD_CREATE(hthrd_t *thr,hthrd_start_t func,void *arg )
+extern int HTHRD_CREATE(hthrd_t *thr,hthrd_start_t func,void *arg );
 #endif
 
 int hthrd_create(hthrd_t *thr,hthrd_start_t func,void *arg )
@@ -80,7 +80,7 @@ int hthrd_create(hthrd_t *thr,hthrd_start_t func,void *arg )
 }
 
 #if defined(HTHRD_EQUAL)
-extern int HTHRD_EQUAL(hthrd_t lhs,hthrd_t rhs )
+extern int HTHRD_EQUAL(hthrd_t lhs,hthrd_t rhs );
 #endif
 
 int hthrd_equal(hthrd_t lhs,hthrd_t rhs )
