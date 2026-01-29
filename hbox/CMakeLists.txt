@@ -32,16 +32,7 @@ target_link_libraries(HBox dl)
 target_compile_definitions(HBox PUBLIC  HAVE_DLFCN_H=1)
 endif()
 
-#查找threads库(c11)
-find_package(Threads)
-if(Threads_FOUND)
-target_link_libraries(HBox Threads::Threads)
 
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
-target_link_libraries(HBox stdthreads)
-endif()
-
-endif()
 
 #查找sys/mman.h
 check_include_file(sys/mman.h HAVE_SYS_MMAN_H)
@@ -65,6 +56,18 @@ endif()
 check_include_file(threads.h HAVE_THREADS_H)
 if(HAVE_THREADS_H)
 target_compile_definitions(HBox PUBLIC  HAVE_THREADS_H=1)
+
+#查找threads库(c11)
+find_package(Threads)
+if(Threads_FOUND)
+target_link_libraries(HBox Threads::Threads)
+
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
+target_link_libraries(HBox stdthreads)
+endif()
+
+endif()
+
 endif()
 
 #查找stdatomic.h
