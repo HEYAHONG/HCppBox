@@ -13,6 +13,11 @@
 #include "hmtx_os_windows.c"
 #endif
 
+#if defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
+#include "hmtx_pthread.c"
+#endif
+
+
 #if defined(HMTX_INIT)
 extern int HMTX_INIT(hmtx_t* __mutex, int type);
 #endif
@@ -32,9 +37,11 @@ int hmtx_init(hmtx_t* __mutex, int type)
     {
         return ret;
     }
-    ret=hthrd_code_wrapper(mtx_init((mtx_t *)__mutex,type));
+    ret=hthrd_code_wrapper(mtx_init((mtx_t *)__mutex,hmtx_type_cstd(type)));
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=hmtx_windows_init(__mutex,type);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
+    ret=hmtx_pthread_init(__mutex,type);
 #endif
 
     return ret;
@@ -62,6 +69,8 @@ int hmtx_lock( hmtx_t* __mutex)
     ret=hthrd_code_wrapper(mtx_lock((mtx_t *)__mutex));
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=hmtx_windows_lock(__mutex);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
+    ret=hmtx_pthread_lock(__mutex);
 #endif
 
     return ret;
@@ -95,6 +104,8 @@ int hmtx_timedlock(hmtx_t * __mutex,const htimespec_t * time_point)
     ret=hthrd_code_wrapper(mtx_timedlock((mtx_t *)__mutex,&tp));
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=hmtx_windows_timedlock(__mutex,time_point);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
+    ret=hmtx_pthread_timedlock(__mutex,time_point);
 #endif
 
     return ret;
@@ -122,6 +133,8 @@ int hmtx_trylock(hmtx_t *__mutex)
     ret=hthrd_code_wrapper(mtx_trylock((mtx_t *)__mutex));
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=hmtx_windows_trylock(__mutex);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
+    ret=hmtx_pthread_trylock(__mutex);
 #endif
 
     return ret;
@@ -150,6 +163,8 @@ int hmtx_unlock( hmtx_t *__mutex)
     ret=hthrd_code_wrapper(mtx_unlock((mtx_t *)__mutex));
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=hmtx_windows_unlock(__mutex);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
+    ret=hmtx_pthread_unlock(__mutex);
 #endif
 
 
@@ -177,6 +192,8 @@ void hmtx_destroy(hmtx_t *__mutex )
     mtx_destroy((mtx_t *)__mutex);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     hmtx_destroy(__mutex);
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
+    hmtx_pthread_destroy(__mutex);
 #endif
 
 }
