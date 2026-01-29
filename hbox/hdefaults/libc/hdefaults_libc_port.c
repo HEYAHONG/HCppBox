@@ -91,6 +91,7 @@
  */
 #include "wrapper/threads/hthreads_common.c"
 #include "wrapper/threads/hthrd.c"
+#include "wrapper/threads/hcall_once.c"
 
 /*
  * posix标准中的函数

@@ -64,6 +64,7 @@ extern "C"
  */
 #include "wrapper/threads/hthreads_common.h"
 #include "wrapper/threads/hthrd.h"
+#include "wrapper/threads/hcall_once.h"
 
 
 /*
