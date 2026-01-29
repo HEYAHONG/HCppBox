@@ -6,8 +6,8 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#ifndef __HHLIBC_THREADS_H__
-#define __HHLIBC_THREADS_H__
+#ifndef __HLIBC_THREADS_H__
+#define __HLIBC_THREADS_H__
 #ifdef __cplusplus
 extern "C"
 {
@@ -29,4 +29,4 @@ void hlibc_call_once(hlibc_once_flag_t *flag,hlibc_call_once_func_t func);
 #endif // __cplusplus
 
 
-#endif // __HHLIBC_THREADS_H__
+#endif // __HLIBC_THREADS_H__

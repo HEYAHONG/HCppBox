@@ -6,8 +6,8 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#ifndef __HHCALL_ONCE_H__
-#define __HHCALL_ONCE_H__
+#ifndef __HCALL_ONCE_H__
+#define __HCALL_ONCE_H__
 #ifdef __cplusplus
 extern "C"
 {
@@ -43,4 +43,4 @@ void hcall_once(honce_flag_t *flag,hcall_once_func_t func);
 #endif // __cplusplus
 
 
-#endif // __HHCALL_ONCE_H__
+#endif // __HCALL_ONCE_H__
