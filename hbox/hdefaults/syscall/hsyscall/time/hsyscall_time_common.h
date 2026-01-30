@@ -31,6 +31,22 @@ struct htimeval
     uint64_t tv_usec;   /* Microseconds.  */
 };
 
+static inline int htimeval_compare(htimeval_t ltv,htimeval_t rtv)
+{
+    if((ltv.tv_sec==rtv.tv_sec) && (ltv.tv_usec==rtv.tv_usec))
+    {
+        return 0;
+    }
+    if((ltv.tv_sec > rtv.tv_sec) || ((ltv.tv_sec==rtv.tv_sec) && (ltv.tv_usec > rtv.tv_usec)))
+    {
+        return 1;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
 struct timespec;
 typedef struct htimespec htimespec_t;
 struct htimespec
@@ -38,6 +54,38 @@ struct htimespec
     uint64_t tv_sec;    /* Seconds.  */
     uint64_t tv_nsec;   /* Nanoseconds [0, 999999999]  */
 };
+
+static inline htimespec_t htimeval_convert_timespec(htimeval_t tv)
+{
+    htimespec_t ret;
+    ret.tv_sec=tv.tv_sec;
+    ret.tv_nsec=tv.tv_usec*1000;
+    return ret;
+}
+
+static inline htimeval_t htimespec_convert_timeval(htimespec_t tv)
+{
+    htimeval_t ret;
+    ret.tv_sec=tv.tv_sec;
+    ret.tv_usec=tv.tv_nsec/1000;
+    return ret;
+}
+
+static inline int htimespec_compare(htimespec_t ltv,htimespec_t rtv)
+{
+    if((ltv.tv_sec==rtv.tv_sec) && (ltv.tv_nsec==rtv.tv_nsec))
+    {
+        return 0;
+    }
+    if((ltv.tv_sec > rtv.tv_sec) || ((ltv.tv_sec==rtv.tv_sec) && (ltv.tv_nsec > rtv.tv_nsec)))
+    {
+        return 1;
+    }
+    else
+    {
+        return -1;
+    }
+}
 
 typedef size_t hclockid_t;
 
