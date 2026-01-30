@@ -45,5 +45,6 @@ void hmtx_destroy(hmtx_t *__mutex );
 }
 #endif // __cplusplus
 
+#include "hmtx_stdatomic.h"
 
 #endif // __HMTX_H__
