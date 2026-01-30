@@ -72,7 +72,7 @@ int hmtx_windows_lock( hmtx_t* __mutex)
     return ret;
 }
 
-
+int hmtx_windows_trylock(hmtx_t *__mutex);
 int hmtx_windows_timedlock(hmtx_t * __mutex,const htimespec_t * time_point)
 {
     int ret=hthrd_error;
@@ -96,34 +96,41 @@ int hmtx_windows_timedlock(hmtx_t * __mutex,const htimespec_t * time_point)
         /*
          * 加锁
          */
-        ret=(WaitForSingleObject(mtx->hMutex,0)==WAIT_OBJECT_0)?hthrd_success:hthrd_error;
+        ret=hmtx_windows_trylock(__mutex);
 
         if(ret==hthrd_success)
         {
             break;
         }
 
-        if(time_point!=NULL)
+        if(ret==hthrd_busy)
         {
-            htimespec_t cur= {0};
-            hclock_gettime(HCLOCK_REALTIME,&cur);
-            if(cur.tv_sec >= time_point->tv_sec && cur.tv_nsec >= time_point->tv_nsec)
+            if(time_point!=NULL)
             {
-                ret=hthrd_timedout;
-                break;
+                htimespec_t cur= {0};
+                hclock_gettime(HCLOCK_REALTIME,&cur);
+                if((cur.tv_sec > time_point->tv_sec)||(cur.tv_sec == time_point->tv_sec && cur.tv_nsec >= time_point->tv_nsec))
+                {
+                    ret=hthrd_timedout;
+                    break;
+                }
+                else
+                {
+                    Sleep(1);
+                }
             }
             else
             {
-                Sleep(1);
+                {
+                    ret=hthrd_timedout;
+                    break;
+                }
             }
         }
-        else
+
+        if(ret==hthrd_error)
         {
-            if(ret==hthrd_error)
-            {
-                ret=hthrd_timedout;
-                break;
-            }
+            break;
         }
 
     } while(ret!=hthrd_success);
@@ -168,7 +175,7 @@ int hmtx_windows_trylock(hmtx_t *__mutex)
     break;
     default:
     {
-
+        ret=hthrd_error;
     }
     break;
     }

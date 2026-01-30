@@ -121,7 +121,7 @@ int hmtx_stdatomic_timedlock(hmtx_t * __mutex,const htimespec_t * time_point)
             {
                 htimespec_t cur= {0};
                 hclock_gettime(HCLOCK_REALTIME,&cur);
-                if(cur.tv_sec >= time_point->tv_sec && cur.tv_nsec >= time_point->tv_nsec)
+                if((cur.tv_sec > time_point->tv_sec)||(cur.tv_sec == time_point->tv_sec && cur.tv_nsec >= time_point->tv_nsec))
                 {
                     ret=hthrd_timedout;
                     wait_for_lock=false;
