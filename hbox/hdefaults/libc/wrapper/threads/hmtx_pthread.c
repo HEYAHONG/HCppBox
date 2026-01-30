@@ -1,6 +1,6 @@
 /***************************************************************
- * Name:      hmtx_os_pthread.c
- * Purpose:   实现hmtx_os_pthread接口
+ * Name:      hmtx_pthread.c
+ * Purpose:   实现hmtx_pthread接口
  * Author:    HYH (hyhsystem.cn)
  * Created:   2026-01-29
  * Copyright: HYH (hyhsystem.cn)

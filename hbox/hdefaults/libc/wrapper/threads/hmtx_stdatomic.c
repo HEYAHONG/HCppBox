@@ -1,6 +1,6 @@
 /***************************************************************
- * Name:      hmtx_os_stdatomic.c
- * Purpose:   实现hmtx_os_stdatomic接口
+ * Name:      hmtx_stdatomic.c
+ * Purpose:   实现hmtx_stdatomic接口
  * Author:    HYH (hyhsystem.cn)
  * Created:   2026-01-30
  * Copyright: HYH (hyhsystem.cn)
