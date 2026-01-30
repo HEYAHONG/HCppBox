@@ -167,7 +167,7 @@ int hthrd_freertos_create(hthrd_t *thr,hthrd_start_t func,void *arg )
 
 int hthrd_freertos_equal(hthrd_t lhs,hthrd_t rhs )
 {
-    int ret=-1;
+    int ret=0;
 
     if(sizeof(hthrd_t) < sizeof(hthrd_freertos_t))
     {
@@ -176,7 +176,7 @@ int hthrd_freertos_equal(hthrd_t lhs,hthrd_t rhs )
 
     if((*(hthrd_freertos_t *)&lhs)==(*(hthrd_freertos_t *)&rhs))
     {
-        ret=0;
+        ret=1;
     }
 
     return ret;

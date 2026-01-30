@@ -17,6 +17,7 @@
 #include "hmtx_pthread.c"
 #endif
 
+#include "hmtx_stdatomic.c"
 
 #if defined(HMTX_INIT)
 extern int HMTX_INIT(hmtx_t* __mutex, int type);
@@ -42,6 +43,8 @@ int hmtx_init(hmtx_t* __mutex, int type)
     ret=hmtx_windows_init(__mutex,type);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
     ret=hmtx_pthread_init(__mutex,type);
+#else
+    ret=hmtx_stdatomic_init(__mutex,type);
 #endif
 
     return ret;
@@ -71,6 +74,8 @@ int hmtx_lock( hmtx_t* __mutex)
     ret=hmtx_windows_lock(__mutex);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
     ret=hmtx_pthread_lock(__mutex);
+#else
+    ret=hmtx_stdatomic_lock(__mutex);
 #endif
 
     return ret;
@@ -106,6 +111,8 @@ int hmtx_timedlock(hmtx_t * __mutex,const htimespec_t * time_point)
     ret=hmtx_windows_timedlock(__mutex,time_point);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
     ret=hmtx_pthread_timedlock(__mutex,time_point);
+#else
+    ret=hmtx_stdatomic_timedlock(__mutex,time_point);
 #endif
 
     return ret;
@@ -135,6 +142,8 @@ int hmtx_trylock(hmtx_t *__mutex)
     ret=hmtx_windows_trylock(__mutex);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
     ret=hmtx_pthread_trylock(__mutex);
+#else
+    ret=hmtx_stdatomic_trylock(__mutex);
 #endif
 
     return ret;
@@ -165,6 +174,8 @@ int hmtx_unlock( hmtx_t *__mutex)
     ret=hmtx_windows_unlock(__mutex);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
     ret=hmtx_pthread_unlock(__mutex);
+#else
+    ret=hmtx_stdatomic_unlock(__mutex);
 #endif
 
 
@@ -194,6 +205,8 @@ void hmtx_destroy(hmtx_t *__mutex )
     hmtx_destroy(__mutex);
 #elif defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD)
     hmtx_pthread_destroy(__mutex);
+#else
+    hmtx_stdatomic_destroy(__mutex);
 #endif
 
 }
