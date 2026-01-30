@@ -223,6 +223,9 @@ void hmtx_windows_destroy(hmtx_t *__mutex )
 
     if(mtx->hMutex!=NULL)
     {
-        CloseHandle(mtx->hMutex);
+        if(CloseHandle(mtx->hMutex))
+        {
+            mtx->hMutex=NULL;
+        }
     }
 }
