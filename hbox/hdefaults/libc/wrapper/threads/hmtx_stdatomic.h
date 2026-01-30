@@ -18,9 +18,9 @@ extern "C"
 #include "hmtx.h"
 
 /*
- × 非标实现
+ * 非标实现
  * 采用原子变量实现的互斥锁
- × 注意：本文中的互斥锁不可与其它头文件混用
+ * 注意：本文件中的互斥锁不可与其它头文件混用
  */
 int hmtx_stdatomic_init(hmtx_t* __mutex, int type);
 int hmtx_stdatomic_lock(hmtx_t* __mutex);
