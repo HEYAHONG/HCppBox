@@ -58,7 +58,6 @@ int hmtx_stdatomic_lock( hmtx_t* __mutex)
         return ret;
     }
 
-    hmtx_stdatomic_t *mtx=((hmtx_stdatomic_t *)__mutex);
 
     bool wait_for_lock=true;
     while(wait_for_lock)
@@ -101,7 +100,6 @@ int hmtx_stdatomic_timedlock(hmtx_t * __mutex,const htimespec_t * time_point)
         return ret;
     }
 
-    hmtx_stdatomic_t *mtx=((hmtx_stdatomic_t *)__mutex);
 
     bool wait_for_lock=true;
     while(wait_for_lock)
