@@ -14,6 +14,10 @@ extern "C"
 {
 #endif // __cplusplus
 
+/*
+ * errno
+ */
+#include "wrapper/errno/herrno.h"
 
 /*
  * stdio

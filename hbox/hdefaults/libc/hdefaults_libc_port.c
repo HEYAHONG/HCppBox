@@ -43,6 +43,11 @@
  */
 
 /*
+ * errno
+ */
+#include "wrapper/errno/herrno.c"
+
+/*
  * stdio
  */
 #include "wrapper/stdio/hputchar.c"
