@@ -20,7 +20,7 @@ typedef int herrno_t;
 
 #define herrno (*herrno_get())
 
-herrno_t * herrno_get(void);
+volatile herrno_t * herrno_get(void);
 
 const char *herrno_str(herrno_t error_number);
 const char *herrno_curstr(void);

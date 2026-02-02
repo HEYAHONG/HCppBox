@@ -10,12 +10,12 @@
 #include "hdefaults.h"
 #include "errno.h"
 
-herrno_t * herrno_get()
+volatile herrno_t * herrno_get()
 {
 #if defined(HERRNO)
-    return &(HERRNO);
+    return (volatile herrno_t *)&(HERRNO);
 #else
-    return &(errno);
+    return (volatile herrno_t *)&(errno);
 #endif
 }
 
