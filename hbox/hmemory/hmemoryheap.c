@@ -500,8 +500,12 @@ static hmemoryheap_pool_t *default_pool=NULL;
 #endif // HMEMORYHEAP_DEFAULT_POOL_SIZE
 #endif // USING_HMEMORYHEAP
 
+#ifndef HMEMORYHEAP_DEFAULT_POOL_ATTRIBUTE
+#define HMEMORYHEAP_DEFAULT_POOL_ATTRIBUTE
+#endif // HMEMORYHEAP_DEFAULT_POOL_ATTRIBUTE
 
 #if HMEMORYHEAP_DEFAULT_POOL_SIZE >= 256
+HMEMORYHEAP_DEFAULT_POOL_ATTRIBUTE
 static uint8_t pool_store[HMEMORYHEAP_DEFAULT_POOL_SIZE]= {0};
 static bool g_is_defalut_pool_init=false;
 static void check_default_pool()

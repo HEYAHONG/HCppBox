@@ -200,7 +200,12 @@ htlsf_t htlsfheap_set_default(htlsf_t tlsf_heap)
 #endif
 #endif // USING_HTLSFHEAP
 
+#ifndef  HTLSFHEAP_DEFAULT_POOL_ATTRIBUTE
+#define  HTLSFHEAP_DEFAULT_POOL_ATTRIBUTE
+#endif // HTLSFHEAP_DEFAULT_POOL_ATTRIBUTE
+
 #if HTLSFHEAP_DEFAULT_POOL_SIZE >= 8192
+HTLSFHEAP_DEFAULT_POOL_ATTRIBUTE
 static uint64_t htlsfheap_default_pool_bytes[(HTLSFHEAP_DEFAULT_POOL_SIZE+sizeof(uint64_t)-1)/sizeof(uint64_t)]= {0};
 static bool htlsfheap_is_default_pool_init=false;
 static void htlsfheap_check_default_pool(void)
