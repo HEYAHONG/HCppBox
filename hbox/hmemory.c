@@ -44,3 +44,8 @@
  * 静态内存分配
  */
 #include "hmemory/hmemorystaticallocator.c"
+
+/*
+ * 文件描述符
+ */
+#include "hmemory/hfiledescriptor.c"

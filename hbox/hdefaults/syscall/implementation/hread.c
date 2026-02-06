@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hdefaults.h"
+#include "hmemory.h"
 
 #if    defined(HDEFAULTS_OS_LINUX_SYSCALL32_read)
 #define HDEFAULTS_SYSCALL_HREAD  HDEFAULTS_OS_LINUX_SYSCALL32_read
@@ -46,7 +47,7 @@ HDEFAULTS_USERCALL_DEFINE3(hread,HDEFAULTS_SYSCALL_HREAD,hread_ssize_t,int,fd,vo
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_read(fd,buff,buff_count);
 #else
-
+    ret=ret=hfiledescriptor_read(fd,buff,buff_count);
 #endif
     return ret;
 }

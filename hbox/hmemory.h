@@ -21,6 +21,7 @@ extern "C"
 #include "hmemory/hobject.h"
 #include "hmemory/hringbuf.h"
 #include "hmemory/hdoublylinkedlist.h"
+#include "hmemory/hfiledescriptor.h"
 
 
 #ifdef __cplusplus

@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hdefaults.h"
+#include "hmemory.h"
 
 #if    defined(HDEFAULTS_OS_LINUX_SYSCALL32_write)
 #define HDEFAULTS_SYSCALL_HWRITE  HDEFAULTS_OS_LINUX_SYSCALL32_write
@@ -46,7 +47,7 @@ HDEFAULTS_USERCALL_DEFINE3(hwrite,HDEFAULTS_SYSCALL_HWRITE,hwrite_ssize_t,int,fd
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_write(fd,buff,buff_count);
 #else
-
+    ret=hfiledescriptor_write(fd,buff,buff_count);
 #endif
     return ret;
 }

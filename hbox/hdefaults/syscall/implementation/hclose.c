@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hdefaults.h"
+#include "hmemory.h"
 
 #if    defined(HDEFAULTS_OS_LINUX_SYSCALL32_close)
 #define HDEFAULTS_SYSCALL_HCLOSE  HDEFAULTS_OS_LINUX_SYSCALL32_close
@@ -46,7 +47,7 @@ HDEFAULTS_USERCALL_DEFINE1(hclose,HDEFAULTS_SYSCALL_HCLOSE,int,int,fd)
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_close(fd);
 #else
-
+    ret=hfiledescriptor_close(fd);
 #endif
     return ret;
 }

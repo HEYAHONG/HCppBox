@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hdefaults.h"
+#include "hmemory.h"
 
 #if    defined(HDEFAULTS_OS_LINUX_SYSCALL32_lseek)
 #define HDEFAULTS_SYSCALL_HLSEEK  HDEFAULTS_OS_LINUX_SYSCALL32_lseek
@@ -46,7 +47,7 @@ HDEFAULTS_USERCALL_DEFINE3(hlseek,HDEFAULTS_SYSCALL_HLSEEK,hlseek_off_t,int,fd,h
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_lseek(fd,offset,whence);
 #else
-
+    ret=hfiledescriptor_lseek(fd,offset,whence);
 #endif
     return ret;
 }
