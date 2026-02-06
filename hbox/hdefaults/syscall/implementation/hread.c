@@ -47,7 +47,7 @@ HDEFAULTS_USERCALL_DEFINE3(hread,HDEFAULTS_SYSCALL_HREAD,hread_ssize_t,int,fd,vo
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_read(fd,buff,buff_count);
 #else
-    ret=ret=hfiledescriptor_read(fd,buff,buff_count);
+    ret=hfiledescriptor_read(fd,buff,buff_count);
 #endif
     return ret;
 }
