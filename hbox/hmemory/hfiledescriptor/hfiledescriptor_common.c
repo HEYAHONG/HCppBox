@@ -73,7 +73,7 @@ hfiledescriptor_common_table_t *hfiledescriptor_common_table_get(hfiledescriptor
         return ret;
     }
     const uintptr_t            table_object_base=(uintptr_t)hfiledescriptor_common_table_object;
-    uintptr_t                  table_object_ptr=(table_object_base+fd-fd_base);
+    uintptr_t                  table_object_ptr=(table_object_base+(fd-fd_base));
     if((table_object_ptr-table_object_base) < (sizeof(hfiledescriptor_common_table_object)))
     {
         ret=(hfiledescriptor_common_table_t *)table_object_ptr;
