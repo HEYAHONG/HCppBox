@@ -67,13 +67,13 @@ hfiledescriptor_common_table_t *hfiledescriptor_common_table_get(hfiledescriptor
      * 默认占用文件描述符空间末尾部分
      */
     const hfiledescriptor_fd_t fd_max=((1ULL<<(sizeof(fd)*8-1))-1);
-    const hfiledescriptor_fd_t fd_base=fd_max-(sizeof(hfiledescriptor_common_table_object))-sizeof(hfiledescriptor_common_table_t)+1;
-    if(fd_base < 0 || fd < fd_base || (((fd-fd_base)%sizeof(hfiledescriptor_common_table_t))!=0))
+    const hfiledescriptor_fd_t fd_base=fd_max-(sizeof(hfiledescriptor_common_table_object)/sizeof(hfiledescriptor_common_table_object[0]));
+    if(fd_base < 0 || fd < fd_base)
     {
         return ret;
     }
     const uintptr_t            table_object_base=(uintptr_t)hfiledescriptor_common_table_object;
-    uintptr_t                  table_object_ptr=(table_object_base+(fd-fd_base));
+    uintptr_t                  table_object_ptr=(table_object_base+(fd-fd_base)*sizeof(hfiledescriptor_common_table_t));
     if((table_object_ptr-table_object_base) < (sizeof(hfiledescriptor_common_table_object)))
     {
         ret=(hfiledescriptor_common_table_t *)table_object_ptr;
@@ -96,13 +96,13 @@ static hfiledescriptor_fd_t hfiledescriptor_common_table_fd(hfiledescriptor_comm
      * 默认占用文件描述符空间末尾部分
      */
     const hfiledescriptor_fd_t fd_max=((1ULL<<(sizeof(hfiledescriptor_fd_t)*8-1))-1);
-    const hfiledescriptor_fd_t fd_base=fd_max-(sizeof(hfiledescriptor_common_table_object))-sizeof(hfiledescriptor_common_table_t)+1;
+    const hfiledescriptor_fd_t fd_base=fd_max-(sizeof(hfiledescriptor_common_table_object)/sizeof(hfiledescriptor_common_table_object[0]));
     if(fd_base < 0)
     {
         return ret;
     }
 
-    ret=fd_base+(table_object_ptr-table_object_base);
+    ret=fd_base+(table_object_ptr-table_object_base)/sizeof(hfiledescriptor_common_table_t);
 
     return ret;
 }
@@ -154,7 +154,7 @@ void hfiledescriptor_common_table_free(hfiledescriptor_fd_t fd)
     {
         return;
     }
-    size_t index=(((uintptr_t)obj)-((uintptr_t)hfiledescriptor_common_table_object));
+    size_t index=(((uintptr_t)obj)-((uintptr_t)hfiledescriptor_common_table_object))/sizeof(hfiledescriptor_common_table_t);
     hatomic_int_store(&hfiledescriptor_common_table_flag[index],0);
 }
 
