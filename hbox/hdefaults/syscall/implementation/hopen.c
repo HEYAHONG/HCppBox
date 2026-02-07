@@ -48,8 +48,8 @@ HDEFAULTS_USERCALL_DEFINE3(hopen,HDEFAULTS_SYSCALL_HOPEN,int,const char *,filena
     ret=open(filename,oflag,mode);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_open(filename,oflag,mode);
-#else
-
+#elif !defined(HDEFAULTS_SYSCALL_NO_HFILEDESCRIPTOR)
+    ret=hfiledescriptor_open(filename,oflag,mode);
 #endif
     return ret;
 }

@@ -183,6 +183,25 @@ bool hfiledescriptor_check_fd(hfiledescriptor_fd_t fd)
     return false;
 }
 
+
+#if defined(HFILEDESCRIPTOR_OPEN)
+extern hfiledescriptor_fd_t  HFILEDESCRIPTOR_OPEN(const char * filename,int oflag,unsigned int mode);
+#endif
+
+hfiledescriptor_fd_t  hfiledescriptor_open(const char * filename,int oflag,unsigned int mode)
+{
+    int ret=-1;
+    /*
+     * open函数中应当使用文件名打开文件，并且自行申请一个文件描述符返回，通常由文件系统实现。
+     */
+
+#if defined(HFILEDESCRIPTOR_OPEN)
+     ret=HFILEDESCRIPTOR_OPEN(filename,oflag,mode);
+#endif
+
+    return ret;
+}
+
 int  hfiledescriptor_read(hfiledescriptor_fd_t fd, void *buff, hfiledescriptor_size_t buff_len)
 {
     int ret=-1;

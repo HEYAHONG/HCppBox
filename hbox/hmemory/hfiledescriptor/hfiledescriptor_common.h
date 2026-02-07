@@ -101,6 +101,7 @@ enum
 /*
  * 常用的文件描述符操作
  */
+hfiledescriptor_fd_t  hfiledescriptor_open(const char * filename,int oflag,unsigned int mode);
 int  hfiledescriptor_read(hfiledescriptor_fd_t fd, void *buff, hfiledescriptor_size_t buff_len);
 int  hfiledescriptor_write(hfiledescriptor_fd_t fd,const void *buff,hfiledescriptor_size_t  buff_len);
 int  hfiledescriptor_close(hfiledescriptor_fd_t fd);
