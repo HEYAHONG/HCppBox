@@ -4,10 +4,13 @@
 
 可外部配置的宏定义如下:
 
-| 宏定义                                | 说明                       | 备注                                                |
-| ------------------------------------- | -------------------------- | --------------------------------------------------- |
-| `HDEFAULTS_SYSCALL_NO_IMPLEMENTATION` | 不实现系统调用             | 可节约部分空间，但会造成某些功能在未改变API表时失效 |
-| `HSYSCALL_NO_IMPLEMENTATION`          | 不实现[hsyscall](hsyscall) | 可用于在编译器垃圾回收不完善时减少资源占用          |
+| 宏定义                                 | 说明                                              | 备注                                                         |
+| -------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------ |
+| `HDEFAULTS_SYSCALL_NO_IMPLEMENTATION`  | 不实现系统调用                                    | 可节约部分空间，但会造成某些功能在未改变API表时失效          |
+| `HDEFAULTS_SYSCALL_NO_HFILEDESCRIPTOR` | 不使用`hfiledescriptor`组件实现文件描述符相关调用 | 可节约部分空间。但`close`、`read`、`write`、`lseek`、`open`等将在某些环境下不可用 |
+| `HSYSCALL_NO_IMPLEMENTATION`           | 不实现[hsyscall](hsyscall)                        | 可用于在编译器垃圾回收不完善时减少资源占用                   |
+| `HSYSCALL_NO_TIME`                     | 不实现[hsyscall](hsyscall)的时间组件              | 可用于在编译器垃圾回收不完善时减少资源占用                   |
+| `HSYSCALL_NO_RANDOM`                   | 不实现[hsyscall](hsyscall)的随机数组件            | 可用于在编译器垃圾回收不完善时减少资源占用                   |
 
 # 目录说明
 

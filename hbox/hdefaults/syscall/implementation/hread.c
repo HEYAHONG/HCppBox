@@ -46,7 +46,7 @@ HDEFAULTS_USERCALL_DEFINE3(hread,HDEFAULTS_SYSCALL_HREAD,hread_ssize_t,int,fd,vo
     ret=read(fd,buff,buff_count);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_read(fd,buff,buff_count);
-#else
+#elif !defined(HDEFAULTS_SYSCALL_NO_HFILEDESCRIPTOR)
     ret=hfiledescriptor_read(fd,buff,buff_count);
 #endif
     return ret;

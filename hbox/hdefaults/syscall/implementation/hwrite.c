@@ -46,7 +46,7 @@ HDEFAULTS_USERCALL_DEFINE3(hwrite,HDEFAULTS_SYSCALL_HWRITE,hwrite_ssize_t,int,fd
     ret=write(fd,buff,buff_count);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_write(fd,buff,buff_count);
-#else
+#elif !defined(HDEFAULTS_SYSCALL_NO_HFILEDESCRIPTOR)
     ret=hfiledescriptor_write(fd,buff,buff_count);
 #endif
     return ret;

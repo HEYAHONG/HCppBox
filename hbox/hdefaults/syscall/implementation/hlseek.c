@@ -46,7 +46,7 @@ HDEFAULTS_USERCALL_DEFINE3(hlseek,HDEFAULTS_SYSCALL_HLSEEK,hlseek_off_t,int,fd,h
     ret=lseek(fd,offset,whence);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_lseek(fd,offset,whence);
-#else
+#elif !defined(HDEFAULTS_SYSCALL_NO_HFILEDESCRIPTOR)
     ret=hfiledescriptor_lseek(fd,offset,whence);
 #endif
     return ret;

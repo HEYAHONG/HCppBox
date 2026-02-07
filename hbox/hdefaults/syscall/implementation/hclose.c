@@ -46,7 +46,7 @@ HDEFAULTS_USERCALL_DEFINE1(hclose,HDEFAULTS_SYSCALL_HCLOSE,int,int,fd)
     ret=close(fd);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_close(fd);
-#else
+#elif !defined(HDEFAULTS_SYSCALL_NO_HFILEDESCRIPTOR)
     ret=hfiledescriptor_close(fd);
 #endif
     return ret;
