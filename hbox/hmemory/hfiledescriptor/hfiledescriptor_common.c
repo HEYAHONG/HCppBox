@@ -258,11 +258,19 @@ static hfiledescriptor_fd_t  (*hfiledescriptor_open_namespace[])(hfiledescriptor
     hfiledescriptor_open_reserved
 };
 
+
 #if defined(HFILEDESCRIPTOR_OPEN)
 extern hfiledescriptor_fd_t  HFILEDESCRIPTOR_OPEN(const char * filename,int oflag,unsigned int mode);
 #endif
+#if defined(HFILEDESCRIPTOR_OPENAT)
+extern hfiledescriptor_fd_t  HFILEDESCRIPTOR_OPENAT(hfiledescriptor_fd_t reuse_fd,const char * filename,int oflag,unsigned int mode);
+#endif
 
 hfiledescriptor_fd_t  hfiledescriptor_open(const char * filename,int oflag,unsigned int mode)
+{
+    return hfiledescriptor_openat(-1,filename,oflag,mode);
+}
+hfiledescriptor_fd_t  hfiledescriptor_openat(hfiledescriptor_fd_t reuse_fd,const char * filename,int oflag,unsigned int mode)
 {
     int ret=-1;
     /*
@@ -273,7 +281,7 @@ hfiledescriptor_fd_t  hfiledescriptor_open(const char * filename,int oflag,unsig
      {
          if(hfiledescriptor_open_namespace[i]==NULL)
          {
-             ret=hfiledescriptor_open_namespace[i](-1,filename,oflag,mode);
+             ret=hfiledescriptor_open_namespace[i](reuse_fd,filename,oflag,mode);
              if(ret >= 0)
              {
                  return ret;
@@ -286,9 +294,21 @@ hfiledescriptor_fd_t  hfiledescriptor_open(const char * filename,int oflag,unsig
      * open函数中应当使用文件名打开文件，并且自行申请一个文件描述符返回，通常由文件系统实现。
      */
 
-#if defined(HFILEDESCRIPTOR_OPEN)
-     ret=HFILEDESCRIPTOR_OPEN(filename,oflag,mode);
+    if(ret < 0)
+    {
+#if defined(HFILEDESCRIPTOR_OPENAT)
+        ret=HFILEDESCRIPTOR_OPENAT(reuse_fd,filename,oflag,mode);
 #endif
+    }
+
+
+    if(ret < 0)
+    {
+#if defined(HFILEDESCRIPTOR_OPEN)
+        ret=HFILEDESCRIPTOR_OPEN(filename,oflag,mode);
+#endif
+    }
+
 
     return ret;
 }
