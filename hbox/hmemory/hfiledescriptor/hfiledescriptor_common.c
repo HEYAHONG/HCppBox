@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hdefaults.h"
+#include "ctype.h"
 #include "hfiledescriptor_common.h"
 #include "hfiledescriptor_filev1.h"
 
@@ -183,6 +184,79 @@ bool hfiledescriptor_check_fd(hfiledescriptor_fd_t fd)
     return false;
 }
 
+static int  hfiledescriptor_reserved_file_nul_write(hfiledescriptor_fd_t fd,const void *buff,hfiledescriptor_size_t  buff_len)
+{
+    (void)fd;
+    (void)buff;
+    return buff_len;
+}
+static const hfiledescriptor_filev1_t hfiledescriptor_reserved_file_nul=
+{
+    NULL,
+    NULL,
+    hfiledescriptor_reserved_file_nul_write,
+    NULL,
+    NULL,
+    NULL
+};
+
+static int  hfiledescriptor_reserved_file_con_read(hfiledescriptor_fd_t fd,void *buff,hfiledescriptor_size_t  buff_len)
+{
+    (void)fd;
+    return hfiledescriptor_read(HFILEDESCRIPTOR_STDIN,buff,buff_len);
+}
+static int  hfiledescriptor_reserved_file_con_write(hfiledescriptor_fd_t fd,const void *buff,hfiledescriptor_size_t  buff_len)
+{
+    (void)fd;
+    return hfiledescriptor_write(HFILEDESCRIPTOR_STDOUT,buff,buff_len);
+}
+static const hfiledescriptor_filev1_t hfiledescriptor_reserved_file_con=
+{
+    NULL,
+    hfiledescriptor_reserved_file_con_read,
+    hfiledescriptor_reserved_file_con_write,
+    NULL,
+    NULL,
+    NULL
+};
+
+static hfiledescriptor_fd_t  hfiledescriptor_open_reserved(hfiledescriptor_fd_t reuse_fd,const char * filename,int oflag,unsigned int mode)
+{
+    int ret=-1;
+    if(filename==NULL)
+    {
+        return ret;
+    }
+    if(hstrlen(filename) < 3 || hstrlen(filename) > 7)
+    {
+        return ret;
+    }
+    unsigned char filename_temp[8]={0};
+    memcpy(filename_temp,filename,hstrlen(filename));
+    for(size_t i=0;i<sizeof(filename_temp);i++)
+    {
+        if(filename_temp[i]!='\0')
+        {
+            filename_temp[i]=toupper(filename_temp[i]);
+        }
+    }
+    if(hstrcmp(filename_temp,"NUL")==0)
+    {
+        return hfiledescriptor_filev1_open(reuse_fd,&hfiledescriptor_reserved_file_nul);
+    }
+
+    if(hstrcmp(filename_temp,"CON")==0)
+    {
+        return hfiledescriptor_filev1_open(reuse_fd,&hfiledescriptor_reserved_file_con);
+    }
+
+
+    return ret;
+}
+static hfiledescriptor_fd_t  (*hfiledescriptor_open_namespace[])(hfiledescriptor_fd_t reuse_fd,const char * filename,int oflag,unsigned int mode)=
+{
+    hfiledescriptor_open_reserved
+};
 
 #if defined(HFILEDESCRIPTOR_OPEN)
 extern hfiledescriptor_fd_t  HFILEDESCRIPTOR_OPEN(const char * filename,int oflag,unsigned int mode);
@@ -191,6 +265,23 @@ extern hfiledescriptor_fd_t  HFILEDESCRIPTOR_OPEN(const char * filename,int ofla
 hfiledescriptor_fd_t  hfiledescriptor_open(const char * filename,int oflag,unsigned int mode)
 {
     int ret=-1;
+    /*
+     * 命名空间。命名空间用于实现保留文件名（NUL、CON）或者使用文件路径访问内核对象(Windows下使用NT命名空间或者Win32设备命名空间，Linux下使用procfs、sysfs、设备文件)
+     * 命名空间优先于普通文件系统,且一般不可以自由创建文件，通常是伪文件系统。     *
+     */
+     for(size_t i=0;i<sizeof(hfiledescriptor_open_namespace)/sizeof(hfiledescriptor_open_namespace[0]);i++)
+     {
+         if(hfiledescriptor_open_namespace[i]==NULL)
+         {
+             ret=hfiledescriptor_open_namespace[i](-1,filename,oflag,mode);
+             if(ret >= 0)
+             {
+                 return ret;
+             }
+         }
+     }
+
+
     /*
      * open函数中应当使用文件名打开文件，并且自行申请一个文件描述符返回，通常由文件系统实现。
      */
