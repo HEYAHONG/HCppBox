@@ -240,12 +240,12 @@ static hfiledescriptor_fd_t  hfiledescriptor_open_reserved(hfiledescriptor_fd_t 
             filename_temp[i]=toupper(filename_temp[i]);
         }
     }
-    if(hstrcmp(filename_temp,"NUL")==0)
+    if(hstrcmp((const char *)filename_temp,"NUL")==0)
     {
         return hfiledescriptor_filev1_open(reuse_fd,&hfiledescriptor_reserved_file_nul);
     }
 
-    if(hstrcmp(filename_temp,"CON")==0)
+    if(hstrcmp((const char *)filename_temp,"CON")==0)
     {
         return hfiledescriptor_filev1_open(reuse_fd,&hfiledescriptor_reserved_file_con);
     }
