@@ -61,6 +61,13 @@ extern int HTHRD_CREATE(hthrd_t *thr,hthrd_start_t func,void *arg );
 int hthrd_create(hthrd_t *thr,hthrd_start_t func,void *arg )
 {
     int ret=hthrd_error;
+    hthrd_t temp_thr;
+    bool need_detach=false;
+    if(thr==NULL)
+    {
+        thr=&temp_thr;
+        need_detach=true;
+    }
 #if defined(HTHRD_CREATE)
     ret=HTHRD_CREATE(thr,func,arg);
 #elif defined(HDEFAULTS_LIBC_HAVE_THREADS)
@@ -76,6 +83,10 @@ int hthrd_create(hthrd_t *thr,hthrd_start_t func,void *arg )
 #elif defined(HTHRD_USING_FREERTOS)
     ret=hthrd_freertos_create(thr,func,arg);
 #endif
+    if(ret==hthrd_success && need_detach)
+    {
+        hthrd_detach(*thr);
+    }
     return ret;
 }
 
