@@ -93,6 +93,20 @@ void hfiledescriptor_common_table_free(hfiledescriptor_fd_t fd);
  */
 bool hfiledescriptor_check_fd(hfiledescriptor_fd_t fd);
 
+/** \brief 文件描述符最大值
+ *
+ * \return hfiledescriptor_fd_t 文件描述符
+ *
+ */
+hfiledescriptor_fd_t hfiledescriptor_fd_max(void);
+
+/** \brief 文件描述符最小值
+ *
+ * \return hfiledescriptor_fd_t 文件描述符
+ *
+ */
+hfiledescriptor_fd_t hfiledescriptor_fd_min(void);
+
 enum
 {
     HFILEDESCRIPTOR_TYPE_FILEV1=1,

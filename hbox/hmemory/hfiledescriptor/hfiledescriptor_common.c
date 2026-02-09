@@ -67,8 +67,8 @@ hfiledescriptor_common_table_t *hfiledescriptor_common_table_get(hfiledescriptor
     /*
      * 默认占用文件描述符空间末尾部分
      */
-    const hfiledescriptor_fd_t fd_max=((1ULL<<(sizeof(fd)*8-1))-1);
-    const hfiledescriptor_fd_t fd_base=fd_max-(sizeof(hfiledescriptor_common_table_object)/sizeof(hfiledescriptor_common_table_object[0]));
+    const hfiledescriptor_fd_t fd_max=hfiledescriptor_fd_max();
+    const hfiledescriptor_fd_t fd_base=hfiledescriptor_fd_min();
     if(fd_base < 0 || fd < fd_base)
     {
         return ret;
@@ -96,8 +96,8 @@ static hfiledescriptor_fd_t hfiledescriptor_common_table_fd(hfiledescriptor_comm
     /*
      * 默认占用文件描述符空间末尾部分
      */
-    const hfiledescriptor_fd_t fd_max=((1ULL<<(sizeof(hfiledescriptor_fd_t)*8-1))-1);
-    const hfiledescriptor_fd_t fd_base=fd_max-(sizeof(hfiledescriptor_common_table_object)/sizeof(hfiledescriptor_common_table_object[0]));
+    const hfiledescriptor_fd_t fd_max=hfiledescriptor_fd_max();
+    const hfiledescriptor_fd_t fd_base=hfiledescriptor_fd_min();
     if(fd_base < 0)
     {
         return ret;
@@ -182,6 +182,17 @@ bool hfiledescriptor_check_fd(hfiledescriptor_fd_t fd)
     }
 
     return false;
+}
+
+
+hfiledescriptor_fd_t hfiledescriptor_fd_max(void)
+{
+    return ((1ULL<<(sizeof(hfiledescriptor_fd_t)*8-1))-1);
+}
+
+hfiledescriptor_fd_t hfiledescriptor_fd_min(void)
+{
+    return hfiledescriptor_fd_max()-(sizeof(hfiledescriptor_common_table_object)/sizeof(hfiledescriptor_common_table_object[0]));
 }
 
 static int  hfiledescriptor_reserved_file_nul_write(hfiledescriptor_fd_t fd,const void *buff,hfiledescriptor_size_t  buff_len)
