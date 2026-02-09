@@ -17,12 +17,6 @@
 #define HDEFAULTS_SYSCALL_HREAD  HDEFAULTS_OS_FREEBSD_SYSCALL_read
 #endif
 
-#if defined(HDEFAULTS_OS_EMSCRIPTEN) && !defined(HREAD)
-/*
- * 默认不支持 Emscripten
- */
-#undef HDEFAULTS_SYSCALL_HREAD
-#endif // HDEFAULTS_OS_EMSCRIPTEN
 
 
 #ifdef HDEFAULTS_SYSCALL_HREAD
@@ -42,7 +36,7 @@ HDEFAULTS_USERCALL_DEFINE3(hread,HDEFAULTS_SYSCALL_HREAD,hread_ssize_t,int,fd,vo
     hread_ssize_t ret=-1;
 #if defined(HREAD)
     ret=HREAD(fd,buff,buff_count);
-#elif defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)
+#elif (defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)) && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     ret=read(fd,buff,buff_count);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_read(fd,buff,buff_count);

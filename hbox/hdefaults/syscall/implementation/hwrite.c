@@ -17,13 +17,6 @@
 #define HDEFAULTS_SYSCALL_HWRITE  HDEFAULTS_OS_FREEBSD_SYSCALL_write
 #endif
 
-#if defined(HDEFAULTS_OS_EMSCRIPTEN) && !defined(HWRITE)
-/*
- * 默认不支持 Emscripten
- */
-#undef HDEFAULTS_SYSCALL_HWRITE
-#endif // HDEFAULTS_OS_EMSCRIPTEN
-
 
 #ifdef HDEFAULTS_SYSCALL_HWRITE
 
@@ -42,7 +35,7 @@ HDEFAULTS_USERCALL_DEFINE3(hwrite,HDEFAULTS_SYSCALL_HWRITE,hwrite_ssize_t,int,fd
     hwrite_ssize_t ret=-1;
 #if defined(HWRITE)
     ret=HWRITE(fd,buff,buff_count);
-#elif defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)
+#elif (defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)) && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     ret=write(fd,buff,buff_count);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_write(fd,buff,buff_count);

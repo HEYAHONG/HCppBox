@@ -35,7 +35,7 @@ HDEFAULTS_USERCALL_DEFINE2(hclock_gettime,HDEFAULTS_SYSCALL_HCLOCK_GETTIME,int,h
     int ret=-1;
 #if defined(HCLOCK_GETTIME)
     ret=HCLOCK_GETTIME(clockid,tp);
-#elif defined(HDEFAULTS_OS_UNIX)
+#elif (defined(HDEFAULTS_OS_UNIX))  && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     {
         struct timespec _tp= {0};
         ret=clock_gettime(clockid,&_tp);

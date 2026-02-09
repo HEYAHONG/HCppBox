@@ -17,12 +17,6 @@
 #define HDEFAULTS_SYSCALL_HMMAP  HDEFAULTS_OS_FREEBSD_SYSCALL_mmap
 #endif
 
-#if defined(HDEFAULTS_OS_EMSCRIPTEN) && !defined(HMMAP)
-/*
- * Emscripten 默认不支持链接此系统调用
- */
-#undef HDEFAULTS_SYSCALL_HMMAP
-#endif // HDEFAULTS_OS_EMSCRIPTEN
 
 
 #ifdef HDEFAULTS_SYSCALL_HMMAP
@@ -90,7 +84,7 @@ HDEFAULTS_USERCALL_DEFINE6(hmmap,HDEFAULTS_SYSCALL_HMMAP,void *,void *,addr, siz
     void* ret=HMMAN_MAP_FAILED;
 #if defined(HMMAP)
     ret=HMMAP(addr,len,prot,flags,fildes,off);
-#elif defined(HAVE_SYS_MMAN_H)
+#elif (defined(HAVE_SYS_MMAN_H)) && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     ret=mmap(addr,len,prot,flags,fildes,off);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     {

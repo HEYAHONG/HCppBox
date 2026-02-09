@@ -17,12 +17,6 @@
 #define HDEFAULTS_SYSCALL_HMPROTECT  HDEFAULTS_OS_FREEBSD_SYSCALL_mprotect
 #endif
 
-#if defined(HDEFAULTS_OS_EMSCRIPTEN) && !defined(HMPROTECT)
-/*
- * Emscripten 默认不支持链接此系统调用
- */
-#undef HDEFAULTS_SYSCALL_HMPROTECT
-#endif // HDEFAULTS_OS_EMSCRIPTEN
 
 
 #ifdef HDEFAULTS_SYSCALL_HMPROTECT
@@ -65,7 +59,7 @@ HDEFAULTS_USERCALL_DEFINE3(hmprotect,HDEFAULTS_SYSCALL_HMPROTECT,int,void *,addr
     int ret=-1;
 #if defined(HMPROTECT)
     ret=HMPROTECT(addr,len,prot);
-#elif defined(HAVE_SYS_MMAN_H)
+#elif defined(HAVE_SYS_MMAN_H)  && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     ret=mprotect(addr,len,prot);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     {

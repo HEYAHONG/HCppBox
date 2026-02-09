@@ -35,7 +35,7 @@ HDEFAULTS_USERCALL_DEFINE2(hgettimeofday,HDEFAULTS_SYSCALL_HGETTIMEOFDAY,int,hge
     int ret=-1;
 #if defined(HGETTIMEOFDAY)
     ret=HGETTIMEOFDAY(tv,tz);
-#elif defined(HDEFAULTS_OS_UNIX)  || ( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) )
+#elif (defined(HDEFAULTS_OS_UNIX)  || ( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) ))  && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     {
         struct timeval _tv= {0};
         struct timezone _tz= {0};

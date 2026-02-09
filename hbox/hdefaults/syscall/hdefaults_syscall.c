@@ -35,6 +35,7 @@
 #include "wrapper/hwrite.c"
 #include "wrapper/hlseek.c"
 #include "wrapper/hopen.c"
+#include "wrapper/hopenat.c"
 #include "wrapper/hclock_getres.c"
 #include "wrapper/hclock_gettime.c"
 #include "wrapper/hclock_settime.c"
@@ -54,6 +55,7 @@
 #include "implementation/hwrite.c"
 #include "implementation/hlseek.c"
 #include "implementation/hopen.c"
+#include "implementation/hopenat.c"
 #include "implementation/hclock_getres.c"
 #include "implementation/hclock_gettime.c"
 #include "implementation/hclock_settime.c"
@@ -108,6 +110,10 @@
 #ifdef HDEFAULTS_SYSCALL_NO_HOPEN
 #undef HDEFAULTS_SYSCALL_HOPEN
 #endif // HDEFAULTS_SYSCALL_NO_HOPEN
+
+#ifdef HDEFAULTS_SYSCALL_NO_HOPENAT
+#undef HDEFAULTS_SYSCALL_HOPENAT
+#endif // HDEFAULTS_SYSCALL_NO_HOPENAT
 
 #ifdef HDEFAULTS_SYSCALL_NO_HCLOCK_GETRES
 #undef HDEFAULTS_SYSCALL_HCLOCK_GETRES
@@ -211,6 +217,13 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
     }
     break;
 #endif
+#ifdef HDEFAULTS_SYSCALL_HOPENAT
+    case HDEFAULTS_SYSCALL_HOPENAT:
+    {
+        ret=__hdefaults_usercall_hopenat;
+    }
+    break;
+#endif
 #ifdef HDEFAULTS_SYSCALL_HCLOCK_GETRES
     case HDEFAULTS_SYSCALL_HCLOCK_GETRES:
     {
@@ -243,6 +256,17 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
 
 void hdefaults_syscall_init(void)
 {
+
+#if  defined(HDEFAULTS_OS_EMSCRIPTEN)
+    {
+        hsettimeofday_timeval_t tv= {0};
+        struct timeval old_tv={0};
+        gettimeofday(&old_tv,NULL);
+        tv.tv_sec=old_tv.tv_sec;
+        tv.tv_usec=old_tv.tv_usec;
+        hsettimeofday(&tv,NULL);
+    }
+#endif
 
 #if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETRANDOM) && !defined(HGETRANDOM)
     {

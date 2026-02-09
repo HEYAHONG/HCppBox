@@ -17,12 +17,6 @@
 #define HDEFAULTS_SYSCALL_HMSYNC  HDEFAULTS_OS_FREEBSD_SYSCALL_msync
 #endif
 
-#if defined(HDEFAULTS_OS_EMSCRIPTEN) && !defined(HMSYNC)
-/*
- * Emscripten 默认不支持链接此系统调用
- */
-#undef HDEFAULTS_SYSCALL_HMSYNC
-#endif // HDEFAULTS_OS_EMSCRIPTEN
 
 
 #ifdef HDEFAULTS_SYSCALL_HMSYNC
@@ -50,7 +44,7 @@ HDEFAULTS_USERCALL_DEFINE3(hmsync,HDEFAULTS_SYSCALL_HMSYNC,int,void *,addr, size
     int ret=-1;
 #if defined(HMSYNC)
     ret=HMSYNC(addr,len,flags);
-#elif defined(HAVE_SYS_MMAN_H)
+#elif defined(HAVE_SYS_MMAN_H)  && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     ret=msync(addr,len,flags);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     {

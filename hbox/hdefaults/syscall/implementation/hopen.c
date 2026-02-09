@@ -16,13 +16,6 @@
 #define HDEFAULTS_SYSCALL_HOPEN  HDEFAULTS_OS_FREEBSD_SYSCALL_open
 #endif
 
-#if defined(HDEFAULTS_OS_EMSCRIPTEN) && !defined(HOPEN)
-/*
- * 默认不支持 Emscripten
- */
-#undef HDEFAULTS_SYSCALL_HOPEN
-#endif // HDEFAULTS_OS_EMSCRIPTEN
-
 
 #ifdef HDEFAULTS_SYSCALL_HOPEN
 
@@ -44,7 +37,7 @@ HDEFAULTS_USERCALL_DEFINE3(hopen,HDEFAULTS_SYSCALL_HOPEN,int,const char *,filena
     int ret=-1;
 #if defined(HOPEN)
     ret=HOPEN(filename,oflag,mode);
-#elif defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)
+#elif (defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)) && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     ret=open(filename,oflag,mode);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_open(filename,oflag,mode);

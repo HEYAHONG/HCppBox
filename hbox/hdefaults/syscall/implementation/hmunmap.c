@@ -17,12 +17,6 @@
 #define HDEFAULTS_SYSCALL_HMUNMAP  HDEFAULTS_OS_FREEBSD_SYSCALL_munmap
 #endif
 
-#if defined(HDEFAULTS_OS_EMSCRIPTEN) && !defined(HMUNMAP)
-/*
- * Emscripten 默认不支持链接此系统调用
- */
-#undef HDEFAULTS_SYSCALL_HMUNMAP
-#endif // HDEFAULTS_OS_EMSCRIPTEN
 
 
 #ifdef HDEFAULTS_SYSCALL_HMUNMAP
@@ -50,7 +44,7 @@ HDEFAULTS_USERCALL_DEFINE2(hmunmap,HDEFAULTS_SYSCALL_HMUNMAP,int,void *,addr, si
     int ret=-1;
 #if defined(HMUNMAP)
     ret=HMUNMAP(addr,len);
-#elif defined(HAVE_SYS_MMAN_H)
+#elif defined(HAVE_SYS_MMAN_H)  && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     ret=munmap(addr,len);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     {

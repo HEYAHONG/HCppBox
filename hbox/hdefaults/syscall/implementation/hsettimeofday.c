@@ -16,13 +16,6 @@
 #define HDEFAULTS_SYSCALL_HSETTIMEOFDAY  HDEFAULTS_OS_FREEBSD_SYSCALL_settimeofday
 #endif
 
-#if defined(HDEFAULTS_OS_EMSCRIPTEN) && !defined(HSETTIMEOFDAY)
-/*
- * Emscripten 默认不支持链接此系统调用
- */
-#undef HDEFAULTS_SYSCALL_HSETTIMEOFDAY
-#endif // HDEFAULTS_OS_EMSCRIPTEN
-
 
 
 #ifdef HDEFAULTS_SYSCALL_HSETTIMEOFDAY
@@ -43,7 +36,7 @@ HDEFAULTS_USERCALL_DEFINE2(hsettimeofday,HDEFAULTS_SYSCALL_HSETTIMEOFDAY,int,con
     int ret=-1;
 #if defined(HSETTIMEOFDAY)
     ret=HSETTIMEOFDAY(tv,tz);
-#elif defined(HDEFAULTS_OS_UNIX)  || ( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) )
+#elif (defined(HDEFAULTS_OS_UNIX)  || ( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) ))  && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     {
         struct timeval _tv= {0};
         struct timezone _tz= {0};

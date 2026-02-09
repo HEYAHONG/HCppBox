@@ -1,0 +1,32 @@
+/***************************************************************
+ * Name:      hopenat.c
+ * Purpose:   实现hopenat接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2026-02-09
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+#include "hdefaults.h"
+
+
+int hopenat(int dirfd,const char * filename,int oflag,...)
+{
+    int ret_value=-1;
+    unsigned int mode=0;
+    {
+        //读取mode值
+        va_list va;
+        va_start(va,oflag);
+        mode=va_arg(va,unsigned int);
+        va_end(va);
+    }
+#if    defined(HDEFAULTS_OS_LINUX_SYSCALL32_openat)
+    hdefaults_usercall(HDEFAULTS_OS_LINUX_SYSCALL32_openat,&ret_value,dirfd,filename,oflag,mode);
+#elif  defined(HDEFAULTS_OS_LINUX_SYSCALL64_openat)
+    hdefaults_usercall(HDEFAULTS_OS_LINUX_SYSCALL64_openat,&ret_value,dirfd,filename,oflag,mode);
+#elif  defined( HDEFAULTS_OS_FREEBSD_SYSCALL_openat)
+    hdefaults_usercall(HDEFAULTS_OS_FREEBSD_SYSCALL_openat,&ret_value,dirfd,filename,oflag,mode);
+#endif
+    return ret_value;
+}
+
