@@ -56,6 +56,7 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number);
  */
 #include "hsyscall/time/hsyscall_time.h"
 #include "hsyscall/random/hsyscall_random.h"
+#include "hsyscall/file/hsyscall_file.h"
 
 #ifdef __cplusplus
 }
