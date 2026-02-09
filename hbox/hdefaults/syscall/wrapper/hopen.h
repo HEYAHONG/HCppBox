@@ -107,11 +107,51 @@ extern "C"
 #define O_ACCMODE (03|O_SEARCH)
 #endif
 
+/*
+ * 模式定义， 用于mode参数，仅O_CREAT标志生效
+ */
+#ifndef S_IRWXU
+#define S_IRWXU  00700
+#endif // S_IRWXU
+#ifndef S_IRUSR
+#define S_IRUSR  00400
+#endif // S_IRUSR
+#ifndef S_IWUSR
+#define S_IWUSR  00200
+#endif // S_IWUSR
+#ifndef S_IXUSR
+#define S_IXUSR  00100
+#endif // S_IXUSR
+#ifndef S_IRWXG
+#define S_IRWXG  00070
+#endif // S_IRWXG
+#ifndef S_IRGRP
+#define S_IRGRP  00040
+#endif // S_IRGRP
+#ifndef S_IWGRP
+#define S_IWGRP  00020
+#endif // S_IWGRP
+#ifndef S_IXGRP
+#define S_IXGRP  00010
+#endif // S_IXGRP
+#ifndef S_IRWXO
+#define S_IRWXO  00007
+#endif // S_IRWXO
+#ifndef S_IROTH
+#define S_IROTH  00004
+#endif // S_IROTH
+#ifndef S_IWOTH
+#define S_IWOTH  00002
+#endif // S_IWOTH
+#ifndef S_IXOTH
+#define S_IXOTH  00001
+#endif // S_IXOTH
+
 /** \brief 打开文件
  *
  * \param filename const char* 文件名
  * \param oflag int 打开文件标志
- * \param ... 可选参数，一般情况下只有mode参数(类型为unsigned int)。
+ * \param ... 可选参数，一般情况下只有mode参数(类型为unsigned int,需要指定O_CREAT标志)。
  * \return int 文件描述符，-1表示出错
  *
  */
