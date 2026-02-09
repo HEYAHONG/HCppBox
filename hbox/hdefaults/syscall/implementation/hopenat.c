@@ -42,6 +42,9 @@ HDEFAULTS_USERCALL_DEFINE4(hopenat,HDEFAULTS_SYSCALL_HOPENAT,int,int,dirfd,const
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=_open(filename,oflag,mode);
 #elif !defined(HDEFAULTS_SYSCALL_NO_HFILEDESCRIPTOR)
+    /*
+     * 注意:hfiledescriptor行为与unix的行为并不一致，hfiledescriptor用于重用文件描述符，unix用于在指定目录
+     */
     ret=hfiledescriptor_openat(dirfd,filename,oflag,mode);
 #endif
     return ret;

@@ -23,7 +23,7 @@ extern "C"
 /** \brief 打开文件
  *
  * \param filename const char* 文件名
- * \param dirfd int 指定的文件描述符
+ * \param dirfd int 指定的文件描述符(无操作系统)/目录文件描述符（unix）
  * \param oflag int 打开文件标志
  * \param ... 可选参数，一般情况下只有mode参数(类型为unsigned int)。
  * \return int 文件描述符，-1表示出错

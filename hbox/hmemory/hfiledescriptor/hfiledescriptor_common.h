@@ -98,6 +98,8 @@ enum
     HFILEDESCRIPTOR_TYPE_FILEV1=1,
 };
 
+
+
 /*
  * 常用的文件描述符操作
  */
