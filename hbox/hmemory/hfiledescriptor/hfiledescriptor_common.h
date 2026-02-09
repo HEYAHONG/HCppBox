@@ -123,7 +123,7 @@ int  hfiledescriptor_read(hfiledescriptor_fd_t fd, void *buff, hfiledescriptor_s
 int  hfiledescriptor_write(hfiledescriptor_fd_t fd,const void *buff,hfiledescriptor_size_t  buff_len);
 int  hfiledescriptor_close(hfiledescriptor_fd_t fd);
 int  hfiledescriptor_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_ssize_t offset, int whence);
-int  hfiledescriptor_ioctl(hfiledescriptor_fd_t fd, int op, ...);
+int  hfiledescriptor_ioctl(hfiledescriptor_fd_t fd,unsigned long op, ...);
 
 
 #ifdef __cplusplus

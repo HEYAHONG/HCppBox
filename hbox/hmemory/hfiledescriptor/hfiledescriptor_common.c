@@ -481,7 +481,7 @@ int  hfiledescriptor_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_ssize_t offs
     return ret;
 }
 
-int  hfiledescriptor_ioctl(hfiledescriptor_fd_t fd, int op, ...)
+int  hfiledescriptor_ioctl(hfiledescriptor_fd_t fd, unsigned long op, ...)
 {
     int ret=-1;
     if(!hfiledescriptor_check_fd(fd))

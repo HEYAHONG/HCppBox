@@ -103,7 +103,7 @@ int  hfiledescriptor_filev1_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_ssize
     return ret;
 }
 
-int  hfiledescriptor_filev1_ioctl(hfiledescriptor_fd_t fd, int op, va_list va)
+int  hfiledescriptor_filev1_ioctl(hfiledescriptor_fd_t fd, unsigned long op, va_list va)
 {
     hfiledescriptor_filev1_t *filev1=hfiledescriptor_filev1_get(fd);
     if(filev1==NULL)
