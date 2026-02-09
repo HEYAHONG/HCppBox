@@ -62,7 +62,7 @@ HDEFAULTS_USERCALL_DEFINE3(hioctl,HDEFAULTS_SYSCALL_HIOCTL,int,int,fd,unsigned l
 
         default:
         {
-            ret=-1
+            ret=-1;
         }
         break;
         }

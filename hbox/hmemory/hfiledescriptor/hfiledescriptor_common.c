@@ -67,7 +67,6 @@ hfiledescriptor_common_table_t *hfiledescriptor_common_table_get(hfiledescriptor
     /*
      * 默认占用文件描述符空间末尾部分
      */
-    const hfiledescriptor_fd_t fd_max=hfiledescriptor_fd_max();
     const hfiledescriptor_fd_t fd_base=hfiledescriptor_fd_min();
     if(fd_base < 0 || fd < fd_base)
     {
@@ -96,7 +95,6 @@ static hfiledescriptor_fd_t hfiledescriptor_common_table_fd(hfiledescriptor_comm
     /*
      * 默认占用文件描述符空间末尾部分
      */
-    const hfiledescriptor_fd_t fd_max=hfiledescriptor_fd_max();
     const hfiledescriptor_fd_t fd_base=hfiledescriptor_fd_min();
     if(fd_base < 0)
     {
