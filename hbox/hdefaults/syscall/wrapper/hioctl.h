@@ -30,7 +30,7 @@ extern "C"
  * 注意：在有操作系统的情况下，仍然推荐使用原操作系统的ioctl
  * \param fd int 文件描述符
  * \param op unsigned long 操作
- * \param ... 其它参数
+ * \param ... 其它参数.一般有三种情况，无参数，无符号整型，指针
  * \return int 成功返回0
  *
  */

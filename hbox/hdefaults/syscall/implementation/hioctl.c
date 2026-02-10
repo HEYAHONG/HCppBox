@@ -35,9 +35,13 @@ extern int HIOCTL(int fd, unsigned long op, va_list va);
 HDEFAULTS_USERCALL_DEFINE3(hioctl,HDEFAULTS_SYSCALL_HIOCTL,int,int,fd,unsigned long,op,va_list *,va)
 {
     int ret=-1;
+    if(va==NULL)
+    {
+        return ret;
+    }
 #if defined(HIOCTL)
     ret=HIOCTL(fd,op,*va);
-#elif (defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)) && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
+#elif (defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)) && (!defined(HDEFAULTS_OS_EMSCRIPTEN))  && !( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) )
     {
         /*
          * 根据实际需要支持部分ioctl
@@ -47,7 +51,8 @@ HDEFAULTS_USERCALL_DEFINE3(hioctl,HDEFAULTS_SYSCALL_HIOCTL,int,int,fd,unsigned l
 
         default:
         {
-            ret=-1;
+            void *parameter=va_arg(*va,void *);
+            ret=ioctl(fd,op,parameter);
         }
         break;
         }
