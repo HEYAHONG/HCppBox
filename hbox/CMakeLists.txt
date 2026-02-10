@@ -40,6 +40,13 @@ if(HAVE_SYS_MMAN_H)
 target_compile_definitions(HBox PUBLIC  HAVE_SYS_MMAN_H=1)
 endif()
 
+#查找sys/ioctl.h
+check_include_file(sys/ioctl.h HAVE_SYS_IOCTL_H)
+if(HAVE_SYS_IOCTL_H)
+target_compile_definitions(HBox PUBLIC  HAVE_SYS_IOCTL_H=1)
+endif()
+
+
 #查找unistd.h
 check_include_file(unistd.h HAVE_UNISTD_H)
 if(HAVE_UNISTD_H)
