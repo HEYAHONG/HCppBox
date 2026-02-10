@@ -12,7 +12,8 @@
 int hopen(const char * filename,int oflag,...)
 {
     int ret_value=-1;
-    unsigned int mode=0;
+    unsigned int mode=S_IRWXU | S_IRWXG | S_IRWXO;
+    if((oflag & O_CREAT)!=0)
     {
         //读取mode值
         va_list va;

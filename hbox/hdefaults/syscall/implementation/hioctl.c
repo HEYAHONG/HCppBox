@@ -46,9 +46,19 @@ HDEFAULTS_USERCALL_DEFINE3(hioctl,HDEFAULTS_SYSCALL_HIOCTL,int,int,fd,unsigned l
         /*
          * 根据实际需要支持部分ioctl
          */
-        switch(op)
+        switch(__HIOC_SIZE(op))
         {
-
+        case 0:
+        {
+            ret=ioctl(fd,op);
+        }
+        break;
+        case sizeof(unsigned long):
+        {
+            unsigned long parameter=va_arg(*va,unsigned long);
+            ret=ioctl(fd,op,parameter);
+        }
+        break;
         default:
         {
             void *parameter=va_arg(*va,void *);
