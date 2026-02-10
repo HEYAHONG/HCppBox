@@ -41,7 +41,7 @@ HDEFAULTS_USERCALL_DEFINE3(hioctl,HDEFAULTS_SYSCALL_HIOCTL,int,int,fd,unsigned l
     }
 #if defined(HIOCTL)
     ret=HIOCTL(fd,op,*va);
-#elif (defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)) && (!defined(HDEFAULTS_OS_EMSCRIPTEN))  && !( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) )
+#elif (defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)) && (!defined(HDEFAULTS_OS_EMSCRIPTEN)) && !defined(HDEFAULTS_OS_WINDOWS)  && !( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) )
     {
         /*
          * 根据实际需要支持部分ioctl
