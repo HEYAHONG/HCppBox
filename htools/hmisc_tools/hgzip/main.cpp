@@ -116,13 +116,13 @@ static int do_decompress_entry(int argc,char *argv[])
     {
         output_filename=input_filename+".data";
     }
-    int input_fd=hopen(input_filename.c_str(),O_RDONLY);
+    int input_fd=hopen(input_filename.c_str(),O_BINARY | O_RDONLY);
     if(input_fd < 0)
     {
         hfprintf(stderr,"open %s failed!\r\n",input_filename.c_str());
         hexit(-1);
     }
-    int output_fd=hopen(output_filename.c_str(),O_RDWR | O_CREAT,00777);
+    int output_fd=hopen(output_filename.c_str(),O_BINARY | O_RDWR | O_CREAT,00777);
     if(output_fd < 0)
     {
         hfprintf(stderr,"open %s failed!\r\n",output_filename.c_str());
@@ -169,13 +169,13 @@ static int do_compress_entry(int argc,char *argv[])
 {
     std::string input_filename=filename;
     std::string output_filename=(filename+".gz");
-    int input_fd=hopen(input_filename.c_str(),O_RDONLY);
+    int input_fd=hopen(input_filename.c_str(),O_BINARY | O_RDONLY);
     if(input_fd < 0)
     {
         hfprintf(stderr,"open %s failed!\r\n",input_filename.c_str());
         hexit(-1);
     }
-    int output_fd=hopen(output_filename.c_str(),O_RDWR | O_CREAT,00777);
+    int output_fd=hopen(output_filename.c_str(),O_BINARY | O_RDWR | O_CREAT,00777);
     if(output_fd < 0)
     {
         hfprintf(stderr,"open %s failed!\r\n",output_filename.c_str());
