@@ -160,7 +160,6 @@ static int do_decompress_entry(int argc,char *argv[])
     }
 
     hgzclose(file);
-    hclose(output_fd);
     hclose(input_fd);
     return 0;
 }
@@ -213,7 +212,6 @@ static int do_compress_entry(int argc,char *argv[])
     }
 
     hgzclose(file);
-    hclose(output_fd);
     hclose(input_fd);
 
     return 0;
