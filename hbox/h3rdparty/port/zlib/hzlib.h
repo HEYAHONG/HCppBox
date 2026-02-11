@@ -64,6 +64,33 @@ bool hzlib_uncompress(uint8_t *dest,unsigned long *dest_length,const uint8_t *sr
 bool hzlib_uncompress2(uint8_t *dest,unsigned long *dest_length,const uint8_t *src,unsigned long *src_length);
 
 
+struct hgzfile;
+typedef struct hgzfile hgzfile_t;
+hgzfile_t *  hgzdopen(int fd, const char *mode);
+int  hgzbuffer(hgzfile_t * file, unsigned length);
+int  hgzsetparams(hgzfile_t * file, int level, int strategy);
+int  hgzread(hgzfile_t * file, void * buf, unsigned len);
+size_t  hgzfread(void * buf, size_t length, size_t nitems,hgzfile_t * file);
+int  hgzwrite(hgzfile_t * file, const void * buf, unsigned len);
+size_t  hgzfwrite(const void * buf, size_t length,size_t nitems, hgzfile_t * file);
+int  hgzputs(hgzfile_t * file, const char *s);
+char *  hgzgets(hgzfile_t * file, char *buf, int len);
+int  hgzputc(hgzfile_t * file, int c);
+int  hgzgetc(hgzfile_t * file);
+int  hgzungetc(int c, hgzfile_t * file);
+int  hgzflush(hgzfile_t * file, int flush);
+int  hgzrewind(hgzfile_t * file);
+int  hgzeof(hgzfile_t * file);
+int  hgzdirect(hgzfile_t * file);
+int  hgzclose(hgzfile_t * file);
+int  hgzclose_r(hgzfile_t * file);
+int  hgzclose_w(hgzfile_t * file);
+const char *  hgzerror(hgzfile_t * file, int *errnum);
+void  hgzclearerr(hgzfile_t * file);
+
+
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
