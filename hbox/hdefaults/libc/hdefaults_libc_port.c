@@ -31,6 +31,9 @@
 #if !defined(HLIBC_NO_THREADS)
 #include "hlibc/threads/hlibc_threads.c"
 #endif
+#if !defined(HLIBC_NO_STDIO)
+#include "hlibc/stdio/hlibc_stdio.c"
+#endif
 #else
 #ifdef HDEFAULTS_LIBC_TINY
 #undef HDEFAULTS_LIBC_TINY

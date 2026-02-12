@@ -18,6 +18,8 @@ int hputchar(int ch)
 {
 #if defined(HPUTCHAR)
     return HPUTCHAR(ch);
+#elif ((HDEFAULTS_LIBC_OPTIMIZE_LEVEL) > 0) && !defined(HDEFAULTS_LIBC_TINY) && !defined(HLIBC_NO_STDIO)
+    return hlibc_putchar(ch);
 #else
     return putchar(ch);
 #endif

@@ -18,6 +18,8 @@ int hgetchar(void)
 {
 #if defined(HGETCHAR)
     return HGETCHAR();
+#elif ((HDEFAULTS_LIBC_OPTIMIZE_LEVEL) > 0) && !defined(HDEFAULTS_LIBC_TINY) && !defined(HLIBC_NO_STDIO)
+    return hlibc_getchar();
 #else
     return getchar();
 #endif

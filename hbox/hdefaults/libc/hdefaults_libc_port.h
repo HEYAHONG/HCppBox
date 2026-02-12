@@ -90,6 +90,7 @@ extern "C"
 #include "hlibc/stdatomic/hlibc_atomic_flag.h"
 #include "hlibc/time/hlibc_time.h"
 #include "hlibc/threads/hlibc_threads.h"
+#include "hlibc/stdio/hlibc_stdio.h"
 
 /*
  * 非标扩展
