@@ -18,6 +18,8 @@ size_t hfread(void*buffer,size_t obj_size,size_t obj_count,FILE * stream)
 {
 #if defined(HFREAD)
     return HFREAD(buffer,obj_size,obj_count,stream);
+#elif ((HDEFAULTS_LIBC_OPTIMIZE_LEVEL) > 0) && !defined(HDEFAULTS_LIBC_TINY) && !defined(HLIBC_NO_STDIO)
+    return hlibc_fread(buffer,obj_size,obj_count,(hfile_t *)stream);
 #else
     return fread(buffer,obj_size,obj_count,stream);
 #endif

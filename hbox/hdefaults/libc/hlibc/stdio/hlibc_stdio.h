@@ -11,6 +11,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "stdint.h"
+#include "stdbool.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -19,6 +20,24 @@ extern "C"
 
 int hlibc_getchar(void);
 int hlibc_putchar(int ch);
+
+struct hfile;
+typedef struct hfile hfile_t;
+
+size_t hlibc_fwrite(const void*buffer,size_t obj_size,size_t obj_count,hfile_t * fp);
+size_t hlibc_fread(void*buffer,size_t obj_size,size_t obj_count,hfile_t * fp);
+
+void hlibc_clearerr(hfile_t *fp);
+int hlibc_ferror(hfile_t *fp);
+int hlibc_feof(hfile_t *fp);
+
+
+hfile_t *hlibc_stdin(void);
+hfile_t *hlibc_stdout(void);
+hfile_t *hlibc_stderr(void);
+bool hlibc_is_stdin(void *fp);
+bool hlibc_is_stdout(void *fp);
+bool hlibc_is_stderr(void *fp);
 
 #ifdef __cplusplus
 }

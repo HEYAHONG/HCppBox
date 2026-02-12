@@ -18,6 +18,8 @@ int hferror( FILE *stream )
 {
 #if defined(HFERROR)
     return HFERROR(stream);
+#elif ((HDEFAULTS_LIBC_OPTIMIZE_LEVEL) > 0) && !defined(HDEFAULTS_LIBC_TINY) && !defined(HLIBC_NO_STDIO)
+    return hlibc_ferror((hfile_t *)stream);
 #else
     return ferror(stream);
 #endif
