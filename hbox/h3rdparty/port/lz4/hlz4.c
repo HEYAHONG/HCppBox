@@ -29,15 +29,16 @@ int hlz4_decompress(const char* src, char* dst, int src_length, int dst_length)
 
 int hlz4f_readopen(hlz4_readfile_t** lz4f, FILE* fp)
 {
-    return (LZ4F_OK_NoError!=LZ4F_readOpen((LZ4_readFile_t**)lz4f, (FILE*)fp))?0:-1;
+    return (LZ4F_OK_NoError==LZ4F_readOpen((LZ4_readFile_t**)lz4f, (FILE*)fp))?0:-1;
 }
 size_t hlz4f_read(hlz4_readfile_t* lz4f, void* buf, size_t length)
 {
-    return LZ4F_read((LZ4_readFile_t*) lz4f, buf, length);
+    size_t ret=LZ4F_read((LZ4_readFile_t*) lz4f, buf, length);
+    return ret;
 }
 int hlz4f_readclose(hlz4_readfile_t* lz4f)
 {
-    return (LZ4F_OK_NoError!=LZ4F_readClose((LZ4_readFile_t*)lz4f))?0:-1;
+    return (LZ4F_OK_NoError==LZ4F_readClose((LZ4_readFile_t*)lz4f))?0:-1;
 }
 
 
@@ -67,14 +68,15 @@ const hlz4f_preferences_t* hlz4f_preferences_best(void)
 }
 int hlz4f_writeopen(hlz4_writefile_t** lz4f, FILE* fp, const hlz4f_preferences_t* prefsPtr)
 {
-    return (LZ4F_OK_NoError!=LZ4F_writeOpen((LZ4_writeFile_t**)lz4f, fp, (const LZ4F_preferences_t*)prefsPtr))?0:-1;
+    return (LZ4F_OK_NoError==LZ4F_writeOpen((LZ4_writeFile_t**)lz4f, fp, (const LZ4F_preferences_t*)prefsPtr))?0:-1;
 }
 size_t hlz4f_write(hlz4_writefile_t* lz4f, const void* buf, size_t length)
 {
-    return LZ4F_write((LZ4_writeFile_t*) lz4f, buf, length);
+    size_t ret=LZ4F_write((LZ4_writeFile_t*) lz4f, buf, length);
+    return ret;
 }
 int hlz4f_writeclose(hlz4_writefile_t* lz4f)
 {
-    return (LZ4F_OK_NoError!=LZ4F_writeClose((LZ4_writeFile_t*)lz4f))?0:-1;
+    return (LZ4F_OK_NoError==LZ4F_writeClose((LZ4_writeFile_t*)lz4f))?0:-1;
 }
 
