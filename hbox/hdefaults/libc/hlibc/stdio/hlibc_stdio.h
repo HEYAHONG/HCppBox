@@ -29,6 +29,9 @@ size_t hlibc_fwrite(const void*buffer,size_t obj_size,size_t obj_count,hfile_t *
 size_t hlibc_fread(void*buffer,size_t obj_size,size_t obj_count,hfile_t * fp);
 int hlibc_fclose(hfile_t * fp);
 
+int64_t hlibc_fseek(hfile_t * fp, int64_t offset, int whence);
+int64_t hlibc_ftell(hfile_t * fp);
+void hlibc_rewind(hfile_t * fp);
 
 
 void hlibc_clearerr(hfile_t *fp);

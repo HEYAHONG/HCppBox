@@ -361,6 +361,27 @@ int hlibc_fclose(hfile_t * fp)
     return ret;
 }
 
+int64_t hlibc_fseek(hfile_t * fp, int64_t offset, int whence)
+{
+    int64_t ret=-1;
+    if(hlibc_stdio_file_check(fp))
+    {
+        return hlseek(fp->fd,offset,whence);
+    }
+    return ret;
+}
+int64_t hlibc_ftell(hfile_t * fp)
+{
+    return hlibc_fseek(fp,0,SEEK_CUR);
+}
+void hlibc_rewind(hfile_t * fp)
+{
+    if(fp!=NULL)
+    {
+        hlibc_fseek(fp,0,SEEK_SET);
+    }
+}
+
 void hlibc_clearerr(hfile_t *fp)
 {
     if(hlibc_is_stdin(fp))

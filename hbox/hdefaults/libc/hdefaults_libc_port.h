@@ -33,6 +33,7 @@ extern "C"
 #include "wrapper/stdio/hfwrite.h"
 #include "wrapper/stdio/hfclose.h"
 #include "wrapper/stdio/hfopen.h"
+#include "wrapper/stdio/hfseek.h"
 
 
 /*
