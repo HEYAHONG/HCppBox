@@ -449,7 +449,7 @@ int  hfiledescriptor_close(hfiledescriptor_fd_t fd)
 
     return ret;
 }
-int  hfiledescriptor_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_ssize_t offset, int whence)
+hfiledescriptor_off_t  hfiledescriptor_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_off_t offset, int whence)
 {
     int ret=-1;
     if(!hfiledescriptor_check_fd(fd))

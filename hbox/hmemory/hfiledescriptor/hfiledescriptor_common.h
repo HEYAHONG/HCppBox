@@ -21,6 +21,7 @@ extern "C"
 typedef int         hfiledescriptor_fd_t;
 typedef intptr_t    hfiledescriptor_ssize_t;
 typedef uintptr_t   hfiledescriptor_size_t;
+typedef int64_t     hfiledescriptor_off_t;
 
 #define HFILEDESCRIPTOR_STDIN    (0)
 #define HFILEDESCRIPTOR_STDOUT   (1)
@@ -122,7 +123,7 @@ hfiledescriptor_fd_t  hfiledescriptor_open(const char * filename,int oflag,unsig
 int  hfiledescriptor_read(hfiledescriptor_fd_t fd, void *buff, hfiledescriptor_size_t buff_len);
 int  hfiledescriptor_write(hfiledescriptor_fd_t fd,const void *buff,hfiledescriptor_size_t  buff_len);
 int  hfiledescriptor_close(hfiledescriptor_fd_t fd);
-int  hfiledescriptor_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_ssize_t offset, int whence);
+hfiledescriptor_off_t  hfiledescriptor_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_off_t offset, int whence);
 int  hfiledescriptor_ioctl(hfiledescriptor_fd_t fd,unsigned long op, ...);
 
 

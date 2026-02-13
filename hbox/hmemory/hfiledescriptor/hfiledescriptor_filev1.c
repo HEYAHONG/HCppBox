@@ -88,7 +88,7 @@ int  hfiledescriptor_filev1_close(hfiledescriptor_fd_t fd)
     return ret;
 }
 
-int  hfiledescriptor_filev1_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_ssize_t offset, int whence)
+hfiledescriptor_off_t  hfiledescriptor_filev1_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_off_t offset, int whence)
 {
     hfiledescriptor_filev1_t *filev1=hfiledescriptor_filev1_get(fd);
     if(filev1==NULL)

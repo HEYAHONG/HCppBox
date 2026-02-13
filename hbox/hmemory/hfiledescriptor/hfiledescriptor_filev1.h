@@ -20,7 +20,7 @@ struct hfiledescriptor_filev1
     int  (*filev1_read)(hfiledescriptor_fd_t fd, void *buff, hfiledescriptor_size_t buff_len);
     int  (*filev1_write)(hfiledescriptor_fd_t fd,const void *buff,hfiledescriptor_size_t  buff_len);
     int  (*filev1_close)(hfiledescriptor_fd_t fd);
-    int  (*filev1_lseek)(hfiledescriptor_fd_t fd, hfiledescriptor_ssize_t offset, int whence);
+    hfiledescriptor_off_t  (*filev1_lseek)(hfiledescriptor_fd_t fd, hfiledescriptor_off_t offset, int whence);
     int  (*filev1_ioctl)(hfiledescriptor_fd_t fd, unsigned long op, va_list va);
 };
 
@@ -33,7 +33,7 @@ hfiledescriptor_fd_t hfiledescriptor_filev1_open(hfiledescriptor_fd_t reuse_fd,c
 int  hfiledescriptor_filev1_read(hfiledescriptor_fd_t fd, void *buff, hfiledescriptor_size_t buff_len);
 int  hfiledescriptor_filev1_write(hfiledescriptor_fd_t fd,const void *buff,hfiledescriptor_size_t  buff_len);
 int  hfiledescriptor_filev1_close(hfiledescriptor_fd_t fd);
-int  hfiledescriptor_filev1_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_ssize_t offset, int whence);
+hfiledescriptor_off_t  hfiledescriptor_filev1_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_off_t offset, int whence);
 int  hfiledescriptor_filev1_ioctl(hfiledescriptor_fd_t fd, unsigned long op, va_list va);
 
 #ifdef __cplusplus
