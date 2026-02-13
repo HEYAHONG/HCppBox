@@ -9,6 +9,7 @@
 #ifndef __HFSEEK_H__
 #define __HFSEEK_H__
 #include "stdio.h"
+#include "stdint.h"
 #ifdef __cplusplus
 extern "C"
 {
