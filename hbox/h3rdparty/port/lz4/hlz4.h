@@ -51,6 +51,27 @@ int hlz4_compress_hc(const char* src, char* dst, int src_length, int dst_length,
  */
 int hlz4_decompress(const char* src, char* dst, int src_length, int dst_length);
 
+
+#include "stdio.h"
+struct hlz4_readfile;
+typedef struct hlz4_readfile hlz4_readfile_t;
+int hlz4f_readopen(hlz4_readfile_t** lz4f, FILE* fp);
+size_t hlz4f_read(hlz4_readfile_t* lz4f, void* buf, size_t length);
+int hlz4f_readclose(hlz4_readfile_t* lz4f);
+struct hlz4_writefile;
+typedef struct hlz4_writefile hlz4_writefile_t;
+/*
+ * hlz4f_preferences相关选项需手动包含H3RDPARTY_LZ4FILE_HEADER头文件，并参考LZ4F_preferences_t结构体
+ */
+struct hlz4f_preferences;
+typedef struct hlz4f_preferences hlz4f_preferences_t;
+const hlz4f_preferences_t* hlz4f_preferences_fast(void);
+const hlz4f_preferences_t* hlz4f_preferences_best(void);
+int hlz4f_writeopen(hlz4_writefile_t** lz4f, FILE* fp, const hlz4f_preferences_t* prefsPtr);
+size_t hlz4f_write(hlz4_writefile_t* lz4f, const void* buf, size_t length);
+int hlz4f_writeclose(hlz4_writefile_t* lz4f);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
