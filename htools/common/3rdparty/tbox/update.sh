@@ -64,5 +64,7 @@ if [ -f "${script_dir}/tbox/LICENSE.md" ]
 then
 	rsync -rl --progress  "${script_dir}/tbox/src/" "${script_dir}/src/"
 	rsync -rl --progress  "${script_dir}/tbox/LICENSE.md" "${script_dir}/LICENSE.md"
+	rsync -rl --progress  "${script_dir}/tbox/xmake.lua" "${script_dir}/xmake.lua"
+	rsync -rl --progress  "${script_dir}/tbox/configure" "${script_dir}/configure"
 fi
 
