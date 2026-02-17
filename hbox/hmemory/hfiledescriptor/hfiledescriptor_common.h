@@ -22,6 +22,13 @@ typedef int         hfiledescriptor_fd_t;
 typedef intptr_t    hfiledescriptor_ssize_t;
 typedef uintptr_t   hfiledescriptor_size_t;
 typedef int64_t     hfiledescriptor_off_t;
+struct hfiledescriptor_sockaddr;
+typedef struct hfiledescriptor_sockaddr hfiledescriptor_sockaddr_t;
+typedef hfiledescriptor_size_t          hfiledescriptor_socklen_t;
+struct hfiledescriptor_iovec;
+typedef struct hfiledescriptor_iovec hfiledescriptor_iovec_t;
+struct hfiledescriptor_msghdr;
+typedef struct hfiledescriptor_msghdr hfiledescriptor_msghdr_t;
 
 #define HFILEDESCRIPTOR_STDIN    (0)
 #define HFILEDESCRIPTOR_STDOUT   (1)
@@ -111,12 +118,17 @@ hfiledescriptor_fd_t hfiledescriptor_fd_min(void);
 enum
 {
     HFILEDESCRIPTOR_TYPE_FILEV1=1,
+    HFILEDESCRIPTOR_TYPE_SOCKETV1,
 };
 
 
 
 /*
  * 常用的文件描述符操作
+ */
+
+/*
+ * 普通文件操作
  */
 hfiledescriptor_fd_t  hfiledescriptor_openat(hfiledescriptor_fd_t reuse_fd,const char * filename,int oflag,unsigned int mode);
 hfiledescriptor_fd_t  hfiledescriptor_open(const char * filename,int oflag,unsigned int mode);
@@ -127,6 +139,26 @@ hfiledescriptor_off_t  hfiledescriptor_lseek(hfiledescriptor_fd_t fd, hfiledescr
 int  hfiledescriptor_ioctl(hfiledescriptor_fd_t fd,unsigned long op, ...);
 int  hfiledescriptor_fcntl(hfiledescriptor_fd_t fd, int op,...);
 
+/*
+ * 套接字操作
+ */
+hfiledescriptor_fd_t    hfiledescriptor_accept(hfiledescriptor_fd_t fd, hfiledescriptor_sockaddr_t *addr, hfiledescriptor_socklen_t *addrlen);
+int                     hfiledescriptor_bind(hfiledescriptor_fd_t fd, const hfiledescriptor_sockaddr_t *name, hfiledescriptor_socklen_t namelen);
+int                     hfiledescriptor_shutdown(hfiledescriptor_fd_t fd, int how);
+int                     hfiledescriptor_getpeername (hfiledescriptor_fd_t fd, hfiledescriptor_sockaddr_t *name, hfiledescriptor_socklen_t *namelen);
+int                     hfiledescriptor_getsockname (hfiledescriptor_fd_t fd, hfiledescriptor_sockaddr_t *name, hfiledescriptor_socklen_t *namelen);
+int                     hfiledescriptor_getsockopt (hfiledescriptor_fd_t fd, int level, int optname, void *optval, hfiledescriptor_socklen_t *optlen);
+int                     hfiledescriptor_setsockopt (hfiledescriptor_fd_t fd, int level, int optname, const void *optval, hfiledescriptor_socklen_t optlen);
+int                     hfiledescriptor_connect(hfiledescriptor_fd_t fd, const hfiledescriptor_sockaddr_t *name, hfiledescriptor_socklen_t namelen);
+int                     hfiledescriptor_listen(hfiledescriptor_fd_t fd, int backlog);
+hfiledescriptor_ssize_t hfiledescriptor_recv(hfiledescriptor_fd_t fd, void *mem, hfiledescriptor_size_t len, int flags);
+hfiledescriptor_ssize_t hfiledescriptor_readv(hfiledescriptor_fd_t fd, const hfiledescriptor_iovec_t *iov, int iovcnt);
+hfiledescriptor_ssize_t hfiledescriptor_recvfrom(hfiledescriptor_fd_t fd, void *mem, hfiledescriptor_size_t len, int flags,hfiledescriptor_sockaddr_t *from, hfiledescriptor_socklen_t *fromlen);
+hfiledescriptor_ssize_t hfiledescriptor_recvmsg(hfiledescriptor_fd_t fd, hfiledescriptor_msghdr_t *message, int flags);
+hfiledescriptor_ssize_t hfiledescriptor_send(hfiledescriptor_fd_t fd, const void *dataptr, hfiledescriptor_size_t len, int flags);
+hfiledescriptor_ssize_t hfiledescriptor_sendmsg(hfiledescriptor_fd_t fd, const hfiledescriptor_msghdr_t *message, int flags);
+hfiledescriptor_ssize_t hfiledescriptor_sendto(hfiledescriptor_fd_t fd, const void *dataptr, hfiledescriptor_size_t len, int flags,const hfiledescriptor_sockaddr_t *to, hfiledescriptor_socklen_t tolen);
+hfiledescriptor_ssize_t hfiledescriptor_writev(hfiledescriptor_fd_t fd, const hfiledescriptor_iovec_t *iov, int iovcnt);
 
 #ifdef __cplusplus
 }

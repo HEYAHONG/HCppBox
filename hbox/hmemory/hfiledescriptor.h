@@ -16,6 +16,7 @@ extern "C"
 
 #include "hfiledescriptor/hfiledescriptor_common.h"
 #include "hfiledescriptor/hfiledescriptor_filev1.h"
+#include "hfiledescriptor/hfiledescriptor_socketv1.h"
 
 #ifdef __cplusplus
 }

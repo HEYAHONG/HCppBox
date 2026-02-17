@@ -11,5 +11,6 @@
 
 #include "hfiledescriptor/hfiledescriptor_common.c"
 #include "hfiledescriptor/hfiledescriptor_filev1.c"
+#include "hfiledescriptor/hfiledescriptor_socketv1.c"
 
 

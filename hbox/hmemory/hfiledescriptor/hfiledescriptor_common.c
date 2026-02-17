@@ -10,8 +10,9 @@
 #include "ctype.h"
 #include "hfiledescriptor_common.h"
 #include "hfiledescriptor_filev1.h"
+#include "hfiledescriptor_socketv1.h"
 
-static hfiledescriptor_std_table_t hfiledescriptor_std_table_object={0};
+static hfiledescriptor_std_table_t hfiledescriptor_std_table_object= {0};
 void hfiledescriptor_std_table_set_read(hfiledescriptor_fd_t fd,hfiledescriptor_ssize_t (*std_read)(hfiledescriptor_fd_t fd, void * buff, hfiledescriptor_size_t buff_length))
 {
     if(fd==HFILEDESCRIPTOR_STDIN)
@@ -48,14 +49,14 @@ void hfiledescriptor_std_table_set_write(hfiledescriptor_fd_t fd,hfiledescriptor
 #endif // HFILEDESCRIPTOR_COMMON_TABLE_ATTRIBUTE
 
 HFILEDESCRIPTOR_COMMON_TABLE_ATTRIBUTE
-static hfiledescriptor_common_table_t hfiledescriptor_common_table_object[HFILEDESCRIPTOR_COMMON_TABLE_SIZE]={0};
+static hfiledescriptor_common_table_t hfiledescriptor_common_table_object[HFILEDESCRIPTOR_COMMON_TABLE_SIZE]= {0};
 
 #ifndef HFILEDESCRIPTOR_COMMON_TABLE_FLAG_ATTRIBUTE
 #define HFILEDESCRIPTOR_COMMON_TABLE_FLAG_ATTRIBUTE
 #endif // HFILEDESCRIPTOR_COMMON_TABLE_FLAG_ATTRIBUTE
 
 HFILEDESCRIPTOR_COMMON_TABLE_FLAG_ATTRIBUTE
-static hatomic_int_t                  hfiledescriptor_common_table_flag[HFILEDESCRIPTOR_COMMON_TABLE_SIZE]={0};
+static hatomic_int_t                  hfiledescriptor_common_table_flag[HFILEDESCRIPTOR_COMMON_TABLE_SIZE]= {0};
 
 hfiledescriptor_common_table_t *hfiledescriptor_common_table_get(hfiledescriptor_fd_t fd)
 {
@@ -122,7 +123,7 @@ hfiledescriptor_fd_t  hfiledescriptor_common_table_alloc(hfiledescriptor_fd_t re
 
     ret=-1;
 
-    for(size_t index=0;index < sizeof(hfiledescriptor_common_table_flag)/sizeof(hfiledescriptor_common_table_flag[0]);index++)
+    for(size_t index=0; index < sizeof(hfiledescriptor_common_table_flag)/sizeof(hfiledescriptor_common_table_flag[0]); index++)
     {
         int value=0;
         if(hatomic_int_compare_exchange_strong(&hfiledescriptor_common_table_flag[index],&value,type))
@@ -240,9 +241,9 @@ static hfiledescriptor_fd_t  hfiledescriptor_open_reserved(hfiledescriptor_fd_t 
     {
         return ret;
     }
-    unsigned char filename_temp[8]={0};
+    unsigned char filename_temp[8]= {0};
     memcpy(filename_temp,filename,hstrlen(filename));
-    for(size_t i=0;i<sizeof(filename_temp);i++)
+    for(size_t i=0; i<sizeof(filename_temp); i++)
     {
         if(filename_temp[i]!='\0')
         {
@@ -286,17 +287,17 @@ hfiledescriptor_fd_t  hfiledescriptor_openat(hfiledescriptor_fd_t reuse_fd,const
      * 命名空间。命名空间用于实现保留文件名（NUL、CON）或者使用文件路径访问内核对象(Windows下使用NT命名空间或者Win32设备命名空间，Linux下使用procfs、sysfs、设备文件)
      * 命名空间优先于普通文件系统,且一般不可以自由创建文件，通常是伪文件系统。     *
      */
-     for(size_t i=0;i<sizeof(hfiledescriptor_open_namespace)/sizeof(hfiledescriptor_open_namespace[0]);i++)
-     {
-         if(hfiledescriptor_open_namespace[i]==NULL)
-         {
-             ret=hfiledescriptor_open_namespace[i](reuse_fd,filename,oflag,mode);
-             if(ret >= 0)
-             {
-                 return ret;
-             }
-         }
-     }
+    for(size_t i=0; i<sizeof(hfiledescriptor_open_namespace)/sizeof(hfiledescriptor_open_namespace[0]); i++)
+    {
+        if(hfiledescriptor_open_namespace[i]==NULL)
+        {
+            ret=hfiledescriptor_open_namespace[i](reuse_fd,filename,oflag,mode);
+            if(ret >= 0)
+            {
+                return ret;
+            }
+        }
+    }
 
 
     /*
@@ -347,9 +348,15 @@ int  hfiledescriptor_read(hfiledescriptor_fd_t fd, void *buff, hfiledescriptor_s
     {
     case HFILEDESCRIPTOR_TYPE_FILEV1:
     {
-        ret=hfiledescriptor_read(fd,buff,buff_len);
+        ret=hfiledescriptor_filev1_read(fd,buff,buff_len);
     }
     break;
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_read(fd,buff,buff_len);
+    }
+    break;
+
 
     case 0:
     default:
@@ -402,7 +409,12 @@ int  hfiledescriptor_write(hfiledescriptor_fd_t fd,const void *buff,hfiledescrip
     {
     case HFILEDESCRIPTOR_TYPE_FILEV1:
     {
-        ret=hfiledescriptor_write(fd,buff,buff_len);
+        ret=hfiledescriptor_filev1_write(fd,buff,buff_len);
+    }
+    break;
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_write(fd,buff,buff_len);
     }
     break;
 
@@ -431,7 +443,12 @@ int  hfiledescriptor_close(hfiledescriptor_fd_t fd)
     {
     case HFILEDESCRIPTOR_TYPE_FILEV1:
     {
-        ret=hfiledescriptor_close(fd);
+        ret=hfiledescriptor_filev1_close(fd);
+    }
+    break;
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_close(fd);
     }
     break;
 
@@ -461,7 +478,7 @@ hfiledescriptor_off_t  hfiledescriptor_lseek(hfiledescriptor_fd_t fd, hfiledescr
     {
     case HFILEDESCRIPTOR_TYPE_FILEV1:
     {
-        ret=hfiledescriptor_lseek(fd,offset,whence);
+        ret=hfiledescriptor_filev1_lseek(fd,offset,whence);
     }
     break;
 
@@ -494,6 +511,11 @@ int  hfiledescriptor_ioctl(hfiledescriptor_fd_t fd, unsigned long op, ...)
     case HFILEDESCRIPTOR_TYPE_FILEV1:
     {
         ret=hfiledescriptor_filev1_ioctl(fd,op,va);
+    }
+    break;
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_ioctl(fd,op,va);
     }
     break;
 
@@ -529,6 +551,12 @@ int  hfiledescriptor_fcntl(hfiledescriptor_fd_t fd, int op,...)
         ret=hfiledescriptor_filev1_fcntl(fd,op,va);
     }
     break;
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_fcntl(fd,op,va);
+    }
+    break;
+
 
     case 0:
     default:
@@ -544,3 +572,531 @@ int  hfiledescriptor_fcntl(hfiledescriptor_fd_t fd, int op,...)
 
     return ret;
 }
+
+hfiledescriptor_fd_t    hfiledescriptor_accept(hfiledescriptor_fd_t fd, hfiledescriptor_sockaddr_t *addr, hfiledescriptor_socklen_t *addrlen)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_accept(fd,addr,addrlen);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+
+int hfiledescriptor_bind(hfiledescriptor_fd_t fd, const hfiledescriptor_sockaddr_t *name, hfiledescriptor_socklen_t namelen)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_bind(fd,name,namelen);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+int hfiledescriptor_shutdown(hfiledescriptor_fd_t fd, int how)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_shutdown(fd,how);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+int hfiledescriptor_getpeername (hfiledescriptor_fd_t fd, hfiledescriptor_sockaddr_t *name, hfiledescriptor_socklen_t *namelen)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_getpeername(fd,name,namelen);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+int hfiledescriptor_getsockname (hfiledescriptor_fd_t fd, hfiledescriptor_sockaddr_t *name, hfiledescriptor_socklen_t *namelen)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_getsockname(fd,name,namelen);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+int hfiledescriptor_getsockopt (hfiledescriptor_fd_t fd, int level, int optname, void *optval, hfiledescriptor_socklen_t *optlen)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_getsockopt(fd,level,optname,optval,optlen);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+int hfiledescriptor_setsockopt (hfiledescriptor_fd_t fd, int level, int optname, const void *optval, hfiledescriptor_socklen_t optlen)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_setsockopt(fd,level,optname,optval,optlen);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+int hfiledescriptor_connect(hfiledescriptor_fd_t fd, const hfiledescriptor_sockaddr_t *name, hfiledescriptor_socklen_t namelen)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_connect(fd,name,namelen);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+int hfiledescriptor_listen(hfiledescriptor_fd_t fd, int backlog)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_listen(fd,backlog);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+hfiledescriptor_ssize_t hfiledescriptor_recv(hfiledescriptor_fd_t fd, void *mem, hfiledescriptor_size_t len, int flags)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_recv(fd,mem,len,flags);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+hfiledescriptor_ssize_t hfiledescriptor_readv(hfiledescriptor_fd_t fd, const hfiledescriptor_iovec_t *iov, int iovcnt)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_readv(fd,iov,iovcnt);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+hfiledescriptor_ssize_t hfiledescriptor_recvfrom(hfiledescriptor_fd_t fd, void *mem, hfiledescriptor_size_t len, int flags,hfiledescriptor_sockaddr_t *from, hfiledescriptor_socklen_t *fromlen)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_recvfrom(fd,mem,len,flags,from,fromlen);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+hfiledescriptor_ssize_t hfiledescriptor_recvmsg(hfiledescriptor_fd_t fd, hfiledescriptor_msghdr_t *message, int flags)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_recvmsg(fd,message,flags);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+hfiledescriptor_ssize_t hfiledescriptor_send(hfiledescriptor_fd_t fd, const void *dataptr, hfiledescriptor_size_t len, int flags)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_send(fd,dataptr,len,flags);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+hfiledescriptor_ssize_t hfiledescriptor_sendmsg(hfiledescriptor_fd_t fd, const hfiledescriptor_msghdr_t *message, int flags)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_sendmsg(fd,message,flags);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+hfiledescriptor_ssize_t hfiledescriptor_sendto(hfiledescriptor_fd_t fd, const void *dataptr, hfiledescriptor_size_t len, int flags,const hfiledescriptor_sockaddr_t *to, hfiledescriptor_socklen_t tolen)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_sendto(fd,dataptr,len,flags,to,tolen);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
+hfiledescriptor_ssize_t hfiledescriptor_writev(hfiledescriptor_fd_t fd, const hfiledescriptor_iovec_t *iov, int iovcnt)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_SOCKETV1:
+    {
+        ret=hfiledescriptor_socketv1_writev(fd,iov,iovcnt);
+    }
+    break;
+
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+
+    return ret;
+}
+
