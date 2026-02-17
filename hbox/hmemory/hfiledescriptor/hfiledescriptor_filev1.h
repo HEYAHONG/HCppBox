@@ -22,6 +22,7 @@ struct hfiledescriptor_filev1
     int  (*filev1_close)(hfiledescriptor_fd_t fd);
     hfiledescriptor_off_t  (*filev1_lseek)(hfiledescriptor_fd_t fd, hfiledescriptor_off_t offset, int whence);
     int  (*filev1_ioctl)(hfiledescriptor_fd_t fd, unsigned long op, va_list va);
+    int  (*filev1_fcntl)(int fd, int op,va_list va);
 };
 
 typedef struct hfiledescriptor_filev1 hfiledescriptor_filev1_t;
@@ -35,6 +36,7 @@ int  hfiledescriptor_filev1_write(hfiledescriptor_fd_t fd,const void *buff,hfile
 int  hfiledescriptor_filev1_close(hfiledescriptor_fd_t fd);
 hfiledescriptor_off_t  hfiledescriptor_filev1_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_off_t offset, int whence);
 int  hfiledescriptor_filev1_ioctl(hfiledescriptor_fd_t fd, unsigned long op, va_list va);
+int  hfiledescriptor_filev1_fcntl(hfiledescriptor_fd_t fd, int op,va_list va);
 
 #ifdef __cplusplus
 }

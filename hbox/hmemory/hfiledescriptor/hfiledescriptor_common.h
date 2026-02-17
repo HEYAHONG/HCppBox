@@ -125,6 +125,7 @@ int  hfiledescriptor_write(hfiledescriptor_fd_t fd,const void *buff,hfiledescrip
 int  hfiledescriptor_close(hfiledescriptor_fd_t fd);
 hfiledescriptor_off_t  hfiledescriptor_lseek(hfiledescriptor_fd_t fd, hfiledescriptor_off_t offset, int whence);
 int  hfiledescriptor_ioctl(hfiledescriptor_fd_t fd,unsigned long op, ...);
+int  hfiledescriptor_fcntl(hfiledescriptor_fd_t fd, int op,...);
 
 
 #ifdef __cplusplus

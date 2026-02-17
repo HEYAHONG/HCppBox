@@ -118,3 +118,18 @@ int  hfiledescriptor_filev1_ioctl(hfiledescriptor_fd_t fd, unsigned long op, va_
     return ret;
 }
 
+int  hfiledescriptor_filev1_fcntl(hfiledescriptor_fd_t fd, int op,va_list va)
+{
+    hfiledescriptor_filev1_t *filev1=hfiledescriptor_filev1_get(fd);
+    if(filev1==NULL)
+    {
+        return -1;
+    }
+    int ret=-1;
+    if(filev1->filev1_fcntl!=NULL)
+    {
+        ret=filev1->filev1_fcntl(fd,op,va);
+    }
+    return ret;
+}
+

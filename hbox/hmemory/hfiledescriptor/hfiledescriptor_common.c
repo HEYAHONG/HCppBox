@@ -511,3 +511,36 @@ int  hfiledescriptor_ioctl(hfiledescriptor_fd_t fd, unsigned long op, ...)
 
     return ret;
 }
+
+int  hfiledescriptor_fcntl(hfiledescriptor_fd_t fd, int op,...)
+{
+    int ret=-1;
+    if(!hfiledescriptor_check_fd(fd))
+    {
+        return ret;
+    }
+
+    va_list va;
+    va_start(va,op);
+    switch(hfiledescriptor_common_table_type(fd))
+    {
+    case HFILEDESCRIPTOR_TYPE_FILEV1:
+    {
+        ret=hfiledescriptor_filev1_fcntl(fd,op,va);
+    }
+    break;
+
+    case 0:
+    default:
+    {
+        /*
+         * 不支持的文件描述符类型
+         */
+        ret=-1;
+    }
+    break;
+    }
+    va_end(va);
+
+    return ret;
+}
