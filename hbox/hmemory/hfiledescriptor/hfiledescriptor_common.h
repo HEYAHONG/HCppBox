@@ -142,6 +142,7 @@ int  hfiledescriptor_fcntl(hfiledescriptor_fd_t fd, int op,...);
 /*
  * 套接字操作
  */
+hfiledescriptor_fd_t    hfiledescriptor_socket(int domain, int type, int protocol);
 hfiledescriptor_fd_t    hfiledescriptor_accept(hfiledescriptor_fd_t fd, hfiledescriptor_sockaddr_t *addr, hfiledescriptor_socklen_t *addrlen);
 int                     hfiledescriptor_bind(hfiledescriptor_fd_t fd, const hfiledescriptor_sockaddr_t *name, hfiledescriptor_socklen_t namelen);
 int                     hfiledescriptor_shutdown(hfiledescriptor_fd_t fd, int how);

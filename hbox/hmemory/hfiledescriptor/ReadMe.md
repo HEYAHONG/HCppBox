@@ -11,4 +11,5 @@
 | `HFILEDESCRIPTOR_COMMON_TABLE_FLAG_ATTRIBUTE` | 文件描述符表标志的属性,用于存储文件描述符分配信息 | 通常用于指定section信息，可用于在启用`MMU`时将文件描述符表标志存放至指定区域。 |
 |            `HFILEDESCRIPTOR_OPEN`             |         用户实现的`hfiledescriptor_open`          |            参数与返回值同``hfiledescriptor_open``            |
 |           `HFILEDESCRIPTOR_OPENAT`            |        用户实现的`hfiledescriptor_openat`         |           参数与返回值同``hfiledescriptor_openat`            |
+|           `HFILEDESCRIPTOR_SOCKET`            |        用户实现的`hfiledescriptor_socket`         |           参数与返回值同``hfiledescriptor_socket``           |
 

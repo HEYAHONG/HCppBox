@@ -56,7 +56,6 @@ hfiledescriptor_socketv1_t *hfiledescriptor_socketv1_get(hfiledescriptor_fd_t fd
 
 hfiledescriptor_fd_t hfiledescriptor_socketv1_alloc(hfiledescriptor_fd_t reuse_fd,const hfiledescriptor_socketv1_t *socketv1);
 
-
 hfiledescriptor_fd_t    hfiledescriptor_socketv1_accept(hfiledescriptor_fd_t fd, hfiledescriptor_sockaddr_t *addr, hfiledescriptor_socklen_t *addrlen);
 int                     hfiledescriptor_socketv1_bind(hfiledescriptor_fd_t fd, const hfiledescriptor_sockaddr_t *name, hfiledescriptor_socklen_t namelen);
 int                     hfiledescriptor_socketv1_shutdown(hfiledescriptor_fd_t fd, int how);

@@ -573,6 +573,25 @@ int  hfiledescriptor_fcntl(hfiledescriptor_fd_t fd, int op,...)
     return ret;
 }
 
+
+#if defined(HFILEDESCRIPTOR_SOCKET)
+extern hfiledescriptor_fd_t HFILEDESCRIPTOR_SOCKET(int domain, int type, int protocol);
+#endif
+
+hfiledescriptor_fd_t hfiledescriptor_socket(int domain, int type, int protocol)
+{
+    hfiledescriptor_fd_t ret=-1;
+
+#if defined(HFILEDESCRIPTOR_SOCKET)
+    if(ret < 0)
+    {
+        ret= HFILEDESCRIPTOR_SOCKET(domain, type, protocol);
+    }
+#endif
+
+    return ret;
+}
+
 hfiledescriptor_fd_t    hfiledescriptor_accept(hfiledescriptor_fd_t fd, hfiledescriptor_sockaddr_t *addr, hfiledescriptor_socklen_t *addrlen)
 {
     int ret=-1;
