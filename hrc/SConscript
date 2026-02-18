@@ -27,8 +27,8 @@ HRC_FSGEN=cwd+"/fsgen"
 
 #执行g++
 if not sys.platform.startswith("win32"):
-    Execute("g++ fsgen.cpp -static -static-libgcc  -o fsgen_custom")
-    HRC_FSGEN=cwd+"/fsgen_custom"	
+    HRC_FSGEN=cwd+"/build/fsgen_custom_"+sys.platform+"_"+HRC_RC_FS_PATH_NUM
+    Execute("g++ fsgen.cpp -static -static-libgcc  -o "+HRC_FSGEN)
 
 
 #生成RC_fs.c
