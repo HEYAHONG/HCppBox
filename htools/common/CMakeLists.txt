@@ -51,10 +51,17 @@ execute_process( COMMAND  ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LI
                )
 
 if(${TBOX_CMAKE_GENERATE_ERRORLEVEL} EQUAL 0)
-execute_process( COMMAND  ${XMAKE} project -k cmake
+if(WIN32)
+execute_process( COMMAND cmd.exe /c  ${XMAKE} project -k cmake
                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/"
                  RESULT_VARIABLE  TBOX_CMAKE_GENERATE_ERRORLEVEL
                )
+else()
+execute_process( COMMAND ${XMAKE} project -k cmake
+                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/"
+                 RESULT_VARIABLE  TBOX_CMAKE_GENERATE_ERRORLEVEL
+               )
+endif()
 endif()
 
 if(${TBOX_CMAKE_GENERATE_ERRORLEVEL} EQUAL 0)
