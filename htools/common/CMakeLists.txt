@@ -42,3 +42,20 @@ target_compile_definitions(HBox PUBLIC -DFREERTOS_KERNEL=1 )
 target_link_libraries(HBox FreeRTOSPort)
 
 
+find_program(XMAKE xmake)
+if(NOT XMAKE-NOTFOUND)
+#生成tbox文件
+execute_process( COMMAND ${XMAKE} project -k cmake
+                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/3rdparty/tbox/"
+                 RESULT_VARIABLE  TBOX_CMAKE_GENERATE_ERRORLEVEL
+               )
+if(${TBOX_CMAKE_GENERATE_ERRORLEVEL} EQUAL 0)
+set(TBOX ON)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/tbox tbox EXCLUDE_FROM_ALL)
+message(STATUS "TBOX:ON")
+else()
+set(TBOX OFF)
+message(STATUS "TBOX:OFF")
+endif()
+
+endif()
