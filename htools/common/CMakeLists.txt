@@ -45,13 +45,21 @@ target_link_libraries(HBox FreeRTOSPort)
 find_program(XMAKE xmake)
 if(NOT XMAKE-NOTFOUND)
 #生成tbox文件
-execute_process( COMMAND ${XMAKE} project -k cmake
+execute_process( COMMAND  ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/3rdparty/tbox/" "${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/"
                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/3rdparty/tbox/"
                  RESULT_VARIABLE  TBOX_CMAKE_GENERATE_ERRORLEVEL
                )
+
+if(${TBOX_CMAKE_GENERATE_ERRORLEVEL} EQUAL 0)
+execute_process( COMMAND  ${XMAKE} project -k cmake
+                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/"
+                 RESULT_VARIABLE  TBOX_CMAKE_GENERATE_ERRORLEVEL
+               )
+endif()
+
 if(${TBOX_CMAKE_GENERATE_ERRORLEVEL} EQUAL 0)
 set(TBOX ON)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/tbox tbox EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/" tbox EXCLUDE_FROM_ALL)
 message(STATUS "TBOX:ON")
 else()
 set(TBOX OFF)
