@@ -9,7 +9,8 @@
 
 # 目录
 
-- [rp_pio_sm](rp_pio_sm)：树莓派PIO状态机模拟。
-- [mcs_51](mcs_51):MCS-51指令集模拟。
-- [risc-v](risc-v):RISC-V指令集模拟。
+- [rp_pio_sm](rp_pio_sm)：树莓派PIO状态机。
+- [mcs_51](mcs_51):MCS-51指令集。
+- [risc-v](risc-v):RISC-V指令集。
+- [moxie](moxie):moxie架构。
 - [common](common):公共组件。
