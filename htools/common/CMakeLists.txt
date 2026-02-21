@@ -78,3 +78,5 @@ endif()
 endif()
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/3rdparty/rvvm/ rvvm EXCLUDE_FROM_ALL)
+#默认不构建动态库
+set(BUILD_SHARED_LIBS OFF)
