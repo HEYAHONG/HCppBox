@@ -36,6 +36,7 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../common
 ${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/astyle/
+${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/rvvm/include/
 ${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/
 ${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/GTerm
 ${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/TerminalWx/taTelnet
@@ -86,9 +87,6 @@ include(${wxWidgets_USE_FILE})
 target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
 
 include(FindPkgConfig)
-#添加rvvm 
-pkg_check_modules(LIBRVVM REQUIRED IMPORTED_TARGET rvvm)
-target_link_libraries(${PROJECT_NAME}  PkgConfig::LIBRVVM)
 
 
 #设定HCppBox使用纯C++
@@ -101,6 +99,8 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../common/  common  EXCLUDE_FROM
 #启用HCppBox、HRC
 hcppbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})
+#rvvm
+target_link_libraries(${PROJECT_NAME} rvvm_objlib)
 
 include(GNUInstallDirs)
 if(DEFINED HTOOLS_INSTALL_DIR)
