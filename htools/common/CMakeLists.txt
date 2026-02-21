@@ -76,3 +76,5 @@ message(STATUS "TBOX:OFF")
 endif()
 
 endif()
+
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/3rdparty/rvvm/ rvvm EXCLUDE_FROM_ALL)
