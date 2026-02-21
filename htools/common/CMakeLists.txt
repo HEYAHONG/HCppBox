@@ -11,7 +11,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../hcppbox hcppbox)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../hrc hrc)
 
-add_library(FreeRTOSPort)
+add_library(FreeRTOSPort STATIC)
 
 if(WIN32 OR CYGWIN)
 target_include_directories(FreeRTOSPort PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS/)

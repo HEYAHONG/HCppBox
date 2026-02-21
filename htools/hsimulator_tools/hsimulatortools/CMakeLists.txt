@@ -100,13 +100,16 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../common/  common  EXCLUDE_FROM
 hcppbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})
 #rvvm
-target_link_libraries(${PROJECT_NAME} rvvm_objlib)
+add_library(${PROJECT_NAME}_rvvm_static STATIC $<TARGET_OBJECTS:rvvm_objlib>)
+target_link_libraries(${PROJECT_NAME}_rvvm_static PRIVATE rvvm_common)
+target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_rvvm_static)
 
 include(GNUInstallDirs)
 if(DEFINED HTOOLS_INSTALL_DIR)
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS ${PROJECT_NAME} rvvm_cli
        RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
        LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
        ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
        )
 endif()
+
