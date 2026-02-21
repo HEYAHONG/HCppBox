@@ -101,6 +101,7 @@ hcppbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})
 #rvvm
 add_library(${PROJECT_NAME}_rvvm_static STATIC $<TARGET_OBJECTS:rvvm_objlib>)
+target_compile_definitions(${PROJECT_NAME}_rvvm_static PUBLIC -DRVVM_STATIC=1 )
 target_link_libraries(${PROJECT_NAME}_rvvm_static PRIVATE rvvm_common)
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_rvvm_static)
 
