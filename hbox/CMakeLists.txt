@@ -6,7 +6,7 @@ if(MSVC)
     add_compile_options(-utf-8 )
 endif()
 
-add_library(HBox EXCLUDE_FROM_ALL)
+add_library(HBox STATIC EXCLUDE_FROM_ALL)
 file(GLOB  HBOX_C_CPP_FILES *.cpp *.hpp *.c *.h cpp/*.cpp cpp/*.hpp cpp/*.c cpp/*.h h3rdparty/*.cpp h3rdparty/*.hpp h3rdparty/*.c h3rdparty/*.h )
 target_sources(HBox PRIVATE ${HBOX_C_CPP_FILES})
 target_include_directories(HBox PUBLIC ./ )

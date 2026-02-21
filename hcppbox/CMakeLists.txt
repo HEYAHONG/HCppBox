@@ -5,7 +5,7 @@ if(MSVC)
     add_compile_options(-utf-8 )
 endif()
 
-add_library(HCppBox EXCLUDE_FROM_ALL)
+add_library(HCppBox STATIC EXCLUDE_FROM_ALL)
 file(GLOB  HCPPBOX_C_CPP_FILES *.cpp *.h)
 target_sources(HCppBox PRIVATE ${HCPPBOX_C_CPP_FILES})
 target_include_directories(HCppBox PUBLIC ./ )
