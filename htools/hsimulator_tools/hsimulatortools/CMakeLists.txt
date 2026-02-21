@@ -105,9 +105,14 @@ target_compile_definitions(${PROJECT_NAME}_rvvm_static PUBLIC -DRVVM_STATIC=1 )
 target_link_libraries(${PROJECT_NAME}_rvvm_static PRIVATE rvvm_common)
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_rvvm_static)
 
+add_executable(${PROJECT_NAME}_rvvm_cli ${CMAKE_CURRENT_LIST_DIR}/../../common/3rdparty/rvvm/src/main.c $<TARGET_OBJECTS:rvvm_objlib>)
+target_link_libraries(${PROJECT_NAME}_rvvm_cli PRIVATE rvvm_common)
+set_target_properties(${PROJECT_NAME}_rvvm_cli PROPERTIES OUTPUT_NAME ${PROJECT_NAME}_rvvm)
+
+
 include(GNUInstallDirs)
 if(DEFINED HTOOLS_INSTALL_DIR)
-install(TARGETS ${PROJECT_NAME} rvvm_cli
+install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_rvvm_cli
        RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
        LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
        ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
