@@ -1,10 +1,7 @@
 
 add_custom_target(hsimulator_tools)
 
-include(FindPkgConfig)
-include(CheckIncludeFile)
 
-find_package(wxWidgets 3.2.0 QUIET)
 if(WXWIDGETS_FOUND)
 #添加hsimulatortools工具构建
 add_custom_target(hsimulatortools_tool  ${CMAKE_COMMAND} -E make_directory hsimulatortools && ${CMAKE_COMMAND} -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR}  -S ${CMAKE_CURRENT_SOURCE_DIR}/hsimulatortools/ -B hsimulatortools && ${CMAKE_COMMAND} --build hsimulatortools -t install

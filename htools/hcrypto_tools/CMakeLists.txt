@@ -1,7 +1,6 @@
 
 add_custom_target(hcrypto_tools)
 
-include(FindPkgConfig)
 
 #添加hashtool工具构建
 add_custom_target(hashtool_tool  ${CMAKE_COMMAND} -E make_directory hashtool && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/hashtool/ -B hashtool && ${CMAKE_COMMAND} --build hashtool -t install

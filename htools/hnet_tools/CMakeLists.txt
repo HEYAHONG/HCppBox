@@ -1,11 +1,6 @@
 
 add_custom_target(hnet_tools)
 
-include(FindPkgConfig)
-
-find_package(wxWidgets 3.2.0 QUIET)
-
-pkg_check_modules(LIBSERIALPORT QUIET IMPORTED_TARGET libserialport)
 
 if(WXWIDGETS_FOUND AND LIBSERIALPORT_FOUND)
 #添加hmodbushelper工具构建
@@ -18,9 +13,6 @@ else()
 message(STATUS "Disable hmodbushelper_tool!" )
 endif()
 
-pkg_check_modules(LIBEVENT QUIET IMPORTED_TARGET libevent)
-pkg_check_modules(LIBEVENT_CORE QUIET IMPORTED_TARGET libevent_core)
-pkg_check_modules(LIBEVENT_EXTRA QUIET IMPORTED_TARGET libevent_extra)
 if(LIBSERIALPORT_FOUND AND LIBEVENT_FOUND AND LIBEVENT_CORE_FOUND AND LIBEVENT_EXTRA_FOUND)
 #添加hmodbustcpgateway工具构建
 add_custom_target(hmodbustcpgateway_tool  ${CMAKE_COMMAND} -E make_directory hmodbustcpgateway && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/hmodbustcpgateway/ -B hmodbustcpgateway && ${CMAKE_COMMAND} --build hmodbustcpgateway -t install

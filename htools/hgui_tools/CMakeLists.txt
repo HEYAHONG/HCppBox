@@ -1,9 +1,6 @@
 
 add_custom_target(hgui_tools)
 
-include(FindPkgConfig)
-
-pkg_check_modules(DOTFONTSCAN_TOOL_FREETYPE2 IMPORTED_TARGET freetype2)
 if(DOTFONTSCAN_TOOL_FREETYPE2_FOUND)
 #添加dotfontscan工具构建
 add_custom_target(dotfontscan_tool  ${CMAKE_COMMAND} -E make_directory dotfontscan && ${CMAKE_COMMAND} -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR}  -S ${CMAKE_CURRENT_SOURCE_DIR}/dotfontscan/ -B dotfontscan && ${CMAKE_COMMAND} --build dotfontscan  -t install
@@ -15,7 +12,6 @@ else()
 message(STATUS "Disable dotfontscan_tool!" )
 endif()
 
-find_package(OpenCV QUIET)
 if(OPENCV_FOUND)
 #添加imageresourcegenerate工具构建
 add_custom_target(imageresourcegenerate_tool  ${CMAKE_COMMAND} -E make_directory imageresourcegenerate && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/imageresourcegenerate/ -B imageresourcegenerate && ${CMAKE_COMMAND} --build imageresourcegenerate -t install
@@ -27,7 +23,6 @@ else()
 message(STATUS "Disable imageresourcegenerate_tool!" )
 endif()
 
-find_package(wxWidgets 3.2.0 QUIET)
 if(WXWIDGETS_FOUND)
 #添加hguitools工具构建
 add_custom_target(hguitools_tool  ${CMAKE_COMMAND} -E make_directory hguitools && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/hguitools/ -B hguitools && ${CMAKE_COMMAND} --build hguitools -t install

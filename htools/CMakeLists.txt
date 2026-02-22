@@ -3,6 +3,9 @@ if(NOT DEFINED HTOOLS_INSTALL_DIR)
     set(HTOOLS_INSTALL_DIR ${CMAKE_BINARY_DIR}/htools)
 endif()
 
+include(${CMAKE_CURRENT_LIST_DIR}/common/CheckExternalLibrariesAndTools.cmake)
+
+
 add_subdirectory(hgui_tools)
 
 add_subdirectory(hnet_tools)
