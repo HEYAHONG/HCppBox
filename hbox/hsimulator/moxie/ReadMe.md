@@ -349,3 +349,7 @@ Zero-extend byte.  Zero-extend the lower 8-bits of `$rB` into a `$rA` as a 32-bi
 
 Zero-extend short.  Zero-extend the lower 16-bits of `$rB` into a `$rA` as a 32-bit value.
 
+# 相关链接
+
+- http://moxielogic.org/blog/
+- https://github.com/atgreen
