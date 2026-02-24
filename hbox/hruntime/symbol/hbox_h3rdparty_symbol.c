@@ -167,6 +167,14 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
     {hdefaults_str(hlz4_compress),(uintptr_t)&hlz4_compress},
     {hdefaults_str(hlz4_compress_hc),(uintptr_t)&hlz4_compress_hc},
     {hdefaults_str(hlz4_decompress),(uintptr_t)&hlz4_decompress},
+    {hdefaults_str(hlz4f_readopen),(uintptr_t)&hlz4f_readopen},
+    {hdefaults_str(hlz4f_read),(uintptr_t)&hlz4f_read},
+    {hdefaults_str(hlz4f_readclose),(uintptr_t)&hlz4f_readclose},
+    {hdefaults_str(hlz4f_preferences_fast),(uintptr_t)&hlz4f_preferences_fast},
+    {hdefaults_str(hlz4f_preferences_best),(uintptr_t)&hlz4f_preferences_best},
+    {hdefaults_str(hlz4f_writeopen),(uintptr_t)&hlz4f_writeopen},
+    {hdefaults_str(hlz4f_write),(uintptr_t)&hlz4f_write},
+    {hdefaults_str(hlz4f_writeclose),(uintptr_t)&hlz4f_writeclose},
 //h3rdparty/h3rdparty_lz4_xxhash.c
 //h3rdparty/h3rdparty_mqtt_packet.c
 //h3rdparty/h3rdparty_pb_common.c
@@ -261,6 +269,27 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
     {hdefaults_str(hzlib_compress2),(uintptr_t)&hzlib_compress2},
     {hdefaults_str(hzlib_uncompress),(uintptr_t)&hzlib_uncompress},
     {hdefaults_str(hzlib_uncompress2),(uintptr_t)&hzlib_uncompress2},
+    {hdefaults_str(hgzdopen),(uintptr_t)&hgzdopen},
+    {hdefaults_str(hgzbuffer),(uintptr_t)&hgzbuffer},
+    {hdefaults_str(hgzsetparams),(uintptr_t)&hgzsetparams},
+    {hdefaults_str(hgzread),(uintptr_t)&hgzread},
+    {hdefaults_str(hgzfread),(uintptr_t)&hgzfread},
+    {hdefaults_str(hgzwrite),(uintptr_t)&hgzwrite},
+    {hdefaults_str(hgzfwrite),(uintptr_t)&hgzfwrite},
+    {hdefaults_str(hgzputs),(uintptr_t)&hgzputs},
+    {hdefaults_str(hgzgets),(uintptr_t)&hgzgets},
+    {hdefaults_str(hgzputc),(uintptr_t)&hgzputc},
+    {hdefaults_str(hgzgetc),(uintptr_t)&hgzgetc},
+    {hdefaults_str(hgzungetc),(uintptr_t)&hgzungetc},
+    {hdefaults_str(hgzflush),(uintptr_t)&hgzflush},
+    {hdefaults_str(hgzrewind),(uintptr_t)&hgzrewind},
+    {hdefaults_str(hgzeof),(uintptr_t)&hgzeof},
+    {hdefaults_str(hgzdirect),(uintptr_t)&hgzdirect},
+    {hdefaults_str(hgzclose),(uintptr_t)&hgzclose},
+    {hdefaults_str(hgzclose_r),(uintptr_t)&hgzclose_r},
+    {hdefaults_str(hgzclose_w),(uintptr_t)&hgzclose_w},
+    {hdefaults_str(hgzerror),(uintptr_t)&hgzerror},
+    {hdefaults_str(hgzclearerr),(uintptr_t)&hgzclearerr},
 //h3rdparty/h3rdparty_zlib_trees.c
 //h3rdparty/h3rdparty_zlib_uncompr.c
 //h3rdparty/h3rdparty_zlib_zutil.c
