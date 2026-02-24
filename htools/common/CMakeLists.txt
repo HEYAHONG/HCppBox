@@ -43,6 +43,9 @@ target_link_libraries(HBox FreeRTOSPort)
 
 
 find_program(XMAKE xmake)
+if(XMAKE STREQUAL "XMAKE-NOTFOUND")
+set(XMAKE-NOTFOUND TRUE)
+endif()
 if(NOT XMAKE-NOTFOUND)
 #生成tbox文件
 execute_process( COMMAND  ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/3rdparty/tbox/" "${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/"
