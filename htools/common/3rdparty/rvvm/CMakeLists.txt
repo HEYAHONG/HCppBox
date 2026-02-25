@@ -131,7 +131,6 @@ include(CheckIPOSupported)
 check_ipo_supported(RESULT lto_supported OUTPUT lto_error)
 
 if (lto_supported)
-	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 else()
 	message(STATUS "${COLLOR_YELLOW}LTO is not supported by this toolchain: ${lto_error}")
 endif()

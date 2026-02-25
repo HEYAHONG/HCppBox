@@ -67,4 +67,5 @@ if [ -f "${script_dir}/RVVM/CMakeLists.txt" ]; then
 	rsync -rl --progress "${script_dir}/RVVM/LICENSE-GPL" "${script_dir}/"
 	rsync -rl --progress "${script_dir}/RVVM/LICENSE-MPL" "${script_dir}/"
 	sed -i "s/CMAKE_SOURCE_DIR/CMAKE_CURRENT_LIST_DIR/g" CMakeLists.txt
+	sed -i "/CMAKE_INTERPROCEDURAL_OPTIMIZATION/d" CMakeLists.txt
 fi
