@@ -305,10 +305,6 @@ int hthrd_freertos_detach(hthrd_t thr)
          * 设置分离标志
          */
         tcb->flags.thread_detach=1;
-        /*
-         * 让出时间片让线程执行
-         */
-        hthrd_freertos_yield();
 
         ret=hthrd_success;
     }
