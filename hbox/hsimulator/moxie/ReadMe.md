@@ -351,6 +351,33 @@ Zero-extend byte.  Zero-extend the lower 8-bits of `$rB` into a `$rA` as a 32-bi
 
 Zero-extend short.  Zero-extend the lower 16-bits of `$rB` into a `$rA` as a 32-bit value.
 
+## 虚拟CPU-moxiebox
+
+[moxiebox](https://github.com/atgreen/moxiebox.git)是一个moxie架构的沙箱。
+
+### 地址空间
+
+moxiebox具有一个空白的的32位地址空间。
+
+所有的代码及数据空间均由ELF可执行文件中的虚拟地址指定。
+
+数据文件中的数据加载在ELF可执行文件后的对齐地址上。
+
+### 中断（异常）
+
+swi指令可触发软中断。但由于moxiebox为沙箱，因此并不执行ELF文件中的中断处理程序,而是由moxiebox模拟实现相应功能。
+
+| swi中断号（系统调用号） | 说明     | 备注                       |
+| ----------------------- | -------- | -------------------------- |
+| 0                       | 退出     |                            |
+| 90                      | 执行mmap | 可用于在沙箱内动态申请内存 |
+
+### 初始状态
+
+- 入口地址由ELF可执行文件的入口地址指定，默认情况下,地址0x00001000用于程序入口地址。
+- 特殊寄存器7存储初始栈地址。
+- 特殊寄存器6存储内存描述表，内存描述表可作为程序的输入。
+
 # 工具链
 
 虽然在官方的[moxiebox](https://github.com/atgreen/moxiebox.git)中提供了GNU 编译器套件的编译脚本，但也可使用[crosstool-ng](https://github.com/crosstool-ng/crosstool-ng)的moxie-unknown-moxiebox样例直接编译出最新的工具链。
