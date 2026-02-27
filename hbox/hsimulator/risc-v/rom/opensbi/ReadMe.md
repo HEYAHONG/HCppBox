@@ -45,7 +45,35 @@ cmake ../
 cmake --build .
 ```
 
+编译完成后,可得rom.bin文件
 
+# 测试
+
+本rom代码需要opensbi环境支持，因此因此用户需要自行准备对应环境的fw_payload.bin与fw_jump.bin.
+
+下列命令均为最少需要使用的选项，用户可根据实际需要增添其他选项。
+
+## rvvm
+
+### 32位RISC-V
+
+```bash
+rvvm -rv32 -kernel rom.bin路径 fw_payload.bin路径
+```
+
+### 64位RISC-V
+
+```bash
+rvvm -kernel rom.bin路径 fw_payload.bin路径
+```
+
+## qemu
+
+### 64位RISC-V
+
+```bash
+qemu-system-riscv64 -M virt -bios fw_jump.bin路径 -kernel rom.bin路径 -serial stdio
+```
 
 # 目录说明
 
