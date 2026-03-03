@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define H3RDPARTY_LIBFDT_IMPLEMENTATION  1
+
 #include "hcompiler.h"
 #include "hdefaults.h"
 #include "h3rdparty.h"

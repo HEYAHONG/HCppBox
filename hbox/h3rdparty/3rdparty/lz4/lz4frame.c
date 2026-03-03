@@ -703,7 +703,7 @@ size_t LZ4F_cctx_size(const LZ4F_cctx* cctx) {
 /* LZ4F_compressBegin_internal()
  * Note: only accepts @cdict _or_ @dictBuffer as non NULL.
  */
-size_t LZ4F_compressBegin_internal(LZ4F_cctx* cctx,
+static size_t LZ4F_compressBegin_internal(LZ4F_cctx* cctx,
                           void* dstBuffer, size_t dstCapacity,
                           const void* dictBuffer, size_t dictSize,
                           const LZ4F_CDict* cdict,
@@ -842,7 +842,7 @@ size_t LZ4F_compressBegin(LZ4F_cctx* cctx,
  * Hidden implementation,
  * employed for multi-threaded compression
  * when frame defines linked blocks */
-size_t LZ4F_compressBegin_usingDictOnce(LZ4F_cctx* cctx,
+static size_t LZ4F_compressBegin_usingDictOnce(LZ4F_cctx* cctx,
                           void* dstBuffer, size_t dstCapacity,
                           const void* dict, size_t dictSize,
                           const LZ4F_preferences_t* preferencesPtr)

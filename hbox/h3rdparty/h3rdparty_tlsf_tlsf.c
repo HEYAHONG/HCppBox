@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define H3RDPARTY_TLSF_IMPLEMENTATION  1
+
 #include "hdefaults.h"
 #include "h3rdparty.h"
 
