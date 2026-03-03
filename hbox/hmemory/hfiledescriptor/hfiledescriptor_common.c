@@ -207,6 +207,7 @@ static const hfiledescriptor_filev1_t hfiledescriptor_reserved_file_nul=
     hfiledescriptor_reserved_file_nul_write,
     NULL,
     NULL,
+    NULL,
     NULL
 };
 
@@ -225,6 +226,7 @@ static const hfiledescriptor_filev1_t hfiledescriptor_reserved_file_con=
     NULL,
     hfiledescriptor_reserved_file_con_read,
     hfiledescriptor_reserved_file_con_write,
+    NULL,
     NULL,
     NULL,
     NULL
