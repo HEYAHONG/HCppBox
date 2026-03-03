@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HMEMORY_IMPLEMENTATION  1
+
 #include "hmemory.h"
 
 /*

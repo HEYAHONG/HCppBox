@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HLOCALE_IMPLEMENTATION  1
+
 #include "hlocale.h"
 
 #include "hlocale/hlocale.c"

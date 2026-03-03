@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HEVENT_IMPLEMENTATION  1
+
 #include "hevent.h"
 
 #include "hevent/heventloop.c"

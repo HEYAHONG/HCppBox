@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HDRIVERFRAMEWORK_IMPLEMENTATION  1
+
 #include "hdriverframework.h"
 
 #include "hdriverframework/hdriverframework.c"

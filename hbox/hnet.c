@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HNET_IMPLEMENTATION  1
+
 #include "hnet.h"
 
 #include "hnet/hnet.c"

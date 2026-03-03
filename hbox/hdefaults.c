@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HDEFAULTS_IMPLEMENTATION  1
+
 #include "hdefaults.h"
 
 #include "hdefaults/hdefaults.c"

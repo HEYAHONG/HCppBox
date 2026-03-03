@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HSOFTPLC_IMPLEMENTATION  1
+
 #include "hsoftplc.h"
 
 #include "hsoftplc/hsoftplc.c"

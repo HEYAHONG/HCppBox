@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HCOMPILER_IMPLEMENTATION  1
+
 #include "hcompiler.h"
 
 #include "hcompiler/hcompiler.c"

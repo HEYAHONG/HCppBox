@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HSIMULATOR_IMPLEMENTATION  1
+
 #include "hsimulator.h"
 
 #include "hsimulator/common/hs_common.h"

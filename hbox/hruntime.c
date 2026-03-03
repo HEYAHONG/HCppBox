@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HRUNTIME_IMPLEMENTATION  1
+
 #include "hruntime.h"
 
 #include "hruntime/hruntime.c"

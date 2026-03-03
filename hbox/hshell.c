@@ -7,6 +7,8 @@
  * License:   MIT
  **************************************************************/
 
+#define HSHELL_IMPLEMENTATION  1
+
 #include "hshell.h"
 
 #include "hshell/hshell.c"

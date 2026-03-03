@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HUUID_IMPLEMENTATION  1
+
 #include "huuid.h"
 
 #include "huuid/huuid.c"

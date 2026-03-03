@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HGUI_IMPLEMENTATION  1
+
 #include "hgui.h"
 
 /*
