@@ -15,7 +15,7 @@
 #if !defined(HTHRD_USING_FREERTOS)
 #define  HTHRD_USING_FREERTOS   1
 #endif
-#elif defined(HTHRD_USING_FREERTOS)
+#elif defined(HTHRD_USING_FREERTOS) || defined(FREERTOS)
 /*
  * 注意:使用外部FreerTOS内核时，需要在配置文件中包含FreeRTOS.h与task.h
  */
