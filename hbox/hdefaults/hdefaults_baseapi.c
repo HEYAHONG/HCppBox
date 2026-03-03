@@ -65,7 +65,7 @@ static hdefaults_tick_t do_hdefaults_tick_get(void)
 {
 #ifdef HDEFAULTS_TICK_GET
     return HDEFAULTS_TICK_GET();
-#elif defined(FREERTOS_KERNEL)
+#elif defined(FREERTOS_KERNEL) || defined(FREERTOS)
     return ((uint64_t)xTaskGetTickCount())*portTICK_PERIOD_MS;
 #elif defined(HDEFAULTS_OS_RTTHREAD)
     return rt_tick_get_millisecond();
@@ -103,7 +103,7 @@ extern void* hmemoryheap_malloc(size_t nBytes);
 #ifdef HDEFAULTS_MALLOC
 extern void * HDEFAULTS_MALLOC(size_t bytes);
 #endif // HDEFAULTS_MALLOC
-#if defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL)
+#if (defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL))  || defined(FREERTOS)
 extern void * pvPortMalloc( size_t xWantedSize );
 #endif
 static void * do_hdefaults_malloc(size_t nBytes,void *usr)
@@ -111,7 +111,7 @@ static void * do_hdefaults_malloc(size_t nBytes,void *usr)
     UNUSED(usr);
 #ifdef HDEFAULTS_MALLOC
     return HDEFAULTS_MALLOC(nBytes);
-#elif defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL)
+#elif (defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL))  || defined(FREERTOS)
     return pvPortMalloc(nBytes);
 #elif defined(__RTTHREAD__)
     return rt_malloc(nBytes);
@@ -132,7 +132,7 @@ extern void hmemoryheap_free(void*);
 #ifdef HDEFAULTS_FREE
 extern void  HDEFAULTS_FREE(void *ptr);
 #endif // HDEFAULTS_FREE
-#if defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL)
+#if (defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL))  || defined(FREERTOS)
 extern void vPortFree( void * pv );
 #endif
 static void do_hdefaults_free(void *ptr,void *usr)
@@ -140,7 +140,7 @@ static void do_hdefaults_free(void *ptr,void *usr)
     UNUSED(usr);
 #ifdef HDEFAULTS_FREE
     HDEFAULTS_FREE(ptr);
-#elif defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL)
+#elif (defined(FREERTOS_KERNEL_MEMMANG_HEAP) && defined(FREERTOS_KERNEL))  || defined(FREERTOS)
     vPortFree(ptr);
 #elif defined(__RTTHREAD__)
     rt_free(ptr);
@@ -164,7 +164,7 @@ static void  do_hdefaults_mutex_lock(void *usr)
     UNUSED(usr);
 #ifdef HDEFAULTS_MUTEX_LOCK
     HDEFAULTS_MUTEX_LOCK();
-#elif defined(FREERTOS_KERNEL)
+#elif defined(FREERTOS_KERNEL)  || defined(FREERTOS)
     vTaskSuspendAll();
 #elif defined(__RTTHREAD__)
     rt_enter_critical();
@@ -188,7 +188,7 @@ static void  do_hdefaults_mutex_unlock(void *usr)
     UNUSED(usr);
 #ifdef  HDEFAULTS_MUTEX_UNLOCK
     HDEFAULTS_MUTEX_UNLOCK();
-#elif defined(FREERTOS_KERNEL)
+#elif defined(FREERTOS_KERNEL)  || defined(FREERTOS)
     xTaskResumeAll();
 #elif defined(__RTTHREAD__)
     rt_exit_critical();

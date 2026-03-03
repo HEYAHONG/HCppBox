@@ -170,10 +170,11 @@ FreeRTOS操作系统
 
  提供的配置宏定义如下：
 
-|                  宏定义                  |                             说明                             |       备注       |
-| :--------------------------------------: | :----------------------------------------------------------: | :--------------: |
-|      `FREERTOS_KERNEL_MEMMANG_HEAP`      | 配置FreeRTOS内核所使用的heap，可选1、2、3、4、5，分别使用heap_1.c、heap_2.c、heap_3.c、heap_4.c、heap_5.c、 | 默认使用heap_3.c |
-| `FREERTOS_KERNEL_NO_AUTO_INCLUDE_HEADER` |                   不自动包含FreeRTOS头文件                   |    默认不定义    |
+|                  宏定义                  |                             说明                             |                 备注                 |
+| :--------------------------------------: | :----------------------------------------------------------: | :----------------------------------: |
+|            `FREERTOS_KERNEL`             |                      启用`FreeRTOS`内核                      | 默认不定义，即默认不用`FreeRTOS`内核 |
+|      `FREERTOS_KERNEL_MEMMANG_HEAP`      | 配置FreeRTOS内核所使用的heap，可选1、2、3、4、5，分别使用heap_1.c、heap_2.c、heap_3.c、heap_4.c、heap_5.c、 |           默认使用heap_3.c           |
+| `FREERTOS_KERNEL_NO_AUTO_INCLUDE_HEADER` |                   不自动包含FreeRTOS头文件                   |              默认不定义              |
 
 # mini-rv32ima
 
