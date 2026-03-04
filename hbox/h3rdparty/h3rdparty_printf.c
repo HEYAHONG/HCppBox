@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define H3RDPARTY_PRINTF_IMPLEMENTATION  1
+
 #include "h3rdparty.h"
 #include "hdefaults.h"
 #if defined(HDEFAULTS_OS_WINDOWS) || defined(HDEFAULTS_OS_UNIX)

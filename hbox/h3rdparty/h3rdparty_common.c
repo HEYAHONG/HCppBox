@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define H3RDPARTY_COMMON_IMPLEMENTATION  1
+
 #include "h3rdparty.h"
 #include "hdefaults.h"
 

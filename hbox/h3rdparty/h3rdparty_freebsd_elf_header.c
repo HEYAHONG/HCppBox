@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define H3RDPARTY_FREEBSD_ELF_HEADER_IMPLEMENTATION  1
+
 #include "stdint.h"
 #include "stdlib.h"
 #include "stdbool.h"

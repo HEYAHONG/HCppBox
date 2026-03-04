@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define H3RDPARTY_NANOPB_IMPLEMENTATION  1
+
 #include "h3rdparty.h"
 
 //定义内存分配函数
