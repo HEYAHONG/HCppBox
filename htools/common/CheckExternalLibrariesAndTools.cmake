@@ -16,7 +16,8 @@ pkg_check_modules(LIBEVENT_EXTRA QUIET IMPORTED_TARGET libevent_extra)
 
 
 find_program(XMAKE xmake)
-if(NOT (( "${XMAKE}" STREQUAL "XMAKE-NOTFOUND" ) OR ("${XMAKE}" STREQUAL "NOTFOUND" )))
+if(XMAKE)
+message(STATUS "xmake:" ${XMAKE})
 #检查tbox
 execute_process( COMMAND  ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/3rdparty/tbox/" "${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/"
                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/3rdparty/tbox/"
@@ -48,3 +49,22 @@ message(STATUS "TBOX:OFF")
 endif()
 
 endif()
+
+
+find_program(AUTORECONF autoreconf)
+if(AUTORECONF)
+message(STATUS "autoreconf:" ${AUTORECONF})
+endif()
+
+find_program(FLEX flex)
+if(FLEX)
+message(STATUS "flex:" ${FLEX})
+endif()
+
+find_program(BISON bison)
+if(BISON)
+message(STATUS "bison:" ${BISON})
+endif()
+
+
+
