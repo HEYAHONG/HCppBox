@@ -18,6 +18,8 @@ add_subdirectory(hsoftplc_tools)
 
 add_subdirectory(hmisc_tools)
 
+add_subdirectory(3rdparty_tools)
+
 add_custom_target(htools
-                                    DEPENDS  hgui_tools hnet_tools hcrypto_tools hsimulator_tools hsoftplc_tools hmisc_tools)
+                                    DEPENDS  hgui_tools hnet_tools hcrypto_tools hsimulator_tools hsoftplc_tools hmisc_tools 3rdparty_tools)
 

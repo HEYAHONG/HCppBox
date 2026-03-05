@@ -21,4 +21,5 @@
 - [hsimulator_tools](hsimulator_tools)：hsimulator组件所使用的工具
 - [hsoftplc_tools](hsoftplc_tools)：hsoftplc组件所使用的工具
 - [hmisc_tools](hmisc_tools):杂项工具
+- [3rdparty_tools](3rdparty_tools):第三方工具
 - [common](common):公共代码
