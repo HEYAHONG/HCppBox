@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install lib
-      run: sudo apt-get update &&  sudo apt-get install libopencv-dev  libfreetype-dev
+      run: sudo apt-get update &&  sudo apt-get install -f libopencv-dev  libfreetype-dev libwx*dev libx11-dev libxext-dev libxkbcommon-dev libwayland-dev
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
