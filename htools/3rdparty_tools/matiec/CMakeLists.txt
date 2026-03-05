@@ -37,7 +37,7 @@ ${CMAKE_CURRENT_LIST_DIR}
 ${CMAKE_CURRENT_LIST_DIR}/config/
 ${CMAKE_CURRENT_LIST_DIR}/../../common/3rdparty/matiec
 )
-target_compile_definitions(matiec_stage1_2 PRIVATE  -DDEFAULT_LIBDIR='"lib"' -DYY_BUF_SIZE=65536)
+target_compile_definitions(matiec_stage1_2 PRIVATE  -DDEFAULT_LIBDIR="lib" -DYY_BUF_SIZE=65536)
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" ) OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" ) )
 target_compile_options(matiec_stage1_2 PRIVATE -fpermissive)
 endif()
