@@ -4,6 +4,13 @@ cmake_minimum_required(VERSION 3.20)
 project(matiec)
 
 
+if(WIN32)
+if(MSVC)
+add_compile_options(-utf-8)
+endif()
+endif()
+
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 

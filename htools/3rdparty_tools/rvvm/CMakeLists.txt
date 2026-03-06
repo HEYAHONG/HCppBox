@@ -3,6 +3,13 @@ cmake_minimum_required(VERSION 3.20)
 
 project(rvvm)
 
+if(WIN32)
+if(MSVC)
+add_compile_options(-utf-8)
+endif()
+endif()
+
+
 include(CheckLibraryExists)
 
 if (LINUX OR BSD OR CMAKE_SYSTEM_NAME STREQUAL "SunOS")
