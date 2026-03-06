@@ -44,6 +44,9 @@ target_link_libraries(HBox FreeRTOSPort)
 
 find_program(XMAKE xmake)
 if(XMAKE)
+
+if(NEED_TBOX)
+
 #生成tbox文件
 execute_process( COMMAND  ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/3rdparty/tbox/" "${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/"
                  WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/3rdparty/tbox/"
@@ -73,6 +76,8 @@ message(STATUS "TBOX:ON")
 else()
 set(TBOX OFF)
 message(STATUS "TBOX:OFF")
+endif()
+
 endif()
 
 endif()
