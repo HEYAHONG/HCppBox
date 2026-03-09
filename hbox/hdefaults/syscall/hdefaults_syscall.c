@@ -35,6 +35,7 @@
 #include "wrapper/hwrite.c"
 #include "wrapper/hlseek.c"
 #include "wrapper/hopen.c"
+#include "wrapper/hfcntl.c"
 #include "wrapper/hopenat.c"
 #include "wrapper/hioctl.c"
 #include "wrapper/hclock_getres.c"
@@ -56,6 +57,7 @@
 #include "implementation/hwrite.c"
 #include "implementation/hlseek.c"
 #include "implementation/hopen.c"
+#include "implementation/hfcntl.c"
 #include "implementation/hopenat.c"
 #include "implementation/hioctl.c"
 #include "implementation/hclock_getres.c"
@@ -112,6 +114,10 @@
 #ifdef HDEFAULTS_SYSCALL_NO_HOPEN
 #undef HDEFAULTS_SYSCALL_HOPEN
 #endif // HDEFAULTS_SYSCALL_NO_HOPEN
+
+#ifdef HDEFAULTS_SYSCALL_NO_HFCNTL
+#undef HDEFAULTS_SYSCALL_HFCNTL
+#endif // HDEFAULTS_SYSCALL_NO_HFCNTL
 
 #ifdef HDEFAULTS_SYSCALL_NO_HOPENAT
 #undef HDEFAULTS_SYSCALL_HOPENAT
@@ -220,6 +226,13 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
     case HDEFAULTS_SYSCALL_HOPEN:
     {
         ret=__hdefaults_usercall_hopen;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HFCNTL
+    case HDEFAULTS_SYSCALL_HFCNTL:
+    {
+        ret=__hdefaults_usercall_hfcntl;
     }
     break;
 #endif
