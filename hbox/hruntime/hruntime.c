@@ -28,36 +28,36 @@ enum
     HRUNTIME_INTERNAL_FLAG_END
 };
 
-static uint8_t hruntime_internal_flag[(((size_t)HRUNTIME_INTERNAL_FLAG_END)+7)/8]= {0};
+static hatomic_int_t hruntime_internal_flag[(((size_t)HRUNTIME_INTERNAL_FLAG_END)+sizeof(hatomic_int_t)*8-1)/(sizeof(hatomic_int_t)*8)]= {0};
 
 static void hruntime_internal_flag_set(size_t flag)
 {
-    size_t flag_byte=flag/8;
-    size_t flag_bit=flag%8;
-    if(flag_byte < sizeof(hruntime_internal_flag))
+    size_t flag_word=flag/(sizeof(hatomic_int_t)*8);
+    size_t flag_bit=flag%(sizeof(hatomic_int_t)*8);
+    if(flag_word < sizeof(hruntime_internal_flag)/sizeof(hruntime_internal_flag[0]))
     {
-        hruntime_internal_flag[flag_byte] |= (1 << flag_bit);
+        hatomic_int_fetch_or(&hruntime_internal_flag[flag_word],(1UL << flag_bit));
     }
 }
 
 static void hruntime_internal_flag_clear(size_t flag)
 {
-    size_t flag_byte=flag/8;
-    size_t flag_bit=flag%8;
-    if(flag_byte < sizeof(hruntime_internal_flag))
+    size_t flag_word=flag/(sizeof(hatomic_int_t)*8);
+    size_t flag_bit=flag%(sizeof(hatomic_int_t)*8);
+    if(flag_word < sizeof(hruntime_internal_flag)/sizeof(hruntime_internal_flag[0]))
     {
-        hruntime_internal_flag[flag_byte] &= (~(1 << flag_bit));
+        hatomic_int_fetch_and(&hruntime_internal_flag[flag_word],(~(1UL << flag_bit)));
     }
 }
 
 static bool hruntime_internal_flag_is_set(size_t flag)
 {
     bool ret=false;
-    size_t flag_byte=flag/8;
-    size_t flag_bit=flag%8;
-    if(flag_byte < sizeof(hruntime_internal_flag))
+    size_t flag_word=flag/(sizeof(hatomic_int_t)*8);
+    size_t flag_bit=flag%(sizeof(hatomic_int_t)*8);
+    if(flag_word < sizeof(hruntime_internal_flag)/sizeof(hruntime_internal_flag[0]))
     {
-        ret=(0!=(hruntime_internal_flag[flag_byte] & (1 << flag_bit)));
+        ret=(0!=(((unsigned)hatomic_int_load(&hruntime_internal_flag[flag_word])) & (1UL << flag_bit)));
     }
     return ret;
 }

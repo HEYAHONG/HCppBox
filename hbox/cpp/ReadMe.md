@@ -8,6 +8,11 @@
 
 本组件用于常用的嵌入式（尤其是单片机）C++运行时常用移植操作。
 
+**注意:**
+
+- 若处于多线程环境，`hcpprt_init`、`hcpprt_loop`应当在同一线程中运行，多个线程中运行可能发生异常情况。
+- 若使用了本组件的`hcpprt_init`、`hcpprt_loop`,则无需使用`hruntime`的`hruntime_init`、`hruntime_loop`。
+
 ### 函数
 
 | 函数                 | 说明                   | 备注                                         |

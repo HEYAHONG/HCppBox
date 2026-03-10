@@ -22,36 +22,36 @@ enum
     HCPPRT_INTERNAL_FLAG_END
 };
 
-static uint8_t hcpprt_internal_flag[(((size_t)HCPPRT_INTERNAL_FLAG_END)+7)/8]= {0};
+static hatomic_int_t hcpprt_internal_flag[(((size_t)HCPPRT_INTERNAL_FLAG_END)+sizeof(hatomic_int_t)*8-1)/(sizeof(hatomic_int_t)*8)]= {0};
 
 static void hcpprt_internal_flag_set(size_t flag)
 {
-    size_t flag_byte=flag/8;
-    size_t flag_bit=flag%8;
-    if(flag_byte < sizeof(hcpprt_internal_flag))
+    size_t flag_word=flag/(sizeof(hatomic_int_t)*8);
+    size_t flag_bit=flag%(sizeof(hatomic_int_t)*8);
+    if(flag_word < sizeof(hcpprt_internal_flag)/sizeof(hcpprt_internal_flag[0]))
     {
-        hcpprt_internal_flag[flag_byte] |= (1 << flag_bit);
+        hatomic_int_fetch_or(&hcpprt_internal_flag[flag_word],(1UL << flag_bit));
     }
 }
 
 static void hcpprt_internal_flag_clear(size_t flag)
 {
-    size_t flag_byte=flag/8;
-    size_t flag_bit=flag%8;
-    if(flag_byte < sizeof(hcpprt_internal_flag))
+    size_t flag_word=flag/(sizeof(hatomic_int_t)*8);
+    size_t flag_bit=flag%(sizeof(hatomic_int_t)*8);
+    if(flag_word < sizeof(hcpprt_internal_flag)/sizeof(hcpprt_internal_flag[0]))
     {
-        hcpprt_internal_flag[flag_byte] &= (~(1 << flag_bit));
+        hatomic_int_fetch_and(&hcpprt_internal_flag[flag_word],(~(1UL << flag_bit)));
     }
 }
 
 static bool hcpprt_internal_flag_is_set(size_t flag)
 {
     bool ret=false;
-    size_t flag_byte=flag/8;
-    size_t flag_bit=flag%8;
-    if(flag_byte < sizeof(hcpprt_internal_flag))
+    size_t flag_word=flag/(sizeof(hatomic_int_t)*8);
+    size_t flag_bit=flag%(sizeof(hatomic_int_t)*8);
+    if(flag_word < sizeof(hcpprt_internal_flag)/sizeof(hcpprt_internal_flag[0]))
     {
-        ret=(0!=(hcpprt_internal_flag[flag_byte] & (1 << flag_bit)));
+        ret=(0!=(((unsigned)hatomic_int_load(&hcpprt_internal_flag[flag_word])) & (1UL << flag_bit)));
     }
     return ret;
 }

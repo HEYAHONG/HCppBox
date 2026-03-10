@@ -30,6 +30,10 @@
 |          `HRUNTIME_NO_SOFTWATCHDOG`          |   无软件看门狗    | 此选项通常用于减小代码，若启用则相关代码无效。未定义此选项时默认由`hruntime`自动运行喂狗 |
 |            `HRUNTIME_NO_SOFTPLC`             |    无软件`PLC`    | 此选项通常用于自行实现软件`PLC`的初始化及循环，未定义此选项时默认由`hruntime`自动运行软件`PLC` |
 
+**注意:**
+
+- 若处于多线程环境，`hruntime_init_lowlevel`、 `hruntime_init`、`hruntime_loop`应当在同一线程中运行，多个线程中运行可能发生异常情况。
+
 ## hstacklesscoroutine
 
 本组件用于辅助编写简易无栈协程。无栈协程可用于实现简易的多任务系统。
