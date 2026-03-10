@@ -212,10 +212,14 @@ mini-rv32ima仅支持以下中断:
 ### 初始化状态
 
 - SP(X2)寄存器的值需要初始化到内存末尾,即由硬件将栈指针设置到内存末尾。
-
 - PC值应当初始化为内存起始地址(默认为0x80000000)。
 - A0(X10)寄存器应当设置为hart_id（单核为0，多核从0开始）。
 - A1(X11)寄存器应当设置为设备树地址。
+
+### 工具
+
+- 虚拟CPU代码：[mini-rv32ima](../../h3rdparty/3rdparty/mini-rv32ima/)
+- 模拟器:[hmini-rv32ima](../../../htools//hsimulator_tools/hmini-rv32ima/)
 
 ## 虚拟CPU模型-rvvm
 
@@ -248,6 +252,10 @@ rvvm支持ACLINT、PLIC。
 - PC值应当初始化为复位PC地址（RVVM_OPT_RESET_PC），默认情况下为内存起始地址。
 - A0(X10)寄存器应当设置为hart_id（单核为0，多核从0开始）。
 - A1(X11)寄存器应当设置为设备树地址。
+
+### 工具
+
+- 模拟器:[rvvm](../../../htools/3rdparty_tools/rvvm/)
 
 # ROM
 
