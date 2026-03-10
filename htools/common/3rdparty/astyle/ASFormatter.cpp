@@ -1,5 +1,5 @@
 // ASFormatter.cpp
-// Copyright (c) 2025 The Artistic Style Authors.
+// Copyright (c) 2026 The Artistic Style Authors.
 // This code is licensed under the MIT License.
 // License.md describes the conditions under which this software may be distributed.
 
@@ -2106,17 +2106,18 @@ std::string ASFormatter::nextLine()
 			handlePotentialOperator(newHeader);
 		}
 
-		// TODO check add flag to preserve space
 		size_t lastNonWsChar = currentLine.find_last_not_of(" \t", charNum - 1);
-		if (lastNonWsChar != std::string::npos && pointerAlignment == PTR_ALIGN_TYPE && !isGSCStyle() && !preserveWhitespace)
+
+		if (lastNonWsChar != std::string::npos && pointerAlignment == PTR_ALIGN_TYPE && !isGSCStyle() && !preserveWhitespace && !isInPreprocessor)
 		{
 			char lastChar = currentLine[lastNonWsChar];
 
-			//if (lastChar != '(' && !isalpha(lastChar)) {
-			//	formattedLine = rtrim(formattedLine);
-			//}
+			//fix SF605, possibly more cases pending
+			char nextChar = 0;
+			size_t nextCharPos = currentLine.find_first_not_of(" \t", lastNonWsChar+1);
+			if (nextCharPos != std::string::npos) nextChar = currentLine[nextCharPos];
 
-			if (lastChar == ',')
+			if (lastChar == ',' && nextChar != '+' && nextChar != '-')
 			{
 				formattedLine = rtrim(formattedLine);
 				formattedLine += ' ';
@@ -4492,7 +4493,7 @@ void ASFormatter::padOperators(const std::string* newOperator)
 	bool isSharpNullConditional = (newOperator == &ASResource::AS_QUESTION && isSharpStyle() &&
 	                               (nextNonWSChar == '.' || nextNonWSChar == '['));
 
-	bool isSpecialTemplateOperator = (isInTemplate || isImmediatelyPostTemplate) &&
+	bool isSpecialTemplateOperator = (isInTemplate || isImmediatelyPostTemplate || isSharpStyle()) &&
 	                                 (newOperator == &ASResource::AS_LS || newOperator == &ASResource::AS_GR);
 
 	std::string sBegin = currentLine.substr(0, charNum);
@@ -6533,7 +6534,7 @@ void ASFormatter::formatQuoteBody()
 		{
 			std::string delim = ')' + verbatimDelimiter;
 			int delimStart = charNum - delim.length();
-			if (delimStart > 0 && currentLine.substr(delimStart, delim.length()) == delim)
+			if (delimStart >= 0 && currentLine.substr(delimStart, delim.length()) == delim)
 			{
 				isInQuote = false;
 				isInVerbatimQuote = false;
@@ -7791,7 +7792,7 @@ void ASFormatter::checkIfTemplateOpener()
 					{
 						// this is a template!
 						// gl85 + sf585
-						isInTemplate = !isInStruct;
+						isInTemplate = true; //!isInStruct;
 						templateDepth = maxTemplateDepth;
 					}
 					return;

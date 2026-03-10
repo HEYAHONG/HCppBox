@@ -1,5 +1,5 @@
 // ASBeautifier.cpp
-// Copyright (c) 2025 The Artistic Style Authors.
+// Copyright (c) 2026 The Artistic Style Authors.
 // This code is licensed under the MIT License.
 // License.md describes the conditions under which this software may be distributed.
 
@@ -4015,10 +4015,11 @@ void ASBeautifier::parseCurrentLine(std::string_view line)
 				char prevCh = i > 0 ? line[i - 1] : ' ';
 				char prevPrevCh = i > 1 ? line[i - 2] : ' ';
 
-				// GL 32
+				// https://gitlab.com/saalen/astyle/-/issues/32
 				// https://sourceforge.net/p/astyle/bugs/535/
 				// https://gitlab.com/saalen/astyle/-/issues/82
-				if (isCStyle() && prevCh == 'R' && !isalpha(prevPrevCh) && !isalpha(prevNonSpaceCh))
+				// https://sourceforge.net/p/astyle/bugs/596/
+				if (isCStyle() && prevCh == 'R' && !isalpha(prevPrevCh) /*&& !isalpha(prevNonSpaceCh)*/ )
 				{
 					int parenPos = line.find('(', i);
 
