@@ -39,7 +39,7 @@ HSOFTPLC_EXPORT_INTERFACE();
 
 # 工具
 
-- [matiec](https://github.com/thiagoralves/matiec)：IEC 61131-3 编译器
+- [matiec](https://github.com/thiagoralves/matiec)：IEC 61131-3 编译器,本工程使用的工具见[matiec](../../htools/3rdparty_tools/matiec/)。
 - [OpenPLC_Editor](https://github.com/thiagoralves/OpenPLC_Editor.git)：OpenPLC IDE，可用于生成软件PLC程序。
 
 ## matiec
