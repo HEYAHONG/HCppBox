@@ -57,6 +57,14 @@
 
 #endif
 
+#ifndef EAGAIN
+#define EAGAIN HEAGAIN
+#endif
+
+#ifndef EWOULDBLOCK
+#define EWOULDBLOCK HEAGAIN
+#endif
+
 #include "stdarg.h"
 
 #ifndef  H3RDPARTY_USING_SYSTEM_ZLIB
