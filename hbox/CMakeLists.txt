@@ -13,6 +13,10 @@ target_include_directories(HBox PUBLIC ./ )
 target_include_directories(HBox PUBLIC ./cpp/ )
 
 
+if(MSVC)
+    add_compile_definitions(HBox PRIVATE -D_CRT_SECURE_NO_WARNINGS=1 )
+endif()
+
 #设置属性
 set_property(TARGET HBox PROPERTY CXX_STANDARD 11)
 #虽然最低支持C99，但此处仍然设置为C11
