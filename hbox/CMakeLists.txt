@@ -14,7 +14,7 @@ target_include_directories(HBox PUBLIC ./cpp/ )
 
 
 if(MSVC)
-    add_compile_definitions(HBox PRIVATE -D_CRT_SECURE_NO_WARNINGS=1 )
+    add_compile_definitions(HBox PRIVATE _CRT_SECURE_NO_WARNINGS=1 )
 endif()
 
 #设置属性
