@@ -37,7 +37,7 @@ HDEFAULTS_USERCALL_DEFINE4(hopenat,HDEFAULTS_SYSCALL_HOPENAT,int,int,dirfd,const
     int ret=-1;
 #if defined(HOPENAT)
     ret=HOPENAT(dirfd,filename,oflag,mode);
-#elif (defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)) && (!defined(HDEFAULTS_OS_EMSCRIPTEN) && !defined(HDEFAULTS_OS_WINDOWS) && !( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) ))
+#elif (defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)) && (!defined(HAVE_NO_OPENAT) && !defined(HDEFAULTS_OS_EMSCRIPTEN) && !defined(HDEFAULTS_OS_WINDOWS) && !( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) ))
     ret=openat(dirfd,filename,oflag,mode);
 #elif ( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) )
     ret=open(filename,oflag,mode);
