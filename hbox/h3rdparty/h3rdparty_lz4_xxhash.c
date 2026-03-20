@@ -14,6 +14,9 @@
 
 #include "h3rdparty/patch/heap.c"
 
+#include "h3rdparty/patch/disable_armcc_gnuc_micro.c"
+
+
 //定义文件操作
 #ifdef  ferror
 #undef  ferror
@@ -34,9 +37,6 @@
  * 修复armcc下的警告
  */
 #ifdef __ARMCC_VERSION
-#ifdef __GNUC__
-#undef __GNUC__
-#endif // __GNUC__
 #define LZ4_DISABLE_DEPRECATE_WARNINGS 1
 #endif // __ARMCC_VERSION
 

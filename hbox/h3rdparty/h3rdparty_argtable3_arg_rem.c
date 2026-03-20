@@ -14,6 +14,9 @@
 
 #include "h3rdparty/patch/heap.c"
 
+#include "h3rdparty/patch/disable_armcc_gnuc_micro.c"
+
+
 #if !defined(HDEFAULTS_LIBC_MSVC)
 
 //定义打印函数
@@ -84,9 +87,6 @@
  * 修复armcc下的警告
  */
 #ifdef __ARMCC_VERSION
-#ifdef __GNUC__
-#undef __GNUC__
-#endif // __GNUC__
 #ifndef __clang__
 //关闭某些警告
 #pragma diag_suppress 111

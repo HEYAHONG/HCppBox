@@ -14,7 +14,7 @@
 
 #include "h3rdparty/patch/heap.c"
 
-
+#include "h3rdparty/patch/disable_armcc_gnuc_micro.c"
 
 #ifndef  H3RDPARTY_USING_SYSTEM_CJSON
 
@@ -25,11 +25,6 @@
 #define  CJSON_HIDE_SYMBOLS 1
 #endif
 
-#ifdef __ARMCC_VERSION
-#ifdef __GNUC__
-#undef __GNUC__
-#endif // __GNUC__
-#endif // __ARMCC_VERSION
 #include "3rdparty/cJSON/cJSON.c"
 #endif // H3RDPARTY_USING_SYSTEM_CJSON
 
