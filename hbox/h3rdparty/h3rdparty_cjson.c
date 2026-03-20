@@ -16,6 +16,8 @@
 
 #include "h3rdparty/patch/disable_armcc_gnuc_micro.c"
 
+#include "h3rdparty/patch/armclang_diagnostic_ignored.c"
+
 #ifndef  H3RDPARTY_USING_SYSTEM_CJSON
 
 /*
