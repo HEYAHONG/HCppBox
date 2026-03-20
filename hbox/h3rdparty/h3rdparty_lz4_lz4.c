@@ -12,10 +12,7 @@
 #include "hdefaults.h"
 #include "h3rdparty.h"
 
-//定义内存分配函数
-#define malloc hmalloc
-#define free   hfree
-#define calloc hcalloc
+#include "h3rdparty/patch/heap.c"
 
 //定义文件操作
 #ifdef  ferror

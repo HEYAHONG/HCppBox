@@ -17,11 +17,7 @@
 #endif
 #define printf hprintf
 
-//定义内存分配函数
-#define malloc hmalloc
-#define free   hfree
-#define calloc hcalloc
-#define realloc hrealloc
+#include "h3rdparty/patch/heap.c"
 
 
 /*
