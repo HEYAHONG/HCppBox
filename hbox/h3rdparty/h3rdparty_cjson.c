@@ -12,11 +12,7 @@
 #include "hdefaults.h"
 #include "h3rdparty.h"
 
-//定义内存分配函数
-#define malloc hmalloc
-#define free   hfree
-#define calloc hcalloc
-#define realloc hrealloc
+#include "h3rdparty/patch/heap.c"
 
 
 
