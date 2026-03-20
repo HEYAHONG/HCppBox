@@ -14,22 +14,10 @@
 
 #include "h3rdparty/patch/heap.c"
 
+#include "h3rdparty/patch/cfile.c"
+
 #include "h3rdparty/patch/disable_armcc_gnuc_micro.c"
 
-
-//定义文件操作
-#ifdef  ferror
-#undef  ferror
-#endif
-#define ferror hferror
-#ifdef  fread
-#undef  fread
-#endif
-#define fread  hfread
-#ifdef  fwrite
-#undef  fwrite
-#endif
-#define fwrite hfwrite
 
 #include "stdarg.h"
 
