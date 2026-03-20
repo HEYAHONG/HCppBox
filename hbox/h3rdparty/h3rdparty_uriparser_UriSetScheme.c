@@ -19,17 +19,8 @@
 
 #include "h3rdparty/patch/heap.c"
 
+#include "h3rdparty/patch/armcc_diag_suppress.c"
 
-/*
- * 修复armcc下的警告
- */
-#ifdef __ARMCC_VERSION
-#ifndef __clang__
-#pragma diag_suppress 68
-#pragma diag_suppress 111
-#pragma diag_suppress 546
-#endif
-#endif // __ARMCC_VERSION
 
 
 

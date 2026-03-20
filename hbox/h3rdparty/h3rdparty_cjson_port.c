@@ -13,14 +13,7 @@
 #include "h3rdparty.h"
 
 
-/*
- * 修复armcc下的警告
- */
-#ifdef __ARMCC_VERSION
-#ifndef __clang__
-#pragma diag_suppress 191
-#endif
-#endif // __ARMCC_VERSION
+#include "h3rdparty/patch/armcc_diag_suppress.c"
 
 
 #include "port/cJSON/hcjson.c"
