@@ -38,6 +38,7 @@ typedef enum hmemory_order hmemory_order_t;
  */
 int hmemory_order_cstd(hmemory_order_t __order);
 
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

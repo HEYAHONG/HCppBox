@@ -267,11 +267,17 @@ static int hdefaults_test(int argc,const char *argv[])
             return 0;
         };
         printf("hdefaults thread:start\r\n");
+#if defined(HAVE_THREAD_LOCAL)
+        {
+            static hthread_local int a=0;
+            printf("hdefaults thread:hthread_local %p\r\n",&a);
+        }
+#endif
         if(hthrd_success==hthrd_create(&th1,func,NULL))
         {
-             printf("hdefaults thread:wait thread(sub)\r\n");
-             hthrd_join(th1,NULL);
-             printf("hdefaults thread:end\r\n");
+            printf("hdefaults thread:wait thread(sub)\r\n");
+            hthrd_join(th1,NULL);
+            printf("hdefaults thread:end\r\n");
         }
     }
 

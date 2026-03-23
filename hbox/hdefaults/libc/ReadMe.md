@@ -301,6 +301,25 @@
 
 ## threads
 
+### thread_local
+
+包装thread_local支持
+
+对外提供的宏定义:
+
+| 宏定义              | 说明             | 备注                               |
+| ------------------- | ---------------- | ---------------------------------- |
+| `hthread_local`     | thread_local     | 当不支持thread_local时可能定义为空 |
+| `HAVE_THREAD_LOCAL` | 支持thread_local |                                    |
+
+可外部配置的宏定义如下:
+
+| 宏定义                  | 说明                         | 备注                                     |
+| ----------------------- | ---------------------------- | ---------------------------------------- |
+| `hthread_local`         | 用户可自行定义的thread_local | 当用户已定义thread_local时使用用户定义。 |
+| `HAVE_CXX_THREAD_LOCAL` | 支持C++的thread_local        |                                          |
+| `HAVE_C_THREAD_LOCAL`   | 支持C的thread_local          |                                          |
+
 ### thrd
 
 线程。

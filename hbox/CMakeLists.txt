@@ -87,3 +87,36 @@ if(HAVE_STDATOMIC_H)
 target_compile_definitions(HBox PUBLIC  HAVE_STDATOMIC_H=1)
 endif()
 
+include(CheckSourceCompiles)
+
+#thread_local
+set(CMAKE_C_STANDARD 11)
+check_source_compiles(C [[
+	#include "threads.h"
+ 	thread_local int a=0;
+	int main()
+	{
+		return 0;
+	}
+]] HAVE_C_THREAD_LOCAL)
+
+if(HAVE_C_THREAD_LOCAL)
+target_compile_definitions(HBox PUBLIC  HAVE_C_THREAD_LOCAL=1)
+endif()
+
+set(CMAKE_CXX_STANDARD  11)
+check_source_compiles(CXX [[
+	#include "thread"
+ 	thread_local int a=0;
+	int main()
+	{
+		return 0;
+	}
+]] HAVE_CXX_THREAD_LOCAL)
+
+if(HAVE_CXX_THREAD_LOCAL)
+target_compile_definitions(HBox PUBLIC  HAVE_CXX_THREAD_LOCAL=1)
+endif()
+
+
+
