@@ -63,12 +63,16 @@ int hmtx_type_cstd(int wrapper_type);
  */
 #if defined(__cplusplus)
 #if defined(HAVE_CXX_THREAD_LOCAL) && !defined(hthread_local)
+#if !defined(HAVE_THREAD_LOCAL)
 #define HAVE_THREAD_LOCAL 1
+#endif
 #define hthread_local thread_local
 #endif
 #else
 #if defined(HAVE_C_THREAD_LOCAL) && !defined(hthread_local)
+#if !defined(HAVE_THREAD_LOCAL)
 #define HAVE_THREAD_LOCAL 1
+#endif
 #define hthread_local thread_local
 #endif
 #endif

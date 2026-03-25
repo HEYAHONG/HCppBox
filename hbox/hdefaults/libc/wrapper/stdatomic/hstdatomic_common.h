@@ -39,6 +39,28 @@ typedef enum hmemory_order hmemory_order_t;
 int hmemory_order_cstd(hmemory_order_t __order);
 
 
+/**
+ * \brief 定义hatomic
+ */
+#if defined(__cplusplus)
+#if defined(HAVE_CXX_ATOMIC) && !defined(hatomic)
+#if !defined(HAVE_ATOMIC)
+#define HAVE_ATOMIC 1
+#endif
+#define hatomic(T) std::atomic<T>
+#endif
+#else
+#if defined(HAVE_C_ATOMIC) && !defined(hatomic)
+#if !defined(HAVE_ATOMIC)
+#define HAVE_ATOMIC 1
+#endif
+#define hatomic(T) _Atomic T
+#endif
+#endif
+#if !defined(hatomic)
+#define hatomic(T) T
+#endif
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

@@ -119,4 +119,37 @@ target_compile_definitions(HBox PUBLIC  HAVE_CXX_THREAD_LOCAL=1)
 endif()
 
 
+#_Atomic
+set(CMAKE_C_STANDARD 11)
+check_source_compiles(C [[
+	#include "stdatomic.h"
+ 	_Atomic int a=0;
+	int main()
+	{
+		return 0;
+	}
+]] HAVE_C_ATOMIC)
+
+if(HAVE_C_ATOMIC)
+target_compile_definitions(HBox PUBLIC  HAVE_C_ATOMIC=1)
+endif()
+
+set(CMAKE_CXX_STANDARD  11)
+check_source_compiles(CXX [[
+	#include "atomic"
+ 	std::atomic<int> a;
+	int main()
+	{
+		a=0;
+		return 0;
+	}
+]] HAVE_CXX_ATOMIC)
+
+if(HAVE_CXX_ATOMIC)
+target_compile_definitions(HBox PUBLIC  HAVE_CXX_ATOMIC=1)
+endif()
+
+
+
+
 
