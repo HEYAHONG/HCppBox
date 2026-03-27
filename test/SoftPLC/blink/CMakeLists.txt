@@ -39,14 +39,20 @@ set(HCPPBOX_USE_PURE_CPLUSPLUS TRUE)
 #添加HCppBox库
 add_subdirectory(../../../ HCppBox EXCLUDE_FROM_ALL)
 
+#复制模板文件
+execute_process( COMMAND  ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/blink/" "${CMAKE_CURRENT_BINARY_DIR}/blink_st_c_source/"
+                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/blink"
+               )
+
+
 #blink.st
 add_custom_target(blink_st ALL
                  SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/blink.st
-                 COMMAND ${IEC2C} -p -l -n -r -R -a -b -c -I ${MATIEC_IEC_HEADER} -T ${CMAKE_CURRENT_SOURCE_DIR}/blink ${CMAKE_CURRENT_SOURCE_DIR}/blink.st
+                 COMMAND ${IEC2C} -p -l -n -r -R -a -b -c -I ${MATIEC_IEC_HEADER} -T ${CMAKE_CURRENT_BINARY_DIR}/blink_st_c_source ${CMAKE_CURRENT_SOURCE_DIR}/blink.st
                  )
 
 ##blink.st库文件
-file(GLOB BLINK_ST_PLC_C_FILES ${CMAKE_CURRENT_SOURCE_DIR}/blink/Config*.c ${CMAKE_CURRENT_SOURCE_DIR}/blink/Res*.c ${CMAKE_CURRENT_SOURCE_DIR}/blink/*.h)
+file(GLOB BLINK_ST_PLC_C_FILES ${CMAKE_CURRENT_BINARY_DIR}/blink_st_c_source/Config*.c ${CMAKE_CURRENT_BINARY_DIR}/blink_st_c_source/Res*.c ${CMAKE_CURRENT_BINARY_DIR}/blink_st_c_source/*.h)
 add_library(blink_st_plc ${BLINK_ST_PLC_C_FILES})
 add_dependencies(blink_st_plc blink_st)
 set_property(TARGET blink_st_plc PROPERTY CXX_STANDARD 11)

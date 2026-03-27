@@ -36,14 +36,20 @@ set(HCPPBOX_USE_PURE_CPLUSPLUS TRUE)
 #添加HCppBox库
 add_subdirectory(../../../ HCppBox EXCLUDE_FROM_ALL)
 
+#复制模板文件
+execute_process( COMMAND  ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/trafic_light/" "${CMAKE_CURRENT_BINARY_DIR}/trafic_light_st_c_source/"
+                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/trafic_light"
+               )
+
+
 #trafic_light.st
 add_custom_target(trafic_light_st ALL
                  SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/trafic_light.st
-                 COMMAND ${IEC2C} -p -l -n -r -R -a -b -c -I ${MATIEC_IEC_HEADER} -T ${CMAKE_CURRENT_SOURCE_DIR}/trafic_light ${CMAKE_CURRENT_SOURCE_DIR}/trafic_light.st
+                 COMMAND ${IEC2C} -p -l -n -r -R -a -b -c -I ${MATIEC_IEC_HEADER} -T ${CMAKE_CURRENT_BINARY_DIR}/trafic_light_st_c_source ${CMAKE_CURRENT_SOURCE_DIR}/trafic_light.st
                  )
 
 ##trafic_light.st库文件
-file(GLOB TRAFIC_LIGHT_ST_PLC_C_FILES ${CMAKE_CURRENT_SOURCE_DIR}/trafic_light/Config*.c ${CMAKE_CURRENT_SOURCE_DIR}/trafic_light/Res*.c ${CMAKE_CURRENT_SOURCE_DIR}/trafic_light/*.h)
+file(GLOB TRAFIC_LIGHT_ST_PLC_C_FILES ${CMAKE_CURRENT_BINARY_DIR}/trafic_light_st_c_source/Config*.c ${CMAKE_CURRENT_BINARY_DIR}/trafic_light_st_c_source/Res*.c ${CMAKE_CURRENT_BINARY_DIR}/trafic_light_st_c_source/*.h)
 add_library(trafic_light_st_plc ${TRAFIC_LIGHT_ST_PLC_C_FILES})
 add_dependencies(trafic_light_st_plc trafic_light_st)
 set_property(TARGET trafic_light_st_plc PROPERTY CXX_STANDARD 11)
