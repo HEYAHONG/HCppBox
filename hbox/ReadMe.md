@@ -14,6 +14,8 @@ hbox意为HYH的工具箱。
 - C语言组件(如`hruntime_init`、`hruntime_loop`)：C语言组件中，由[hruntime](hruntime)组件管理运行时，其它组件的初始化及循环调用默认情况下均由[hruntime](hruntime)管理，也可使用宏定义单独管理某个组件的调用。
 - OS/裸机（如C运行库、系统调用）:一般情况下由[hdefaults](hdefaults)组件管理。
 
+hbox可通过宏定义进行配置，配置文件模板见[template/config.h](template/config.h)
+
 # 硬件要求
 
 主要支持32位及更高位宽的硬件平台,包括但不限于嵌入式硬件平台:
