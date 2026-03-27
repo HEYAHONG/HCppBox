@@ -1,6 +1,6 @@
 # 说明
 
-本组件用于辅助实现[modbus](https://modbus.org),标准文档为[Modbus_Application_Protocol_V1_1b3.pdf](https://modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf)。
+本组件用于辅助实现[modbus](https://modbus.org),标准文档为[Modbus_Application_Protocol_V1_1b3.pdf](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf)。
 
 现可实现以下功能：
 

@@ -19,5 +19,5 @@
 - `hsm3sum`
 - `hcksum`:仅支持`cksum`的CRC32算法
 
-所有工具的用法与系统哈希命令(由[coreutils](https://www.gnu.org/software/coreutils/)或者[busybox](http://www.busybox.net/)提供，如`md5sum`、`sha256sum`、`sha512sum`等)类似,可用于计算文件的hash值，也可计算标准输入的hash值。
+所有工具的用法与系统哈希命令(由coreutils或者busybox提供，如`md5sum`、`sha256sum`、`sha512sum`等)类似,可用于计算文件的hash值，也可计算标准输入的hash值。
 
