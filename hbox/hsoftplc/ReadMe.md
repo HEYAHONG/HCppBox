@@ -48,7 +48,7 @@ IEC 61131-3编译器，可将IEC 61131-3中定义的编程语言（通常用于P
 
 一般情况下，PLC的编程更加注重控制逻辑的实现，一般称为组态。
 
-matiec编译器生成的C语言文件编译时需要指定库的头文件路径，此时可使用本库内置的头文件路径（**需要手动指定**），见[3rdparty/matiec_c_header/](3rdparty/matiec_c_header/)
+matiec编译器生成的C语言文件编译时需要指定库的头文件路径，此时可使用本库内置的头文件路径（**需要手动指定**），见[3rdparty/matiec_c_header/](../h3rdparty/3rdparty/matiec_c_header/)
 
 通常情况下，可使用`iec2c`命令将IEC 61131-3程序文件转化为C语言文件，如：
 

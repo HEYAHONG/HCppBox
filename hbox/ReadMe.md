@@ -158,5 +158,5 @@ hbox可通过宏定义进行配置，配置文件模板见[template/config.h](te
 
 辅助实现软件PLC功能。 
 
-具体实现见[hsoftplc](hhsoftplc)目录。
+具体实现见[hsoftplc](hsoftplc)目录。
 

@@ -15,7 +15,7 @@
 - [argtable3](https://github.com/argtable/argtable3.git):命令行解析工具
 - [tlsf](https://github.com/mattconte/tlsf.git):TLSF 内存分配算法实现
 - [libfdt](https://git.kernel.org/pub/scm/utils/dtc/dtc.git):设备树操作库
-- [FreeRTOS](www.freertos.org):FreeRTOS操作系统
+- [FreeRTOS](https://www.freertos.org):FreeRTOS操作系统
 - [mini-rv32ima](https://github.com/cnlohr/mini-rv32ima.git):C语言编写的极小的RISC-V模拟器
 - [matiec](https://github.com/thiagoralves/matiec.git):IEC 61131-3 编译器，注意:本库仅集成matiec编译器的内置库的C语言头文件,而非编译本身。
 - [uriparser](https://github.com/uriparser/uriparser.git):RFC 3986 兼容的URI解析库
