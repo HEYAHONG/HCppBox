@@ -91,7 +91,7 @@
 
 /** \brief 当前环境支持FreeRTOS
  *
- * 通常用于外部支持的FreeRTOS,使用内置FreeRTOS内核(见[h3rdparty](../h3rdparty))时无需定义。启用此定义后，需要在配置头文件中包含FreeRTOS头文件（由于某些环境的头文件与官方的不一致，因此需要用户手动实现）
+ * 通常用于外部支持的FreeRTOS,使用内置FreeRTOS内核(见h3rdparty)时无需定义。启用此定义后，需要在配置头文件中包含FreeRTOS头文件（由于某些环境的头文件与官方的不一致，因此需要用户手动实现）
  */
 /* #define FREERTOS */
 
@@ -503,19 +503,19 @@
  */
 /* #define HDEFAULTS_SYSCALL_NO_HFILEDESCRIPTOR */
 
-/** \brief 不实现[hsyscall](hsyscall)
+/** \brief 不实现hsyscall
  *
  * 可用于在编译器垃圾回收不完善时减少资源占用
  */
 /* #define HSYSCALL_NO_IMPLEMENTATION */
 
-/** \brief 不实现[hsyscall](hsyscall)的时间组件
+/** \brief 不实现hsyscall的时间组件
  *
  * 可用于在编译器垃圾回收不完善时减少资源占用
  */
 /* #define HSYSCALL_NO_TIME */
 
-/** \brief 不实现[hsyscall](hsyscall)的随机数组件
+/** \brief 不实现hsyscall的随机数组件
  *
  * 可用于在编译器垃圾回收不完善时减少资源占用
  */
