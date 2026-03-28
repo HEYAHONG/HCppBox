@@ -15,7 +15,8 @@ target_include_directories(HBox PUBLIC ./cpp/ )
 
 if(MSVC)
     target_compile_definitions(HBox PRIVATE _CRT_SECURE_NO_WARNINGS=1 )
-    add_compile_options(/experimental:c11atomics )
+    target_compile_options(HBox PUBLIC /experimental:c11atomics )
+    list(APPEND CMAKE_REQUIRED_FLAGS  /experimental:c11atomics )
 endif()
 
 #设置属性
