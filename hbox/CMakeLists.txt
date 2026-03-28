@@ -14,7 +14,8 @@ target_include_directories(HBox PUBLIC ./cpp/ )
 
 
 if(MSVC)
-    add_compile_definitions(HBox PRIVATE _CRT_SECURE_NO_WARNINGS=1 )
+    target_compile_definitions(HBox PRIVATE _CRT_SECURE_NO_WARNINGS=1 )
+    add_compile_options(/experimental:c11atomics )
 endif()
 
 #设置属性
