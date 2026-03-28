@@ -15,8 +15,10 @@ target_include_directories(HBox PUBLIC ./cpp/ )
 
 if(MSVC)
     target_compile_definitions(HBox PRIVATE _CRT_SECURE_NO_WARNINGS=1 )
-    target_compile_options(HBox PUBLIC /experimental:c11atomics )
-    list(APPEND CMAKE_REQUIRED_FLAGS  /experimental:c11atomics )
+    if("${MSVC_TOOLSET_VERSION}" GREATER_EQUAL "143" )
+        target_compile_options(HBox PUBLIC /experimental:c11atomics )
+        list(APPEND CMAKE_REQUIRED_FLAGS  /experimental:c11atomics )
+    endif()
 endif()
 
 #设置属性
