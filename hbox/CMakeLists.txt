@@ -91,15 +91,25 @@ include(CheckSourceCompiles)
 
 #thread_local
 set(CMAKE_C_STANDARD 11)
+if(HAVE_THREADS_H)
 check_source_compiles(C [[
 	#include "threads.h"
- 	thread_local int a=0;
+	thread_local int a=0;
 	int main()
 	{
 		return 0;
 	}
 ]] HAVE_C_THREAD_LOCAL)
-
+else()
+check_source_compiles(C [[
+	#include "stdlib.h"
+	thread_local int a=0;
+	int main()
+	{
+		return 0;
+	}
+]] HAVE_C_THREAD_LOCAL)
+endif()
 if(HAVE_C_THREAD_LOCAL)
 target_compile_definitions(HBox PUBLIC  HAVE_C_THREAD_LOCAL=1)
 endif()
@@ -121,6 +131,7 @@ endif()
 
 #_Atomic
 set(CMAKE_C_STANDARD 11)
+if(HAVE_STDATOMIC_H)
 check_source_compiles(C [[
 	#include "stdatomic.h"
  	_Atomic int a=0;
@@ -129,6 +140,16 @@ check_source_compiles(C [[
 		return 0;
 	}
 ]] HAVE_C_ATOMIC)
+else()
+check_source_compiles(C [[
+	#include "stdlib.h"
+ 	_Atomic int a=0;
+	int main()
+	{
+		return 0;
+	}
+]] HAVE_C_ATOMIC)
+endif()
 
 if(HAVE_C_ATOMIC)
 target_compile_definitions(HBox PUBLIC  HAVE_C_ATOMIC=1)
