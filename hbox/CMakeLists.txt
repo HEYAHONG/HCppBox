@@ -103,6 +103,9 @@ check_source_compiles(C [[
 else()
 check_source_compiles(C [[
 	#include "stdlib.h"
+	#if defined(__STDC_VERSION__) && ((__STDC_VERSION__) < 202311L) && !defined(thread_local)
+	#define thread_local _Thread_local
+	#endif
 	thread_local int a=0;
 	int main()
 	{

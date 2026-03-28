@@ -73,6 +73,9 @@ int hmtx_type_cstd(int wrapper_type);
 #if !defined(HAVE_THREAD_LOCAL)
 #define HAVE_THREAD_LOCAL 1
 #endif
+#if defined(__STDC_VERSION__) && ((__STDC_VERSION__) < 202311L) && !defined(thread_local)
+#define thread_local _Thread_local
+#endif
 #define hthread_local thread_local
 #endif
 #endif
