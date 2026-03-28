@@ -442,6 +442,54 @@
  * 参数与返回值同hunsetenv
  */
 /* #define HUNSETENV */
+/** \brief C运行库优化级别。
+ *
+ * 默认优化级别为0（直接包装原C运行库的函数）。无操作系统时应当定义为1.
+ */
+/* #HDEFAULTS_LIBC_OPTIMIZE_LEVEL */
+
+/** \brief 精简C运行库包装
+ *
+ * 用于减小代码体积。注意:此选项将关闭libc包装的初始化与循环调用，可能影响部分功能，此时用户需要手动初始化或循环调用用到的功能。
+ */
+/* #HDEFAULTS_LIBC_TINY */
+
+/** \brief 不实现hlibc原子标志
+ *
+ * 可用于在编译器垃圾回收不完善时减少资源占用。
+ */
+/* #HLIBC_NO_ATOMIC_FLAG */
+
+/** \brief 不实现hlibc环境变量
+ *
+ * 可用于在编译器垃圾回收不完善时减少资源占用。
+ */
+/* #HLIBC_NO_ENV */
+
+/** \brief 不实现hlibc
+ *
+ * 可用于在编译器垃圾回收不完善时减少资源占用,将强制启用`HDEFAULTS_LIBC_TINY`。
+ */
+/* #HLIBC_NO_IMPLEMENTATION */
+
+/** \brief 不实现hlibc标准io
+ *
+ * 可用于在编译器垃圾回收不完善时减少资源占用。
+ */
+/* #HLIBC_NO_STDIO */
+
+/** \brief 不实现hlibc线程
+ *
+ * 可用于在编译器垃圾回收不完善时减少资源占用。
+ */
+/* #HLIBC_NO_THREADS */
+
+/** \brief 不实现hlibc时间
+ *
+ * 可用于在编译器垃圾回收不完善时减少资源占用。
+ */
+/* #HLIBC_NO_TIME */
+
 
 /* ========== hdefaults/libc/hlibc/env ========== */
 
@@ -992,5 +1040,41 @@
  * 通常用于多线程环境，为实现相对精确的定时，定时器线程优先级一般较高,此时用户需要自行调用hsoftwaretimer_mainloop。
  */
 /* #define HSOFTWARETIMER_CUSTOM_LOOP */
+
+
+/* ========== hcompiler ========== */
+
+/** \brief 配置`__DLLSPEC`宏定义，当未设置时为导出,设置时为导入。
+ *
+ * 默认不启用。
+ */
+/* #HCOMPILER_DLLSPEC_IMPORT */
+
+
+/* ========== hsoftplc ========== */
+
+/** \brief 启用本组件，启用时需要定义为1
+ *
+ * 默认不启用。
+ */
+/* #HSOFTPLC */
+
+/** \brief 宏函数，参数1为节拍间隔，当允许进入组态逻辑时需要返回真，否则返回假
+ *
+ * 默认不定义。如不定义，将使用以ms为单位的系统节拍，在绝大多数MCU上已够用。但如果组态逻辑中采用的小于1ms的节拍间隔，PLC循环将无法正常运行，此时必须定义此宏函数，并且实现以ns为单位的时间检查。
+ */
+/* #HSOFTPLC_LOOP_CHECK_TIMEOUT */
+
+/** \brief 宏函数，参数1为秒，参数2为纳秒，均需要传出。用于更新PLC逻辑的当前时间
+ *
+ * 默认不定义。
+ */
+/* #HSOFTPLC_LOOP_CURRENT_TIME */
+
+/** \brief 不启用动态生成的变量。若启用，用户需要手工定义相关变量。
+ *
+ * 默认不启用。推荐使用弱符号预定义相关变量而不是启用此选项。
+ */
+/* #HSOFTPLC_NO_DYNAMIC_LOCATED_VARIABLES */
 
 #endif /* HBOX_CONFIG_H */
