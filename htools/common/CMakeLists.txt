@@ -41,47 +41,6 @@ target_include_directories(HBox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS/)
 target_compile_definitions(HBox PUBLIC -DFREERTOS_KERNEL=1 )
 target_link_libraries(HBox FreeRTOSPort)
 
-
-find_program(XMAKE xmake)
-if(XMAKE)
-
-if(NEED_TBOX)
-
-#生成tbox文件
-execute_process( COMMAND  ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/3rdparty/tbox/" "${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_PROJECT_NAME}/tbox/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/"
-                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/3rdparty/tbox/"
-                 RESULT_VARIABLE  TBOX_CMAKE_GENERATE_ERRORLEVEL
-               )
-
-if(${TBOX_CMAKE_GENERATE_ERRORLEVEL} EQUAL 0)
-if(WIN32)
-execute_process( COMMAND cmd.exe /c  ${XMAKE} project -k cmake
-                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_PROJECT_NAME}/tbox/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/"
-                 RESULT_VARIABLE  TBOX_CMAKE_GENERATE_ERRORLEVEL
-                 OUTPUT_VARIABLE  TBOX_CMAKE_GENERATE_OUTPUT
-               )
-else()
-execute_process( COMMAND ${XMAKE} project -k cmake
-                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_PROJECT_NAME}/tbox/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/"
-                 RESULT_VARIABLE  TBOX_CMAKE_GENERATE_ERRORLEVEL
-                 OUTPUT_VARIABLE  TBOX_CMAKE_GENERATE_OUTPUT
-               )
-endif()
-endif()
-
-if(${TBOX_CMAKE_GENERATE_ERRORLEVEL} EQUAL 0)
-set(TBOX ON)
-add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/build/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_VERSION}/${CMAKE_C_COMPILER_ID}/" tbox EXCLUDE_FROM_ALL)
-message(STATUS "TBOX:ON")
-else()
-set(TBOX OFF)
-message(STATUS "TBOX:OFF")
-endif()
-
-endif()
-
-endif()
-
 #rvvm设置
 if (LINUX OR BSD OR CMAKE_SYSTEM_NAME STREQUAL "SunOS")
 check_library_exists(X11 XInitThreads ""  HAVE_X11)
