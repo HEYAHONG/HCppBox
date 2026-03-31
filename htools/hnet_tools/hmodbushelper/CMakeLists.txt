@@ -28,9 +28,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 if(WIN32)
-	if(MSVC)
-		add_compile_options(-utf-8)
-	endif()
+    if(MSVC)
+        add_compile_options(-utf-8)
+    endif()
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../common ${CMAKE_CURRENT_SOURCE_DIR}/ )
@@ -39,14 +39,14 @@ file(GLOB MAIN_CXX_C_FILES *.cpp *.c *.h ../../common/common_wxwidgets.h ../../c
 list(APPEND  MAIN_SRCS ${MAIN_CXX_C_FILES})
 
 if(WIN32)
-	file(GLOB_RECURSE MAIN_RC_FILES win32/*.rc)
-	list(APPEND  MAIN_SRCS ${MAIN_RC_FILES})
+    file(GLOB_RECURSE MAIN_RC_FILES win32/*.rc)
+    list(APPEND  MAIN_SRCS ${MAIN_RC_FILES})
 endif()
 
 if(WIN32)
-	add_executable(${PROJECT_NAME} WIN32 ${MAIN_SRCS})
+    add_executable(${PROJECT_NAME} WIN32 ${MAIN_SRCS})
 else()
-	add_executable(${PROJECT_NAME} ${MAIN_SRCS})
+    add_executable(${PROJECT_NAME} ${MAIN_SRCS})
 endif()
 target_link_libraries(${PROJECT_NAME} ${MAIN_LIBS})
 
@@ -57,9 +57,9 @@ FIND_PACKAGE(Threads REQUIRED)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  ${CMAKE_THREAD_LIBS_INIT})
 
 if(WIN32)
-	find_package(wxWidgets 3.2.0 REQUIRED core base adv aui stc webview net html gl richtext )
+    find_package(wxWidgets 3.2.0 REQUIRED core base adv aui stc webview net html gl richtext )
 else()
-	find_package(wxWidgets 3.2.0 REQUIRED all)
+    find_package(wxWidgets 3.2.0 REQUIRED all)
 endif()
 include(${wxWidgets_USE_FILE})
 target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
@@ -82,9 +82,9 @@ hrc_enable(${PROJECT_NAME})
 
 include(GNUInstallDirs)
 if(DEFINED HTOOLS_INSTALL_DIR)
-install(TARGETS ${PROJECT_NAME}
-       RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
-       LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
-       ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
-       )
+    install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
+        LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+        ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+        )
 endif()

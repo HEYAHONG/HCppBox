@@ -25,10 +25,10 @@ endif()
 
 #添加C语言头文件
 include_directories(
-${MATIEC_C_HEADER}
-${CMAKE_CURRENT_SOURCE_DIR}
-${CMAKE_CURRENT_SOURCE_DIR}/blink
-)
+    ${MATIEC_C_HEADER}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/blink
+    )
 #启用hsoftplc组件
 add_compile_options( -DHSOFTPLC=1 )
 
@@ -41,15 +41,15 @@ add_subdirectory(../../../ HCppBox EXCLUDE_FROM_ALL)
 
 #复制模板文件
 execute_process( COMMAND  ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/blink/" "${CMAKE_CURRENT_BINARY_DIR}/blink_st_c_source/"
-                 WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/blink"
-               )
+    WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/blink"
+    )
 
 
 #blink.st
 add_custom_target(blink_st ALL
-                 SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/blink.st
-                 COMMAND ${IEC2C} -p -l -n -r -R -a -b -c -I ${MATIEC_IEC_HEADER} -T ${CMAKE_CURRENT_BINARY_DIR}/blink_st_c_source ${CMAKE_CURRENT_SOURCE_DIR}/blink.st
-                 )
+    SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/blink.st
+    COMMAND ${IEC2C} -p -l -n -r -R -a -b -c -I ${MATIEC_IEC_HEADER} -T ${CMAKE_CURRENT_BINARY_DIR}/blink_st_c_source ${CMAKE_CURRENT_SOURCE_DIR}/blink.st
+    )
 
 ##blink.st库文件
 file(GLOB BLINK_ST_PLC_C_FILES ${CMAKE_CURRENT_BINARY_DIR}/blink_st_c_source/Config*.c ${CMAKE_CURRENT_BINARY_DIR}/blink_st_c_source/Res*.c ${CMAKE_CURRENT_BINARY_DIR}/blink_st_c_source/*.h)
@@ -75,33 +75,33 @@ if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 endif()
 
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-file(GLOB PLC_OBJECT_C_FILES  ${CMAKE_CURRENT_SOURCE_DIR}/blink/Config*.c ${CMAKE_CURRENT_SOURCE_DIR}/blink/Res*.c )
-add_library(plc_object OBJECT ${PLC_OBJECT_C_FILES})
-target_compile_options(plc_object PUBLIC -fPIC )
-file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/plc_mod.lst
-			  CONTENT "$<TARGET_OBJECTS:plc_object>")
-file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/plc_mod.cmake
-			  INPUT ${CMAKE_CURRENT_SOURCE_DIR}/plc_mod.cmake.in)
-#创建可重定位文件用于运行时直接加载
-add_custom_target(plc_mod ALL
-				  COMMAND  cmake -P ${CMAKE_BINARY_DIR}/plc_mod.cmake && ${CMAKE_LINKER}  --relocatable -o plc.mod  @${CMAKE_BINARY_DIR}/plc_mod.lst
-				  DEPENDS plc_object
-				  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-				 )
+    file(GLOB PLC_OBJECT_C_FILES  ${CMAKE_CURRENT_SOURCE_DIR}/blink/Config*.c ${CMAKE_CURRENT_SOURCE_DIR}/blink/Res*.c )
+    add_library(plc_object OBJECT ${PLC_OBJECT_C_FILES})
+    target_compile_options(plc_object PUBLIC -fPIC )
+    file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/plc_mod.lst
+        CONTENT "$<TARGET_OBJECTS:plc_object>")
+    file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/plc_mod.cmake
+        INPUT ${CMAKE_CURRENT_SOURCE_DIR}/plc_mod.cmake.in)
+    #创建可重定位文件用于运行时直接加载
+    add_custom_target(plc_mod ALL
+        COMMAND  cmake -P ${CMAKE_BINARY_DIR}/plc_mod.cmake && ${CMAKE_LINKER}  --relocatable -o plc.mod  @${CMAKE_BINARY_DIR}/plc_mod.lst
+        DEPENDS plc_object
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        )
 endif()
 
 #安装相关文件到对应目录
 include(GNUInstallDirs)
 if(DEFINED SOFTPLC_INSTALL_DIR)
-install(TARGETS blink plc
-       RUNTIME DESTINATION ${SOFTPLC_INSTALL_DIR}/blink/bin
-       LIBRARY DESTINATION ${SOFTPLC_INSTALL_DIR}/blink/lib
-       ARCHIVE DESTINATION ${SOFTPLC_INSTALL_DIR}/blink/lib
-       )
-if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-install(FILES ${CMAKE_BINARY_DIR}/plc.mod
-       DESTINATION ${SOFTPLC_INSTALL_DIR}/blink/bin
-       )
-endif()
+    install(TARGETS blink plc
+        RUNTIME DESTINATION ${SOFTPLC_INSTALL_DIR}/blink/bin
+        LIBRARY DESTINATION ${SOFTPLC_INSTALL_DIR}/blink/lib
+        ARCHIVE DESTINATION ${SOFTPLC_INSTALL_DIR}/blink/lib
+        )
+    if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+        install(FILES ${CMAKE_BINARY_DIR}/plc.mod
+            DESTINATION ${SOFTPLC_INSTALL_DIR}/blink/bin
+            )
+    endif()
 endif()
 

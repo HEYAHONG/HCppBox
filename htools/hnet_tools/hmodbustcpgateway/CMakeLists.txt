@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 set(PROJECT_NAME hmodbustcpgateway)
 project(${PROJECT_NAME}
-	VERSION 1.0.0.0
-	LANGUAGES C CXX)
+    VERSION 1.0.0.0
+    LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 99)
@@ -15,7 +15,7 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/astyle/ ${CMAKE_CURRENT_SOURCE_DIR}/ )
 file(GLOB C_CXX_FILES *.h *.cpp *.c *.hpp *.cxx
-)
+    )
 add_executable(${PROJECT_NAME}  ${C_CXX_FILES})
 #添加线程库
 find_package(Threads REQUIRED)
@@ -23,7 +23,7 @@ target_link_libraries(${PROJECT_NAME}  ${CMAKE_THREAD_LIBS_INIT})
 
 check_include_file(syslog.h HAVE_SYSLOG_H)
 if(HAVE_SYSLOG_H)
-target_compile_definitions(${PROJECT_NAME}  PUBLIC  HAVE_SYSLOG_H=1)
+    target_compile_definitions(${PROJECT_NAME}  PUBLIC  HAVE_SYSLOG_H=1)
 endif()
 
 
@@ -51,9 +51,9 @@ target_link_libraries(${PROJECT_NAME}  PkgConfig::LIBEVENT_EXTRA)
 
 include(GNUInstallDirs)
 if(DEFINED HTOOLS_INSTALL_DIR)
-install(TARGETS ${PROJECT_NAME}
-       RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
-       LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
-       ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
-       )
+    install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
+        LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+        ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+        )
 endif()

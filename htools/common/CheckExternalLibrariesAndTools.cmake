@@ -16,17 +16,17 @@ pkg_check_modules(LIBEVENT_EXTRA QUIET IMPORTED_TARGET libevent_extra)
 
 find_program(AUTORECONF autoreconf)
 if(AUTORECONF)
-message(STATUS "autoreconf:" ${AUTORECONF})
+    message(STATUS "autoreconf:" ${AUTORECONF})
 endif()
 
 find_program(FLEX flex)
 if(FLEX)
-message(STATUS "flex:" ${FLEX})
+    message(STATUS "flex:" ${FLEX})
 endif()
 
 find_program(BISON bison)
 if(BISON)
-message(STATUS "bison:" ${BISON})
+    message(STATUS "bison:" ${BISON})
 endif()
 
 

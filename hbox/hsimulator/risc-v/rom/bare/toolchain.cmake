@@ -25,27 +25,27 @@ set(CMAKE_EXECUTABLE_SUFFIX_CXX .elf)
 set(CMAKE_C_COMPILER_FORCED TRUE)
 set(CMAKE_CXX_COMPILER_FORCED TRUE)
 execute_process(	COMMAND  ${CMAKE_C_COMPILER} --version
-					OUTPUT_QUIET
-					COMMAND_ERROR_IS_FATAL ANY
-				)
+    OUTPUT_QUIET
+    COMMAND_ERROR_IS_FATAL ANY
+    )
 execute_process(    COMMAND  ${CMAKE_C_COMPILER} -specs=picolibcpp.specs --version
-					RESULT_VARIABLE	PICOLIBCPP_SPECS_TEST_CODE
-                    OUTPUT_QUIET
-                    ERROR_QUIET
-                )
+    RESULT_VARIABLE	PICOLIBCPP_SPECS_TEST_CODE
+    OUTPUT_QUIET
+    ERROR_QUIET
+    )
 if("${PICOLIBCPP_SPECS_TEST_CODE}" EQUAL "0")
-	message(STATUS "libc using picolibc!")
-	set(PICOLIBC TRUE)
+    message(STATUS "libc using picolibc!")
+    set(PICOLIBC TRUE)
 else()
-	execute_process(    COMMAND  ${CMAKE_C_COMPILER} -specs=nano.specs --version
-                    RESULT_VARIABLE NANO_SPECS_TEST_CODE
-                    OUTPUT_QUIET
-                    ERROR_QUIET
-                )
-	if("${NANO_SPECS_TEST_CODE}" EQUAL "0")
-		message(STATUS "libc using newlib!")
-		set(NEWLIB TRUE)
-	else()
-		message(FATAL_ERROR "libc not support!")
-	endif()
+    execute_process(    COMMAND  ${CMAKE_C_COMPILER} -specs=nano.specs --version
+        RESULT_VARIABLE NANO_SPECS_TEST_CODE
+        OUTPUT_QUIET
+        ERROR_QUIET
+        )
+    if("${NANO_SPECS_TEST_CODE}" EQUAL "0")
+        message(STATUS "libc using newlib!")
+        set(NEWLIB TRUE)
+    else()
+        message(FATAL_ERROR "libc not support!")
+    endif()
 endif()

@@ -2,34 +2,34 @@
 add_custom_target(hgui_tools)
 
 if(DOTFONTSCAN_TOOL_FREETYPE2_FOUND)
-#添加dotfontscan工具构建
-add_custom_target(dotfontscan_tool  ${CMAKE_COMMAND} -E make_directory dotfontscan && ${CMAKE_COMMAND} -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR}  -S ${CMAKE_CURRENT_SOURCE_DIR}/dotfontscan/ -B dotfontscan && ${CMAKE_COMMAND} --build dotfontscan  -t install
-                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-                                    USES_TERMINAL)
-add_dependencies(hgui_tools dotfontscan_tool)
-message(STATUS "Enable dotfontscan_tool!" )
+    #添加dotfontscan工具构建
+    add_custom_target(dotfontscan_tool  ${CMAKE_COMMAND} -E make_directory dotfontscan && ${CMAKE_COMMAND} -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR}  -S ${CMAKE_CURRENT_SOURCE_DIR}/dotfontscan/ -B dotfontscan && ${CMAKE_COMMAND} --build dotfontscan  -t install
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+        USES_TERMINAL)
+    add_dependencies(hgui_tools dotfontscan_tool)
+    message(STATUS "Enable dotfontscan_tool!" )
 else()
-message(STATUS "Disable dotfontscan_tool!" )
+    message(STATUS "Disable dotfontscan_tool!" )
 endif()
 
 if(OPENCV_FOUND)
-#添加imageresourcegenerate工具构建
-add_custom_target(imageresourcegenerate_tool  ${CMAKE_COMMAND} -E make_directory imageresourcegenerate && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/imageresourcegenerate/ -B imageresourcegenerate && ${CMAKE_COMMAND} --build imageresourcegenerate -t install
-                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-                                    USES_TERMINAL)
-add_dependencies(hgui_tools imageresourcegenerate_tool)
-message(STATUS "Enable imageresourcegenerate_tool!" )
+    #添加imageresourcegenerate工具构建
+    add_custom_target(imageresourcegenerate_tool  ${CMAKE_COMMAND} -E make_directory imageresourcegenerate && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/imageresourcegenerate/ -B imageresourcegenerate && ${CMAKE_COMMAND} --build imageresourcegenerate -t install
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+        USES_TERMINAL)
+    add_dependencies(hgui_tools imageresourcegenerate_tool)
+    message(STATUS "Enable imageresourcegenerate_tool!" )
 else()
-message(STATUS "Disable imageresourcegenerate_tool!" )
+    message(STATUS "Disable imageresourcegenerate_tool!" )
 endif()
 
 if(WXWIDGETS_FOUND)
-#添加hguitools工具构建
-add_custom_target(hguitools_tool  ${CMAKE_COMMAND} -E make_directory hguitools && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/hguitools/ -B hguitools && ${CMAKE_COMMAND} --build hguitools -t install
-                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-                                    USES_TERMINAL)
-add_dependencies(hgui_tools hguitools_tool)
-message(STATUS "Enable hguitools_tool!" )
+    #添加hguitools工具构建
+    add_custom_target(hguitools_tool  ${CMAKE_COMMAND} -E make_directory hguitools && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/hguitools/ -B hguitools && ${CMAKE_COMMAND} --build hguitools -t install
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+        USES_TERMINAL)
+    add_dependencies(hgui_tools hguitools_tool)
+    message(STATUS "Enable hguitools_tool!" )
 else()
-message(STATUS "Disable hguitools_tool!" )
+    message(STATUS "Disable hguitools_tool!" )
 endif()

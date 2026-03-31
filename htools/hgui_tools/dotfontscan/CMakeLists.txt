@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 set(PROJECT_NAME dotfontscan)
 project(${PROJECT_NAME}
-	VERSION 1.0.0.0
-	LANGUAGES C CXX)
+    VERSION 1.0.0.0
+    LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 99)
@@ -15,12 +15,12 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../common/3rdparty/astyle/ ${CMAKE_CURRENT_SOURCE_DIR}/ )
 file(GLOB C_CXX_FILES *.h *.cpp *.c *.hpp *.cxx
-../../common/3rdparty/astyle/ASBeautifier.cpp
-../../common/3rdparty/astyle/ASEnhancer.cpp
-../../common/3rdparty/astyle/ASFormatter.cpp
-../../common/3rdparty/astyle/ASLocalizer.cpp
-../../common/3rdparty/astyle/ASResource.cpp
-)
+    ../../common/3rdparty/astyle/ASBeautifier.cpp
+    ../../common/3rdparty/astyle/ASEnhancer.cpp
+    ../../common/3rdparty/astyle/ASFormatter.cpp
+    ../../common/3rdparty/astyle/ASLocalizer.cpp
+    ../../common/3rdparty/astyle/ASResource.cpp
+    )
 add_executable(${PROJECT_NAME}  ${C_CXX_FILES})
 #添加线程库
 find_package(Threads REQUIRED)
@@ -45,10 +45,10 @@ target_link_libraries(${PROJECT_NAME}  PkgConfig::FREETYPE2)
 
 include(GNUInstallDirs)
 if(DEFINED HTOOLS_INSTALL_DIR)
-install(TARGETS ${PROJECT_NAME}
-       RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
-       LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
-       ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
-       )
+    install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
+        LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+        ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+        )
 endif()
 

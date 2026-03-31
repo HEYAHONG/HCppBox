@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 set(PROJECT_NAME hashtool)
 project(${PROJECT_NAME}
-	VERSION 1.0.0.0
-	LANGUAGES C CXX)
+    VERSION 1.0.0.0
+    LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 99)
@@ -111,9 +111,9 @@ target_link_libraries(hcksum  ${CMAKE_THREAD_LIBS_INIT})
 
 include(GNUInstallDirs)
 if(DEFINED HTOOLS_INSTALL_DIR)
-install(TARGETS hmd4sum hmd5sum hsha1sum  hsha224sum hsha256sum hsha384sum hsha512sum hsha3sum224 hsha3sum256 hsha3sum384 hsha3sum512 hripemd160sum hsm3sum hcksum
-       RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
-       LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
-       ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
-       )
+    install(TARGETS hmd4sum hmd5sum hsha1sum  hsha224sum hsha256sum hsha384sum hsha512sum hsha3sum224 hsha3sum256 hsha3sum384 hsha3sum512 hripemd160sum hsm3sum hcksum
+        RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
+        LIBRARY DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+        ARCHIVE DESTINATION ${HTOOLS_INSTALL_DIR}/lib
+        )
 endif()
