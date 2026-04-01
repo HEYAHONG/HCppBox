@@ -343,6 +343,8 @@
 
 -  编译器会将线程局部变量放入特定的节（如coff文件为.tls节，elf文件为.tbbs与.tdata 节）并对相应变量的访问做优化(如通过专用寄存器访问)。
 - 操作系统会在线程创建时加载相应的节（创建内存中的副本），线程销毁时删除内存中的副本。
+- 线程局部变量不能为非静态变量与自动变量。
+- 在C++中，如果线程局部变量具有初始化器，则该初始化器必须为常量表达式。
 
 对于嵌入式环境而言，用户可通过以下方法实现线程局部变量:
 
@@ -355,6 +357,13 @@
 - 在命令选项中启用TLS并选择TLS模型.
 - 根据架构及选择的TLS模型实现线程指针（TP,通常是把线程指针放入某个专用寄存器）、`__tls_get_addr`函数、`_aeabi_read_tp`（ARM专用）。
 - 在初始化线程时，需要手动初始化TLS空间（一般在栈底保留空间），具体初始化内容可通过链接脚本的特定节获取。
+
+在posix标准中，可使用以下函数线程局部变量的功能(线程销毁时自动执行析构函数):
+
+- `int pthread_key_create(pthread_key_t *key, void (*destructor)(void*));`
+- `void *pthread_getspecific(pthread_key_t key);`
+- `int pthread_setspecific(pthread_key_t key, const void *value);`
+- `int pthread_key_delete(pthread_key_t key);`
 
 ### thrd
 
