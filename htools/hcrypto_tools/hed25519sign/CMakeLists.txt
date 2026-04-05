@@ -32,6 +32,9 @@ hrc_enable(hed25519sign)
 target_link_libraries(hed25519sign  ${CMAKE_THREAD_LIBS_INIT})
 
 include(GNUInstallDirs)
+if(NOT DEFINED HTOOLS_INSTALL_DIR)
+    set(HTOOLS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
+endif()
 if(DEFINED HTOOLS_INSTALL_DIR)
     install(TARGETS hed25519sign
         RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin

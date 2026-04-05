@@ -43,6 +43,9 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 
 include(GNUInstallDirs)
+if(NOT DEFINED HTOOLS_INSTALL_DIR)
+    set(HTOOLS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
+endif()
 if(DEFINED HTOOLS_INSTALL_DIR)
     install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin

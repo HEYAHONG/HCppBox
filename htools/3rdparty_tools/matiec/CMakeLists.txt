@@ -107,6 +107,9 @@ add_executable(iec2iec ${MATIEC_MAIN_FILES})
 target_link_libraries(iec2iec matiec_stage4_iec matiec_stage3 matiec_stage1_2 matiec_absyntax_utils matiec_absyntax )
 
 include(GNUInstallDirs)
+if(NOT DEFINED HTOOLS_INSTALL_DIR)
+    set(HTOOLS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
+endif()
 if(DEFINED HTOOLS_INSTALL_DIR)
 install(TARGETS iec2c iec2iec
        RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin

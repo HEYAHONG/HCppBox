@@ -110,6 +110,9 @@ hrc_enable(hcksum)
 target_link_libraries(hcksum  ${CMAKE_THREAD_LIBS_INIT})
 
 include(GNUInstallDirs)
+if(NOT DEFINED HTOOLS_INSTALL_DIR)
+    set(HTOOLS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
+endif()
 if(DEFINED HTOOLS_INSTALL_DIR)
     install(TARGETS hmd4sum hmd5sum hsha1sum  hsha224sum hsha256sum hsha384sum hsha512sum hsha3sum224 hsha3sum256 hsha3sum384 hsha3sum512 hripemd160sum hsm3sum hcksum
         RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin

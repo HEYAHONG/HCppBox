@@ -46,6 +46,9 @@ add_dependencies(rvvm_all rvvm)
 
 
 include(GNUInstallDirs)
+if(NOT DEFINED HTOOLS_INSTALL_DIR)
+    set(HTOOLS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
+endif()
 if(DEFINED HTOOLS_INSTALL_DIR)
 install(TARGETS rvvm rvvm_cli
        RUNTIME DESTINATION ${HTOOLS_INSTALL_DIR}/bin
