@@ -7,6 +7,8 @@
  * License:   MIT
  **************************************************************/
 
+#define HCPPSOCKETCYGWINHELPER_IMPLEMENTATION  1
+
 #ifdef __CYGWIN__
 
 #include "winsock2.h"

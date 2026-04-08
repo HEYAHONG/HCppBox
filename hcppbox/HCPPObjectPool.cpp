@@ -1,3 +1,14 @@
+/***************************************************************
+ * Name:      HCPPObjectPool.cpp
+ * Purpose:   实现HCPPObjectPool接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2026-04-08
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+
+#define HCPPOBJECTPOOL_IMPLEMENTATION  1
+
 #include "HCPPObjectPool.h"
 #include "map"
 #include <mutex>

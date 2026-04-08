@@ -1,3 +1,14 @@
+/***************************************************************
+ * Name:      HCPPTimer.cpp
+ * Purpose:   实现HCPPTimer接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2026-04-08
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+
+#define HCPPTIMER_IMPLEMENTATION  1
+
 #include "HCPPTimer.h"
 #include <mutex>
 

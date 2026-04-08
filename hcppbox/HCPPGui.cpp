@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HCPPGUI_IMPLEMENTATION  1
+
 #include "hbox.h"
 #include "HCPPGui.h"
 #include "mutex"

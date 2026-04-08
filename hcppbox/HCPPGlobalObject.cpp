@@ -1,7 +1,18 @@
+/***************************************************************
+ * Name:      HCPPGlobalObject.cpp
+ * Purpose:   实现HCPPGlobalObject接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2026-04-08
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+
+#define HCPPGLOBALOBJECT_IMPLEMENTATION  1
+
 /*
-*为使C++全局变量按照一定顺序构造及析构，将有关联的全局变量放入一个文件中.
-*一定要将被依赖的组件的全局变量放在依赖其的组件的全局变量的前面。
-*/
+ *为使C++全局变量按照一定顺序构造及析构，将有关联的全局变量放入一个文件中.
+ *一定要将被依赖的组件的全局变量放在依赖其的组件的全局变量的前面。
+ */
 
 //HCPPObjectPool
 #include "HCPPObjectPool.h"

@@ -1,3 +1,14 @@
+/***************************************************************
+ * Name:      HCPPThread.cpp
+ * Purpose:   实现HCPPThread接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2026-04-08
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+
+#define HCPPTHREAD_IMPLEMENTATION  1
+
 #include "HCPPThread.h"
 
 HCPPThread::HCPPThread():HCPPObject(NULL),std::thread(std::bind(&HCPPThread::RunThread,this)),m_idle_sleep_time(std::chrono::milliseconds(1))

@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HCPPSOCKET_IMPLEMENTATION  1
+
 #include "HCPPSocket.h"
 #ifdef HCPPSOCKET_HAVE_SOCKET
 #ifdef __CYGWIN__

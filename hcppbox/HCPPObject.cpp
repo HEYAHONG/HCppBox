@@ -1,4 +1,14 @@
-﻿
+﻿/***************************************************************
+ * Name:      HCPPObject.cpp
+ * Purpose:   实现HCPPObject接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2026-04-08
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+
+#define HCPPOBJECT_IMPLEMENTATION  1
+
 #include "HCPPObject.h"
 #include <map>
 #include <mutex>
