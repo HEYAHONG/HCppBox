@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HOBJ_IMPLEMENTATION  1
+
 #include "hobj.h"
 
 

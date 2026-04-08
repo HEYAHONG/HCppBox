@@ -6,4 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HCHAIN_IMPLEMENTATION  1
+
 #include "hchain.h"

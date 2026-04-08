@@ -6,4 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HFIFO_IMPLEMENTATION  1
+
 #include "hfifo.h"

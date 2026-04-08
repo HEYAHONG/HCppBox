@@ -6,5 +6,8 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HSIM_IMPLEMENTATION  1
+
 #include "hsim.h"
 

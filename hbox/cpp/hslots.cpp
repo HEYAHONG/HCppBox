@@ -6,5 +6,8 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HSLOTS_IMPLEMENTATION  1
+
 #include "hslots.h"
 

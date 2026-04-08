@@ -6,5 +6,8 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HSOFTDOG_IMPLEMENTATION  1
+
 #include "hsoftdog.h"
 #include "hruntime.h"

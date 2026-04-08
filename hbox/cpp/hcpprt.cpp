@@ -6,6 +6,9 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HCPPRT_IMPLEMENTATION  1
+
 #include "hcpprt.h"
 #include "hcompiler.h"
 #include "hdefaults.h"

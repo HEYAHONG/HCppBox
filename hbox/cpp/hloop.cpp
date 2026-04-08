@@ -6,4 +6,7 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+
+#define HLOOP_IMPLEMENTATION  1
+
 #include "hloop.h"
