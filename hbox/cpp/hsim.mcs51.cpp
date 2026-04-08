@@ -1,14 +1,13 @@
 /***************************************************************
- * Name:      hsim.h
+ * Name:      hsim.mcs51.cpp
  * Purpose:   hsim
  * Author:    HYH (hyhsystem.cn)
- * Created:   2025-03-25
+ * Created:   2026-04-08
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#ifndef __HSIM_H__
-#define __HSIM_H__
-#include "hsimulator.h"
+
+#define HSIM_MCS51_IMPLEMENTATION  1
+
 #include "hsim.mcs51.h"
-#endif // __HSIM_H__
 
