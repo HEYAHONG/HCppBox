@@ -469,4 +469,5 @@ C标准库的某些代码需要编译器实现且无法通过较老标准的C代
 
 - [https://www.cppreference.com/](https://www.cppreference.com/)
 - [https://pubs.opengroup.org/onlinepubs/9699919799/](https://pubs.opengroup.org/onlinepubs/9699919799/)
+- [https://pubs.opengroup.org/onlinepubs/9799919799/](https://pubs.opengroup.org/onlinepubs/9799919799/)
 
