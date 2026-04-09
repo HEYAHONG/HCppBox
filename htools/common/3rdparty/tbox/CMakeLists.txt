@@ -40,14 +40,25 @@ option(TBOX_MODULE_DATABASE "The database module."  ON)
 option(TBOX_MODULE_COROUTINE "The coroutine module." ON)
 
 # packages
-option(TBOX_USE_ZLIB        "Enable the zlib package."      ON)
-option(TBOX_USE_MYSQL       "Enable the mysql package."     ON)
-option(TBOX_USE_SQLITE3     "Enable the sqlite3 package."   ON)
-option(TBOX_USE_OPENSSL     "Enable the openssl package."   ON)
-option(TBOX_USE_POLARSSL    "Enable the polarssl package."  ON)
-option(TBOX_USE_MBEDTLS     "Enable the mbedtls package."   ON)
-option(TBOX_USE_PCRE2       "Enable the pcre2 package."     ON)
-option(TBOX_USE_PCRE        "Enable the pcre package."      ON)
+if(NOT MSVC)
+    option(TBOX_USE_ZLIB        "Enable the zlib package."      ON)
+    option(TBOX_USE_MYSQL       "Enable the mysql package."     ON)
+    option(TBOX_USE_SQLITE3     "Enable the sqlite3 package."   ON)
+    option(TBOX_USE_OPENSSL     "Enable the openssl package."   ON)
+    option(TBOX_USE_POLARSSL    "Enable the polarssl package."  ON)
+    option(TBOX_USE_MBEDTLS     "Enable the mbedtls package."   ON)
+    option(TBOX_USE_PCRE2       "Enable the pcre2 package."     ON)
+    option(TBOX_USE_PCRE        "Enable the pcre package."      ON)
+else()
+    option(TBOX_USE_ZLIB        "Enable the zlib package."      OFF)
+    option(TBOX_USE_MYSQL       "Enable the mysql package."     OFF)
+    option(TBOX_USE_SQLITE3     "Enable the sqlite3 package."   OFF)
+    option(TBOX_USE_OPENSSL     "Enable the openssl package."   OFF)
+    option(TBOX_USE_POLARSSL    "Enable the polarssl package."  OFF)
+    option(TBOX_USE_MBEDTLS     "Enable the mbedtls package."   OFF)
+    option(TBOX_USE_PCRE2       "Enable the pcre2 package."     OFF)
+    option(TBOX_USE_PCRE        "Enable the pcre package."      OFF)
+endif()
 
 # ============================================================
 # micro/small mode disables modules and float
@@ -96,11 +107,9 @@ if(NOT MSVC)
 endif()
 
 if(MSVC)
-    # MSVC: use /std:c++latest for C++ and /std:clatest for C to enable more features (VLA, etc.)
-    # Note: /std:clatest and /std:c++latest must be set separately for C and C++ compilation
-    string(APPEND CMAKE_C_FLAGS_INIT "  /TC  /std:clatest")
-    string(APPEND CMAKE_CXX_FLAGS_INIT " /std:c++latest")
-    add_compile_options(/W3 /wd4996 /wd4133 /wd4090 /wd4214)
+    # MSVC: 将C源代码强行当作C++源代码，跳过MSVC对C语言的某些限制
+    set(CMAKE_C_FLAGS " /TP ")
+    set(CMAKE_CXX_FLAGS " /TP ")
     add_compile_definitions(NOCRYPT NOGDI)
 else()
     add_compile_options(
