@@ -31,7 +31,7 @@ int hunsetenv(const char *envname)
              */
             return 0;
         }
-        if(SetEnvironmentVariable(envname,NULL))
+        if(SetEnvironmentVariableA(envname,NULL))
         {
             return 0;
         }

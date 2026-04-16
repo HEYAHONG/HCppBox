@@ -33,7 +33,7 @@ int hsetenv(const char *envname, const char *envval, int overwrite)
                 return 0;
             }
         }
-        if(SetEnvironmentVariable(envname,envval))
+        if(SetEnvironmentVariableA(envname,envval))
         {
             return 0;
         }
