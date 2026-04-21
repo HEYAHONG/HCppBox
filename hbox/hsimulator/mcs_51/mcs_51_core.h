@@ -79,7 +79,7 @@ typedef bool (*hs_mcs_51_io_t)(hs_mcs_51_core_t *core,hs_mcs_51_io_opt_t opt,uin
  *
  * \param mem void* 大小至少为hs_mcs_51_core_size()返回的大小的内存的指针
  * \param io hs_mcs_51_io_t MCS-51 内核IO
- * \param usr void* 用户指针 用户指针，注意：此指针需要按照当前架构的指针大小进行对其
+ * \param usr void* 用户指针 用户指针，注意：此指针需要按照当前架构的指针大小进行对齐
  * \return hs_mcs_51_core_t* 成功返回地址，失败返回NULL
  *
  */
