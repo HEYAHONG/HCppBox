@@ -15,11 +15,12 @@ struct hs_mcs_51_core
     void *usr;
     struct
     {
-        uint16_t delay_tick:2;//MCS-51具有多周期指令。为保证执行效果，对于多周期指令需要延时,最多延时3周期。
-        uint16_t interrupt_nested:2;//中断嵌套层数，0=正常运行,3=直接进入高优先级中断
-        uint16_t pc;//PC
-        uint32_t interrupt_low_priority_scan_table;//中断(低优先级)扫描表，位0表示中断0，最高支持32个中断
-        uint32_t interrupt_high_priority_scan_table;//中断(高优先级)扫描表，位0表示中断0，最高支持32个中断
+        uint16_t delay_tick:2;                          //MCS-51具有多周期指令。为保证执行效果，对于多周期指令需要延时,最多延时3周期。
+        uint16_t interrupt_nested:2;                    //中断嵌套层数，0=正常运行,3=直接进入高优先级中断
+        uint16_t one_cycle:1;                           //是否为单周期
+        uint16_t pc;                                    //PC
+        uint32_t interrupt_low_priority_scan_table;     //中断(低优先级)扫描表，位0表示中断0，最高支持32个中断
+        uint32_t interrupt_high_priority_scan_table;    //中断(高优先级)扫描表，位0表示中断0，最高支持32个中断
     };
 };
 
@@ -39,6 +40,14 @@ hs_mcs_51_core_t *hs_mcs_51_core_init(void *mem,hs_mcs_51_io_t io,void *usr)
         return core;
     }
     return NULL;
+}
+
+void hs_mcs_51_core_set_1t(hs_mcs_51_core_t *core,bool one_cycle)
+{
+    if(core!=NULL)
+    {
+        core->one_cycle=(one_cycle?1:0);
+    }
 }
 
 static void hs_mcs_51_core_pc_push(hs_mcs_51_core_t * core)
@@ -1918,6 +1927,12 @@ void hs_mcs_51_core_tick(hs_mcs_51_core_t * core,size_t cycles)
             }
 
             core->io(core,HS_MCS_51_IO_TICK_ENTER,core->pc,(uint8_t *)&cycles,sizeof(cycles),core->usr);
+
+            if(core->one_cycle!=0)
+            {
+                core->delay_tick=0;
+            }
+
             if(core->delay_tick!=0)
             {
                 core->delay_tick--;
