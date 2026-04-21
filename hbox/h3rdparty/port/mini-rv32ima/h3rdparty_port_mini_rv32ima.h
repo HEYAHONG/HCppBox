@@ -30,6 +30,6 @@
 #define MINIRV32WARN( ... )
 #endif
 
-
+#include "hminirv32ima.h"
 
 #endif // __H3RDPARTY_PORT_MINI_RV32IMA_H_INCLUDE__
