@@ -100,6 +100,10 @@ static void console_output(uint8_t data)
 
 static uint8_t console_keyboard_input(void)
 {
+    if(!console_iskbhit())
+    {
+        return -1;
+    }
     // This code is kind of tricky, but used to convert windows arrow keys
     // to VT100 arrow keys.
     static int is_escape_sequence = 0;
