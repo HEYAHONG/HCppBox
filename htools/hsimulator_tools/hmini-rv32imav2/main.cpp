@@ -201,7 +201,8 @@ static bool console_iskbhit()
 static void console_output(uint8_t data)
 {
     char txchar = (char)data;
-    write(fileno(stdout), (char*)&txchar, sizeof(txchar));
+    int txlen=write(fileno(stdout), (char*)&txchar, sizeof(txchar));
+    (void)txlen;
 }
 
 static uint8_t console_keyboard_input(void)
