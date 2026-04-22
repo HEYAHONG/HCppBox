@@ -23,3 +23,14 @@ if(NOT MSVC)
 else()
     message(STATUS "Disable hmini-rv32ima_tool!" )
 endif()
+
+if(NOT MSVC)
+    #添加hmini-rv32imav2工具构建
+    add_custom_target(hmini-rv32imav2_tool  ${CMAKE_COMMAND} -E make_directory hmini-rv32imav2 && ${CMAKE_COMMAND} -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR}  -S ${CMAKE_CURRENT_SOURCE_DIR}/hmini-rv32imav2/ -B hmini-rv32imav2 && ${CMAKE_COMMAND} --build hmini-rv32imav2 -t install
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+        USES_TERMINAL)
+    add_dependencies(hsimulator_tools hmini-rv32imav2_tool)
+    message(STATUS "Enable hmini-rv32imav2_tool!" )
+else()
+    message(STATUS "Disable hmini-rv32imav2_tool!" )
+endif()
