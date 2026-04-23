@@ -8,6 +8,7 @@
 #include "thread"
 #include "chrono"
 #include H3RDPARTY_ARGTABLE3_HEADER
+#include "inttypes.h"
 
 
 static void show_banner()
@@ -245,143 +246,126 @@ static void console_init(void)
 
 #endif
 
-#include H3RDPARTY_LIBFDT_HEADER
-static void dtb_print_blank(size_t n)
-{
-    while(n--)
-    {
-        hprintf("    ");
-    }
-}
-
-
-static void dtb_print_fdt(const void *fdt,int offset,int depth)
-{
-    if(offset < 0 || depth < 0)
-    {
-        return;
-    }
-    /*
-     * 遍历属性
-     */
-    {
-        if(offset >= 0)
-        {
-            const char *name=fdt_get_name(fdt,offset,NULL);
-            if(name!=NULL)
-            {
-                if(name[0]=='\0')
-                {
-                    name="/";
-                }
-                dtb_print_blank(depth);
-                hprintf("%s\r\n",name);
-            }
-            {
-                int prop_offset=0;
-                fdt_for_each_property_offset(prop_offset,fdt,offset)
-                {
-                    int prop_size=0;
-                    const char *prop_name=NULL;
-                    const uint8_t *prop_value = (const uint8_t *)fdt_getprop_by_offset(fdt, prop_offset, &prop_name, &prop_size);
-                    if(name!=NULL)
-                    {
-                        bool is_printable_string=(prop_value!=NULL) && (prop_size > 0) && (prop_value[prop_size-1]=='\0');
-                        for(size_t i=0; i<prop_size; i++)
-                        {
-                            if((i+1)==prop_size)
-                            {
-                                break;
-                            }
-                            if(((!isprint((char)prop_value[i])  && (strcmp(prop_name,"model")!=0)) && !(prop_value[i]=='\0' && (strcmp(prop_name,"compatible")==0))))
-                            {
-                                is_printable_string=false;
-                                break;
-                            }
-                        }
-                        if(is_printable_string)
-                        {
-                            dtb_print_blank(depth+1);
-                            const char *value=(const char *)prop_value;
-                            hprintf("%-32s:",prop_name);
-                            size_t value_base=0;
-                            while(value_base+strlen(&value[value_base])+1 <= prop_size)
-                            {
-                                hprintf("%s ",&value[value_base]);
-                                value_base+=(strlen(&value[value_base])+1);
-                            }
-                            hprintf("\r\n");
-                        }
-                        else
-                        {
-                            dtb_print_blank(depth+1);
-                            switch(prop_size)
-                            {
-                            case 0:
-                            {
-                                hprintf("%-32s\r\n",prop_name);
-                            }
-                            break;
-                            case 1:
-                            {
-                                uint8_t value=prop_value[0];
-                                hprintf("%-32s:%02X\r\n",prop_name,(int)value);
-                            }
-                            break;
-                            case 2:
-                            {
-                                uint16_t value=fdt16_ld((const fdt16_t *)prop_value);
-                                hprintf("%-32s:%04X\r\n",prop_name,(int)value);
-                            }
-                            break;
-                            case 4:
-                            {
-                                uint32_t value=fdt32_ld((const fdt32_t *)prop_value);
-                                hprintf("%-32s:%08X\r\n",prop_name,(int)value);
-                            }
-                            break;
-                            case 8:
-                            {
-                                uint64_t value=fdt64_ld((const fdt64_t *)prop_value);
-                                hprintf("%-32s:%08X%08X\r\n",prop_name,(int)((value>>32)&0xFFFFFFFF),(int)((value>>0)&0xFFFFFFFF));
-                            }
-                            break;
-                            default:
-                            {
-                                char value[512]= {0};
-                                hbase16_encode_with_null_terminator(value,sizeof(value),prop_value,prop_size);
-                                hprintf("%-32s:%s\r\n",prop_name,value);
-                            }
-                            break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    /*
-     * 遍历子节点
-     */
-    {
-        if(offset >= 0)
-        {
-            int child=0;
-            fdt_for_each_subnode(child,fdt,offset)
-            {
-                dtb_print_fdt(fdt,child,depth+1);
-            }
-        }
-    }
-}
-
 
 hminirv32ima_machine_default64mb_t machine;
 
 static void dtb_display(void)
 {
     hprintf("dtb:\r\n");
-    dtb_print_fdt(machine.dtb,0,1);
+    /*
+     * 遍历节点
+     */
+
+    /*
+     * node_ctx[0]: depth
+     * node_ctx[1]: #address-cells
+     * node_ctx[2]: #size-cells
+     * node_ctx[3]: blank_space
+     */
+    intptr_t node_ctx[8]= {0};
+    node_ctx[1]=2;
+    node_ctx[2]=1;
+    hlibfdt_traverse_node(machine.dtb,[](const void *fdt,int offset,const char *name,int depth,void *usr)
+    {
+        intptr_t *node_ctx=(intptr_t *)usr;
+        std::string blank_space;
+        for(size_t i=0; i<(depth-1); i++)
+        {
+            blank_space+="\t";
+        }
+        if(name==NULL || strlen(name)==0)
+        {
+            name="/";
+        }
+        hprintf("%s%s\r\n",blank_space.c_str(),name);
+        node_ctx[0]=depth;
+        node_ctx[3]=(intptr_t)blank_space.c_str();
+        hlibfdt_traverse_node_property(fdt,offset,[](const void *fdt,int offset,const char *name,const uint8_t *value,size_t value_length,void *usr)
+        {
+            intptr_t *node_ctx=(intptr_t *)usr;
+            const char *blank_space=(const char *)node_ctx[3];
+            if(strcmp("#address-cells",name)==0)
+            {
+                uint32_t val=0;
+                for(size_t i=0; i<value_length; i++)
+                {
+                    val <<= 8;
+                    val +=  value[i];
+                }
+                node_ctx[1]=val;
+                hprintf( "%s\t%-20s:%" PRIu32 "\r\n",blank_space,name,val);
+            }
+            else if(strcmp("#size-cells",name)==0)
+            {
+                uint32_t val=0;
+                for(size_t i=0; i<value_length; i++)
+                {
+                    val <<= 8;
+                    val +=  value[i];
+                }
+                node_ctx[2]=val;
+                hprintf( "%s\t%-20s:%" PRIu32 "\r\n",blank_space,name,val);
+            }
+            else if(strcmp("reg",name)==0)
+            {
+                hprintf( "%s\t%-20s:",blank_space,name);
+                for(size_t i=0; i<value_length; i++)
+                {
+                    if(i==node_ctx[1]*4)
+                    {
+                        hprintf("\t");
+                    }
+                    if(i==(node_ctx[1]*4+node_ctx[2]*4))
+                    {
+                        hprintf("\t");
+                    }
+                    hprintf("%02X",(int)value[i]);
+                }
+                hprintf("\r\n");
+            }
+            else
+            {
+                const char *string_data_name_list[]
+                {
+                    "model",
+                    "compatible",
+                    "status",
+                    "device_type",
+                    "mmu-type",
+                    "riscv,isa",
+                    "bootargs"
+                };
+                bool is_string_data=false;
+                for(size_t i=0; i< sizeof(string_data_name_list)/sizeof(string_data_name_list[0]); i++)
+                {
+                    if(strcmp(string_data_name_list[i],name)==0)
+                    {
+                        is_string_data=true;
+                        break;
+                    }
+                }
+                hprintf( "%s\t%-20s:",blank_space,name);
+                if(is_string_data)
+                {
+                    size_t string_offset=0;
+                    while(string_offset<value_length)
+                    {
+                        hprintf(" %s",(char *)&value[string_offset]);
+                        string_offset+=strlen((char *)&value[string_offset])+1;
+                    }
+                }
+                else
+                {
+                    for(size_t i=0; i<value_length; i++)
+                    {
+                        hprintf("%02X",(int)value[i]);
+                    }
+                }
+                hprintf("\r\n");
+            }
+
+        },node_ctx);
+    },node_ctx);
     hprintf("\r\n");
 }
 
