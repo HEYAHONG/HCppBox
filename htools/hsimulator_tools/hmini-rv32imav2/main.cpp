@@ -21,15 +21,20 @@ static void show_banner()
 
 
 static std::string filename="Image";
+static std::string dtbfilename;
+static bool displaydtb=false;
 static void check_args(int argc,char *argv[])
 {
     struct arg_lit  * help=NULL;
-    struct arg_lit  * decompress=NULL;
+    struct arg_lit  * display_dtb=NULL;
     struct arg_file *file=NULL;
+    struct arg_file *dtbfile=NULL;
     void *argtable[]=
     {
         help=arg_lit0("h","help",                                      "print this help and exit"),
+        display_dtb=arg_lit0("D","displaydtb",                          "display dtb before vm start"),
         file=arg_file0(NULL,NULL,"<file>",                              "image file name(default:Image)"),
+        dtbfile=arg_file0("d","dtb","<file>",                           "dtb file name"),
         arg_end(20)
     };
     if(arg_nullcheck(argtable)!=0)
@@ -54,9 +59,19 @@ static void check_args(int argc,char *argv[])
         hexit(-1);
     }
 
+    if(display_dtb->count>0)
+    {
+        displaydtb=true;
+    }
+
     if(file->count > 0)
     {
         filename=std::string(file->filename[0]);
+    }
+
+    if(dtbfile->count > 0)
+    {
+        dtbfilename=std::string(dtbfile->filename[0]);
     }
 
     arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
@@ -79,6 +94,7 @@ static void check_args(int argc,char *argv[])
             file.close();
         }
     }
+
 }
 
 #if defined(WINDOWS) || defined(WIN32) || defined(_WIN32)
@@ -229,7 +245,146 @@ static void console_init(void)
 
 #endif
 
+#include H3RDPARTY_LIBFDT_HEADER
+static void dtb_print_blank(size_t n)
+{
+    while(n--)
+    {
+        hprintf("    ");
+    }
+}
+
+
+static void dtb_print_fdt(const void *fdt,int offset,int depth)
+{
+    if(offset < 0 || depth < 0)
+    {
+        return;
+    }
+    /*
+     * 遍历属性
+     */
+    {
+        if(offset >= 0)
+        {
+            const char *name=fdt_get_name(fdt,offset,NULL);
+            if(name!=NULL)
+            {
+                if(name[0]=='\0')
+                {
+                    name="/";
+                }
+                dtb_print_blank(depth);
+                hprintf("%s\r\n",name);
+            }
+            {
+                int prop_offset=0;
+                fdt_for_each_property_offset(prop_offset,fdt,offset)
+                {
+                    int prop_size=0;
+                    const char *prop_name=NULL;
+                    const uint8_t *prop_value = (const uint8_t *)fdt_getprop_by_offset(fdt, prop_offset, &prop_name, &prop_size);
+                    if(name!=NULL)
+                    {
+                        bool is_printable_string=(prop_value!=NULL) && (prop_size > 0) && (prop_value[prop_size-1]=='\0');
+                        for(size_t i=0; i<prop_size; i++)
+                        {
+                            if((i+1)==prop_size)
+                            {
+                                break;
+                            }
+                            if(((!isprint((char)prop_value[i])  && (strcmp(prop_name,"model")!=0)) && !(prop_value[i]=='\0' && (strcmp(prop_name,"compatible")==0))))
+                            {
+                                is_printable_string=false;
+                                break;
+                            }
+                        }
+                        if(is_printable_string)
+                        {
+                            dtb_print_blank(depth+1);
+                            const char *value=(const char *)prop_value;
+                            hprintf("%-32s:",prop_name);
+                            size_t value_base=0;
+                            while(value_base+strlen(&value[value_base])+1 <= prop_size)
+                            {
+                                hprintf("%s ",&value[value_base]);
+                                value_base+=(strlen(&value[value_base])+1);
+                            }
+                            hprintf("\r\n");
+                        }
+                        else
+                        {
+                            dtb_print_blank(depth+1);
+                            switch(prop_size)
+                            {
+                            case 0:
+                            {
+                                hprintf("%-32s\r\n",prop_name);
+                            }
+                            break;
+                            case 1:
+                            {
+                                uint8_t value=prop_value[0];
+                                hprintf("%-32s:%02X\r\n",prop_name,(int)value);
+                            }
+                            break;
+                            case 2:
+                            {
+                                uint16_t value=fdt16_ld((const fdt16_t *)prop_value);
+                                hprintf("%-32s:%04X\r\n",prop_name,(int)value);
+                            }
+                            break;
+                            case 4:
+                            {
+                                uint32_t value=fdt32_ld((const fdt32_t *)prop_value);
+                                hprintf("%-32s:%08X\r\n",prop_name,(int)value);
+                            }
+                            break;
+                            case 8:
+                            {
+                                uint64_t value=fdt64_ld((const fdt64_t *)prop_value);
+                                hprintf("%-32s:%08X%08X\r\n",prop_name,(int)((value>>32)&0xFFFFFFFF),(int)((value>>0)&0xFFFFFFFF));
+                            }
+                            break;
+                            default:
+                            {
+                                char value[512]= {0};
+                                hbase16_encode_with_null_terminator(value,sizeof(value),prop_value,prop_size);
+                                hprintf("%-32s:%s\r\n",prop_name,value);
+                            }
+                            break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    /*
+     * 遍历子节点
+     */
+    {
+        if(offset >= 0)
+        {
+            int child=0;
+            fdt_for_each_subnode(child,fdt,offset)
+            {
+                dtb_print_fdt(fdt,child,depth+1);
+            }
+        }
+    }
+}
+
+
 hminirv32ima_machine_default64mb_t machine;
+
+static void dtb_display(void)
+{
+    hprintf("dtb:\r\n");
+    dtb_print_fdt(machine.dtb,0,1);
+    hprintf("\r\n");
+}
+
 
 static void run_vm(int argc,char *argv[])
 {
@@ -258,6 +413,7 @@ static void run_vm(int argc,char *argv[])
         hminirv32ima_machine_default64mb_reset(&machine);
 
         {
+            //加载Image
             std::fstream file;
             file.open(filename.c_str(),std::ios::in|std::ios::binary);
             if(!file.is_open())
@@ -269,6 +425,27 @@ static void run_vm(int argc,char *argv[])
             file.read((char *)machine.ram,sizeof(machine.ram));
 
             file.close();
+        }
+
+        if(!dtbfilename.empty())
+        {
+            //加载dtb
+            std::fstream file;
+            file.open(dtbfilename.c_str(),std::ios::in|std::ios::binary);
+            if(!file.is_open())
+            {
+                hfprintf(stderr,"open %s failed!\r\n",dtbfilename.c_str());
+                hexit(-1);
+            }
+
+            file.read((char *)machine.dtb,sizeof(machine.dtb));
+
+            file.close();
+        }
+
+        if(displaydtb)
+        {
+            dtb_display();
         }
 
         bool cpu_cycle=true;
