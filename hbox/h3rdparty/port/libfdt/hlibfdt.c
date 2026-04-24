@@ -62,6 +62,21 @@ bool hlibfdt_traverse_node(const void *fdt,hlibfdt_traverse_on_node_t on_node,vo
     return hlibfdt_traverse_node_internal(fdt,0,1,on_node,usr);
 }
 
+bool hlibfdt_traverse_subnode(const void *fdt,int offset,hlibfdt_traverse_on_node_t on_node,void *usr)
+{
+    if(!hlibfdt_check(fdt))
+    {
+        return false;
+    }
+
+    return hlibfdt_traverse_node_internal(fdt,offset,1,on_node,usr);
+}
+
+int hlibfdt_path_offset(const void *fdt, const char *path)
+{
+    return fdt_path_offset(fdt,path);
+}
+
 bool hlibfdt_traverse_node_property(const void *fdt,int node_offset,hlibfdt_traverse_on_node_property_t on_property,void *usr)
 {
     bool ret=false;
@@ -99,4 +114,12 @@ uint32_t hlibfdt_get_phandle(const void *fdt, int node_offset)
     return fdt_get_phandle(fdt, node_offset);
 }
 
+int hlibfdt_node_offset_by_phandle(const void *fdt, uint32_t phandle)
+{
+    return fdt_node_offset_by_phandle(fdt,phandle);
+}
 
+const void *hlibfdt_getprop(const void *fdt, int nodeoffset,const char *name, int *lenp)
+{
+    return fdt_getprop(fdt,nodeoffset,name,lenp);
+}

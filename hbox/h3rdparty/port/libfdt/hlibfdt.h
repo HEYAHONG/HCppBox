@@ -48,6 +48,27 @@ typedef void (*hlibfdt_traverse_on_node_t)(const void *fdt,int offset,const char
 bool hlibfdt_traverse_node(const void *fdt,hlibfdt_traverse_on_node_t on_node,void *usr);
 
 
+/** \brief 遍历子节点
+ *
+ * \param fdt const void* fdt指针
+ * \param offset int 子节点偏移
+ * \param on_node hlibfdt_traverse_on_node_t 遍历节点回调
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hlibfdt_traverse_subnode(const void *fdt,int offset,hlibfdt_traverse_on_node_t on_node,void *usr);
+
+/** \brief 通过路径获取节点偏移
+ *
+ * \param fdt const void* fdt指针
+ * \param path const char* 路径
+ * \return int 偏移，大于等于0表示成功
+ *
+ */
+int hlibfdt_path_offset(const void *fdt, const char *path);
+
+
 /** \brief 遍历节点属性回调
  *
  * \param fdt const void* fdt指针
@@ -89,7 +110,19 @@ uint32_t hlibfdt_get_phandle(const void *fdt, int node_offset);
  * \return int 节点偏移，大于等于0时为成功
  *
  */
-int fdt_node_offset_by_phandle(const void *fdt, uint32_t phandle);
+int hlibfdt_node_offset_by_phandle(const void *fdt, uint32_t phandle);
+
+
+/** \brief 读取节点属性
+ *
+ * \param fdt const void* fdt指针
+ * \param nodeoffset int 节点偏移
+ * \param name const char* 属性名称
+ * \param lenp int* 属性长度指针，当属性长度大于等于0时成功
+ * \return const void* 属性值
+ *
+ */
+const void *hlibfdt_getprop(const void *fdt, int nodeoffset,const char *name, int *lenp);
 
 #ifdef __cplusplus
 }
