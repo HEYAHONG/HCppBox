@@ -9,6 +9,6 @@
 #ifndef __HSHELL_H_INCLUDED__
 #define __HSHELL_H_INCLUDED__
 
-#include "hshell/hshell.h"
+#include "hshell/hshellv1.h"
 
 #endif // __HSHELL_H_INCLUDED__

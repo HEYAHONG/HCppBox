@@ -1,14 +1,14 @@
 /***************************************************************
- * Name:      hshell.c
- * Purpose:   实现hshell接口
+ * Name:      hshellv1.h
+ * Purpose:   声明hshell接口
  * Author:    HYH (hyhsystem.cn)
- * Created:   2025-03-15
+ * Created:   2026-04-25
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+#ifndef __HSHELLV1_H__
+#define __HSHELLV1_H__
 
-#define HSHELL_IMPLEMENTATION  1
+#include "hshellv1/hshell.h"
 
-#include "hshell.h"
-
-#include "hshell/hshellv1.c"
+#endif // __HSHELLV1_H__
