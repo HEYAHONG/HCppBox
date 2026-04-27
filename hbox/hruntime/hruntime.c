@@ -63,6 +63,32 @@ static bool hruntime_internal_flag_is_set(size_t flag)
 }
 
 
+typedef void (*hruntime_internal_function_t)(void);
+
+void hruntime_init_h3rdparty(void)
+{
+    /*
+     * 初始化第三方库
+     */
+    h3rdparty_init();
+}
+
+void hruntime_init_hdefaults(void)
+{
+    hdefaults_init();
+}
+
+static const hruntime_internal_function_t hruntime_internal_function_init_lowlevel[]=
+{
+#ifndef HRUNTIME_NO_H3RDPARTY
+    hruntime_init_h3rdparty,
+#endif // HRUNTIME_NO_H3RDPARTY
+#ifndef HRUNTIME_NO_HDEFAULTS
+    hruntime_init_hdefaults,
+#endif // HRUNTIME_NO_HDEFAULTS
+    NULL
+};
+
 void hruntime_init_lowlevel()
 {
     if(hruntime_init_lowlevel_done())
@@ -70,17 +96,13 @@ void hruntime_init_lowlevel()
         return;
     }
 
-#ifndef HRUNTIME_NO_H3RDPARTY
-    /*
-     * 初始化第三方库
-     */
-    h3rdparty_init();
-#endif // HRUNTIME_NO_H3RDPARTY
-
-
-#ifndef HRUNTIME_NO_HDEFAULTS
-    hdefaults_init();
-#endif // HRUNTIME_NO_HDEFAULTS
+    for(size_t i=0; i<sizeof(hruntime_internal_function_init_lowlevel)/sizeof(hruntime_internal_function_init_lowlevel[0]); i++)
+    {
+        if(hruntime_internal_function_init_lowlevel[i]!=NULL)
+        {
+            hruntime_internal_function_init_lowlevel[i]();
+        }
+    }
 
     //标记初始化完成
     hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOWLEVEL_INIT_DONE);
@@ -90,6 +112,44 @@ bool hruntime_init_lowlevel_done(void)
 {
     return hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_LOWLEVEL_INIT_DONE);
 }
+
+void hruntime_init_section(void)
+{
+#ifdef HRUNTIME_USING_INIT_SECTION
+    HRUNTIME_INIT_INVOKE();
+#endif // HRUNTIME_USING_INIT_SECTION
+}
+
+void hruntime_init_slots(void)
+{
+    /*
+     * 系统初始化完成
+     */
+    {
+        heventslots_t *slots_init=heventslots_get_slots_from_table(HEVENTSLOTS_SYSTEM_SLOTS_INIT);
+        if(slots_init!=NULL)
+        {
+            heventslots_emit_signal(slots_init,NULL);
+        }
+    }
+}
+
+void hruntime_init_hsoftplc(void)
+{
+#if defined(HSOFTPLC)
+    hsoftplc_init();
+#endif
+}
+
+static const hruntime_internal_function_t hruntime_internal_function_init[]=
+{
+    hruntime_init_section,
+    hruntime_init_slots,
+#if !defined(HRUNTIME_NO_SOFTPLC)
+    hruntime_init_hsoftplc,
+#endif
+    NULL
+};
 
 void hruntime_init()
 {
@@ -103,24 +163,13 @@ void hruntime_init()
         return;
     }
 
-#ifdef HRUNTIME_USING_INIT_SECTION
-    HRUNTIME_INIT_INVOKE();
-#endif // HRUNTIME_USING_INIT_SECTION
-
-    /*
-     * 系统初始化完成
-     */
+    for(size_t i=0; i<sizeof(hruntime_internal_function_init)/sizeof(hruntime_internal_function_init[0]); i++)
     {
-        heventslots_t *slots_init=heventslots_get_slots_from_table(HEVENTSLOTS_SYSTEM_SLOTS_INIT);
-        if(slots_init!=NULL)
+        if(hruntime_internal_function_init[i]!=NULL)
         {
-            heventslots_emit_signal(slots_init,NULL);
+            hruntime_internal_function_init[i]();
         }
     }
-
-#if defined(HSOFTPLC) && !defined(HRUNTIME_NO_SOFTPLC)
-    hsoftplc_init();
-#endif
 
     //标记初始化完成
     hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_INIT_DONE);
@@ -136,17 +185,8 @@ bool hruntime_init_done(void)
 #define HRUNTIME_USING_LOOP_SECTION_CACHE   1
 #endif
 
-void hruntime_loop()
+void hruntime_loop_section(void)
 {
-    if(!hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_INIT_DONE))
-    {
-        hruntime_init();
-    }
-
-
-    hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_END);
-    hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN);
-
 #ifdef HRUNTIME_USING_LOOP_SECTION
 #ifdef HRUNTIME_USING_LOOP_SECTION_CACHE
     HRUNTIME_LOOP_CACHE_INVOKE();
@@ -154,7 +194,10 @@ void hruntime_loop()
     HRUNTIME_LOOP_INVOKE();
 #endif
 #endif // HRUNTIME_USING_LOOP_SECTION
+}
 
+void hruntime_loop_slots(void)
+{
     /*
      * 系统循环
      */
@@ -165,7 +208,10 @@ void hruntime_loop()
             heventslots_emit_signal(slots_loop,NULL);
         }
     }
+}
 
+void hruntime_loop_queue(void)
+{
     /*
      * 工作队列
      */
@@ -176,8 +222,10 @@ void hruntime_loop()
             heventloop_process_event(loop_workqueue);
         }
     }
+}
 
-#ifndef HRUNTIME_NO_SOFTWARETIMER
+void hruntime_loop_softwaretimer(void)
+{
     /*
      * 定时器循环
      */
@@ -185,9 +233,10 @@ void hruntime_loop()
     {
         hsoftwaretimer_loop_hruntime();
     }
-#endif // HRUNTIME_NO_SOFTWARETIMER
+}
 
-#ifndef HRUNTIME_NO_SOFTWATCHDOG
+void hruntime_loop_softwaredog(void)
+{
     /*
      * 软件看门狗
      */
@@ -202,23 +251,71 @@ void hruntime_loop()
             hruntime_loop_enable_softwatchdog(false);
         }
     }
-#endif // HRUNTIME_NO_SOFTWATCHDOG
+}
 
-#ifndef HRUNTIME_NO_H3RDPARTY
+void hruntime_loop_h3rdparty(void)
+{
     /*
      * 第三方库循环
      */
     h3rdparty_loop();
-#endif // HRUNTIME_NO_H3RDPARTY
+}
 
-#ifndef HRUNTIME_NO_HDEFAULTS
+void hruntime_loop_hdefaults(void)
+{
     hdefaults_loop();
-#endif // HRUNTIME_NO_HDEFAULTS
+}
 
-
-#if defined(HSOFTPLC) && !defined(HRUNTIME_NO_SOFTPLC)
+void hruntime_loop_hsoftplc(void)
+{
+#if defined(HSOFTPLC)
     hsoftplc_loop();
 #endif
+}
+
+static const hruntime_internal_function_t hruntime_internal_function_loop[]=
+{
+    hruntime_loop_section,
+    hruntime_loop_slots,
+    hruntime_loop_queue,
+#ifndef HRUNTIME_NO_SOFTWARETIMER
+    hruntime_loop_softwaretimer,
+#endif // HRUNTIME_NO_SOFTWARETIMER
+#ifndef HRUNTIME_NO_SOFTWATCHDOG
+    hruntime_loop_softwaredog,
+#endif // HRUNTIME_NO_SOFTWATCHDOG
+#ifndef HRUNTIME_NO_H3RDPARTY
+    hruntime_loop_h3rdparty,
+#endif // HRUNTIME_NO_H3RDPARTY
+#ifndef HRUNTIME_NO_HDEFAULTS
+    hruntime_loop_hdefaults,
+#endif // HRUNTIME_NO_HDEFAULTS
+#if !defined(HRUNTIME_NO_SOFTPLC)
+    hruntime_loop_hsoftplc,
+#endif
+    NULL
+};
+
+
+void hruntime_loop()
+{
+    if(!hruntime_internal_flag_is_set(HRUNTIME_INTERNAL_FLAG_INIT_DONE))
+    {
+        hruntime_init();
+    }
+
+
+    hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_END);
+    hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN);
+
+
+    for(size_t i=0; i<sizeof(hruntime_internal_function_loop)/sizeof(hruntime_internal_function_loop[0]); i++)
+    {
+        if(hruntime_internal_function_loop[i]!=NULL)
+        {
+            hruntime_internal_function_loop[i]();
+        }
+    }
 
     hruntime_internal_flag_clear(HRUNTIME_INTERNAL_FLAG_LOOP_BEGIN);
     hruntime_internal_flag_set(HRUNTIME_INTERNAL_FLAG_LOOP_END);
