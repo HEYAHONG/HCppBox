@@ -66,6 +66,16 @@ struct hminirv32ima_state
      *
      */
     void (*csr_read)(struct hminirv32ima_state *state,uint32_t csrno,uint32_t* csrvalue);
+
+    /** \brief 指令执行后回调
+     *
+     * \param state struct hminirv32ima_state* 状态
+     * \param pc uint32_t* PC指针
+     * \param ir uint32_t* 指令指针
+     * \param trap uint32_t* 陷入号。注意:此值为0时表示正常执行，其余情况其值=中断号/异常号+1。当其值为3(2(Illegal instruction)+1)时可用于扩展未支持的指令。
+     *
+     */
+    void (*post_exec)(struct hminirv32ima_state *state,uint32_t *pc,uint32_t *ir,uint32_t *trap);
 };
 
 typedef struct hminirv32ima_state hminirv32ima_state_t;

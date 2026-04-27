@@ -24,6 +24,14 @@ static void hminirv32ima_state_csr_read(struct hminirv32ima_state *state,uint32_
     (void)csrvalue;
 }
 
+ void hminirv32ima_state_post_exec(struct hminirv32ima_state *state,uint32_t *pc,uint32_t *ir,uint32_t *trap)
+ {
+     (void)state;
+     (void)pc;
+     (void)ir;
+     (void)trap;
+ }
+
 
 static size_t hminirv32ima_memory_load(const struct hminirv32ima_memory *mem,uintptr_t ram_addr,void *ptr,size_t length)
 {
@@ -74,6 +82,7 @@ void hminirv32ima_core_init(hminirv32ima_core_t *core,size_t ram_size)
         core->state.extraflags |= 3;                       /**< 默认特权为机器级 */
         core->state.csr_read=hminirv32ima_state_csr_read;
         core->state.csr_write=hminirv32ima_state_csr_write;
+        core->state.post_exec=hminirv32ima_state_post_exec;
 
         /*
          * 初始化内存
@@ -461,6 +470,7 @@ int hminirv32ima_machine_default64mb_step(hminirv32ima_machine_default64mb_t *ma
 #define MINIRV32_HANDLE_MEM_LOAD_CONTROL(addr,rs)      do {core->mmio.mmio_load(&core->mmio,addr,&rs,sizeof(rs));}  while(0)
 #define MINIRV32_OTHERCSR_WRITE(csrno,csrval)          do {core->state.csr_write(&core->state,csrno,csrval);}      while(0)
 #define MINIRV32_OTHERCSR_READ(csrno,csrval)           do {core->state.csr_read(&core->state,csrno,&csrval);}      while(0)
+#define MINIRV32_POSTEXEC( pc, ir, trap )              do {core->state.post_exec(&core->state,&pc,&ir,&trap);}      while(0)
 
 #define MINIRV32_CUSTOM_MEMORY_BUS 1
 static inline void hminirv32ima_store4(hminirv32ima_core_t *core,size_t offset,uint32_t val)
