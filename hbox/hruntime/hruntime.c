@@ -78,6 +78,19 @@ void hruntime_init_hdefaults(void)
     hdefaults_init();
 }
 
+#if !defined(HRUNTIME_INIT_LOWLEVEL_LIST1)
+#define HRUNTIME_INIT_LOWLEVEL_LIST1
+#endif
+#if !defined(HRUNTIME_INIT_LOWLEVEL_LIST2)
+#define HRUNTIME_INIT_LOWLEVEL_LIST2
+#endif
+#if !defined(HRUNTIME_INIT_LOWLEVEL_LIST3)
+#define HRUNTIME_INIT_LOWLEVEL_LIST3
+#endif
+#if !defined(HRUNTIME_INIT_LOWLEVEL_LIST4)
+#define HRUNTIME_INIT_LOWLEVEL_LIST4
+#endif
+
 static const hruntime_internal_function_t hruntime_internal_function_init_lowlevel[]=
 {
 #ifndef HRUNTIME_NO_H3RDPARTY
@@ -86,6 +99,10 @@ static const hruntime_internal_function_t hruntime_internal_function_init_lowlev
 #ifndef HRUNTIME_NO_HDEFAULTS
     hruntime_init_hdefaults,
 #endif // HRUNTIME_NO_HDEFAULTS
+    HRUNTIME_INIT_LOWLEVEL_LIST1
+    HRUNTIME_INIT_LOWLEVEL_LIST2
+    HRUNTIME_INIT_LOWLEVEL_LIST3
+    HRUNTIME_INIT_LOWLEVEL_LIST4
     NULL
 };
 
@@ -141,6 +158,19 @@ void hruntime_init_hsoftplc(void)
 #endif
 }
 
+#if !defined(HRUNTIME_INIT_LIST1)
+#define HRUNTIME_INIT_LIST1
+#endif
+#if !defined(HRUNTIME_INIT_LIST2)
+#define HRUNTIME_INIT_LIST2
+#endif
+#if !defined(HRUNTIME_INIT_LIST3)
+#define HRUNTIME_INIT_LIST3
+#endif
+#if !defined(HRUNTIME_INIT_LIST4)
+#define HRUNTIME_INIT_LIST4
+#endif
+
 static const hruntime_internal_function_t hruntime_internal_function_init[]=
 {
     hruntime_init_section,
@@ -148,6 +178,10 @@ static const hruntime_internal_function_t hruntime_internal_function_init[]=
 #if !defined(HRUNTIME_NO_SOFTPLC)
     hruntime_init_hsoftplc,
 #endif
+    HRUNTIME_INIT_LIST1
+    HRUNTIME_INIT_LIST2
+    HRUNTIME_INIT_LIST3
+    HRUNTIME_INIT_LIST4
     NULL
 };
 
@@ -273,6 +307,19 @@ void hruntime_loop_hsoftplc(void)
 #endif
 }
 
+#if !defined(HRUNTIME_LOOP_LIST1)
+#define HRUNTIME_LOOP_LIST1
+#endif
+#if !defined(HRUNTIME_LOOP_LIST2)
+#define HRUNTIME_LOOP_LIST2
+#endif
+#if !defined(HRUNTIME_LOOP_LIST3)
+#define HRUNTIME_LOOP_LIST3
+#endif
+#if !defined(HRUNTIME_LOOP_LIST4)
+#define HRUNTIME_LOOP_LIST4
+#endif
+
 static const hruntime_internal_function_t hruntime_internal_function_loop[]=
 {
     hruntime_loop_section,
@@ -293,6 +340,10 @@ static const hruntime_internal_function_t hruntime_internal_function_loop[]=
 #if !defined(HRUNTIME_NO_SOFTPLC)
     hruntime_loop_hsoftplc,
 #endif
+    HRUNTIME_LOOP_LIST1
+    HRUNTIME_LOOP_LIST2
+    HRUNTIME_LOOP_LIST3
+    HRUNTIME_LOOP_LIST4
     NULL
 };
 

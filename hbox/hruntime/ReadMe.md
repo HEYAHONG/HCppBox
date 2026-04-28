@@ -29,6 +29,18 @@
 |         `HRUNTIME_NO_SOFTWARETIMER`          |   无软件定时器    | 此选项通常用于减小代码，若启用则相关代码无效。未定义此选项时默认由`hruntime`自动运行软件定时器 |
 |          `HRUNTIME_NO_SOFTWATCHDOG`          |   无软件看门狗    | 此选项通常用于减小代码，若启用则相关代码无效。未定义此选项时默认由`hruntime`自动运行喂狗 |
 |            `HRUNTIME_NO_SOFTPLC`             |    无软件`PLC`    | 此选项通常用于自行实现软件`PLC`的初始化及循环，未定义此选项时默认由`hruntime`自动运行软件`PLC` |
+|        `HRUNTIME_INIT_LOWLEVEL_LIST1`        |  低级初始化列表1  | 列表中可包含一项或者多项返回值与参数均为void的函数地址，每个函数地址后跟逗号(,) |
+|        `HRUNTIME_INIT_LOWLEVEL_LIST2`        |  低级初始化列表2  |             格式同`HRUNTIME_INIT_LOWLEVEL_LIST1`             |
+|        `HRUNTIME_INIT_LOWLEVEL_LIST3`        |  低级初始化列表3  |             格式同`HRUNTIME_INIT_LOWLEVEL_LIST1`             |
+|        `HRUNTIME_INIT_LOWLEVEL_LIST4`        |  低级初始化列表4  |             格式同`HRUNTIME_INIT_LOWLEVEL_LIST1`             |
+|            `HRUNTIME_INIT_LIST1`             |    初始化列表1    | 列表中可包含一项或者多项返回值与参数均为void的函数地址，每个函数地址后跟逗号(,) |
+|            `HRUNTIME_INIT_LIST2`             |    初始化列表2    |                 格式同`HRUNTIME_INIT_LIST1`                  |
+|            `HRUNTIME_INIT_LIST3`             |    初始化列表3    |                 格式同`HRUNTIME_INIT_LIST1`                  |
+|            `HRUNTIME_INIT_LIST4`             |    初始化列表4    |                 格式同`HRUNTIME_INIT_LIST1`                  |
+|            `HRUNTIME_LOOP_LIST1`             |     循环列表1     | 列表中可包含一项或者多项返回值与参数均为void的函数地址，每个函数地址后跟逗号(,) |
+|            `HRUNTIME_LOOP_LIST2`             |     循环列表2     |                 格式同`HRUNTIME_LOOP_LIST1`                  |
+|            `HRUNTIME_LOOP_LIST3`             |     循环列表3     |                 格式同`HRUNTIME_LOOP_LIST1`                  |
+|            `HRUNTIME_LOOP_LIST4`             |     循环列表4     |                 格式同`HRUNTIME_LOOP_LIST1`                  |
 
 **注意:**
 
