@@ -178,6 +178,7 @@ if(HAVE_CXX_ATOMIC)
 endif()
 
 
-
+#添加独立组件
+add_subdirectory(hstandalone)
 
 
