@@ -9,3 +9,10 @@
 计算日出日落的算法。
 
 具体实现见[hsunriseandsunset](hsunriseandsunset)。
+
+## hsoftplc
+
+辅助实现软件PLC功能。 
+
+具体实现见[hsoftplc](hsoftplc)目录。
+

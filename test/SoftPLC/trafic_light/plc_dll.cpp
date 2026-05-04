@@ -1,4 +1,5 @@
 #include "hbox.h"
+#include "hsoftplc.h"
 
 /*
  * 导出动态链接库接口

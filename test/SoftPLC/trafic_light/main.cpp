@@ -1,4 +1,5 @@
 #include "hbox.h"
+#include "hsoftplc.h"
 #include "HCPPBox.h"
 #include <chrono>
 #include <thread>

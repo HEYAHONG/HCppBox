@@ -1,4 +1,5 @@
 #include "hbox.h"
+#include "hsoftplc.h"
 #include <string>
 #include <fstream>
 #include <hrc.h>

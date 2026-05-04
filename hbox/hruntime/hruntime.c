@@ -11,7 +11,6 @@
 #include "hdriverframework.h"
 #include "h3rdparty.h"
 #include "hevent.h"
-#include "hsoftplc.h"
 #include "stdbool.h"
 #include "stdint.h"
 #include "stdlib.h"
@@ -154,6 +153,7 @@ void hruntime_init_slots(void)
 void hruntime_init_hsoftplc(void)
 {
 #if defined(HSOFTPLC)
+    extern void hsoftplc_init(void);
     hsoftplc_init();
 #endif
 }
@@ -303,6 +303,7 @@ void hruntime_loop_hdefaults(void)
 void hruntime_loop_hsoftplc(void)
 {
 #if defined(HSOFTPLC)
+    extern void hsoftplc_loop(void);
     hsoftplc_loop();
 #endif
 }

@@ -31,7 +31,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../common/  common EXCLUDE_FROM_
 #启用HCppBox、HRC
 hcppbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})
-
+target_link_libraries(${PROJECT_NAME} hsoftplc) 
 
 include(GNUInstallDirs)
 if(NOT DEFINED HTOOLS_INSTALL_DIR)
