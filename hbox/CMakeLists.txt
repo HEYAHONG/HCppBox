@@ -7,7 +7,7 @@ if(MSVC)
 endif()
 
 add_library(HBox STATIC EXCLUDE_FROM_ALL)
-file(GLOB  HBOX_C_CPP_FILES *.cpp *.hpp *.c *.h cpp/*.cpp cpp/*.hpp cpp/*.c cpp/*.h h3rdparty/*.cpp h3rdparty/*.hpp h3rdparty/*.c h3rdparty/*.h )
+file(GLOB  HBOX_C_CPP_FILES *.cpp *.hpp *.c *.h cpp/*.cpp cpp/*.hpp cpp/*.c cpp/*.h)
 target_sources(HBox PRIVATE ${HBOX_C_CPP_FILES})
 target_include_directories(HBox PUBLIC ./ )
 target_include_directories(HBox PUBLIC ./cpp/ )
@@ -181,4 +181,5 @@ endif()
 #添加独立组件
 add_subdirectory(hstandalone)
 
-
+#添加第三方组件
+add_subdirectory(h3rdparty)

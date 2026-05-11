@@ -1,0 +1,117 @@
+
+
+file(GLOB H3RDPARTY_COMMON_C_FILES h3rdparty_common.c h3rdparty.h )
+add_library(h3rdparty_common STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_COMMON_C_FILES})
+set_property(TARGET h3rdparty_common PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_common PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(h3rdparty_common HBox)
+
+file(GLOB H3RDPARTY_ARGTABLE3_C_FILES h3rdparty_argtable3*.c h3rdparty_argtable3*.h )
+add_library(h3rdparty_argtable3 STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_ARGTABLE3_C_FILES})
+set_property(TARGET h3rdparty_argtable3 PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_argtable3 PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_argtable3)
+target_link_libraries(h3rdparty_argtable3 h3rdparty_common)
+
+file(GLOB H3RDPARTY_CJSON_C_FILES h3rdparty_cjson*.c h3rdparty_cjson*.h )
+add_library(h3rdparty_cjson STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_CJSON_C_FILES})
+set_property(TARGET h3rdparty_cjson PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_cjson PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_cjson)
+target_link_libraries(h3rdparty_cjson h3rdparty_common)
+
+file(GLOB H3RDPARTY_FREEBSD_ELF_HEADER_C_FILES h3rdparty_freebsd_elf_header*.c h3rdparty_freebsd_elf_header*.h )
+add_library(h3rdparty_freebsd_elf_header STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_FREEBSD_ELF_HEADER_C_FILES})
+set_property(TARGET h3rdparty_freebsd_elf_header PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_freebsd_elf_header PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_freebsd_elf_header)
+target_link_libraries(h3rdparty_freebsd_elf_header h3rdparty_common)
+
+file(GLOB H3RDPARTY_FREERTOS_KERNEL_C_FILES h3rdparty_freertos_kernel*.c h3rdparty_freertos_kernel*.h )
+add_library(h3rdparty_freertos_kernel STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_FREERTOS_KERNEL_C_FILES})
+set_property(TARGET h3rdparty_freertos_kernel PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_freertos_kernel PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_freertos_kernel)
+target_link_libraries(h3rdparty_freertos_kernel h3rdparty_common)
+
+
+file(GLOB H3RDPARTY_LIBFDT_C_FILES h3rdparty_libfdt*.c h3rdparty_libfdt*.h )
+add_library(h3rdparty_libfdt STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_LIBFDT_C_FILES})
+set_property(TARGET h3rdparty_libfdt PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_libfdt PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_libfdt)
+target_link_libraries(h3rdparty_libfdt h3rdparty_common)
+
+file(GLOB H3RDPARTY_LIBQRENCODE_C_FILES h3rdparty_libqrencode*.c h3rdparty_libqrencode*.h )
+add_library(h3rdparty_libqrencode STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_LIBQRENCODE_C_FILES})
+set_property(TARGET h3rdparty_libqrencode PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_libqrencode PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_libqrencode)
+target_link_libraries(h3rdparty_libqrencode h3rdparty_common)
+
+file(GLOB H3RDPARTY_LZ4_C_FILES h3rdparty_lz4*.c h3rdparty_lz4*.h )
+add_library(h3rdparty_lz4 STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_LZ4_C_FILES})
+set_property(TARGET h3rdparty_lz4 PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_lz4 PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_lz4)
+target_link_libraries(h3rdparty_lz4 h3rdparty_common)
+
+file(GLOB H3RDPARTY_MINI_RV32IMA_C_FILES h3rdparty_mini-rv32ima*.c h3rdparty_mini-rv32ima*.h )
+add_library(h3rdparty_mini_rv32ima STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_MINI_RV32IMA_C_FILES})
+set_property(TARGET h3rdparty_mini_rv32ima PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_mini_rv32ima PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_mini_rv32ima)
+target_link_libraries(h3rdparty_mini_rv32ima h3rdparty_common)
+
+file(GLOB H3RDPARTY_MQTT_PACKET_C_FILES h3rdparty_mqtt_packet*.c h3rdparty_mqtt_packet*.h )
+add_library(h3rdparty_mqtt_packet STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_MQTT_PACKET_C_FILES})
+set_property(TARGET h3rdparty_mqtt_packet PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_mqtt_packet PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_mqtt_packet)
+target_link_libraries(h3rdparty_mqtt_packet h3rdparty_common)
+
+file(GLOB H3RDPARTY_NANOPB_C_FILES h3rdparty_pb*.c h3rdparty_pb*.h )
+add_library(h3rdparty_nanopb STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_NANOPB_C_FILES})
+set_property(TARGET h3rdparty_nanopb PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_nanopb PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_nanopb)
+target_link_libraries(h3rdparty_nanopb h3rdparty_common)
+
+
+file(GLOB H3RDPARTY_PRINTF_C_FILES h3rdparty_printf*.c h3rdparty_printf*.h )
+add_library(h3rdparty_printf STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_PRINTF_C_FILES})
+set_property(TARGET h3rdparty_printf PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_printf PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_printf)
+target_link_libraries(h3rdparty_printf h3rdparty_common)
+
+
+file(GLOB H3RDPARTY_SOFTFP_C_FILES h3rdparty_softfp*.c h3rdparty_softfloat*.c h3rdparty_printf*.h )
+add_library(h3rdparty_softfp STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_SOFTFP_C_FILES})
+set_property(TARGET h3rdparty_softfp PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_softfp PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_softfp)
+target_link_libraries(h3rdparty_softfp h3rdparty_common)
+
+file(GLOB H3RDPARTY_TLSF_C_FILES h3rdparty_tlsf*.c h3rdparty_tlsf*.h )
+add_library(h3rdparty_tlsf STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_TLSF_C_FILES})
+set_property(TARGET h3rdparty_tlsf PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_tlsf PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_tlsf)
+target_link_libraries(h3rdparty_tlsf h3rdparty_common)
+
+file(GLOB H3RDPARTY_URIPARSER_C_FILES h3rdparty_uriparser*.c h3rdparty_uriparser*.h )
+add_library(h3rdparty_uriparser STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_URIPARSER_C_FILES})
+set_property(TARGET h3rdparty_uriparser PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_uriparser PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_uriparser)
+target_link_libraries(h3rdparty_uriparser h3rdparty_common)
+
+file(GLOB H3RDPARTY_ZLIB_C_FILES h3rdparty_zlib*.c h3rdparty_zlib*.h )
+add_library(h3rdparty_zlib STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_ZLIB_C_FILES})
+set_property(TARGET h3rdparty_zlib PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_zlib PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_zlib)
+target_link_libraries(h3rdparty_zlib h3rdparty_common)
+
+
