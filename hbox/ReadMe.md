@@ -14,8 +14,6 @@ hbox意为HYH的工具箱。
 - C语言组件(如`hruntime_init`、`hruntime_loop`)：C语言组件中，由[hruntime](hruntime)组件管理运行时，其它组件的初始化及循环调用默认情况下均由[hruntime](hruntime)管理，也可使用宏定义单独管理某个组件的调用。
 - OS/裸机（如C运行库、系统调用）:一般情况下由[hdefaults](hdefaults)组件管理。
 
-hbox可通过宏定义进行配置，配置文件模板见[template/config.h](template/config.h)
-
 # 硬件要求
 
 主要支持32位及更高位宽的硬件平台,包括但不限于嵌入式硬件平台:
@@ -49,6 +47,17 @@ hbox可通过宏定义进行配置，配置文件模板见[template/config.h](te
 | `__STDC_NO_ATOMICS__` | 当此宏定义被定义时，C不包含`_Atomic`原子类型名,即不支持原子操作。 |                            C11起                             |
 |    `HAVE_CONFIG_H`    |          `config.h`存在,当定义存在时包含`config.h`           |                    此宏定义一般由用户定义                    |
 | `HBOX_CONFIG_HEADER`  | `HBOX_CONFIG_HEADER`表示hbox的配置文件路径(不含引号)，若定义将由hdefaults包含该配置文件。 |                    此宏定义一般由用户定义                    |
+
+# 配置文件
+
+hbox支持通过配置文件实现以下功能:
+
+-  覆盖某些组件的默认配置。
+- 提供用户自行实现的外部接口，主要是hdefaults组件中依赖的接口。
+
+使用正确的配置文件后，理论hbox可在任意支持C语言的环境中运行。
+
+配置文件的模板见[template](template)。
 
 # C++组件
 
