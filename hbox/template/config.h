@@ -95,6 +95,14 @@
  */
 /* #define FREERTOS */
 
+/** \brief 无线程库
+ */
+/* #define __STDC_NO_THREADS__ */
+
+/** \brief 无原子库
+ */
+/* #define __STDC_NO_ATOMICS__ */
+
 /* ========== hdefaults/libc ========== */
 
 /** \brief 用户实现的errno变量
@@ -489,6 +497,14 @@
  * 可用于在编译器垃圾回收不完善时减少资源占用。
  */
 /* #define HLIBC_NO_TIME */
+
+/** \brief 支持原子
+ */
+/* #define HAVE_ATOMIC */
+
+/** \brief 支持thread_local
+ */
+/* #define HAVE_THREAD_LOCAL */
 
 
 /* ========== hdefaults/libc/hlibc/env ========== */
@@ -1083,6 +1099,78 @@
  */
 /* #define HSOFTWARETIMER_CUSTOM_LOOP */
 
+/** \brief 低级初始化列表1
+ *
+ * 列表中可包含一项或者多项返回值与参数均为void的函数地址，每个函数地址后跟逗号(,)
+ */
+/* #define HRUNTIME_INIT_LOWLEVEL_LIST1 */
+
+/** \brief 低级初始化列表2
+ *
+ * 格式同HRUNTIME_INIT_LOWLEVEL_LIST1
+ */
+/* #define HRUNTIME_INIT_LOWLEVEL_LIST2 */
+
+/** \brief 低级初始化列表3
+ *
+ * 格式同HRUNTIME_INIT_LOWLEVEL_LIST1
+ */
+/* #define HRUNTIME_INIT_LOWLEVEL_LIST3 */
+
+/** \brief 低级初始化列表4
+ *
+ * 格式同HRUNTIME_INIT_LOWLEVEL_LIST1
+ */
+/* #define HRUNTIME_INIT_LOWLEVEL_LIST4 */
+
+/** \brief 初始化列表1
+ *
+ * 列表中可包含一项或者多项返回值与参数均为void的函数地址，每个函数地址后跟逗号(,)
+ */
+/* #define HRUNTIME_INIT_LIST1 */
+
+/** \brief 初始化列表2
+ *
+ * 格式同HRUNTIME_INIT_LIST1
+ */
+/* #define HRUNTIME_INIT_LIST2 */
+
+/** \brief 初始化列表3
+ *
+ * 格式同HRUNTIME_INIT_LIST1
+ */
+/* #define HRUNTIME_INIT_LIST3 */
+
+/** \brief 初始化列表4
+ *
+ * 格式同HRUNTIME_INIT_LIST1
+ */
+/* #define HRUNTIME_INIT_LIST4 */
+
+/** \brief 循环列表1
+ *
+ * 列表中可包含一项或者多项返回值与参数均为void的函数地址，每个函数地址后跟逗号(,)
+ */
+/* #define HRUNTIME_LOOP_LIST1 */
+
+/** \brief 循环列表2
+ *
+ * 格式同HRUNTIME_LOOP_LIST1
+ */
+/* #define HRUNTIME_LOOP_LIST2 */
+
+/** \brief 循环列表3
+ *
+ * 格式同HRUNTIME_LOOP_LIST1
+ */
+/* #define HRUNTIME_LOOP_LIST3 */
+
+/** \brief 循环列表4
+ *
+ * 格式同HRUNTIME_LOOP_LIST1
+ */
+/* #define HRUNTIME_LOOP_LIST4 */
+
 /* ========== hruntime/hstacklesscoroutine ========== */
 
 /** \brief 使用裸机模式运行协程
@@ -1114,7 +1202,7 @@
 /* #define HCOMPILER_DLLSPEC_IMPORT */
 
 
-/* ========== hsoftplc ========== */
+/* ========== hstandalone/hsoftplc/hsoftplc ========== */
 
 /** \brief 启用本组件，启用时需要定义为1
  *
