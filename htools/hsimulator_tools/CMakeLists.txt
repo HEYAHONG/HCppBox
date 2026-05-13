@@ -40,3 +40,4 @@ add_custom_target(hmini-mcs51_tool  ${CMAKE_COMMAND} -E make_directory hmini-mcs
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
     USES_TERMINAL)
 add_dependencies(hsimulator_tools hmini-mcs51_tool)
+message(STATUS "Enable hmini-mcs51_tool!" )
