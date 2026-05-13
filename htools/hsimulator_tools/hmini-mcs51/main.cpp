@@ -89,7 +89,7 @@ static void check_args(int argc,char *argv[])
 #include <conio.h>
 void console_init(void)
 {
-    system("");
+
 }
 
 static bool console_iskbhit(void)
