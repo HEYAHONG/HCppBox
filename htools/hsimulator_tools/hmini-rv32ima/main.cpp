@@ -31,7 +31,7 @@ static int ReadKBByte();
 // This is the functionality we want to override in the emulator.
 //  think of this as the way the emulator's processor is connected to the outside world.
 #undef  MINIRV32WARN
-#define MINIRV32WARN( x... ) printf( x );
+#define MINIRV32WARN( x,... ) printf( x,##__VA_ARGS__ );
 #define MINIRV32_DECORATE  static
 #define MINI_RV32_RAM_SIZE ram_amt
 #define MINIRV32_IMPLEMENTATION
@@ -281,7 +281,31 @@ restart:
 
 static void CaptureKeyboardInput()
 {
-    system(""); // Poorly documented tick: Enable VT100 Windows mode.
+    /*
+     * Enable VT100
+     */
+#if defined(ENABLE_VIRTUAL_TERMINAL_INPUT)
+    {
+        HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+        DWORD  Mode = 0;
+        if (GetConsoleMode(hStdin, &Mode))
+        {
+            Mode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
+            SetConsoleMode(hStdin, Mode);
+        }
+    }
+#endif
+#if defined(ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+    {
+        HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+        DWORD  Mode = 0;
+        if (GetConsoleMode(hStdout, &Mode))
+        {
+            Mode |= (ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+            SetConsoleMode(hStdout, Mode);
+        }
+    }
+#endif
 }
 
 static void ResetKeyboardInput()
