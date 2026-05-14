@@ -100,9 +100,34 @@ static void check_args(int argc,char *argv[])
 
 #if defined(WINDOWS) || defined(WIN32) || defined(_WIN32)
 #include <conio.h>
+#include <windows.h>
 void console_init(void)
 {
-    system("");
+    /*
+     * 启用虚拟终端处理
+     */
+#if defined(ENABLE_VIRTUAL_TERMINAL_INPUT)
+    {
+        HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+        DWORD  Mode = 0;
+        if (GetConsoleMode(hStdin, &Mode))
+        {
+            Mode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
+            SetConsoleMode(hStdin, Mode);
+        }
+    }
+#endif
+#if defined(ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+    {
+        HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+        DWORD  Mode = 0;
+        if (GetConsoleMode(hStdout, &Mode))
+        {
+            Mode |= (ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+            SetConsoleMode(hStdout, Mode);
+        }
+    }
+#endif
 }
 
 static bool console_iskbhit(void)
