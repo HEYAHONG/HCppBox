@@ -445,7 +445,7 @@ static void run_vm(int argc,char *argv[])
             }
             {
                 //执行虚拟机
-                g_vm.vm_execute(time_ns_now-time_ns,256);
+                g_vm.vm_execute(time_ns_now-time_ns,32);
             }
             time_ns=time_ns_now;
         }
