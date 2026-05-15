@@ -7,8 +7,8 @@ file(GLOB C_CXX_FILES ../*.h ../*.c ../*.cpp ../*.s *.h *.c *.cpp)
 
 if(${PICOLIBC})
     set(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} \
-        -march=rv64i\
-        -mabi=lp64\
+        -march=rv32i\
+        -mabi=ilp32\
         -std=gnu11\
         -fPIC\
         -ffunction-sections\
@@ -16,8 +16,8 @@ if(${PICOLIBC})
         --specs=picolibcpp.specs\
         ")
     set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
-        -march=rv64i\
-        -mabi=lp64\
+        -march=rv32i\
+        -mabi=ilp32\
         -std=gnu++11\
         -fPIC\
         -ffunction-sections\
@@ -25,8 +25,8 @@ if(${PICOLIBC})
         --specs=picolibcpp.specs\
         ")
     set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS}\
-        -march=rv64i\
-        -mabi=lp64\
+        -march=rv32i\
+        -mabi=ilp32\
         -nostdlib++\
         -T${CMAKE_CURRENT_SOURCE_DIR}/../rom.ld\
         -Wl,--gc-sections \
@@ -37,8 +37,8 @@ endif()
 
 if(${NEWLIB})
     set(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} \
-        -march=rv64i\
-        -mabi=lp64\
+        -march=rv32i\
+        -mabi=ilp32\
         -std=gnu11\
         -fPIC\
         -ffunction-sections\
@@ -46,8 +46,8 @@ if(${NEWLIB})
         --specs=nano.specs\
         ")
     set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
-        -march=rv64i\
-        -mabi=lp64\
+        -march=rv32i\
+        -mabi=ilp32\
         -std=gnu++11\
         -fPIC\
         -ffunction-sections\
@@ -55,8 +55,8 @@ if(${NEWLIB})
         --specs=nano.specs\
         ")
     set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS}\
-        -march=rv64i\
-        -mabi=lp64\
+        -march=rv32i\
+        -mabi=ilp32\
         -nostdlib++\
         -T${CMAKE_CURRENT_SOURCE_DIR}/../rom.ld\
         -Wl,--gc-sections \
@@ -80,8 +80,8 @@ include_directories(
 
 #设定HRC文件系统目录为fs
 set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../fs/)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../hbox HBox EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../hrc HRC EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../hbox HBox EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../hrc HRC EXCLUDE_FROM_ALL)
 #启用HBox、HRC
 hbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})

@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(SDCCProject NONE)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../toolchain.cmake)
 
 #SDCC设置
 set(SDCC_MCS51_MODEL small)
