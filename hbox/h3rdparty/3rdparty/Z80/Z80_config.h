@@ -3,6 +3,13 @@
 #include "stdint.h"
 #include "stdlib.h"
 
+/*
+ *  修复Windows下的警告
+ */
+#if defined(WIN32) || defined(_WIN32)
+#undef IN
+#undef OUT
+#endif
 
 //启用静态API
 #define Z80_STATIC   1
