@@ -19,6 +19,7 @@
 - [mini-rv32ima](https://github.com/cnlohr/mini-rv32ima.git):C语言编写的极小的RISC-V模拟器
 - [matiec](https://github.com/thiagoralves/matiec.git):IEC 61131-3 编译器，注意:本库仅集成matiec编译器的内置库的C语言头文件,而非编译本身。
 - [uriparser](https://github.com/uriparser/uriparser.git):RFC 3986 兼容的URI解析库
+- [Z80](https://github.com/redcode/Z80.git):Z80 CPU模拟器
 
  提供的配置宏定义如下：
 
@@ -36,6 +37,7 @@
 |           `H3RDPARTY_USING_SYSTEM_LIBFDT`            |          使用系统libfdt          |         链接到系统的libfdt时,可使用此宏定义防止冲突          |
 |                  `FREERTOS_KERNEL`                   |       启用FreeRTOS内核代码       | 若启用FreeRTOS内核代码，必须完成FreeRTOS的移植，否则将编译不过。 |
 |          `H3RDPARTY_USING_SYSTEM_URIPARSER`          |        使用系统uriparser         |        链接到系统的uriparser时,可使用此宏定义防止冲突        |
+|             `H3RDPARTY_USING_SYSTEM_Z80`             |           使用系统z80            |           链接到系统的z80时,可使用此宏定义防止冲突           |
 
 # nanopb
 
@@ -224,3 +226,16 @@ RFC 3986 兼容的URI解析库
 ```
 
 注意:此库需要根据使用情况添加C语言文件(h3rdparty_uriparser_*.c),某些C文件可能在某些场景下不能正常编译。
+
+# Z80
+
+Z80 CPU模拟器
+
+若要使用相应库功能，请使用以下代码：
+
+```c++
+#include H3RDPARTY_Z80_HEADER
+```
+
+注意:此库需要根据使用情况添加C语言文件(h3rdparty_Z80_*.c),某些C文件可能在某些场景下不能正常编译。
+

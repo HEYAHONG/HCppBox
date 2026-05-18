@@ -1,0 +1,14 @@
+*.diff
+*.patch
+*.orig
+*.rej
+
+*~
+*.a
+*.lo
+*.o
+*.dylib
+
+
+Z80/
+Zeta/

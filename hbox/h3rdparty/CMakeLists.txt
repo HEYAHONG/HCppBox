@@ -114,4 +114,9 @@ target_include_directories(h3rdparty_zlib PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
 target_link_libraries(HBox h3rdparty_zlib)
 target_link_libraries(h3rdparty_zlib h3rdparty_common)
 
-
+file(GLOB H3RDPARTY_Z80_C_FILES h3rdparty_Z80*.c h3rdparty_Z80*.h )
+add_library(h3rdparty_z80 STATIC EXCLUDE_FROM_ALL ${H3RDPARTY_Z80_C_FILES})
+set_property(TARGET h3rdparty_z80 PROPERTY C_STANDARD 99)
+target_include_directories(h3rdparty_z80 PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ )
+target_link_libraries(HBox h3rdparty_z80)
+target_link_libraries(h3rdparty_z80 h3rdparty_common)

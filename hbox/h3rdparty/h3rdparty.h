@@ -43,7 +43,7 @@ void h3rdparty_loop(void);
 #include "h3rdparty/port/FreeRTOS/h3rdparty_port_FreeRTOS.h"
 #include "h3rdparty/port/mini-rv32ima/h3rdparty_port_mini_rv32ima.h"
 #include "h3rdparty/port/uriparser/h3rdparty_port_uriparser.h"
-
+#include "h3rdparty/port/Z80/h3rdparty_port_Z80.h"
 
 #endif // __H3RDPARTY_H__
 
