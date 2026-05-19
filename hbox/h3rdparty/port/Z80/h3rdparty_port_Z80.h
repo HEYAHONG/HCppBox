@@ -31,6 +31,7 @@
 #endif
 #endif
 
+#include "hz80cpu.h"
 
 
 #endif // __H3RDPARTY_PORT_Z80_H_INCLUDE__
