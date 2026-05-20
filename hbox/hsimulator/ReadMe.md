@@ -13,4 +13,5 @@
 - [mcs_51](mcs_51):MCS-51指令集。
 - [risc-v](risc-v):RISC-V指令集。
 - [moxie](moxie):moxie架构。
+- [z80](z80):Z80指令集。
 - [common](common):公共组件。
