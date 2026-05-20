@@ -37,7 +37,7 @@ cmake --build .
 可采用以下命令生成ihx文件：
 
 ```bash
-sdcc -mmcs51 --std-sdcc11  --model-small --iram-size 128 --xram-size 0 --code-size 8192   helloworld.c
+sdcc -mmcs51 --std-sdcc11  --model-small --iram-size 128 --xram-size 0 --code-size 8192   timer0.c
 ```
 
 编译完成后，SDCC将生成一大堆文件，其中ihx文件即为生成的hex文件。
@@ -47,6 +47,6 @@ sdcc -mmcs51 --std-sdcc11  --model-small --iram-size 128 --xram-size 0 --code-si
 某些情况下，用户可能需要生成bin文件，生成ihx文件后，可通过SDCC自带的`makebin`命令将ihx文件转化为bin文件。
 
 ```bash
-makebin -p helloworld.ihx helloworld.bin
+makebin -p timer0.ihx timer0.bin
 ```
 
