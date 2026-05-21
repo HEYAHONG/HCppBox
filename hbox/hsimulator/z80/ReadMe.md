@@ -16,7 +16,8 @@ Z80是由美国Zilog公司推出的8位微处理器。
 由于Z80应用极广，编译器与开发环境也相对丰富。此章节仅描述本工程使用的编译器与开发环境。
 
 - [SDCC](https://sdcc.sourceforge.net/)：支持Z80的编译器。
-- [z88dk](https://z88dk.org)：基于Z80的机器的开发工具，包括C编译器、汇编、库。其中C编译器支持多种模式，包括但不限于SDCC。.
+- [z88dk](https://z88dk.org)：基于Z80的机器的开发工具，包括C编译器、汇编器、库。其中C编译器支持多种模式，包括但不限于SDCC。.
+- [z80pack](https://github.com/udo-munk/z80pack.git):Z80模拟器。包含一个汇编器。
 
 # 模型
 
