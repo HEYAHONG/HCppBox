@@ -2,6 +2,7 @@
 
 #ifdef __ARMCC_VERSION
 #ifndef __clang__
+#pragma diag_suppress 1
 #pragma diag_suppress 68
 #pragma diag_suppress 111
 #pragma diag_suppress 186

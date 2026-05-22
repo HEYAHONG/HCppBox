@@ -12,6 +12,7 @@
 #include "hdefaults.h"
 #include "h3rdparty.h"
 
+#include "patch/armcc_diag_suppress.c"
 
 #include "port/mini-rv32ima/hminirv32ima.c"
 
