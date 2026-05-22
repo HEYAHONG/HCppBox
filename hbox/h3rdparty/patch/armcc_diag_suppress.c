@@ -8,6 +8,7 @@
 #pragma diag_suppress 191
 #pragma diag_suppress 546
 #pragma diag_suppress 1293
+#pragma diag_suppress 1296
 #endif
 #endif // __ARMCC_VERSION
 

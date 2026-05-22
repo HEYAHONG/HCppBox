@@ -12,6 +12,7 @@
 #include "hdefaults.h"
 #include "h3rdparty.h"
 
+#include "patch/armcc_diag_suppress.c"
 
 #ifndef  H3RDPARTY_USING_SYSTEM_Z80
 
