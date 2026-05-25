@@ -37,7 +37,7 @@ cmake --build .
 可采用以下命令生成ihx文件：
 
 ```bash
-sdcc -mmcs51 --std-sdcc11  --model-small --iram-size 128 --xram-size 0 --code-size 8192   helloworld.c
+sdcc -mmcs51 --std-sdcc11  --model-large --iram-size 256 --xram-size 4096 --code-size 65536   helloworld.c
 ```
 
 编译完成后，SDCC将生成一大堆文件，其中ihx文件即为生成的hex文件。
