@@ -33,3 +33,18 @@ MCS-51 公共代码库。
 
 ```
 
+# 组件
+
+## 基础
+
+基础头文件，见[base](base)。
+
+### 可外部配置的宏定义
+
+| 宏定义                                 | 说明           | 备注                       |
+| -------------------------------------- | -------------- | -------------------------- |
+| `LIBMONO_DATA_ATTRIBUTE`               | (普通)数据属性 | 根据模型不同有不同的默认值 |
+| `LIBMONO_CONST_DATA_ATTRIBUTE`         | 常量数据属性   |                            |
+| `LIBMONO_FUNCTION_ATTRIBUTE`           | (普通)函数属性 |                            |
+| `LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE` | 可重入函数属性 |                            |
+
