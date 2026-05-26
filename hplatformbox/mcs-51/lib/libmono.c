@@ -24,6 +24,7 @@
 #include "base/registers.h"
 #include "base/model.h"
 #include "base/globalconfig.h"
+#include "base/core.h"
 
 
 /*

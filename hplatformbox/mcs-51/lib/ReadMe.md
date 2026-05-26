@@ -41,10 +41,12 @@ MCS-51 公共代码库。
 
 ### 可外部配置的宏定义
 
-| 宏定义                                 | 说明           | 备注                       |
-| -------------------------------------- | -------------- | -------------------------- |
-| `LIBMONO_DATA_ATTRIBUTE`               | (普通)数据属性 | 根据模型不同有不同的默认值 |
-| `LIBMONO_CONST_DATA_ATTRIBUTE`         | 常量数据属性   |                            |
-| `LIBMONO_FUNCTION_ATTRIBUTE`           | (普通)函数属性 |                            |
-| `LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE` | 可重入函数属性 |                            |
+| 宏定义                                 | 说明           | 备注                                                         |
+| -------------------------------------- | -------------- | ------------------------------------------------------------ |
+| `LIBMONO_DATA_ATTRIBUTE`               | (普通)数据属性 | 根据模型不同有不同的默认值                                   |
+| `LIBMONO_CONST_DATA_ATTRIBUTE`         | 常量数据属性   |                                                              |
+| `LIBMONO_FUNCTION_ATTRIBUTE`           | (普通)函数属性 |                                                              |
+| `LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE` | 可重入函数属性 |                                                              |
+| `LIBMONO_BASE_CORE_DISABLE_INTERRUPT`  | 关中断         | 通常用于实现临界区，用户可重新定义此宏定义用于控制libmono库行为 |
+| `LIBMONO_BASE_CORE_ENABLE_INTERRUPT`   | 开中断         | 通常用于实现临界区，用户可重新定义此宏定义用于控制libmono库行为 |
 
