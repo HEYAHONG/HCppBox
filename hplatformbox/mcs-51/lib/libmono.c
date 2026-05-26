@@ -10,6 +10,15 @@
 #pragma std_sdcc99
 
 /*
+ * C99头文件
+ */
+#include "stdint.h"
+#include "stdlib.h"
+#include "stdio.h"
+#include "string.h"
+
+
+/*
  * 基础组件(头文件)
  */
 #include "base/registers.h"
