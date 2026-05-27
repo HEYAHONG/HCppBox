@@ -56,10 +56,11 @@ MCS-51 公共代码库。
 
 ### 可外部配置的宏定义
 
-| 宏定义                            | 说明                | 备注                                                |
-| --------------------------------- | ------------------- | --------------------------------------------------- |
-| `LIBMONO_RUNTIME_LIBC_NO_GETCHAR` | 不移植`getchar`     | 若用户不实现`getchar`可能会在某些情况下遇到链接错误 |
-| `GETCHAR`                         | 用户实现的`getchar` |                                                     |
-| `LIBMONO_RUNTIME_LIBC_NO_PUTCHAR` | 不移植`putchar`     | 若用户不实现`putchar`可能会在某些情况下遇到链接错误 |
-| `PUTCHAR`                         | 用户实现的`putchar` |                                                     |
+| 宏定义                              | 说明                     | 备注                                                |
+| ----------------------------------- | ------------------------ | --------------------------------------------------- |
+| `LIBMONO_RUNTIME_LIBC_NO_GETCHAR`   | 不移植`getchar`          | 若用户不实现`getchar`可能会在某些情况下遇到链接错误 |
+| `GETCHAR`                           | 用户实现的`getchar`      |                                                     |
+| `LIBMONO_RUNTIME_LIBC_NO_PUTCHAR`   | 不移植`putchar`          | 若用户不实现`putchar`可能会在某些情况下遇到链接错误 |
+| `PUTCHAR`                           | 用户实现的`putchar`      |                                                     |
+| `LIBMONO_RUNTIME_LIBC_STDIO_SERIAL` | 使用串口作为标准输入输出 |                                                     |
 

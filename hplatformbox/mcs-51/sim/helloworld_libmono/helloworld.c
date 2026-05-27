@@ -3,6 +3,8 @@
 #include "8051.h"
 
 
+#define LIBMONO_RUNTIME_LIBC_STDIO_SERIAL 1
+
 #include "../../lib/libmono.c"
 
 
@@ -52,12 +54,10 @@ void uart_init(void)
 
 void uart_send_char(int ch)
 {
-    SBUF=(uint8_t)ch;
     /*
      * 注意：此代码要求实现串口功能，即发送完后TI需要被硬件（模拟器）置1。
      */
-    while(TI==0);
-    TI=0;
+    putchar(ch);
 }
 
 uint8_t uart_receive_char(void)
@@ -65,10 +65,12 @@ uint8_t uart_receive_char(void)
     /*
      * 注意：此代码要求实现串口功能，即接收数据时RI需要被硬件（模拟器）置1。
      */
-    while(RI==0);
-    uint8_t data=SBUF;
-    RI=0;
-    return data;
+    int data=-1;
+    while((data=getchar())<0)
+    {
+
+    }
+    return (uint8_t)data;
 }
 
 void uart_send_str(char *str)
