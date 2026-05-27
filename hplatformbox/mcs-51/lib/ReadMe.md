@@ -37,7 +37,7 @@ MCS-51 公共代码库。
 
 ## 基础
 
-基础头文件，见[base](base)。
+基础组件，见[base](base)。
 
 ### 可外部配置的宏定义
 
@@ -49,4 +49,17 @@ MCS-51 公共代码库。
 | `LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE` | 可重入函数属性 |                                                              |
 | `LIBMONO_BASE_CORE_DISABLE_INTERRUPT`  | 关中断         | 通常用于实现临界区，用户可重新定义此宏定义用于控制libmono库行为 |
 | `LIBMONO_BASE_CORE_ENABLE_INTERRUPT`   | 开中断         | 通常用于实现临界区，用户可重新定义此宏定义用于控制libmono库行为 |
+
+## 运行时
+
+运行时组件，见[runtime](runtime)。
+
+### 可外部配置的宏定义
+
+| 宏定义                            | 说明                | 备注                                                |
+| --------------------------------- | ------------------- | --------------------------------------------------- |
+| `LIBMONO_RUNTIME_LIBC_NO_GETCHAR` | 不移植`getchar`     | 若用户不实现`getchar`可能会在某些情况下遇到链接错误 |
+| `GETCHAR`                         | 用户实现的`getchar` |                                                     |
+| `LIBMONO_RUNTIME_LIBC_NO_PUTCHAR` | 不移植`putchar`     | 若用户不实现`putchar`可能会在某些情况下遇到链接错误 |
+| `PUTCHAR`                         | 用户实现的`putchar` |                                                     |
 

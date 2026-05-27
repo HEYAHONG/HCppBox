@@ -26,6 +26,23 @@
 #include "base/globalconfig.h"
 #include "base/core.h"
 
+/*
+ * 运行时（头文件）
+ */
+#include "runtime/criticalsection.h"
+#include "runtime/libc.h"
+
+/*
+ * 基础组件(实现文件)
+ */
+#include "base/core.c"
+
+
+/*
+ * 运行时（实现文件）
+ */
+#include "runtime/criticalsection.c"
+#include "runtime/libc.c"
 
 /*
  * 恢复之前的选项
