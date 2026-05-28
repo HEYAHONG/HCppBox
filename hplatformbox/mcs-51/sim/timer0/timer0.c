@@ -82,7 +82,7 @@ void uart_send_str(char *str)
  */
 #define timer0_cnt 100
 #define timer0_hz  1000000
-void timer0_init()
+void timer0_init(void)
 {
     TMOD |= 0x02;
     TH0   = (unsigned char)((unsigned)0x100-timer0_cnt);
@@ -92,7 +92,7 @@ void timer0_init()
     TR0 = 1;
 }
 
-void timer0_event_process()
+void timer0_event_process(void)
 {
     static unsigned  long int last_count=0;
     ET0=0;

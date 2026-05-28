@@ -99,7 +99,7 @@ void uart_send_str(char *str)
 /*
  * Timer0 模式1 中断,需要模拟器实现定时器功能
  */
-void timer0_init()
+void timer0_init(void)
 {
     TMOD |= 0x01;
     TH0 = (0x10000-timer0_cnt)/256;
