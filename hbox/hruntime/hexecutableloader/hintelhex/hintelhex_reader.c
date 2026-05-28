@@ -41,6 +41,10 @@ void hintelhex_reader_input(hintelhex_reader_t *reader,const char *data,size_t d
         if(data[i]=='\r' || data[i]=='\n' || line_index >= sizeof(reader->buffer.line))
         {
             line[line_index]='\0';
+            if (line_index == 0)
+            {
+                continue;
+            }
             {
                 //处理单行
                 uint8_t *line_binary=reader->buffer.line_binary;
