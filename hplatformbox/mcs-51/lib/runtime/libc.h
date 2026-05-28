@@ -5,6 +5,7 @@
 
 #include "libc/getchar.h"
 #include "libc/putchar.h"
+#include "libc/time.h"
 
 #endif
 

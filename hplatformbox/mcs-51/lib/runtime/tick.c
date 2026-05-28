@@ -1,5 +1,5 @@
 
-LIBMONO_DATA_ATTRIBUTE libmono_runtime_tick_t libmono_runtime_tick_current=0;
+static LIBMONO_DATA_ATTRIBUTE libmono_runtime_tick_t libmono_runtime_tick_current=0;
 
 void libmono_runtime_tick_inc(uint8_t time_ms) LIBMONO_FUNCTION_ATTRIBUTE
 {

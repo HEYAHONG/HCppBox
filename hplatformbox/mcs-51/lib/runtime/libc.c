@@ -8,3 +8,9 @@
 #include "libc/putchar.c"
 #endif
 
+
+#if !defined(LIBMONO_RUNTIME_LIBC_NO_TIME)
+#include "libc/time.c"
+#endif
+
+

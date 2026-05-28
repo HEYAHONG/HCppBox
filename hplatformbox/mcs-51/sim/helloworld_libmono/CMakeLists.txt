@@ -10,4 +10,4 @@ set(SDCC_MCS51_IRAM_SIZE 256)
 set(SDCC_MCS51_XRAM_SIZE 4096)
 set(SDCC_MCS51_CODE_SIZE 65536)
 
-add_mcs51_executable(${CMAKE_CURRENT_SOURCE_DIR}/helloworld.c)
+add_mcs51_executable(${CMAKE_CURRENT_SOURCE_DIR}/helloworld.c -l liblonglong.lib)
