@@ -30,6 +30,7 @@
  * 运行时（头文件）
  */
 #include "runtime/criticalsection.h"
+#include "runtime/tick.h"
 #include "runtime/libc.h"
 
 /*
@@ -42,6 +43,7 @@
  * 运行时（实现文件）
  */
 #include "runtime/criticalsection.c"
+#include "runtime/tick.c"
 #include "runtime/libc.c"
 
 /*
