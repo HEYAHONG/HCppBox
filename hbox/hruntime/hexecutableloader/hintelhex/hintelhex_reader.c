@@ -38,7 +38,7 @@ void hintelhex_reader_input(hintelhex_reader_t *reader,const char *data,size_t d
     uint8_t *line=reader->buffer.line;
     for(size_t i=0; i<data_len; i++)
     {
-        if(data[i]=='\r' || data[i]=='\n' || line_index >= sizeof(reader->buffer.line))
+        if(data[i]=='\r' || data[i]=='\n' || line_index >= (sizeof(reader->buffer.line)-1))
         {
             line[line_index]='\0';
             if (line_index == 0)
