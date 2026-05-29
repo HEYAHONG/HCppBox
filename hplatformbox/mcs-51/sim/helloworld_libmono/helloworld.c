@@ -5,6 +5,8 @@
 
 #define LIBMONO_RUNTIME_LIBC_STDIO_SERIAL 1
 
+#define LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME tasks
+
 #include "../../lib/libmono.c"
 
 
@@ -114,36 +116,55 @@ void main(void)
     timer0_init();
     uart_init();
     libmono_base_core_enable_interrupt();
-    uart_send_str("Hello World!\n");
-    {
-        //打印9x9乘法表
-        uart_send_str("9x9 multiplication table:\n");
-        for(uint8_t i=1; i<=9; i++)
-        {
-            for(uint8_t j=1; j<=i; j++)
-            {
-                uart_send_char(i+'0');
-                uart_send_char('*');
-                uart_send_char(j+'0');
-                uart_send_char('=');
-                if(i*j >= 10)
-                {
-                    uart_send_char('0'+i*j/10);
-                }
-                uart_send_char('0'+i*j%10);
-                if(i*j < 10)
-                {
-                    uart_send_char(' ');
-                }
-                uart_send_char(' ');
-            }
-            uart_send_char('\n');
-        }
-    }
     while(1)
     {
-        int data=uart_receive_char();
-        uart_send_char(data);
+        libmono_runtime_mainloop_process();
     }
 }
 
+static void task1_entry(struct libmono_runtime_mainloop_task_context *ctx)
+{
+    /*
+     * 清除所有事件，后面若无其他任务唤醒将不再调用
+     */
+    libmono_runtime_mainloop_task_event_clear(ctx,libmono_runtime_mainloop_task_event(ctx));
+    printf("task1:hello libmono!\r\n");
+}
+libmono_runtime_mainloop_task_context_t task1_context=
+{
+    task1_entry,
+    0
+};
+
+static void task2_entry(struct libmono_runtime_mainloop_task_context *ctx)
+{
+    uint16_t events=libmono_runtime_mainloop_task_event(ctx);
+    if((events&LIBMONO_RUNTIME_MAINLOOP_TASK_EVENT_INIT)!=0)
+    {
+        libmono_runtime_mainloop_task_event_clear(ctx,LIBMONO_RUNTIME_MAINLOOP_TASK_EVENT_INIT);
+        libmono_runtime_mainloop_task_event_set(ctx,LIBMONO_RUNTIME_MAINLOOP_TASK_EVENT_SERVICE_RUN);
+        printf("task2:hello libmono!\r\n");
+    }
+    if((events&LIBMONO_RUNTIME_MAINLOOP_TASK_EVENT_SERVICE_RUN)!=0)
+    {
+        int ch=getchar();
+        if(ch>0)
+        {
+            putchar(ch);
+        }
+    }
+
+}
+
+libmono_runtime_mainloop_task_context_t task2_context=
+{
+    task2_entry,
+    0
+};
+
+libmono_runtime_mainloop_task_context_t * const tasks[]=
+{
+    &task1_context,
+    &task2_context,
+    NULL
+};

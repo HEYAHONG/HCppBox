@@ -1,0 +1,127 @@
+#include "mainloop.h"
+
+
+void libmono_runtime_mainloop_task_event_set(struct libmono_runtime_mainloop_task_context *ctx,uint16_t events) LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE
+{
+    libmono_runtime_criticalsection_enter();
+    if(ctx!=NULL)
+    {
+        ctx->event_group |= (events);
+    }
+    libmono_runtime_criticalsection_leave();
+}
+
+
+void libmono_runtime_mainloop_task_event_clear(struct libmono_runtime_mainloop_task_context *ctx,uint16_t events) LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE
+{
+    libmono_runtime_criticalsection_enter();
+    if(ctx!=NULL)
+    {
+        ctx->event_group &= (~events);
+    }
+    libmono_runtime_criticalsection_leave();
+}
+
+uint16_t libmono_runtime_mainloop_task_event(struct libmono_runtime_mainloop_task_context *ctx) LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE
+{
+    uint16_t ret=0;
+    libmono_runtime_criticalsection_enter();
+    if(ctx!=NULL)
+    {
+        ret=ctx->event_group;
+    }
+    libmono_runtime_criticalsection_leave();
+    return ret;
+}
+
+static LIBMONO_DATA_ATTRIBUTE struct
+{
+    /** \brief  标志位：
+     *              位0表示是否第一次进入。
+     */
+    uint8_t flags;
+
+    /** \brief 当前任务
+     *
+     *
+     */
+    libmono_runtime_mainloop_task_context_t **curtask;
+
+} libmono_runtime_mainloop_context;
+
+#if defined(LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME)
+
+extern libmono_runtime_mainloop_task_context_t * const LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME[];
+
+#endif
+
+void libmono_runtime_mainloop_process(void) LIBMONO_FUNCTION_ATTRIBUTE
+{
+    if((libmono_runtime_mainloop_context.flags&(1U << 0))==0)
+    {
+        /*
+         * 第一次进入
+         */
+        libmono_runtime_mainloop_context.flags |= (1U << 0);
+
+#if defined(LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME)
+
+        if(LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME!=NULL)
+        {
+            libmono_runtime_mainloop_context.curtask=(libmono_runtime_mainloop_task_context_t **)&LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME[0];
+            while(libmono_runtime_mainloop_context.curtask!=NULL && (*libmono_runtime_mainloop_context.curtask)!=NULL)
+            {
+                libmono_runtime_mainloop_task_event_set(*libmono_runtime_mainloop_context.curtask,LIBMONO_RUNTIME_MAINLOOP_TASK_EVENT_INIT);
+                libmono_runtime_mainloop_context.curtask++;
+            }
+        }
+
+#endif
+
+    }
+
+#if defined(LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME)
+
+    if(LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME!=NULL)
+    {
+        libmono_runtime_mainloop_context.curtask=(libmono_runtime_mainloop_task_context_t **)&LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME[0];
+        while(libmono_runtime_mainloop_context.curtask!=NULL && (*libmono_runtime_mainloop_context.curtask)!=NULL)
+        {
+            if(libmono_runtime_mainloop_task_event(*libmono_runtime_mainloop_context.curtask)!=0)
+            {
+                if((*libmono_runtime_mainloop_context.curtask)->entry!=NULL)
+                {
+                    (*libmono_runtime_mainloop_context.curtask)->entry(*(libmono_runtime_mainloop_context.curtask));
+                }
+            }
+            libmono_runtime_mainloop_context.curtask++;
+        }
+    }
+
+#endif
+
+}
+
+bool libmono_runtime_mainloop_is_idle(void) LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE
+{
+    bool ret=true;
+    libmono_runtime_criticalsection_enter();
+#if defined(LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME)
+
+    for(size_t i=0; LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME[i]!=NULL; i++)
+    {
+        if(libmono_runtime_mainloop_task_event(LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME[i])!=0)
+        {
+            /*
+             * 当任务有事件未处理时判定为非空闲
+             */
+            ret=false;
+            break;
+        }
+    }
+
+#endif
+    libmono_runtime_criticalsection_leave();
+    return ret;
+}
+

@@ -60,13 +60,50 @@ MCS-51 公共代码库。
 
 ### 可外部配置的宏定义
 
-| 宏定义                              | 说明                     | 备注                                                |
-| ----------------------------------- | ------------------------ | --------------------------------------------------- |
-| `LIBMONO_RUNTIME_LIBC_NO_GETCHAR`   | 不移植`getchar`          | 若用户不实现`getchar`可能会在某些情况下遇到链接错误 |
-| `GETCHAR`                           | 用户实现的`getchar`      |                                                     |
-| `LIBMONO_RUNTIME_LIBC_NO_PUTCHAR`   | 不移植`putchar`          | 若用户不实现`putchar`可能会在某些情况下遇到链接错误 |
-| `PUTCHAR`                           | 用户实现的`putchar`      |                                                     |
-| `LIBMONO_RUNTIME_LIBC_STDIO_SERIAL` | 使用串口作为标准输入输出 |                                                     |
-| `LIBMONO_RUNTIME_LIBC_NO_TIME`      | 不移植`time`             | 若用户不实现`time`将使用C库的版本                   |
-| `TIME`                              | 用户实现的`time`         |                                                     |
+| 宏定义                                     | 说明                     | 备注                                                         |
+| ------------------------------------------ | ------------------------ | ------------------------------------------------------------ |
+| `LIBMONO_RUNTIME_LIBC_NO_GETCHAR`          | 不移植`getchar`          | 若用户不实现`getchar`可能会在某些情况下遇到链接错误          |
+| `GETCHAR`                                  | 用户实现的`getchar`      |                                                              |
+| `LIBMONO_RUNTIME_LIBC_NO_PUTCHAR`          | 不移植`putchar`          | 若用户不实现`putchar`可能会在某些情况下遇到链接错误          |
+| `PUTCHAR`                                  | 用户实现的`putchar`      |                                                              |
+| `LIBMONO_RUNTIME_LIBC_STDIO_SERIAL`        | 使用串口作为标准输入输出 |                                                              |
+| `LIBMONO_RUNTIME_LIBC_NO_TIME`             | 不移植`time`             | 若用户不实现`time`将使用C库的版本                            |
+| `TIME`                                     | 用户实现的`time`         |                                                              |
+| `LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME` | 任务数组名称             | 定义任务数组时类型采用l`ibmono_runtime_mainloop_task_context_t * const`且需要以NULL结尾。 |
+
+### 主循环
+
+ libmono中绝大部分运行时代码均运行在主循环中，对于用户而言，需要实际业务代码中调用主循环才能保证libmono库运行正常。
+
+```c
+
+/*
+ * 主函数入口，若使用了RTOS,也可替换为RTOS任务入口。
+ * 注意：在编写实际业务代码时需要提前包含libmono.c
+ */
+void main(void)
+{
+    /*
+     * 硬件初始化代码
+     */
+    
+    /*
+     * libmono初始化代码
+     */
+    
+    while(1)
+    {
+        /*
+         * libmono主循环
+         */
+        libmono_runtime_mainloop_process();
+        
+        /*
+         * 其它业务代码
+         */
+       
+    }
+}
+
+```
 

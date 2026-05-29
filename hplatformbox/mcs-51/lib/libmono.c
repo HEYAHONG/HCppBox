@@ -31,6 +31,7 @@
  */
 #include "runtime/criticalsection.h"
 #include "runtime/tick.h"
+#include "runtime/mainloop.h"
 #include "runtime/libc.h"
 
 /*
@@ -44,6 +45,7 @@
  */
 #include "runtime/criticalsection.c"
 #include "runtime/tick.c"
+#include "runtime/mainloop.c"
 #include "runtime/libc.c"
 
 /*
