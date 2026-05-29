@@ -62,21 +62,44 @@ HDEFAULTS_USERCALL_DEFINE2(hclock_gettime,HDEFAULTS_SYSCALL_HCLOCK_GETTIME,int,h
         break;
         case HCLOCK_MONOTONIC:
         {
-            static htimespec_t current_monotonic_clock= {0};
-            static uint32_t current_monotonic_clock_last_tick=0;
-            ret=0;
-            hdefaults_mutex_lock(NULL);
-            uint32_t current_tick=GetTickCount();
-            current_monotonic_clock.tv_nsec+=(current_tick-current_monotonic_clock_last_tick)*1000000;
-            current_monotonic_clock_last_tick=current_tick;
-            current_monotonic_clock.tv_sec+=current_monotonic_clock.tv_nsec/1000000000;
-            current_monotonic_clock.tv_nsec=current_monotonic_clock.tv_nsec%1000000000;
-            if(tp!=NULL)
+            LARGE_INTEGER freq;
+            if (QueryPerformanceFrequency(&freq))
             {
-                tp->tv_sec=current_monotonic_clock.tv_sec;
-                tp->tv_nsec=current_monotonic_clock.tv_nsec;
+                static htimespec_t current_monotonic_clock = { 0 };
+                static LARGE_INTEGER current_monotonic_last_counter = { 0 };
+                ret = 0;
+                hdefaults_mutex_lock(NULL);
+                LARGE_INTEGER current_monotonic_counter;
+                QueryPerformanceCounter(&current_monotonic_counter);
+                current_monotonic_clock.tv_nsec += (current_monotonic_counter.QuadPart - current_monotonic_last_counter.QuadPart) * 1000000000/freq.QuadPart;
+                current_monotonic_last_counter= current_monotonic_counter;
+                current_monotonic_clock.tv_sec += current_monotonic_clock.tv_nsec / 1000000000;
+                current_monotonic_clock.tv_nsec = current_monotonic_clock.tv_nsec % 1000000000;
+                if (tp != NULL)
+                {
+                    tp->tv_sec = current_monotonic_clock.tv_sec;
+                    tp->tv_nsec = current_monotonic_clock.tv_nsec;
+                }
+                hdefaults_mutex_unlock(NULL);
             }
-            hdefaults_mutex_unlock(NULL);
+            else
+            {
+                static htimespec_t current_monotonic_clock = { 0 };
+                static uint32_t current_monotonic_clock_last_tick = 0;
+                ret = 0;
+                hdefaults_mutex_lock(NULL);
+                uint32_t current_tick = GetTickCount();
+                current_monotonic_clock.tv_nsec += (current_tick - current_monotonic_clock_last_tick) * 1000000;
+                current_monotonic_clock_last_tick = current_tick;
+                current_monotonic_clock.tv_sec += current_monotonic_clock.tv_nsec / 1000000000;
+                current_monotonic_clock.tv_nsec = current_monotonic_clock.tv_nsec % 1000000000;
+                if (tp != NULL)
+                {
+                    tp->tv_sec = current_monotonic_clock.tv_sec;
+                    tp->tv_nsec = current_monotonic_clock.tv_nsec;
+                }
+                hdefaults_mutex_unlock(NULL);
+            }
         }
         break;
         default:
