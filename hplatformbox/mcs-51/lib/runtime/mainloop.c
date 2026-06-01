@@ -49,6 +49,36 @@ static LIBMONO_DATA_ATTRIBUTE struct
 
 } libmono_runtime_mainloop_context;
 
+enum
+{
+    LIBMONO_RUNTIME_MAINLOOP_INIT=(1UL<< 0),
+};
+
+static inline void libmono_runtime_mainloop_flags_set(uint8_t flags) LIBMONO_FUNCTION_ATTRIBUTE
+{
+    libmono_runtime_criticalsection_enter();
+    libmono_runtime_mainloop_context.flags |= flags;
+    libmono_runtime_criticalsection_leave();
+}
+
+static inline void libmono_runtime_mainloop_flags_clear(uint8_t flags) LIBMONO_FUNCTION_ATTRIBUTE
+{
+    libmono_runtime_criticalsection_enter();
+    libmono_runtime_mainloop_context.flags &= (~flags);
+    libmono_runtime_criticalsection_leave();
+}
+
+static inline uint8_t libmono_runtime_mainloop_flags(void) LIBMONO_FUNCTION_ATTRIBUTE
+{
+    uint8_t ret=0;
+    libmono_runtime_criticalsection_enter();
+    ret=libmono_runtime_mainloop_context.flags;
+    libmono_runtime_criticalsection_leave();
+    return ret;
+}
+
+
+
 #if defined(LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME)
 
 extern libmono_runtime_mainloop_task_context_t * const LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME[];
@@ -57,12 +87,12 @@ extern libmono_runtime_mainloop_task_context_t * const LIBMONO_RUNTIME_MAINLOOP_
 
 void libmono_runtime_mainloop_process(void) LIBMONO_FUNCTION_ATTRIBUTE
 {
-    if((libmono_runtime_mainloop_context.flags&(1U << 0))==0)
+    if((libmono_runtime_mainloop_flags()&(LIBMONO_RUNTIME_MAINLOOP_INIT))==0)
     {
         /*
          * 第一次进入
          */
-        libmono_runtime_mainloop_context.flags |= (1U << 0);
+        libmono_runtime_mainloop_flags_set(LIBMONO_RUNTIME_MAINLOOP_INIT);
 
 #if defined(LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME)
 
