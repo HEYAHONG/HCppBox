@@ -69,5 +69,12 @@ void libmono_runtime_mainloop_process(void) LIBMONO_FUNCTION_ATTRIBUTE;
  */
 bool libmono_runtime_mainloop_is_idle(void) LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE;
 
+/** \brief 主循环当前任务
+ *
+ * \return libmono_runtime_mainloop_task_context_t* 当前任务指针，失败返回NULL
+ *
+ */
+libmono_runtime_mainloop_task_context_t * libmono_runtime_mainloop_current_task(void) LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE;
+
 #endif
 

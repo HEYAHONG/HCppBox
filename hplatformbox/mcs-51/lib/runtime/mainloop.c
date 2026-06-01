@@ -38,6 +38,7 @@ static LIBMONO_DATA_ATTRIBUTE struct
 {
     /** \brief  标志位：
      *              位0表示是否第一次进入。
+     *              位1表示正在执行任务
      */
     uint8_t flags;
 
@@ -52,6 +53,7 @@ static LIBMONO_DATA_ATTRIBUTE struct
 enum
 {
     LIBMONO_RUNTIME_MAINLOOP_INIT=(1UL<< 0),
+    LIBMONO_RUNTIME_MAINLOOP_TASK_RUNNING=(1UL << 1)
 };
 
 static inline void libmono_runtime_mainloop_flags_set(uint8_t flags) LIBMONO_FUNCTION_ATTRIBUTE
@@ -121,7 +123,9 @@ void libmono_runtime_mainloop_process(void) LIBMONO_FUNCTION_ATTRIBUTE
             {
                 if((*libmono_runtime_mainloop_context.curtask)->entry!=NULL)
                 {
+                    libmono_runtime_mainloop_flags_set(LIBMONO_RUNTIME_MAINLOOP_TASK_RUNNING);
                     (*libmono_runtime_mainloop_context.curtask)->entry(*(libmono_runtime_mainloop_context.curtask));
+                    libmono_runtime_mainloop_flags_clear(LIBMONO_RUNTIME_MAINLOOP_TASK_RUNNING);
                 }
             }
             libmono_runtime_mainloop_context.curtask++;
@@ -155,3 +159,14 @@ bool libmono_runtime_mainloop_is_idle(void) LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE
     return ret;
 }
 
+libmono_runtime_mainloop_task_context_t * libmono_runtime_mainloop_current_task(void) LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE
+{
+    libmono_runtime_mainloop_task_context_t *ret=NULL;
+    libmono_runtime_criticalsection_enter();
+    if((libmono_runtime_mainloop_flags()&LIBMONO_RUNTIME_MAINLOOP_TASK_RUNNING)!=0)
+    {
+        ret=(*libmono_runtime_mainloop_context.curtask);
+    }
+    libmono_runtime_criticalsection_leave();
+    return ret;
+}
