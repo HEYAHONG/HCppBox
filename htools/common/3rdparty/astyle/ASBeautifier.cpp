@@ -62,6 +62,7 @@ ASBeautifier::ASBeautifier()
 	setClassIndent(false);
 	setModifierIndent(false);
 	setSwitchIndent(false);
+	setNoIndentIfAfterElseMode(false);
 	setCaseIndent(false);
 	setSqueezeWhitespace(false);
 	setPreserveWhitespace(false);
@@ -216,6 +217,7 @@ ASBeautifier::ASBeautifier(const ASBeautifier& other) : ASBase(other)
 	isInTrailingReturnType = other.isInTrailingReturnType;
 	modifierIndent = other.modifierIndent;
 	switchIndent = other.switchIndent;
+	noIndentIfAfterElse = other.noIndentIfAfterElse;
 	caseIndent = other.caseIndent;
 	squeezeWhitespace = other.squeezeWhitespace;
 	preserveWhitespace = other.preserveWhitespace;
@@ -1112,6 +1114,18 @@ void ASBeautifier::setSwitchIndent(bool state)
 }
 
 /**
+ * set the no-indent-if-after-else option. If true, an 'if' statement
+ * that follows an 'else' (when break-elseifs is active) will not
+ * receive the extra indentation normally applied to a broken else-if.
+ *
+ * @param   state             state of option.
+ */
+void ASBeautifier::setNoIndentIfAfterElseMode(bool state)
+{
+	noIndentIfAfterElse = state;
+}
+
+/**
  * set the state of the case indentation option. If true, lines of 'case'
  * statements will be indented one additional indent.
  *
@@ -1393,6 +1407,11 @@ int ASBeautifier::getTabLength() const
 	return tabLength;
 }
 
+int ASBeautifier::getMinConditionalIndent() const
+{
+	return minConditionalIndent;
+}
+
 int ASBeautifier::getIndentCount() const
 {
 	return indentCount;
@@ -1403,7 +1422,6 @@ int ASBeautifier::getSpaceIndentCount() const
 	return spaceIndentCount;
 }
 
-
 int ASBeautifier::getPrevFinalLineIndentCount() const
 {
 	return prevFinalLineIndentCount;
@@ -1413,7 +1431,6 @@ int ASBeautifier::getPrevFinalLineSpaceIndentCount() const
 {
 	return prevFinalLineSpaceIndentCount;
 }
-
 
 std::string ASBeautifier::preLineWS(int lineIndentCount, int lineSpaceIndentCount)
 {
@@ -1528,18 +1545,29 @@ void ASBeautifier::registerContinuationIndent(std::string_view line, int i, int 
 
 	// this is not done for an in-statement array
 	int multiplier = isInAssignment ? 1 : 2; // GL16 - no multiply in assignments
-	if (continuationIndentCount > maxContinuationIndent
-	        && !(prevNonLegalCh == '=' && currentNonLegalCh == '{'))
-		continuationIndentCount = indentLength * multiplier + spaceIndentCount_;
 
-	if (!continuationIndentStack->empty()
-	        && continuationIndentCount < continuationIndentStack->back())
+	// when capped by max-continuation-indent, don't let the stack promote
+	// the value back up (e.g. to a prior '.' operator's column on the same line)
+	bool reducedToMax = false;
+
+	if (continuationIndentCount > maxContinuationIndent
+		&& !(prevNonLegalCh == '=' && currentNonLegalCh == '{')){
+		continuationIndentCount = indentLength * multiplier + spaceIndentCount_;
+			reducedToMax = true;
+	}
+
+	if (!reducedToMax && !continuationIndentStack->empty()
+		&& continuationIndentCount < continuationIndentStack->back()){
 		continuationIndentCount = continuationIndentStack->back();
+
+	}
 
 	// the block opener is not indented for a NonInStatementArray
 	if ((isNonInStatementArray && i >= 0 && line[i] == '{')
-	        && !isInEnum && !isInStruct && !braceBlockStateStack->empty() && braceBlockStateStack->back())
+		&& !isInEnum && !isInStruct && !braceBlockStateStack->empty() && braceBlockStateStack->back()){
 		continuationIndentCount = 0;
+	}
+
 	continuationIndentStack->emplace_back(continuationIndentCount);
 }
 
@@ -2889,6 +2917,17 @@ bool ASBeautifier::handleHeaderSection(std::string_view line, size_t* i, bool cl
 				headerStack->pop_back();
 		}
 
+		// suppress extra indentation for 'if' that follows 'else' on the previous line
+		// (when break-elseifs has split them onto separate lines)
+		if (newHeader == &ASResource::AS_IF
+		        && previousLastLineHeader == &ASResource::AS_ELSE
+		        && noIndentIfAfterElse)
+		{
+			if (!headerStack->empty())
+				headerStack->pop_back();
+			--indentCount;
+		}
+
 		// take care of 'else'
 		else if (newHeader == &ASResource::AS_ELSE && !lambdaDepth)
 		{
@@ -3573,7 +3612,25 @@ void ASBeautifier::handleClosingParen(std::string_view line, size_t i, bool tabI
 
 	// GL28 fix initializer lists like x({a.x=0;})
 	// https://gitlab.com/saalen/astyle/-/work_items/108
-	bool isDirectBraceInit = isCStyle() && isBlockOpener && prevNonSpaceCh != ')' && prevNonSpaceCh != '}';
+	// direct-list-init like 'A var_a { ... }': prev char ends an identifier
+	// or template/array close, and we are not inside a class/enum header, a
+	// control-flow header (do/try/else/...), or a class initializer.
+	// Also exclude block-scope openers like 'namespace xxx {' where the
+    // brace opens a scope rather than initializing a variable.
+    bool isPrevHeaderBlockScope = !headerStack->empty()
+                                  && (headerStack->back() == &ASResource::AS_NAMESPACE
+                                      || headerStack->back() == &ASResource::AS_MODULE);
+
+	bool isDirectBraceInit = isCStyle() && isBlockOpener
+	                         && (isLegalNameChar(prevNonSpaceCh)
+	                             || prevNonSpaceCh == '>'
+	                             || prevNonSpaceCh == ']')
+	                         && !isInClassHeader
+	                         && !isInClassInitializer
+	                         && !isInEnum
+							 && !isPrevHeaderBlockScope
+	                         && currentHeader == nullptr;
+
 	isInInitializerList = isCStyle() && isBlockOpener && (prevNonSpaceCh == '(' || prevNonSpaceCh == '=' || isDirectBraceInit);
 
 	if (!isBlockOpener && currentHeader != nullptr)
@@ -3812,7 +3869,7 @@ void ASBeautifier::handlePotentialHeaderSection(std::string_view line, size_t* i
 }
 
 
-void ASBeautifier::handlePotentialOperatorSection(std::string_view line, size_t* i, bool tabIncrementIn, bool haveAssignmentThisLine, bool isInOperator)
+void ASBeautifier::handlePotentialOperatorSection(std::string_view line, size_t* i, bool tabIncrementIn, bool* haveAssignmentThisLine, bool isInOperator)
 {
 	// Check if an operator has been reached.
 	const std::string* foundAssignmentOp = findOperator(line, *i, assignmentOperators);
@@ -3905,10 +3962,10 @@ void ASBeautifier::handlePotentialOperatorSection(std::string_view line, size_t*
 			        && statementEndsWithComma(line, *i))
 			{
 				// only one assignment indent per line + GH #10
-				if (!haveAssignmentThisLine && line.find(ASResource::AS_SCOPE_RESOLUTION) == std::string::npos)
+				if (!*haveAssignmentThisLine && line.find(ASResource::AS_SCOPE_RESOLUTION) == std::string::npos)
 				{
 					// register indent at previous word
-					haveAssignmentThisLine = true;
+					*haveAssignmentThisLine = true;
 					int prevWordIndex = getContinuationIndentAssign(line, *i);
 					int continuationIndentCount = prevWordIndex + spaceIndentCount + tabIncrementIn;
 					continuationIndentStack->emplace_back(continuationIndentCount);
@@ -4463,7 +4520,7 @@ void ASBeautifier::parseCurrentLine(std::string_view line)
 
 		if (isPotentialOperator)
 		{
-			handlePotentialOperatorSection(line, &i, tabIncrementIn, haveAssignmentThisLine, isInOperator);
+			handlePotentialOperatorSection(line, &i, tabIncrementIn, &haveAssignmentThisLine, isInOperator);
 		}
 	}	// end of for loop * end of for loop * end of for loop * end of for loop * end of for loop *
 }

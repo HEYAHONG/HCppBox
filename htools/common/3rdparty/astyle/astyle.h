@@ -28,7 +28,7 @@
 	#include <cstring>              // need both string and cstring for GCC
 #endif
 
-#define ASTYLE_VERSION "3.6.14"
+#define ASTYLE_VERSION "3.6.16"
 
 namespace astyle {
 
@@ -359,6 +359,7 @@ public:
 	void setAlignMethodColon(bool state);
 	void setSpaceIndentation(int length = 4);
 	void setSwitchIndent(bool state);
+	void setNoIndentIfAfterElseMode(bool state);
 	void setTabIndentation(int length = 4, bool forceTabs = false);
 	void setPreprocDefineIndent(bool state);
 	void setPreprocConditionalIndent(bool state);
@@ -369,6 +370,7 @@ public:
 	[[nodiscard]] int getFileType() const;
 	[[nodiscard]] int getIndentLength() const;
 	[[nodiscard]] int getTabLength() const;
+	[[nodiscard]] int getMinConditionalIndent() const;
 
 	[[nodiscard]] int getIndentCount() const;
 	[[nodiscard]] int getSpaceIndentCount() const;
@@ -470,10 +472,10 @@ private:  // functions
 	bool handleHeaderSection(std::string_view line, size_t* i, bool closingBraceReached, bool *haveCaseIndent);
 	bool handleColonSection(std::string_view line, size_t* i, bool tabIncrementIn, char* ch);
 	void handleEndOfStatement(size_t i, bool *closingBraceReached, char* ch);
-	void handleParens(std::string_view line, size_t i, bool tabIncrementIn, bool * isInOperator, char ch);
+	void handleParens(std::string_view line, size_t i, bool tabIncrementIn, bool* isInOperator, char ch);
 	void handleClosingParen(std::string_view line, size_t i, bool tabIncrementIn);
-	void handlePotentialHeaderSection(std::string_view line, size_t* i, bool tabIncrementIn, bool *isInOperator);
-	void handlePotentialOperatorSection(std::string_view line, size_t* i, bool tabIncrementIn, bool haveAssignmentThisLine, bool isInOperator);
+	void handlePotentialHeaderSection(std::string_view line, size_t* i, bool tabIncrementIn, bool* isInOperator);
+	void handlePotentialOperatorSection(std::string_view line, size_t* i, bool tabIncrementIn, bool* haveAssignmentThisLine, bool isInOperator);
 
 private:  // variables
 	int beautifierFileType;
@@ -545,6 +547,7 @@ private:  // variables
 	bool isInTrailingReturnType;
 	bool modifierIndent;
 	bool switchIndent;
+	bool noIndentIfAfterElse;
 	bool caseIndent;
 	bool namespaceIndent;
 	bool blockIndent;
@@ -726,6 +729,8 @@ public:	// functions
 	void setBreakClosingHeaderBracesMode(bool state);
 	void setBreakBlocksMode(bool state);
 	void setBreakClosingHeaderBlocksMode(bool state);
+	void setLineBetweenMembersMode(bool state);
+	void setLineBetweenAllMembersMode(bool state);
 	void setBreakElseIfsMode(bool state);
 	void setBreakOneLineBlocksMode(bool state);
 	void setBreakOneLineHeadersMode(bool state);
@@ -747,6 +752,7 @@ public:	// functions
 	void setLineEndFormat(LineEndFormat fmt);
 	void setMaxCodeLength(int max);
 	void setMaxCodeLengthMode(MaxCodeLengthMode mode);
+	void setIgnoreSideCommentLengths(bool state);
 	void setObjCColonPaddingMode(ObjCColonPad mode);
 	void setOperatorPaddingMode(bool state);
 	void setNegationPaddingMode(NegationPaddingMode mode);
@@ -1007,6 +1013,7 @@ private:  // variables
 	bool shouldPadParensInside;
 	bool shouldPadHeader;
 	bool shouldStripCommentPrefix;
+	bool shouldIgnoreSideCommentLengths;
 	bool shouldUnPadParens;
 	bool shouldConvertTabs;
 	bool shouldIndentCol1Comments;
@@ -1052,6 +1059,7 @@ private:  // variables
 	bool foundTrailingReturnType;
 	bool foundCastOperator;
 	bool isInLineBreak;
+	bool isLineContinuation;
 	bool endOfAsmReached;
 	bool endOfCodeReached;
 	bool lineCommentNoIndent;
@@ -1135,6 +1143,11 @@ private:  // variables
 	bool isImmediatelyPostPointerOrReference;
 	bool shouldBreakBlocks;
 	bool shouldBreakClosingHeaderBlocks;
+	bool shouldLineBetweenMembers;
+	bool shouldLineBetweenAllMembers;
+	bool needBlankBeforeNextMember;
+	bool lineBetweenMembersDoBlank;
+	bool lineBetweenMembersPassedClassClose;
 	bool isPrependPostBlockEmptyLineRequested;
 	bool isAppendPostBlockEmptyLineRequested;
 	bool isIndentablePreprocessor;

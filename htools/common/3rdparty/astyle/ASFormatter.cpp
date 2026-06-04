@@ -48,6 +48,7 @@ ASFormatter::ASFormatter()
 	squeezeEmptyLineNum = std::string::npos;
 	maxCodeLength = std::string::npos;
 	maxCodeLengthMode = MAXCODELENGTH_CODE,
+	shouldIgnoreSideCommentLengths = false;
 	isInStruct = false;
 	shouldPadCommas = false;
 	shouldPadOperators = false;
@@ -75,6 +76,11 @@ ASFormatter::ASFormatter()
 	shouldAttachInline = false;
 	shouldBreakBlocks = false;
 	shouldBreakClosingHeaderBlocks = false;
+	shouldLineBetweenMembers = false;
+	shouldLineBetweenAllMembers = false;
+	needBlankBeforeNextMember = false;
+	lineBetweenMembersDoBlank = false;
+	lineBetweenMembersPassedClassClose = false;
 	shouldBreakClosingHeaderBraces = false;
 	shouldDeleteEmptyLines = false;
 	shouldBreakReturnType = false;
@@ -257,6 +263,7 @@ void ASFormatter::init(ASSourceIterator* si)
 	foundCastOperator = false;
 	foundQuestionMark = false;
 	isInLineBreak = false;
+	isLineContinuation = false;
 	endOfAsmReached = false;
 	endOfCodeReached = false;
 	isFormattingModeOff = false;
@@ -1146,6 +1153,15 @@ void ASFormatter::handleEndOfBlock()
 		   )
 		{
 			isAppendPostBlockEmptyLineRequested = true;
+		}
+
+		// line-between-members=all: insert blank after field at class scope
+		if (shouldLineBetweenAllMembers
+		        && isBraceType(braceTypeStack->back(), DEFINITION_TYPE)
+		        && !isBraceType(braceTypeStack->back(), NAMESPACE_TYPE)
+		        && parenStack->back() == 0)
+		{
+			needBlankBeforeNextMember = true;
 		}
 	}
 	if (currentChar != ';'
@@ -2224,6 +2240,31 @@ std::string ASFormatter::nextLine()
 	size_t readyFormattedLineLength = trim(readyFormattedLine).length();
 	bool isInNamespace = isBraceType(braceTypeStack->back(), NAMESPACE_TYPE);
 
+	// line-between-members: if a field line was just output, arm blank before the next member.
+	// This flag survives intermediate breakLine() calls (which can clear iPrependPostBlock).
+	if (lineBetweenMembersDoBlank)
+	{
+		bool doInsertBlank = true;
+		if (!shouldLineBetweenAllMembers)
+		{
+			// Non-all mode: insert blank only before methods/properties, not before data fields.
+			// A data field line ends with ';' but the character before ';' is not ')'.
+			// Method prototypes end with ');' and DO get a blank.
+			const std::string trimLine = trim(readyFormattedLine);
+			if (!trimLine.empty() && trimLine.back() == ';')
+			{
+				bool prevIsCloseParen = trimLine.size() >= 2
+										&& trimLine[trimLine.size() - 2] == ')';
+				if (!prevIsCloseParen)
+					doInsertBlank = false;
+			}
+		}
+		if (doInsertBlank)
+			prependEmptyLine = true;
+
+		lineBetweenMembersDoBlank = false;
+	}
+
 	if (prependEmptyLine		// prepend a blank line before this formatted line
 	        && readyFormattedLineLength > 0
 	        && previousReadyFormattedLineLength > 0)
@@ -2258,6 +2299,20 @@ std::string ASFormatter::nextLine()
 		}
 		isInPreprocessorBeautify = isInPreprocessor;	// used by ASEnhancer
 		isInBeautifySQL = isInExecSQL;					// used by ASEnhancer
+		// line-between-members=all: after outputting a field line, arm blank before next member.
+		// Skip if lineBetweenMembersPassedClassClose: the class scope just closed, meaning
+		// this is the last field before '}'. Arming doBlank here would produce a spurious
+		// blank before '}'.
+		if (needBlankBeforeNextMember && !lineBetweenMembersPassedClassClose)
+		{
+			lineBetweenMembersDoBlank = true;
+			needBlankBeforeNextMember = false;
+		}
+		else
+		{
+			needBlankBeforeNextMember = false;
+			lineBetweenMembersPassedClassClose = false;
+		}
 	}
 
 	prependEmptyLine = false;
@@ -2448,6 +2503,19 @@ void ASFormatter::setMaxCodeLength(int max)
 void ASFormatter::setMaxCodeLengthMode(MaxCodeLengthMode mode)
 {
 	maxCodeLengthMode = mode;
+}
+
+
+/**
+ * When true, trailing side comments are excluded from the line-length
+ * calculation used by max-code-length, so existing alignment of side
+ * comments is preserved instead of triggering a split.
+ *
+ * @param state         true to ignore side-comment lengths.
+ */
+void ASFormatter::setIgnoreSideCommentLengths(bool state)
+{
+	shouldIgnoreSideCommentLengths = state;
 }
 
 
@@ -2823,6 +2891,29 @@ void ASFormatter::setBreakClosingHeaderBlocksMode(bool state)
 }
 
 /**
+ * set option to insert an empty line between class members (methods/properties).
+ *
+ * @param state        true = insert, false = don't insert.
+ */
+void ASFormatter::setLineBetweenMembersMode(bool state)
+{
+	shouldLineBetweenMembers = state;
+}
+
+/**
+ * set option to insert an empty line between all class members including fields.
+ *
+ * @param state        true = insert, false = don't insert.
+ */
+void ASFormatter::setLineBetweenAllMembersMode(bool state)
+{
+	shouldLineBetweenAllMembers = state;
+	if (state)
+		shouldLineBetweenMembers = true;
+}
+
+
+/**
  * set option to delete empty lines.
  *
  * @param state        true = delete, false = don't delete.
@@ -3055,6 +3146,12 @@ bool ASFormatter::getNextLine(bool emptyLineWasDeleted /*false*/)
 		currentLine = sourceIterator->nextLine(emptyLineWasDeleted);
 		assert(computeChecksumIn(currentLine));
 	}
+
+	// snapshot paren depth before this line's chars are parsed: if non-zero,
+	// this source line begins inside a paren that opened on a previous line,
+	// i.e. it is a continuation. Used by getEffectiveLineLength() so the
+	// first continuation line predicts the indent ASBeautifier will apply.
+	isLineContinuation = !parenStack->empty() && parenStack->back() > 0;
 
 	// reset variables for new line
 	inLineNumber++;
@@ -3393,7 +3490,6 @@ void ASFormatter::breakLine(bool isSplitLine /*false*/)
 	formattedLine.erase();
 	// queue an empty line prepend request if one exists
 	prependEmptyLine = isPrependPostBlockEmptyLineRequested;
-
 	if (!isSplitLine)
 	{
 		formattedLineCommentNum = std::string::npos;
@@ -3760,15 +3856,6 @@ bool ASFormatter::isDereferenceOrAddressOf() const
 		return false;
 	}
 
-	if ( currentChar == '*' && pointerAlignment == PTR_ALIGN_NAME )
-	{
-		size_t openParen = currentLine.rfind('(', charNum);
-		if (openParen != std::string::npos)
-		{
-			return true;
-		}
-	}
-
 	std::set<char> allowedChars = {'=', '.', '{', '>', '<', '?'};
 
 	if ( allowedChars.find(previousNonWSChar) != allowedChars.end()
@@ -3968,6 +4055,7 @@ bool ASFormatter::isUnaryOperator() const
 		size_t end = currentLine.rfind(')', charNum);
 		if (end == std::string::npos)
 			return false;
+
 		size_t lastChar = currentLine.find_last_not_of(" \t", end - 1);
 		if (lastChar == std::string::npos)
 			return false;
@@ -5567,6 +5655,25 @@ void ASFormatter::formatClosingBrace(BraceType braceType)
 	if (parenStack->size() > 1)
 		parenStack->pop_back();
 
+	// suppress pending blank before class/struct closing brace (e.g. from =all field)
+	if (isBraceType(braceType, DEFINITION_TYPE)
+	        && !isBraceType(braceType, NAMESPACE_TYPE))
+	{
+		// Only clear iPrepend when formattedLine has no pending content.
+		// If formattedLine already holds a member (e.g. "int x;"), the blank
+		// belongs BEFORE that member, not before the class brace — preserve it.
+		if (trim(formattedLine).empty())
+			isPrependPostBlockEmptyLineRequested = false;
+		needBlankBeforeNextMember = false;
+		// Signal that the class scope has closed. The output section uses this to avoid
+		// arming lineBetweenMembersDoBlank for the last field before '}' — that would
+		// produce an unwanted blank before '}'.
+		// We do NOT clear lineBetweenMembersDoBlank here because formatClosingBrace()
+		// is called (line 862) BEFORE breakLine() fires (line 2030) in the same loop
+		// iteration, so the blank for the previous member line hasn't been output yet.
+		lineBetweenMembersPassedClassClose = true;
+	}
+
 	// mark state of immediately after empty block
 	// this state will be used for locating braces that appear immediately AFTER an empty block (e.g. '{} \n}').
 	if (previousCommandChar == '{')
@@ -5636,6 +5743,22 @@ void ASFormatter::formatClosingBrace(BraceType braceType)
 	else if (shouldBreakClosingHeaderBlocks)
 	{
 		isAppendPostBlockEmptyLineRequested = !currentHeader && shouldBreakBlocks;
+	}
+
+	// line-between-members: insert blank after method/property close at class scope
+	if (shouldLineBetweenMembers
+	        && isBraceType(braceTypeStack->back(), DEFINITION_TYPE))
+	{
+		isAppendPostBlockEmptyLineRequested = true;
+	}
+	// line-between-members: insert blank after top-level function close
+	else if (shouldLineBetweenMembers
+	         && (isBraceType(braceTypeStack->back(), NULL_TYPE)
+	             || isBraceType(braceTypeStack->back(), NAMESPACE_TYPE))
+	         && !isBraceType(braceType, DEFINITION_TYPE)
+	         && !isBraceType(braceType, NAMESPACE_TYPE))
+	{
+		isAppendPostBlockEmptyLineRequested = true;
 	}
 }
 
@@ -8264,11 +8387,31 @@ size_t ASFormatter::getEffectiveLineLength() const
 {
 	size_t lineLength = formattedLine.length();
 
+	// Exclude trailing side-comment text from the length used for split decisions.
+	// A side comment has non-whitespace code preceding it on the same line; a
+	// stand-alone comment line (no preceding code) is left alone.
+	if (shouldIgnoreSideCommentLengths
+		&& formattedLineCommentNum != std::string::npos
+		&& formattedLineCommentNum > 0
+		&& formattedLineCommentNum < lineLength) {
+			size_t firstNonWs = formattedLine.find_first_not_of(" \t");
+			if (firstNonWs != std::string::npos && firstNonWs < formattedLineCommentNum)
+				lineLength = formattedLineCommentNum;
+	}
+
 	if (maxCodeLengthMode == MAXCODELENGTH_TOTAL) {
 		int predictedIndentCount = bracesNestingLevel;
 		int predictedSpaceIndent = 0;
 		if (getPrevFinalLineSpaceIndentCount()>0 && bracesNestingLevel == getPrevFinalLineIndentCount()){
 			predictedSpaceIndent = getPrevFinalLineSpaceIndentCount();
+		}
+		else if (isLineContinuation && bracesNestingLevel == getPrevFinalLineIndentCount()){
+			// First continuation line of a multi-line statement: the previous
+			// emitted line was the statement header (spaceIndentCount == 0),
+			// but ASBeautifier will indent this line by minConditionalIndent.
+			// Without this branch the predictor is one line behind and the
+			// first wrapped line escapes the max-code-length check.
+			predictedSpaceIndent = getMinConditionalIndent();
 		}
 
 		if (!formattedLine.empty()){
