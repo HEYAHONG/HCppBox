@@ -66,12 +66,10 @@
 #  endif
 
 static URI_INLINE UriBool URI_FUNC(AppendSegment)(URI_TYPE(Uri) * uri,
-                                                  const URI_CHAR * first,
-                                                  const URI_CHAR * afterLast,
-                                                  UriMemoryManager * memory) {
+        const URI_CHAR * first, const URI_CHAR * afterLast, UriMemoryManager * memory) {
     /* Create segment */
     URI_TYPE(PathSegment) * segment =
-        memory->malloc(memory, 1 * sizeof(URI_TYPE(PathSegment)));
+            memory->malloc(memory, 1 * sizeof(URI_TYPE(PathSegment)));
     if (segment == NULL) {
         return URI_FALSE; /* Raises malloc error */
     }
@@ -90,42 +88,42 @@ static URI_INLINE UriBool URI_FUNC(AppendSegment)(URI_TYPE(Uri) * uri,
     return URI_TRUE;
 }
 
-static URI_INLINE UriBool URI_FUNC(EqualsAuthority)(const URI_TYPE(Uri) * first,
-                                                    const URI_TYPE(Uri) * second) {
+static URI_INLINE UriBool URI_FUNC(EqualsAuthority)(
+        const URI_TYPE(Uri) * first, const URI_TYPE(Uri) * second) {
     /* IPv4 */
     if (first->hostData.ip4 != NULL) {
         return ((second->hostData.ip4 != NULL)
-                && !memcmp(first->hostData.ip4->data, second->hostData.ip4->data, 4))
-                   ? URI_TRUE
-                   : URI_FALSE;
+                       && !memcmp(
+                               first->hostData.ip4->data, second->hostData.ip4->data, 4))
+                       ? URI_TRUE
+                       : URI_FALSE;
     }
 
     /* IPv6 */
     if (first->hostData.ip6 != NULL) {
         return ((second->hostData.ip6 != NULL)
-                && !memcmp(first->hostData.ip6->data, second->hostData.ip6->data, 16))
-                   ? URI_TRUE
-                   : URI_FALSE;
+                       && !memcmp(
+                               first->hostData.ip6->data, second->hostData.ip6->data, 16))
+                       ? URI_TRUE
+                       : URI_FALSE;
     }
 
     /* IPvFuture */
     if (first->hostData.ipFuture.first != NULL) {
         return ((second->hostData.ipFuture.first != NULL)
-                && !URI_FUNC(CompareRange)(&first->hostData.ipFuture,
-                                           &second->hostData.ipFuture))
-                   ? URI_TRUE
-                   : URI_FALSE;
+                       && URI_FUNC(RangeEquals)(
+                               &first->hostData.ipFuture, &second->hostData.ipFuture))
+                       ? URI_TRUE
+                       : URI_FALSE;
     }
 
-    return !URI_FUNC(CompareRange)(&first->hostText, &second->hostText) ? URI_TRUE
-                                                                        : URI_FALSE;
+    return URI_FUNC(RangeEquals)(&first->hostText, &second->hostText) ? URI_TRUE
+                                                                      : URI_FALSE;
 }
 
 static int URI_FUNC(RemoveBaseUriImpl)(URI_TYPE(Uri) * dest,
-                                       const URI_TYPE(Uri) * absSource,
-                                       const URI_TYPE(Uri) * absBase,
-                                       UriBool domainRootMode,
-                                       UriMemoryManager * memory) {
+        const URI_TYPE(Uri) * absSource, const URI_TYPE(Uri) * absBase,
+        UriBool domainRootMode, UriMemoryManager * memory) {
     if (dest == NULL) {
         return URI_ERROR_NULL;
     }
@@ -152,7 +150,7 @@ static int URI_FUNC(RemoveBaseUriImpl)(URI_TYPE(Uri) * dest,
                 /* clang-format off */
     /* [01/50] if (A.scheme != Base.scheme) then */
                 /* clang-format on */
-                if (URI_FUNC(CompareRange)(&absSource->scheme, &absBase->scheme)) {
+                if (!URI_FUNC(RangeEquals)(&absSource->scheme, &absBase->scheme)) {
                     /* clang-format off */
     /* [02/50]    T.scheme    = A.scheme; */
                     /* clang-format on */
@@ -253,13 +251,13 @@ static int URI_FUNC(RemoveBaseUriImpl)(URI_TYPE(Uri) * dest,
                             /* clang-format off */
     /* [22/50]          while (first(A.path) == first(Base.path)) do */
                             /* clang-format on */
-                            while (
-                                (sourceSeg != NULL) && (baseSeg != NULL)
-                                && !URI_FUNC(CompareRange)(&sourceSeg->text,
-                                                           &baseSeg->text)
-                                && !((sourceSeg->text.first == sourceSeg->text.afterLast)
-                                     && ((sourceSeg->next == NULL)
-                                         != (baseSeg->next == NULL)))) {
+                            while ((sourceSeg != NULL) && (baseSeg != NULL)
+                                    && URI_FUNC(RangeEquals)(
+                                            &sourceSeg->text, &baseSeg->text)
+                                    && !((sourceSeg->text.first
+                                                 == sourceSeg->text.afterLast)
+                                            && ((sourceSeg->next == NULL)
+                                                    != (baseSeg->next == NULL)))) {
                                 /* clang-format off */
     /* [23/50]             A.path++; */
                                 /* clang-format on */
@@ -284,8 +282,7 @@ static int URI_FUNC(RemoveBaseUriImpl)(URI_TYPE(Uri) * dest,
     /* [28/50]             T.path += "../"; */
                                 /* clang-format on */
                                 if (!URI_FUNC(AppendSegment)(dest, URI_FUNC(ConstParent),
-                                                             URI_FUNC(ConstParent) + 2,
-                                                             memory)) {
+                                            URI_FUNC(ConstParent) + 2, memory)) {
                                     return URI_ERROR_MALLOC;
                                 }
                                 /* clang-format off */
@@ -320,9 +317,9 @@ static int URI_FUNC(RemoveBaseUriImpl)(URI_TYPE(Uri) * dest,
                                         /* clang-format off */
     /* [34/50]                   T.path += "./"; */
                                         /* clang-format on */
-                                        if (!URI_FUNC(AppendSegment)(
-                                                dest, URI_FUNC(ConstPwd),
-                                                URI_FUNC(ConstPwd) + 1, memory)) {
+                                        if (!URI_FUNC(AppendSegment)(dest,
+                                                    URI_FUNC(ConstPwd),
+                                                    URI_FUNC(ConstPwd) + 1, memory)) {
                                             return URI_ERROR_MALLOC;
                                         }
                                         /* clang-format off */
@@ -333,9 +330,9 @@ static int URI_FUNC(RemoveBaseUriImpl)(URI_TYPE(Uri) * dest,
                                         /* clang-format off */
     /* [36/50]                   T.path += "/."; */
                                         /* clang-format on */
-                                        if (!URI_FUNC(AppendSegment)(
-                                                dest, URI_FUNC(ConstPwd),
-                                                URI_FUNC(ConstPwd) + 1, memory)) {
+                                        if (!URI_FUNC(AppendSegment)(dest,
+                                                    URI_FUNC(ConstPwd),
+                                                    URI_FUNC(ConstPwd) + 1, memory)) {
                                             return URI_ERROR_MALLOC;
                                         }
                                         /* clang-format off */
@@ -350,8 +347,7 @@ static int URI_FUNC(RemoveBaseUriImpl)(URI_TYPE(Uri) * dest,
     /* [39/50]             T.path += first(A.path); */
                                 /* clang-format on */
                                 if (!URI_FUNC(AppendSegment)(dest, sourceSeg->text.first,
-                                                             sourceSeg->text.afterLast,
-                                                             memory)) {
+                                            sourceSeg->text.afterLast, memory)) {
                                     return URI_ERROR_MALLOC;
                                 }
                                 /* clang-format off */
@@ -405,13 +401,13 @@ static int URI_FUNC(RemoveBaseUriImpl)(URI_TYPE(Uri) * dest,
 }
 
 int URI_FUNC(RemoveBaseUri)(URI_TYPE(Uri) * dest, const URI_TYPE(Uri) * absSource,
-                            const URI_TYPE(Uri) * absBase, UriBool domainRootMode) {
+        const URI_TYPE(Uri) * absBase, UriBool domainRootMode) {
     return URI_FUNC(RemoveBaseUriMm)(dest, absSource, absBase, domainRootMode, NULL);
 }
 
 int URI_FUNC(RemoveBaseUriMm)(URI_TYPE(Uri) * dest, const URI_TYPE(Uri) * absSource,
-                              const URI_TYPE(Uri) * absBase, UriBool domainRootMode,
-                              UriMemoryManager * memory) {
+        const URI_TYPE(Uri) * absBase, UriBool domainRootMode,
+        UriMemoryManager * memory) {
     int res;
 
     URI_CHECK_MEMORY_MANAGER(memory); /* may return */
