@@ -3,6 +3,10 @@ if(POLICY CMP0079 )
     cmake_policy(SET CMP0079 NEW)
 endif()
 
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/hplatformbox")
+    add_subdirectory(hplatformbox EXCLUDE_FROM_ALL)
+endif()
+
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/hbox")
     add_subdirectory(hbox)
 endif()
