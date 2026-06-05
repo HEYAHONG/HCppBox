@@ -30,6 +30,9 @@
 //定义平台(支持部分常用平台)
 #include "hdefaults_platform.h"
 
+//定义大小端
+#include "hdefaults_endian.h"
+
 //定义操作系统
 #include "hdefaults_os.h"
 
