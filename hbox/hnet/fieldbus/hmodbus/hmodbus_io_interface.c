@@ -164,7 +164,7 @@ modbus_io_interface_context_encapsulated_interface_transport_t modbus_io_interfa
     return ctx;
 }
 
-static bool modbus_io_interface_is_serialline_only_function_code(uint8_t function_code)
+static inline bool modbus_io_interface_is_serialline_only_function_code(uint8_t function_code)
 {
     bool ret=false;
     switch(function_code)
@@ -184,7 +184,7 @@ static bool modbus_io_interface_is_serialline_only_function_code(uint8_t functio
     return ret;
 }
 
-static uint16_t modbus_io_interface_get_Tid_and_increase(modbus_io_interface_context_base_t *ctx)
+static inline uint16_t modbus_io_interface_get_Tid_and_increase(modbus_io_interface_context_base_t *ctx)
 {
     if(ctx!=NULL)
     {
@@ -194,7 +194,7 @@ static uint16_t modbus_io_interface_get_Tid_and_increase(modbus_io_interface_con
 }
 
 
-static bool hmodbus_read_coils_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_coils_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_read_coils_t *fc_ctx=(modbus_io_interface_context_read_coils_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -249,12 +249,12 @@ static bool hmodbus_read_coils_tcp_pdu_callback(uint16_t TId,uint8_t node_addres
     return false;
 }
 
-static bool hmodbus_read_coils_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_coils_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_read_coils_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_read_discrete_inputs_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_discrete_inputs_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_read_discrete_inputs_t *fc_ctx=(modbus_io_interface_context_read_discrete_inputs_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -309,12 +309,12 @@ static bool hmodbus_read_discrete_inputs_tcp_pdu_callback(uint16_t TId,uint8_t n
     return false;
 }
 
-static bool hmodbus_read_discrete_inputs_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_discrete_inputs_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_read_discrete_inputs_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_read_holding_registers_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_holding_registers_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_read_holding_registers_t *fc_ctx=(modbus_io_interface_context_read_holding_registers_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -362,12 +362,12 @@ static bool hmodbus_read_holding_registers_tcp_pdu_callback(uint16_t TId,uint8_t
     return false;
 }
 
-static bool hmodbus_read_holding_registers_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_holding_registers_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_read_holding_registers_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_read_input_registers_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_input_registers_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_read_input_registers_t *fc_ctx=(modbus_io_interface_context_read_input_registers_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -415,12 +415,12 @@ static bool hmodbus_read_input_registers_tcp_pdu_callback(uint16_t TId,uint8_t n
     return false;
 }
 
-static bool hmodbus_read_input_registers_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_input_registers_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_read_input_registers_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_write_single_coil_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_write_single_coil_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_write_single_coil_t *fc_ctx=(modbus_io_interface_context_write_single_coil_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -468,13 +468,13 @@ static bool hmodbus_write_single_coil_tcp_pdu_callback(uint16_t TId,uint8_t node
     return false;
 }
 
-static bool hmodbus_write_single_coil_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_write_single_coil_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_write_single_coil_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
 
-static bool hmodbus_write_single_register_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_write_single_register_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_write_single_register_t *fc_ctx=(modbus_io_interface_context_write_single_register_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -515,12 +515,12 @@ static bool hmodbus_write_single_register_tcp_pdu_callback(uint16_t TId,uint8_t 
     return false;
 }
 
-static bool hmodbus_write_single_register_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_write_single_register_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_write_single_register_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_read_exception_status_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_exception_status_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_read_exception_status_t *fc_ctx=(modbus_io_interface_context_read_exception_status_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -559,12 +559,12 @@ static bool hmodbus_read_exception_status_tcp_pdu_callback(uint16_t TId,uint8_t 
     return false;
 }
 
-static bool hmodbus_read_exception_status_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_exception_status_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_read_exception_status_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_diagnostics_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_diagnostics_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_diagnostics_t *fc_ctx=(modbus_io_interface_context_diagnostics_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -604,12 +604,12 @@ static bool hmodbus_diagnostics_tcp_pdu_callback(uint16_t TId,uint8_t node_addre
     return false;
 }
 
-static bool hmodbus_diagnostics_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_diagnostics_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_diagnostics_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_get_comm_event_counter_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_get_comm_event_counter_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_get_comm_event_counter_t *fc_ctx=(modbus_io_interface_context_get_comm_event_counter_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -649,13 +649,13 @@ static bool hmodbus_get_comm_event_counter_tcp_pdu_callback(uint16_t TId,uint8_t
     return false;
 }
 
-static bool hmodbus_get_comm_event_counter_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_get_comm_event_counter_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_get_comm_event_counter_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
 
-static bool hmodbus_get_comm_event_log_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_get_comm_event_log_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_get_comm_event_log_t *fc_ctx=(modbus_io_interface_context_get_comm_event_log_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -697,12 +697,12 @@ static bool hmodbus_get_comm_event_log_tcp_pdu_callback(uint16_t TId,uint8_t nod
     return false;
 }
 
-static bool hmodbus_get_comm_event_log_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_get_comm_event_log_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_get_comm_event_log_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_write_multiple_coils_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_write_multiple_coils_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_write_multiple_coils_t *fc_ctx=(modbus_io_interface_context_write_multiple_coils_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -742,12 +742,12 @@ static bool hmodbus_write_multiple_coils_tcp_pdu_callback(uint16_t TId,uint8_t n
     return false;
 }
 
-static bool hmodbus_write_multiple_coils_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_write_multiple_coils_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_write_multiple_coils_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_write_multiple_registers_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_write_multiple_registers_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_write_multiple_registers_t *fc_ctx=(modbus_io_interface_context_write_multiple_registers_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -787,12 +787,12 @@ static bool hmodbus_write_multiple_registers_tcp_pdu_callback(uint16_t TId,uint8
     return false;
 }
 
-static bool hmodbus_write_multiple_registers_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_write_multiple_registers_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_write_multiple_registers_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_report_server_id_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_report_server_id_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_report_server_id_t *fc_ctx=(modbus_io_interface_context_report_server_id_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -831,13 +831,13 @@ static bool hmodbus_report_server_id_tcp_pdu_callback(uint16_t TId,uint8_t node_
     return false;
 }
 
-static bool hmodbus_report_server_id_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_report_server_id_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_report_server_id_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
 
-static bool hmodbus_read_file_record_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_file_record_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_read_file_record_t *fc_ctx=(modbus_io_interface_context_read_file_record_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -884,13 +884,13 @@ static bool hmodbus_read_file_record_tcp_pdu_callback(uint16_t TId,uint8_t node_
     return false;
 }
 
-static bool hmodbus_read_file_record_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_file_record_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_read_file_record_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
 
-static bool hmodbus_write_file_record_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_write_file_record_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_write_file_record_t *fc_ctx=(modbus_io_interface_context_write_file_record_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -940,12 +940,12 @@ static bool hmodbus_write_file_record_tcp_pdu_callback(uint16_t TId,uint8_t node
     return false;
 }
 
-static bool hmodbus_write_file_record_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_write_file_record_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_write_file_record_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_mask_write_register_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_mask_write_register_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_mask_write_register_t *fc_ctx=(modbus_io_interface_context_mask_write_register_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -986,13 +986,13 @@ static bool hmodbus_mask_write_register_tcp_pdu_callback(uint16_t TId,uint8_t no
     return false;
 }
 
-static bool hmodbus_mask_write_register_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_mask_write_register_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_mask_write_register_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
 
-static bool hmodbus_read_write_multiple_registers_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_write_multiple_registers_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_read_write_multiple_registers_t *fc_ctx=(modbus_io_interface_context_read_write_multiple_registers_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -1035,12 +1035,12 @@ static bool hmodbus_read_write_multiple_registers_tcp_pdu_callback(uint16_t TId,
     return false;
 }
 
-static bool hmodbus_read_write_multiple_registers_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_write_multiple_registers_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_read_write_multiple_registers_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_read_fifo_queue_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_fifo_queue_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_read_fifo_queue_t *fc_ctx=(modbus_io_interface_context_read_fifo_queue_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -1081,12 +1081,12 @@ static bool hmodbus_read_fifo_queue_tcp_pdu_callback(uint16_t TId,uint8_t node_a
     return false;
 }
 
-static bool hmodbus_read_fifo_queue_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_read_fifo_queue_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_read_fifo_queue_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool hmodbus_encapsulated_interface_transport_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_encapsulated_interface_transport_tcp_pdu_callback(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_io_interface_context_encapsulated_interface_transport_t *fc_ctx=(modbus_io_interface_context_encapsulated_interface_transport_t*)usr;
     if(pdu!=NULL && pdu_length > 1)
@@ -1126,12 +1126,12 @@ static bool hmodbus_encapsulated_interface_transport_tcp_pdu_callback(uint16_t T
     return false;
 }
 
-static bool hmodbus_encapsulated_interface_transport_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool hmodbus_encapsulated_interface_transport_rtu_pdu_callback(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     return hmodbus_encapsulated_interface_transport_tcp_pdu_callback(0,node_address,pdu,pdu_length,usr);
 }
 
-static bool modbus_io_interface_request_rtu(modbus_io_interface_t *io,uint8_t function_code,void *context,size_t context_length)
+static inline bool modbus_io_interface_request_rtu(modbus_io_interface_t *io,uint8_t function_code,void *context,size_t context_length)
 {
     modbus_io_interface_context_base_t *ctx=(modbus_io_interface_context_base_t *)context;
     modbus_io_interface_get_Tid_and_increase(ctx);
@@ -1685,7 +1685,7 @@ static bool modbus_io_interface_request_rtu(modbus_io_interface_t *io,uint8_t fu
     return false;
 }
 
-static bool modbus_io_interface_request_tcp(modbus_io_interface_t *io,uint8_t function_code,void *context,size_t context_length,bool is_gateway)
+static inline bool modbus_io_interface_request_tcp(modbus_io_interface_t *io,uint8_t function_code,void *context,size_t context_length,bool is_gateway)
 {
     if(!is_gateway)
     {

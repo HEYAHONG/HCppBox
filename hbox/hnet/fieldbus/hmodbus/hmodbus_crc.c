@@ -8,7 +8,7 @@
  **************************************************************/
 #include "hmodbus.h"
 
-static uint16_t hmodbus_crc16(const uint8_t *arr_buff,size_t len)
+static inline uint16_t hmodbus_crc16(const uint8_t *arr_buff,size_t len)
 {
     uint16_t crc=0xFFFF;
     size_t  i, j;

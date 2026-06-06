@@ -8,7 +8,7 @@
  **************************************************************/
 #include "hmodbus.h"
 
-static bool modbus_tcp_gateway_server_tcp_reply(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool modbus_tcp_gateway_server_tcp_reply(uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_tcp_gateway_server_context_t *ctx=(modbus_tcp_gateway_server_context_t *)usr;
     if(ctx->reply!=NULL)
@@ -34,7 +34,7 @@ static bool modbus_tcp_gateway_server_tcp_reply(uint8_t node_address,const uint8
 }
 
 
-static bool modbus_tcp_gateway_server_rtu_reply(modbus_tcp_gateway_server_context_t* ctx,const uint8_t *adu,size_t adu_length)
+static inline bool modbus_tcp_gateway_server_rtu_reply(modbus_tcp_gateway_server_context_t* ctx,const uint8_t *adu,size_t adu_length)
 {
     if(ctx==NULL || adu == NULL || adu_length == 0 || ctx->reply == NULL)
     {
@@ -43,7 +43,7 @@ static bool modbus_tcp_gateway_server_rtu_reply(modbus_tcp_gateway_server_contex
     return modbus_rtu_get_pdu_from_adu(adu,adu_length,modbus_tcp_gateway_server_tcp_reply,ctx);
 }
 
-static bool modbus_tcp_gateway_server_pdu_process(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
+static inline bool modbus_tcp_gateway_server_pdu_process(uint16_t TId,uint8_t node_address,const uint8_t *pdu,size_t pdu_length,void *usr)
 {
     modbus_tcp_gateway_server_context_t *ctx=(modbus_tcp_gateway_server_context_t *)usr;
     ctx->TId=TId;
@@ -137,7 +137,7 @@ modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_t modbus_tcp_gateway_serv
     return ctx;
 }
 
-static void   modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request_reply(modbus_rtu_slave_tiny_context_t* ctx,const uint8_t *adu,size_t adu_length)
+static inline void   modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request_reply(modbus_rtu_slave_tiny_context_t* ctx,const uint8_t *adu,size_t adu_length)
 {
     if(ctx!=NULL)
     {
@@ -156,7 +156,7 @@ static void   modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request
     }
 }
 
-static bool modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request(modbus_tcp_gateway_server_context_t *_ctx,const uint8_t *adu,size_t adu_length,bool (*rtu_reply)(modbus_tcp_gateway_server_context_t* ctx,const uint8_t *adu,size_t adu_length))
+static inline bool modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request(modbus_tcp_gateway_server_context_t *_ctx,const uint8_t *adu,size_t adu_length,bool (*rtu_reply)(modbus_tcp_gateway_server_context_t* ctx,const uint8_t *adu,size_t adu_length))
 {
     if(_ctx!=NULL)
     {
@@ -170,7 +170,7 @@ static bool modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_rtu_request(m
     return false;
 }
 
-static void  modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_reply(modbus_tcp_gateway_server_context_t* _ctx,const uint8_t *adu,size_t adu_length)
+static inline void  modbus_tcp_gateway_server_context_with_modbus_rtu_tiny_reply(modbus_tcp_gateway_server_context_t* _ctx,const uint8_t *adu,size_t adu_length)
 {
     if(_ctx!=NULL)
     {
