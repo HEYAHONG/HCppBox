@@ -50,7 +50,7 @@ void hs_mcs_51_core_set_1t(hs_mcs_51_core_t *core,bool one_cycle)
     }
 }
 
-static void hs_mcs_51_core_pc_push(hs_mcs_51_core_t * core)
+static inline void hs_mcs_51_core_pc_push(hs_mcs_51_core_t * core)
 {
     if(core!=NULL && core->io!=NULL)
     {
@@ -89,7 +89,7 @@ static void hs_mcs_51_core_pc_push(hs_mcs_51_core_t * core)
     }
 }
 
-static void hs_mcs_51_core_pc_pop(hs_mcs_51_core_t * core)
+static inline void hs_mcs_51_core_pc_pop(hs_mcs_51_core_t * core)
 {
     if(core!=NULL && core->io!=NULL)
     {
@@ -123,10 +123,17 @@ static void hs_mcs_51_core_pc_pop(hs_mcs_51_core_t * core)
     }
 }
 
-static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
+static inline void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
 {
     if(core != NULL)
     {
+        if(!hs_mcs_51_bit_read(core,HS_MCS_51_BIT_ADDRESS_EA))
+        {
+            /*
+             * 中断未使能，退出中断扫描
+             */
+            return;
+        }
         if(core->interrupt_nested < 2)
         {
             if(core->interrupt_high_priority_scan_table!=0)
@@ -197,21 +204,21 @@ static void hs_mcs_51_core_scan_interrupt(hs_mcs_51_core_t * core)
     }
 }
 
-static size_t hs_mcs_51_core_instruction_length(uint8_t instruction)
+static inline size_t hs_mcs_51_core_instruction_length(uint8_t instruction)
 {
     return hs_mcs_51_disassembly_instruction_length(&instruction);
 }
 
-static uint8_t hs_mcs_51_sfr_acc_read(hs_mcs_51_core_t * core)
+static inline uint8_t hs_mcs_51_sfr_acc_read(hs_mcs_51_core_t * core)
 {
     uint8_t ret=0;
     hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_ACC,&ret);
     return ret;
 }
 
-static uint8_t hs_mcs_51_sfr_psw_read(hs_mcs_51_core_t * core);
-static void hs_mcs_51_sfr_psw_write(hs_mcs_51_core_t * core,uint8_t psw);
-static void hs_mcs_51_sfr_acc_write(hs_mcs_51_core_t * core,uint8_t acc)
+static inline uint8_t hs_mcs_51_sfr_psw_read(hs_mcs_51_core_t * core);
+static inline void hs_mcs_51_sfr_psw_write(hs_mcs_51_core_t * core,uint8_t psw);
+static inline void hs_mcs_51_sfr_acc_write(hs_mcs_51_core_t * core,uint8_t acc)
 {
     hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_ACC,acc);
     {
@@ -237,32 +244,32 @@ static void hs_mcs_51_sfr_acc_write(hs_mcs_51_core_t * core,uint8_t acc)
     }
 }
 
-static uint8_t hs_mcs_51_sfr_b_read(hs_mcs_51_core_t * core)
+static inline uint8_t hs_mcs_51_sfr_b_read(hs_mcs_51_core_t * core)
 {
     uint8_t ret=0;
     hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_B,&ret);
     return ret;
 }
 
-static void hs_mcs_51_sfr_b_write(hs_mcs_51_core_t * core,uint8_t b)
+static inline void hs_mcs_51_sfr_b_write(hs_mcs_51_core_t * core,uint8_t b)
 {
     hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_B,b);
 }
 
 
-static uint8_t hs_mcs_51_sfr_psw_read(hs_mcs_51_core_t * core)
+static inline uint8_t hs_mcs_51_sfr_psw_read(hs_mcs_51_core_t * core)
 {
     uint8_t ret=0;
     hs_mcs_51_sfr_read(core,HS_MCS_51_SFR_PSW,&ret);
     return ret;
 }
 
-static void hs_mcs_51_sfr_psw_write(hs_mcs_51_core_t * core,uint8_t psw)
+static inline void hs_mcs_51_sfr_psw_write(hs_mcs_51_core_t * core,uint8_t psw)
 {
     hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_PSW,psw);
 }
 
-static bool hs_mcs_51_sfr_bit_read(hs_mcs_51_core_t * core,uint8_t bit_address)
+static inline bool hs_mcs_51_sfr_bit_read(hs_mcs_51_core_t * core,uint8_t bit_address)
 {
     if(core==NULL || core->io==NULL)
     {
@@ -295,7 +302,7 @@ static bool hs_mcs_51_sfr_bit_read(hs_mcs_51_core_t * core,uint8_t bit_address)
     return false;
 }
 
-static void hs_mcs_51_sfr_bit_write(hs_mcs_51_core_t * core,uint8_t bit_address,bool bit_value)
+static inline void hs_mcs_51_sfr_bit_write(hs_mcs_51_core_t * core,uint8_t bit_address,bool bit_value)
 {
     if(core==NULL || core->io==NULL)
     {
@@ -331,7 +338,7 @@ static void hs_mcs_51_sfr_bit_write(hs_mcs_51_core_t * core,uint8_t bit_address,
     }
 }
 
-static uint16_t hs_mcs_51_sfr_dptr_read(hs_mcs_51_core_t * core)
+static inline uint16_t hs_mcs_51_sfr_dptr_read(hs_mcs_51_core_t * core)
 {
     uint16_t ret=0;
     uint8_t val=0;
@@ -342,13 +349,13 @@ static uint16_t hs_mcs_51_sfr_dptr_read(hs_mcs_51_core_t * core)
     return ret;
 }
 
-static void hs_mcs_51_sfr_dptr_write(hs_mcs_51_core_t * core,uint16_t dptr)
+static inline void hs_mcs_51_sfr_dptr_write(hs_mcs_51_core_t * core,uint16_t dptr)
 {
     hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_DPH,(dptr>>8)&0xFF);
     hs_mcs_51_sfr_write(core,HS_MCS_51_SFR_DPL,dptr&0xFF);
 }
 
-static void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
+static inline void hs_mcs_51_core_exec(hs_mcs_51_core_t * core)
 {
     if(core!=NULL && core->io!=NULL)
     {
