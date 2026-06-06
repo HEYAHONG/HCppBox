@@ -100,6 +100,7 @@ extern "C"
  * 非标扩展
  */
 #include "wrapper/nonstandard/stdatomic/hatomic_int.h"
+#include "wrapper/nonstandard/endian/hendian.h"
 
 #ifdef __cplusplus
 }

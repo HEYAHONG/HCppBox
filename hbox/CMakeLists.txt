@@ -91,6 +91,12 @@ if(HAVE_STDATOMIC_H)
     target_compile_definitions(HBox PUBLIC  HAVE_STDATOMIC_H=1)
 endif()
 
+#查找endian.h
+check_include_file(endian.h HAVE_ENDIAN_H)
+if(HAVE_ENDIAN_H)
+    target_compile_definitions(HBox PUBLIC  HAVE_ENDIAN_H=1)
+endif()
+
 include(CheckSourceCompiles)
 
 #thread_local

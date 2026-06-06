@@ -115,6 +115,7 @@
  * 非标扩展
  */
 #include "wrapper/nonstandard/stdatomic/hatomic_int.c"
+#include "wrapper/nonstandard/endian/hendian.c"
 
 void hdefaults_libc_port_init(void)
 {
