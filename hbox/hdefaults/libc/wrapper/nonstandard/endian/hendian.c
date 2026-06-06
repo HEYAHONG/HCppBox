@@ -29,7 +29,7 @@ static inline void  hlibc_endian_bswap(uint8_t *bytes,size_t len)
 static inline uint16_t hlibc_endian_bswap16(uint16_t data)
 {
     uint16_t ret=data;
-#if defined(__clang__) || defined(__GNUC__)
+#if defined(__clang__) || (defined(__GNUC__) && !defined(__CC_ARM))
     ret=__builtin_bswap16(ret);
 #elif defined(HDEFAULTS_LIBC_MSVC)
     ret = _byteswap_ushort(ret);
@@ -84,7 +84,7 @@ uint16_t hle16toh(uint16_t little_endian_16bits)
 static inline uint32_t hlibc_endian_bswap32(uint32_t data)
 {
     uint32_t ret=data;
-#if defined(__clang__) || defined(__GNUC__)
+#if defined(__clang__) || (defined(__GNUC__) && !defined(__CC_ARM))
     ret=__builtin_bswap32(ret);
 #elif defined(HDEFAULTS_LIBC_MSVC)
     ret = _byteswap_ulong(ret);
@@ -138,7 +138,7 @@ uint32_t hle32toh(uint32_t little_endian_32bits)
 static inline uint64_t hlibc_endian_bswap64(uint64_t data)
 {
     uint64_t ret=data;
-#if defined(__clang__) || defined(__GNUC__)
+#if defined(__clang__) || (defined(__GNUC__) && !defined(__CC_ARM))
     ret=__builtin_bswap64(ret);
 #elif defined(HDEFAULTS_LIBC_MSVC)
     ret = _byteswap_uint64(ret);

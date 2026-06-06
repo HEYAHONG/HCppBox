@@ -72,6 +72,24 @@
 
 #endif
 
+/*
+ * armcc判断大小端
+ */
+#if defined(__BIG_ENDIAN)
+
+#if !defined(HDEFAULTS_ENDIAN_ORDER)
+#define HDEFAULTS_ENDIAN_ORDER HDEFAULTS_ENDIAN_ORDER_BIG
+#endif
+
+#endif
+#if defined(__CC_ARM)
+
+#if !defined(HDEFAULTS_ENDIAN_ORDER)
+#define HDEFAULTS_ENDIAN_ORDER HDEFAULTS_ENDIAN_ORDER_LITTLE
+#endif
+
+#endif
+
 #if !defined(HDEFAULTS_ENDIAN_ORDER)
 /*
  * 默认为小端序
