@@ -263,6 +263,27 @@ static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
 //h3rdparty/h3rdparty_uriparser_UriSetUserInfo.c
 //h3rdparty/h3rdparty_uriparser_UriShorten.c
 //h3rdparty/h3rdparty_uriparser_UriVersion.c
+//h3rdparty/h3rdparty_Z80_port.c
+    {hdefaults_str(hz80cpu_size),(uintptr_t)&hz80cpu_size},
+    {hdefaults_str(hz80cpu_init),(uintptr_t)&hz80cpu_init},
+    {hdefaults_str(hz80cpu_callback_enable_get),(uintptr_t)&hz80cpu_callback_enable_get},
+    {hdefaults_str(hz80cpu_callback_enable_set),(uintptr_t)&hz80cpu_callback_enable_set},
+    {hdefaults_str(hz80cpu_callback_register),(uintptr_t)&hz80cpu_callback_register},
+    {hdefaults_str(hz80cpu_callback_deregister),(uintptr_t)&hz80cpu_callback_deregister},
+    {hdefaults_str(hz80cpu_op_power),(uintptr_t)&hz80cpu_op_power},
+    {hdefaults_str(hz80cpu_op_instant_reset),(uintptr_t)&hz80cpu_op_instant_reset},
+    {hdefaults_str(hz80cpu_op_special_reset),(uintptr_t)&hz80cpu_op_special_reset},
+    {hdefaults_str(hz80cpu_op_int),(uintptr_t)&hz80cpu_op_int},
+    {hdefaults_str(hz80cpu_op_nmi),(uintptr_t)&hz80cpu_op_nmi},
+    {hdefaults_str(hz80cpu_op_execute),(uintptr_t)&hz80cpu_op_execute},
+    {hdefaults_str(hz80cpu_op_run),(uintptr_t)&hz80cpu_op_run},
+    {hdefaults_str(hz80cpu_op_break),(uintptr_t)&hz80cpu_op_break},
+    {hdefaults_str(hz80cpu_op_r),(uintptr_t)&hz80cpu_op_r},
+    {hdefaults_str(hz80cpu_op_refresh_address),(uintptr_t)&hz80cpu_op_refresh_address},
+    {hdefaults_str(hz80cpu_op_in_cycle),(uintptr_t)&hz80cpu_op_in_cycle},
+    {hdefaults_str(hz80cpu_op_out_cycle),(uintptr_t)&hz80cpu_op_out_cycle},
+    {hdefaults_str(hz80cpu_op_wait),(uintptr_t)&hz80cpu_op_wait},
+//h3rdparty/h3rdparty_Z80_Z80.c
 //h3rdparty/h3rdparty_zlib_adler32.c
 //h3rdparty/h3rdparty_zlib_compress.c
 //h3rdparty/h3rdparty_zlib_crc32.c
