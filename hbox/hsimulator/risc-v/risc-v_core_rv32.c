@@ -1160,7 +1160,7 @@ static inline  void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
     if(core->exception_pending !=0 || core->interrupt_pending!=0)
     {
         uint32_t mstatus=hs_risc_v_core_rv32_csr_read(core,CSR_MSTATUS);
-        bool mie=((mstatus&0x8)!=0);
+        bool mie=((mstatus&MSTATUS_MIE)!=0);
         bool skip_exception=false;
         if(core->exception_pending!=0)
         {
