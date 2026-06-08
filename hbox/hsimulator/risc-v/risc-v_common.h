@@ -132,13 +132,13 @@ typedef union
  */
 #define HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(Data)             \
 {                                                               \
-       switch(sizeof(Data))                                     \
-       {                                                        \
-       case 2:{Data.value=hle16toh(Data.value);};break;         \
-       case 4:{Data.value=hle32toh(Data.value);};break;         \
-       case 8:{Data.value=hle64toh(Data.value);};break;         \
-       default:{};break;                                        \
-       }                                                        \
+    switch(sizeof(Data))                                        \
+    {                                                           \
+    case 2:{Data.value=hle16toh(Data.value);};break;            \
+    case 4:{Data.value=hle32toh(Data.value);};break;            \
+    case 8:{Data.value=hle64toh(Data.value);};break;            \
+    default:{};break;                                           \
+    }                                                           \
 }
 #endif // HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX
 
