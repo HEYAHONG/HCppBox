@@ -343,6 +343,7 @@ static inline  void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
     uint32_t next_pc=pc+hs_risc_v_common_instruction_length(instruction);
     hs_risc_v_core_rv32_pc_write(core,next_pc);
     uint32_t load_or_store_addr=0;
+    bool     is_instruction_xret=false;         /**<指令是否是XRET，当其为XRET时跳过本次指令结束的异常处理*/
 
     //指令是否正确处理，当指令被正确处理时，需要将此标志置位true
     bool is_instruction_processed=false;
@@ -692,6 +693,7 @@ static inline  void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(mret,
             {
                 hs_risc_v_core_rv32_exec_exception_mret(core);
+                is_instruction_xret=true;
                 hs_risc_v_core_rv32_exec_io(core,(uint32_t)HS_RISC_V_CORE_RV32_IO_INSTRUCTION_MRET_EXEC,pc,(uint8_t*)&instruction,sizeof(instruction));
             });
             HS_RISC_V_CORE_RV32_EXEC_INSN_MATCH(wfi,
@@ -1157,7 +1159,7 @@ static inline  void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
     /*
      * 异常处理
      */
-    if(core->exception_pending !=0 || core->interrupt_pending!=0)
+    if((core->exception_pending !=0 || core->interrupt_pending!=0) && (!is_instruction_xret))
     {
         uint32_t mstatus=hs_risc_v_core_rv32_csr_read(core,CSR_MSTATUS);
         bool mie=((mstatus&MSTATUS_MIE)!=0);
