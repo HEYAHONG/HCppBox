@@ -65,6 +65,8 @@ typedef enum
     HS_RISC_V_CORE_RV32_IO_INSTRUCTION_PAUSE_EXEC,                      /**< pause指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
     HS_RISC_V_CORE_RV32_IO_INSTRUCTION_ECALL_EXEC,                      /**< ecall指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
     HS_RISC_V_CORE_RV32_IO_INSTRUCTION_EBREAK_EXEC,                     /**< ebreak指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_MRET_EXEC,                       /**< mret指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_WFI_EXEC,                        /**< wfi指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
 } hs_risc_v_core_rv32_io_opt_t;                                         /**< RISC-V RV32 IO选项。IO选项通常占32位中的低24位 */
 
 typedef enum
@@ -155,6 +157,30 @@ uint32_t hs_risc_v_core_rv32_sets_disable_set(hs_risc_v_core_rv32_t *core,hs_ris
  *
  */
 bool hs_risc_v_core_rv32_exception_raise(hs_risc_v_core_rv32_t *core,int cause,bool interrupt);
+
+/** \brief RISC-V RV32 异常清除
+ *
+ * \param core hs_risc_v_core_rv32_t* RISC-V内核指针
+ * \param interrupt bool 是否为中断。RISC-V将狭义的异常与中断统称为异常。当此值为false时表示狭义的异常，否则表示中断
+ * \return bool  是否清除成功
+ *
+ */
+bool hs_risc_v_core_rv32_exception_clear(hs_risc_v_core_rv32_t *core,bool interrupt);
+
+/** \brief RISC-V RV32 是否处于WFI状态
+ *
+ * \param core hs_risc_v_core_rv32_t* RISC-V内核指针
+ * \return bool 是否处于WFI功能
+ *
+ */
+bool hs_risc_v_core_rv32_wfi(hs_risc_v_core_rv32_t *core);
+
+/** \brief RISC-V RV32清除WFI状态
+ *
+ * \param core hs_risc_v_core_rv32_t* RISC-V内核指针
+ *
+ */
+void hs_risc_v_core_rv32_wfi_clear(hs_risc_v_core_rv32_t *core);
 
 #ifdef __cplusplus
 }
