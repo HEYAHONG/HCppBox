@@ -169,7 +169,10 @@ static inline  uint32_t hs_risc_v_core_rv32_csr_read_default_value(hs_risc_v_cor
     break;
     case CSR_MSTATUS:
     {
-
+        /*
+         * 默认特权模式为3
+         */
+        reg_value=MSTATUS_MPP;
     }
     break;
     case CSR_MSTATUSH:
@@ -281,10 +284,9 @@ static inline void hs_risc_v_core_rv32_exec_exception_mret(hs_risc_v_core_rv32_t
     hs_risc_v_core_rv32_pc_write(core,mepc);
     uint32_t mstatus=hs_risc_v_core_rv32_csr_read(core,CSR_MSTATUS);
     /*
-     * 移动MPIE到MIE
+     * 复制MPIE到MIE
      */
-    mstatus |= ((mstatus&0x80)>>4);
-    mstatus &= (~(0x80));
+    mstatus |= ((mstatus&MSTATUS_MPIE)!=0?MSTATUS_MIE:0);
     /*
      * TODO:还原MPP
      */
@@ -1195,15 +1197,15 @@ static inline  void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
             /*
              * 将mie移动至mpie
              */
-            mstatus |= ((mstatus&0x08)<<4);
+            mstatus |= ((mstatus&MSTATUS_MIE)!=0?MSTATUS_MPIE:0);
             /*
              * 清理mie
              */
-            mstatus &=(~(0x08ULL));
+            mstatus &=(~(MSTATUS_MIE));
             /*
              * MPP设置为3
              */
-            mstatus |= ((0x03)<<11);
+            mstatus |= (MSTATUS_MPP);
             hs_risc_v_core_rv32_csr_write(core,CSR_MSTATUS,mstatus);
             uint32_t mtvec=hs_risc_v_core_rv32_csr_read(core,CSR_MTVEC);
             uint32_t mcause=hs_risc_v_core_rv32_csr_read(core,CSR_MCAUSE);
