@@ -128,20 +128,17 @@ typedef union
 /*
  *  对半字、字、双字的大小端进行修复。在读取字节数据与写入字节数据时进行调用。第一次调用后，确保value成员可用，第二次调用时又回复原有字节序，即bytes成员可用。
  *  参数Data为变量名称。
+ *  理论上lexxtoh与htolexx操作一致，故而只需要使用lexxtoh
  */
 #define HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX(Data)             \
 {                                                               \
-    hs_risc_v_common_memory_halfword_t m_hs_byteorder;          \
-    m_hs_byteorder.value=0x01;                                  \
-    if(m_hs_byteorder.bytes[0]==0 && (sizeof(Data) > 1))        \
-    {                                                           \
-        for(size_t i=0;i<sizeof(Data)/2;i++)                    \
-        {                                                       \
-            uint8_t temp=(Data).bytes[i];                       \
-            (Data).bytes[i]=(Data).bytes[sizeof(Data)-1-i];     \
-            (Data).bytes[sizeof(Data)-1-i]=temp;                \
-        }                                                       \
-    };                                                          \
+       switch(sizeof(Data))                                     \
+       {                                                        \
+       case 2:{Data.value=hle16toh(Data.value);};break;         \
+       case 4:{Data.value=hle32toh(Data.value);};break;         \
+       case 8:{Data.value=hle64toh(Data.value);};break;         \
+       default:{};break;                                        \
+       }                                                        \
 }
 #endif // HS_RISC_V_COMMOM_MEMORY_BYTEORDER_FIX
 

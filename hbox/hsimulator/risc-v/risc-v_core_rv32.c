@@ -13,6 +13,7 @@
 #include "h3rdparty.h"
 #include H3RDPARTY_SOFTFP_HEADER
 #include H3RDPARTY_SOFTFLOAT_HEADER
+#include "hdefaults.h"
 
 struct hs_risc_v_core_rv32
 {
