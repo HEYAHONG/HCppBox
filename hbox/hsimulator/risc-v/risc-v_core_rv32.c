@@ -19,12 +19,17 @@ struct hs_risc_v_core_rv32
 {
     hs_risc_v_core_rv32_io_t    io;
     void*                       usr;
-    uint32_t                    instruction_sets; /**< 支持的扩展指令集 */
-    uint32_t                    exception_pending; /**< 等待执行的异常（狭义的异常） */
-    uint32_t                    interrupt_pending; /**< 等待执行的中断 */
+    uint32_t                    instruction_sets;       /**< 支持的扩展指令集 */
+    uint32_t                    exception_pending;      /**< 等待执行的异常（狭义的异常） */
+    uint32_t                    interrupt_pending;      /**< 等待执行的中断 */
     struct
     {
-        uint32_t                wfi_enable:1;      /**< 当前已启用WFI */
+        uint64_t                mtime;                  /**< 全局计数寄存器 */
+        uint64_t                mtimecmp;               /**< 全局比较寄存器 */
+    }                           clint;
+    struct
+    {
+        uint32_t                wfi_enable:1;           /**< 当前已启用WFI */
     }                           flags;
 };
 
@@ -306,8 +311,24 @@ static inline void hs_risc_v_core_rv32_exec_clint(hs_risc_v_core_rv32_t *core)
     }
 
     /*
-     * 此处只实现了clint的部分功能，用户需要手动实现定时器与软件中断，最终向mip写入相应的位
+     * 此处只实现了clint的部分功能，用户需要手动实现软件中断，最终向mip写入相应的位
      */
+
+    {
+        /*
+         * 处理定时器中断
+         */
+        uint32_t mip=hs_risc_v_core_rv32_csr_read(core,CSR_MIP);
+        if(core->clint.mtimecmp > core->clint.mtime)
+        {
+            mip &= (~MIP_MTIP);
+        }
+        else
+        {
+            mip |= (MIP_MTIP);
+        }
+        hs_risc_v_core_rv32_csr_write(core,CSR_MIP,mip);
+    }
 
     uint32_t mstatus=hs_risc_v_core_rv32_csr_read(core,CSR_MSTATUS);
 
@@ -1481,4 +1502,23 @@ void hs_risc_v_core_rv32_wfi_clear(hs_risc_v_core_rv32_t *core)
     {
         core->flags.wfi_enable=0;
     }
+}
+
+uint64_t * hs_risc_v_core_rv32_clint_mtime(hs_risc_v_core_rv32_t *core)
+{
+    if(core!=NULL)
+    {
+        return &core->clint.mtime;
+    }
+    return NULL;
+}
+
+
+uint64_t * hs_risc_v_core_rv32_clint_mtimecmp(hs_risc_v_core_rv32_t *core)
+{
+    if(core!=NULL)
+    {
+        return &core->clint.mtimecmp;
+    }
+    return NULL;
 }

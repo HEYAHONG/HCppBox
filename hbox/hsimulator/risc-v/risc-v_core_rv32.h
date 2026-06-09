@@ -182,6 +182,22 @@ bool hs_risc_v_core_rv32_wfi(hs_risc_v_core_rv32_t *core);
  */
 void hs_risc_v_core_rv32_wfi_clear(hs_risc_v_core_rv32_t *core);
 
+/** \brief RISC-V RV32获取mtime
+ *
+ * \param core hs_risc_v_core_rv32_t* RISC-V内核指针
+ * \return uint64_t* mtime寄存器指针
+ *
+ */
+uint64_t * hs_risc_v_core_rv32_clint_mtime(hs_risc_v_core_rv32_t *core);
+
+/** \brief RISC-V RV32获取mtimecmp
+ *
+ * \param core hs_risc_v_core_rv32_t* RISC-V内核指针
+ * \return uint64_t* mtimecmp寄存器指针
+ *
+ */
+uint64_t * hs_risc_v_core_rv32_clint_mtimecmp(hs_risc_v_core_rv32_t *core);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
