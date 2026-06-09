@@ -5,7 +5,7 @@
 static LIBMONO_DATA_ATTRIBUTE int64_t libmono_runtime_libc_time_offset=0;
 #endif
 
-time_t time(time_t *timeptr)
+time_t htime(time_t *timeptr)
 {
     time_t ret=0;
 #if defined(TIME)

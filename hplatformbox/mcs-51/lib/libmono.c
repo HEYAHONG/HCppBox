@@ -35,6 +35,11 @@
 #include "runtime/libc.h"
 
 /*
+ * shell(头文件)
+ */
+#include "shell/shell.h"
+
+/*
  * 基础组件(实现文件)
  */
 #include "base/core.c"
@@ -47,6 +52,11 @@
 #include "runtime/tick.c"
 #include "runtime/mainloop.c"
 #include "runtime/libc.c"
+
+/*
+ * shell(实现文件)
+ */
+#include "shell/shell.c"
 
 /*
  * 恢复之前的选项

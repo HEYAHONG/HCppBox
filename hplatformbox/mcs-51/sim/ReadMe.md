@@ -34,4 +34,5 @@ sudo apt-get install build-essential sdcc
 - [helloworld](helloworld):helloworld程序
 - [helloworld_stdio](helloworld_stdio):helloworld程序(采用C库实现)
 - [helloworld_libmono](helloworld_libmono):helloworld程序(libmono)
+- [shell_libmono](shell_libmono):shell程序(libmono)
 - [timer0](timer0):定时器0程序

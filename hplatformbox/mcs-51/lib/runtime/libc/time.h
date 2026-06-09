@@ -8,7 +8,7 @@
  * \return time_t 当前时间
  *
  */
-time_t time(time_t *timeptr);
+time_t htime(time_t *timeptr);
 
 #if !defined(TIME) && !defined(LIBMONO_RUNTIME_LIBC_NO_TIME)
 
