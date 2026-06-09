@@ -1331,6 +1331,14 @@ void hs_risc_v_core_rv32_tick(hs_risc_v_core_rv32_t * core,size_t cycles)
         hs_risc_v_core_rv32_exec(core);
 
         core->io(core,(uint32_t)HS_RISC_V_CORE_RV32_IO_TICK_EXIT | (uint32_t)HS_RISC_V_CORE_RV32_IO_OPERATOR_HW,hs_risc_v_core_rv32_pc_read(core),(uint8_t*)&cycles,sizeof(cycles),core->usr);
+
+        if(core->flags.wfi_enable!=0)
+        {
+            /*
+             * WFI指令执行中，直接返回
+             */
+            break;
+        }
     };
 }
 
