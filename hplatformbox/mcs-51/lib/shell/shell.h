@@ -9,7 +9,7 @@
 #endif
 
 /*
- * 注意：shell默认使用hputchar输出，如需控制输出请配置hputchar移植
+ * 注意：shell默认使用putchar输出，如需控制输出请配置putchar移植
  */
 
 /** \brief shell处理
