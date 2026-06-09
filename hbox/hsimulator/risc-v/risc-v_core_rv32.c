@@ -397,12 +397,6 @@ static inline  void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         return;
     }
 
-
-    /*
-     * 处理clint
-     */
-    hs_risc_v_core_rv32_exec_clint(core);
-
     /*
      * 处理WFI指令
      */
@@ -1324,6 +1318,12 @@ void hs_risc_v_core_rv32_tick(hs_risc_v_core_rv32_t * core,size_t cycles)
     {
         return;
     }
+
+    /*
+     * 处理clint
+     */
+    hs_risc_v_core_rv32_exec_clint(core);
+
     while(cycles--)
     {
         core->io(core,(uint32_t)HS_RISC_V_CORE_RV32_IO_TICK_ENTER | (uint32_t)HS_RISC_V_CORE_RV32_IO_OPERATOR_HW,hs_risc_v_core_rv32_pc_read(core),(uint8_t*)&cycles,sizeof(cycles),core->usr);
