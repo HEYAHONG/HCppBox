@@ -292,6 +292,60 @@ static inline void hs_risc_v_core_rv32_exec_exception_mret(hs_risc_v_core_rv32_t
 
 }
 
+static inline  void hs_risc_v_core_rv32_exec_interrupt_raise(hs_risc_v_core_rv32_t *core,int cause)
+{
+    hs_risc_v_core_rv32_exception_raise(core,cause,true);
+}
+
+
+static inline void hs_risc_v_core_rv32_exec_clint(hs_risc_v_core_rv32_t *core)
+{
+    if(core==NULL)
+    {
+        return;
+    }
+
+    /*
+     * 此处只实现了clint的部分功能，用户需要手动实现定时器与软件中断，最终向mip写入相应的位
+     */
+
+    uint32_t mstatus=hs_risc_v_core_rv32_csr_read(core,CSR_MSTATUS);
+
+    if(((mstatus&MSTATUS_MIE)!=0) && (core->interrupt_pending==0))
+    {
+        uint32_t mip=hs_risc_v_core_rv32_csr_read(core,CSR_MIP);
+        uint32_t mie=hs_risc_v_core_rv32_csr_read(core,CSR_MIE);
+
+        uint32_t interrupt=(mip&mie);
+
+        /*
+         * 按照MEI、MSI、MTI的优先级顺序处理中断
+         */
+         if((interrupt & MIP_MEIP)!=0)
+         {
+             /*
+              * 外部中断
+              */
+             hs_risc_v_core_rv32_exec_interrupt_raise(core,11);
+         }
+         else if((interrupt & MIP_MSIP)!=0)
+         {
+             /*
+              * 软件中断
+              */
+             hs_risc_v_core_rv32_exec_interrupt_raise(core,3);
+         }
+         else if((interrupt & MIP_MTIP)!=0)
+         {
+             /*
+              * 定时器中断
+              */
+             hs_risc_v_core_rv32_exec_interrupt_raise(core,7);
+         }
+
+    }
+}
+
 static inline void hs_risc_v_core_rv32_cycle_inc(hs_risc_v_core_rv32_t *core)
 {
     uint32_t cycle=hs_risc_v_core_rv32_csr_read(core,CSR_CYCLE);
@@ -322,6 +376,15 @@ static inline  void hs_risc_v_core_rv32_exec(hs_risc_v_core_rv32_t * core)
         return;
     }
 
+
+    /*
+     * 处理clint
+     */
+    hs_risc_v_core_rv32_exec_clint(core);
+
+    /*
+     * 处理WFI指令
+     */
     if(core->flags.wfi_enable==1)
     {
         /*
