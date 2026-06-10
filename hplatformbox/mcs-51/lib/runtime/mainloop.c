@@ -144,7 +144,7 @@ bool libmono_runtime_mainloop_is_idle(void) LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE
 
     for(size_t i=0; LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME[i]!=NULL; i++)
     {
-        if(libmono_runtime_mainloop_task_event(LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME[i])!=0)
+        if(libmono_runtime_mainloop_task_event((struct libmono_runtime_mainloop_task_context *)LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME[i])!=0)
         {
             /*
              * 当任务有事件未处理时判定为非空闲

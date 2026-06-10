@@ -69,6 +69,7 @@ MCS-51 公共代码库。
 | `LIBMONO_RUNTIME_LIBC_STDIO_SERIAL`        | 使用串口作为标准输入输出 |                                                              |
 | `LIBMONO_RUNTIME_LIBC_NO_TIME`             | 不移植`time`             | 若用户不实现`time`将使用C库的版本                            |
 | `TIME`                                     | 用户实现的`time`         |                                                              |
+| `LIBMONO_RUNTIME_TIMEZONE_OFFSET`          | 时区偏移                 | `UTC时间-当前时区时间`，如北京时间的时区偏移为`-8*3600`      |
 | `LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME` | 任务数组名称             | 定义任务数组时类型采用`libmono_runtime_mainloop_task_context_t * const`且需要以NULL结尾。 |
 
 ### 主循环

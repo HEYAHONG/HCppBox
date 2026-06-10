@@ -104,7 +104,8 @@ static void libmono_shell_command_internal_date_entry(char *cmd) LIBMONO_FUNCTIO
 {
     (void)cmd;
     time_t time_now=htime(NULL);
-    printf("timestamp:%lu\r\n",time_now);
+    htm_t *cur=hlocaltime_r(&time_now,NULL);
+    printf("%04d-%02d-%02d %02d:%02d:%02d\r\n",cur->tm_year+1900,cur->tm_mon+1,cur->tm_mday,cur->tm_hour,cur->tm_min,cur->tm_sec);
 }
 
 void libmono_shell_process(int ch) LIBMONO_FUNCTION_ATTRIBUTE
