@@ -26,7 +26,7 @@ void ie0_isr(void) __interrupt(IE0_VECTOR)
 /*
  * 定时器0频率
  */
-#define timer0_hz  1000000
+#define timer0_hz  1000
 /*
  * 定时器0计数值,MCS-51（模拟器）速率一般不高，逻辑复杂后若定时器中断太频繁会导致丢中断，采用10ms中断比较合适
  */

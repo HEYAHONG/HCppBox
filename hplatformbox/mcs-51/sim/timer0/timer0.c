@@ -80,8 +80,8 @@ void uart_send_str(char *str)
 /*
  * Timer0 模式2 中断,需要模拟器实现定时器功能
  */
-#define timer0_cnt 100
-#define timer0_hz  1000000
+#define timer0_cnt 10
+#define timer0_hz  1000
 void timer0_init(void)
 {
     TMOD |= 0x02;

@@ -263,7 +263,7 @@ class vm:public hsimmcs51huge
     uint64_t timer_escaped_time_ns;
     void init_timer()
     {
-        hs_mcs_51_timer_clk_freq_set(timer_get(),1000000);
+        hs_mcs_51_timer_clk_freq_set(timer_get(),1000);
         hs_mcs_51_timer_timer2_enable(timer_get(),true);
     }
     void update_timer(uint64_t escaped_time_ns)
