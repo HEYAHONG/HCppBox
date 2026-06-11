@@ -33,7 +33,11 @@ static LIBMONO_CONST_DATA_ATTRIBUTE const libmono_shell_command_t libmono_shell_
     {
         libmono_shell_command_internal_date_entry,
         "date",
+#if !defined(TIME)
+        "date [year] [month] [day] [hour [minute] [second],show date or set date"
+#else
         "show date"
+#endif
     },
     LIBMONO_SHELL_COMMAND_LIST
 };
@@ -42,7 +46,23 @@ static LIBMONO_CONST_DATA_ATTRIBUTE const libmono_shell_command_t libmono_shell_
 
 static void libmono_shell_command_internal_help_entry(char *cmd) LIBMONO_FUNCTION_ATTRIBUTE
 {
-    size_t cmd_offset=4;
+    size_t cmd_offset=0;
+
+    /*
+     * 去除命令的空格
+     */
+    while(cmd[cmd_offset]==' ')
+    {
+        cmd_offset++;
+    }
+
+    /*
+     * 跳过命令名称
+     */
+    while(cmd[cmd_offset] !=' ' && cmd[cmd_offset] !='\0')
+    {
+        cmd_offset++;
+    }
 
     /*
      * 去除参数1的空格
@@ -103,8 +123,178 @@ static void libmono_shell_command_internal_help_entry(char *cmd) LIBMONO_FUNCTIO
 static void libmono_shell_command_internal_date_entry(char *cmd) LIBMONO_FUNCTION_ATTRIBUTE
 {
     (void)cmd;
-    time_t time_now=htime(NULL);
-    htm_t *cur=hlocaltime_r(&time_now,NULL);
+    htm_t *cur=NULL;
+    {
+        time_t time_now=htime(NULL);
+        cur=hlocaltime_r(&time_now,NULL);
+    }
+#if !defined(TIME)
+    {
+
+        size_t cmd_offset=0;
+        /*
+         * 去除命令的空格
+         */
+        while(cmd[cmd_offset]==' ')
+        {
+            cmd_offset++;
+        }
+
+        /*
+         * 跳过命令名称
+         */
+        while(cmd[cmd_offset] !=' ' && cmd[cmd_offset] !='\0')
+        {
+            cmd_offset++;
+        }
+
+        /*
+         * 去除年的空格
+         */
+        while(cmd[cmd_offset]==' ')
+        {
+            cmd_offset++;
+        }
+
+        {
+            int year=0;
+            while(cmd[cmd_offset]!=' ' && cmd[cmd_offset]!='\0')
+            {
+                year*=10;
+                year+=cmd[cmd_offset]-'0';
+                cmd_offset++;
+            }
+            if(year >= 1970)
+            {
+                cur->tm_year=year-1900;
+            }
+        }
+
+        /*
+         * 去除月的空格
+         */
+        while(cmd[cmd_offset]==' ')
+        {
+            cmd_offset++;
+        }
+
+        {
+            int month=0;
+            while(cmd[cmd_offset]!=' ' && cmd[cmd_offset]!='\0')
+            {
+                month*=10;
+                month+=cmd[cmd_offset]-'0';
+                cmd_offset++;
+            }
+            if(month >= 1 && month <= 12)
+            {
+                cur->tm_mon=month-1;
+            }
+        }
+
+        /*
+         * 去除日的空格
+         */
+        while(cmd[cmd_offset]==' ')
+        {
+            cmd_offset++;
+        }
+
+        {
+            int day=0;
+            while(cmd[cmd_offset]!=' ' && cmd[cmd_offset]!='\0')
+            {
+                day*=10;
+                day+=cmd[cmd_offset]-'0';
+                cmd_offset++;
+            }
+            if(day >= 1 && day <= 31)
+            {
+                cur->tm_mday=day;
+            }
+        }
+
+        /*
+         * 去除时的空格
+         */
+        while(cmd[cmd_offset]==' ')
+        {
+            cmd_offset++;
+        }
+
+        {
+            int hour=-1;
+            while(cmd[cmd_offset]!=' ' && cmd[cmd_offset]!='\0')
+            {
+                if(hour < 0)
+                {
+                    hour=0;
+                }
+                hour*=10;
+                hour+=cmd[cmd_offset]-'0';
+                cmd_offset++;
+            }
+            if(hour >= 0 && hour <= 23)
+            {
+                cur->tm_hour=hour;
+            }
+        }
+
+        /*
+         * 去除分的空格
+         */
+        while(cmd[cmd_offset]==' ')
+        {
+            cmd_offset++;
+        }
+
+        {
+            int minute=-1;
+            while(cmd[cmd_offset]!=' ' && cmd[cmd_offset]!='\0')
+            {
+                if(minute < 0)
+                {
+                    minute=0;
+                }
+                minute*=10;
+                minute+=cmd[cmd_offset]-'0';
+                cmd_offset++;
+            }
+            if(minute >= 0 && minute <= 59)
+            {
+                cur->tm_min=minute;
+            }
+        }
+
+        /*
+         * 去除秒的空格
+         */
+        while(cmd[cmd_offset]==' ')
+        {
+            cmd_offset++;
+        }
+
+        {
+            int second=-1;
+            while(cmd[cmd_offset]!=' ' && cmd[cmd_offset]!='\0')
+            {
+                if(second < 0)
+                {
+                    second=0;
+                }
+                second*=10;
+                second+=cmd[cmd_offset]-'0';
+                cmd_offset++;
+            }
+            if(second >= 0 && second <= 59)
+            {
+                cur->tm_sec=second;
+            }
+        }
+
+        libmono_runtime_libc_time_set(hmktime(cur));
+    }
+#endif
     printf("%04d-%02d-%02d %02d:%02d:%02d\r\n",cur->tm_year+1900,cur->tm_mon+1,cur->tm_mday,cur->tm_hour,cur->tm_min,cur->tm_sec);
 }
 
@@ -141,6 +331,7 @@ void libmono_shell_process(int ch) LIBMONO_FUNCTION_ATTRIBUTE
         }
         if(libmono_shell_buffer_index==LIBMONO_SHELL_BUFFER_LENGTH)
         {
+            libmono_shell_buffer[libmono_shell_buffer_index]='\0';
             start_process=true;
         }
     }
@@ -152,6 +343,7 @@ void libmono_shell_process(int ch) LIBMONO_FUNCTION_ATTRIBUTE
             {
                 putchar(ch);
             }
+            libmono_shell_buffer[libmono_shell_buffer_index]='\0';
             start_process=true;
         }
     }
