@@ -70,16 +70,60 @@ private:
                 return false;
             }
             hsimmcs51tiny &obj=*(hsimmcs51tiny *)usr;
-            //RAM操作(注意：此操作前不应当有外设操作)
-            hs_mcs_51_ram_model_tiny_bus_io(core,opt,address,data,length,usr,&obj.ram);
-            //ROM操作
-            hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
-            //处理串口外设
-            hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
-            //处理PIN
-            hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
-            //处理定时器
-            hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            switch(opt)
+            {
+            case HS_MCS_51_IO_READ_ROM:
+            {
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+            }
+            break;
+            case HS_MCS_51_IO_READ_RAM_SFR:
+            case HS_MCS_51_IO_WRITE_RAM_SFR:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_tiny_bus_io(core,opt,address,data,length,usr,&obj.ram);
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+                //处理串口外设
+                hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
+                //处理PIN
+                hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
+                //处理定时器
+                hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            }
+            break;
+            case HS_MCS_51_IO_READ_HIGH_RAM:
+            case HS_MCS_51_IO_WRITE_HIGH_RAM:
+            case HS_MCS_51_IO_READ_EXTERNAL_RAM:
+            case HS_MCS_51_IO_WRITE_EXTERNAL_RAM:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_tiny_bus_io(core,opt,address,data,length,usr,&obj.ram);
+            }
+            break;
+            case HS_MCS_51_IO_TICK_ENTER:
+            case HS_MCS_51_IO_TICK_EXIT:
+            case HS_MCS_51_IO_RESET:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_tiny_bus_io(core,opt,address,data,length,usr,&obj.ram);
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+                //处理串口外设
+                hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
+                //处理PIN
+                hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
+                //处理定时器
+                hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
             return obj.on_io(core,opt,address,data,length,usr);
         }
         ,this);
@@ -243,16 +287,62 @@ private:
                 return false;
             }
             hsimmcs51small &obj=*(hsimmcs51small *)usr;
-            //RAM操作(注意：此操作前不应当有外设操作)
-            hs_mcs_51_ram_model_small_bus_io(core,opt,address,data,length,usr,&obj.ram);
-            //ROM操作
-            hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
-            //处理串口外设
-            hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
-            //处理PIN
-            hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
-            //处理定时器
-            hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            switch(opt)
+            {
+            case HS_MCS_51_IO_READ_ROM:
+            {
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+            }
+            break;
+            case HS_MCS_51_IO_READ_RAM_SFR:
+            case HS_MCS_51_IO_WRITE_RAM_SFR:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_small_bus_io(core,opt,address,data,length,usr,&obj.ram);
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+                //处理串口外设
+                hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
+                //处理PIN
+                hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
+                //处理定时器
+                hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            }
+            break;
+            case HS_MCS_51_IO_READ_HIGH_RAM:
+            case HS_MCS_51_IO_WRITE_HIGH_RAM:
+            case HS_MCS_51_IO_READ_EXTERNAL_RAM:
+            case HS_MCS_51_IO_WRITE_EXTERNAL_RAM:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_small_bus_io(core,opt,address,data,length,usr,&obj.ram);
+            }
+            break;
+            case HS_MCS_51_IO_TICK_ENTER:
+            case HS_MCS_51_IO_TICK_EXIT:
+            case HS_MCS_51_IO_RESET:
+            case HS_MCS_51_IO_INTERRUPT_ENTER:
+            case HS_MCS_51_IO_INTERRUPT_EXIT:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_small_bus_io(core,opt,address,data,length,usr,&obj.ram);
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+                //处理串口外设
+                hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
+                //处理PIN
+                hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
+                //处理定时器
+                hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
             return obj.on_io(core,opt,address,data,length,usr);
         }
         ,this);
@@ -417,16 +507,62 @@ private:
                 return false;
             }
             hsimmcs51medium &obj=*(hsimmcs51medium *)usr;
-            //RAM操作(注意：此操作前不应当有外设操作)
-            hs_mcs_51_ram_model_medium_bus_io(core,opt,address,data,length,usr,&obj.ram);
-            //ROM操作
-            hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
-            //处理串口外设
-            hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
-            //处理PIN
-            hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
-            //处理定时器
-            hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            switch(opt)
+            {
+            case HS_MCS_51_IO_READ_ROM:
+            {
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+            }
+            break;
+            case HS_MCS_51_IO_READ_RAM_SFR:
+            case HS_MCS_51_IO_WRITE_RAM_SFR:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_medium_bus_io(core,opt,address,data,length,usr,&obj.ram);
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+                //处理串口外设
+                hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
+                //处理PIN
+                hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
+                //处理定时器
+                hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            }
+            break;
+            case HS_MCS_51_IO_READ_HIGH_RAM:
+            case HS_MCS_51_IO_WRITE_HIGH_RAM:
+            case HS_MCS_51_IO_READ_EXTERNAL_RAM:
+            case HS_MCS_51_IO_WRITE_EXTERNAL_RAM:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_medium_bus_io(core,opt,address,data,length,usr,&obj.ram);
+            }
+            break;
+            case HS_MCS_51_IO_TICK_ENTER:
+            case HS_MCS_51_IO_TICK_EXIT:
+            case HS_MCS_51_IO_RESET:
+            case HS_MCS_51_IO_INTERRUPT_ENTER:
+            case HS_MCS_51_IO_INTERRUPT_EXIT:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_medium_bus_io(core,opt,address,data,length,usr,&obj.ram);
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+                //处理串口外设
+                hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
+                //处理PIN
+                hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
+                //处理定时器
+                hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
             return obj.on_io(core,opt,address,data,length,usr);
         }
         ,this);
@@ -592,16 +728,62 @@ private:
                 return false;
             }
             hsimmcs51large &obj=*(hsimmcs51large *)usr;
-            //RAM操作(注意：此操作前不应当有外设操作)
-            hs_mcs_51_ram_model_large_bus_io(core,opt,address,data,length,usr,&obj.ram);
-            //ROM操作
-            hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
-            //处理串口外设
-            hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
-            //处理PIN
-            hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
-            //处理定时器
-            hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            switch(opt)
+            {
+            case HS_MCS_51_IO_READ_ROM:
+            {
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+            }
+            break;
+            case HS_MCS_51_IO_READ_RAM_SFR:
+            case HS_MCS_51_IO_WRITE_RAM_SFR:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_large_bus_io(core,opt,address,data,length,usr,&obj.ram);
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+                //处理串口外设
+                hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
+                //处理PIN
+                hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
+                //处理定时器
+                hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            }
+            break;
+            case HS_MCS_51_IO_READ_HIGH_RAM:
+            case HS_MCS_51_IO_WRITE_HIGH_RAM:
+            case HS_MCS_51_IO_READ_EXTERNAL_RAM:
+            case HS_MCS_51_IO_WRITE_EXTERNAL_RAM:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_large_bus_io(core,opt,address,data,length,usr,&obj.ram);
+            }
+            break;
+            case HS_MCS_51_IO_TICK_ENTER:
+            case HS_MCS_51_IO_TICK_EXIT:
+            case HS_MCS_51_IO_RESET:
+            case HS_MCS_51_IO_INTERRUPT_ENTER:
+            case HS_MCS_51_IO_INTERRUPT_EXIT:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_large_bus_io(core,opt,address,data,length,usr,&obj.ram);
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+                //处理串口外设
+                hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
+                //处理PIN
+                hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
+                //处理定时器
+                hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
             return obj.on_io(core,opt,address,data,length,usr);
         }
         ,this);
@@ -765,16 +947,62 @@ private:
                 return false;
             }
             hsimmcs51huge &obj=*(hsimmcs51huge *)usr;
-            //RAM操作(注意：此操作前不应当有外设操作)
-            hs_mcs_51_ram_model_huge_bus_io(core,opt,address,data,length,usr,&obj.ram);
-            //ROM操作
-            hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
-            //处理串口外设
-            hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
-            //处理PIN
-            hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
-            //处理定时器
-            hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            switch(opt)
+            {
+            case HS_MCS_51_IO_READ_ROM:
+            {
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+            }
+            break;
+            case HS_MCS_51_IO_READ_RAM_SFR:
+            case HS_MCS_51_IO_WRITE_RAM_SFR:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_huge_bus_io(core,opt,address,data,length,usr,&obj.ram);
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+                //处理串口外设
+                hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
+                //处理PIN
+                hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
+                //处理定时器
+                hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            }
+            break;
+            case HS_MCS_51_IO_READ_HIGH_RAM:
+            case HS_MCS_51_IO_WRITE_HIGH_RAM:
+            case HS_MCS_51_IO_READ_EXTERNAL_RAM:
+            case HS_MCS_51_IO_WRITE_EXTERNAL_RAM:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_huge_bus_io(core,opt,address,data,length,usr,&obj.ram);
+            }
+            break;
+            case HS_MCS_51_IO_TICK_ENTER:
+            case HS_MCS_51_IO_TICK_EXIT:
+            case HS_MCS_51_IO_RESET:
+            case HS_MCS_51_IO_INTERRUPT_ENTER:
+            case HS_MCS_51_IO_INTERRUPT_EXIT:
+            {
+                //RAM操作(注意：此操作前不应当有外设操作)
+                hs_mcs_51_ram_model_huge_bus_io(core,opt,address,data,length,usr,&obj.ram);
+                //ROM操作
+                hs_mcs_51_rom_bus_io(core,opt,address,data,length,usr,&obj.rom);
+                //处理串口外设
+                hs_mcs_51_serial_bus_io(core,opt,address,data,length,usr,&obj.uart);
+                //处理PIN
+                hs_mcs_51_pin_bus_io(core,opt,address,data,length,usr,&obj.pin);
+                //处理定时器
+                hs_mcs_51_timer_bus_io(core,opt,address,data,length,usr,&obj.timer);
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
             return obj.on_io(core,opt,address,data,length,usr);
         }
         ,this);
