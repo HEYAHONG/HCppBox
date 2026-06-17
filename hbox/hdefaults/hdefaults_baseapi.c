@@ -41,7 +41,7 @@ static void check_mutex_lock()
     }
 }
 #endif // WIN32
-#ifdef __unix__
+#if  defined(__unix__) || defined(HDEFAULTS_OS_NUTTX)
 #include "pthread.h"
 static pthread_mutex_t g_mutex_lock;
 static pthread_mutexattr_t g_mutex_lock_attr;
@@ -71,7 +71,7 @@ static hdefaults_tick_t do_hdefaults_tick_get(void)
     return rt_tick_get_millisecond();
 #elif defined(HDEFAULTS_OS_WINDOWS)
     return GetTickCount();
-#elif defined(HDEFAULTS_OS_UNIX)
+#elif defined(HDEFAULTS_OS_UNIX) || defined(HDEFAULTS_OS_NUTTX)
 #if defined(CLOCK_MONOTONIC)
     {
         struct timespec ts= {0};
@@ -171,7 +171,7 @@ static void  do_hdefaults_mutex_lock(void *usr)
 #elif defined(WIN32)
     check_mutex_lock();
     EnterCriticalSection(&g_mutex_lock);
-#elif defined(__unix__)
+#elif defined(__unix__) || defined(HDEFAULTS_OS_NUTTX)
     check_mutex_lock();
     pthread_mutex_lock(&g_mutex_lock);
 #else
@@ -195,7 +195,7 @@ static void  do_hdefaults_mutex_unlock(void *usr)
 #elif defined(WIN32)
     check_mutex_lock();
     LeaveCriticalSection(&g_mutex_lock);
-#elif defined(__unix__)
+#elif defined(__unix__) || defined(HDEFAULTS_OS_NUTTX)
     check_mutex_lock();
     pthread_mutex_unlock(&g_mutex_lock);
 #else

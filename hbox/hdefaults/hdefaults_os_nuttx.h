@@ -11,6 +11,20 @@
 #include "hdefaults_common.h"
 
 
+#if !defined(HAVE_UNISTD_H)
+#define HAVE_UNISTD_H  1
+#include "unistd.h"
+#include "pthread.h"
+#endif
+
+/*
+ * NuttX支持具有完善的C++支持
+ */
+#ifndef HCPPRT_NO_NEW_AND_DELETE_OVERRIDE
+#define HCPPRT_NO_NEW_AND_DELETE_OVERRIDE 1
+#endif // HCPPRT_NO_NEW_AND_DELETE_OVERRIDE
+
+
 /*
  * 系统调用号
  */
