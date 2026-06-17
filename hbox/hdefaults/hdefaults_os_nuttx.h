@@ -23,6 +23,21 @@
 #endif
 
 /*
+ * NuttX采用pthread管理线程
+ */
+#if !defined(HTHRD_USING_PTHREAD)
+#define HTHRD_USING_PTHREAD 1
+#endif
+
+/*
+ * NuttX采用pthread管理锁
+ */
+#if !defined(HMTX_USING_PTHREAD)
+#define HMTX_USING_PTHREAD 1
+#endif
+
+
+/*
  * NuttX支持具有完善的C++支持
  */
 #ifndef HCPPRT_NO_NEW_AND_DELETE_OVERRIDE
