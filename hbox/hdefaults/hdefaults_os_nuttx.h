@@ -17,6 +17,11 @@
 #include "pthread.h"
 #endif
 
+#if !defined(HAVE_FCNTL_H)
+#define HAVE_FCNTL_H   1
+#define HAVE_NO_OPENAT 1
+#endif
+
 /*
  * NuttX支持具有完善的C++支持
  */
