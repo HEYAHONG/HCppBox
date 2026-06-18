@@ -33,6 +33,17 @@
 #endif
 #endif // __NuttX__
 
+//Zephyr
+#ifdef __ZEPHYR__
+#include "hdefaults_os_zephyr.h"
+#ifndef HDEFAULTS_OS_ZEPHYR
+#define HDEFAULTS_OS_ZEPHYR 1
+#endif // HDEFAULTS_OS_ZEPHYR
+#ifndef HDEFAULTS_HAVE_OS
+#define HDEFAULTS_HAVE_OS 1
+#endif
+#endif
+
 //Windows
 //提高windows下的兼容性
 #ifdef _WIN32

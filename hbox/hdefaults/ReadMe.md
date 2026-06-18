@@ -56,6 +56,7 @@
 |  `HDEFAULTS_ENDIAN_ORDER`   | 端序                             | 若定义，应当为`HDEFAULTS_ENDIAN_ORDER_LITTLE`或`HDEFAULTS_ENDIAN_ORDER_BIG` |
 |   `HDEFAULTS_OS_RTTHREAD`   | 处于RT-Thread中                  |                                                              |
 |    `HDEFAULTS_OS_NUTTX`     | 处于NuttX中                      |                                                              |
+|    `HDEFAULTS_OS_ZEPHYR`    | 处于Zephyr中                     |                                                              |
 |   `HDEFAULTS_OS_WINDOWS`    | 处于Windows中                    |                                                              |
 |     `HDEFAULTS_OS_UNIX`     | 处于UNIX(类UNIX中)               |                                                              |
 |   `HDEFAULTS_OS_FREEBSD`    | 处于FreeBSD中                    | 通常也会定义`HDEFAULTS_OS_UNIX`                              |
