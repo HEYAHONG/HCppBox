@@ -9,8 +9,7 @@
 #ifndef __HDEFAULTS_OS_ZEPHYR_H__
 #define __HDEFAULTS_OS_ZEPHYR_H__
 #include "hdefaults_common.h"
-#include "zephyr/kernel.h"
-
+#include "stdio.h"
 
 /*
  * Zephyr具有C++支持
@@ -26,5 +25,26 @@
  */
 #include "syscall/hdefaults_os_zephyr_syscall.h"
 
+/*
+ * zephyr默认不支持
+ */
+#if defined(HAVE_UNISTD_H)
+#undef HAVE_UNISTD_H
+#endif
+
+/*
+ * zephyr默认不支持
+ */
+#if defined(HAVE_FCNTL_H)
+#undef HAVE_FCNTL_H
+#endif
+
+
+/*
+ * 不支持openat
+ */
+#if !defined(HAVE_NO_OPENAT)
+#define HAVE_NO_OPENAT 1
+#endif
 
 #endif

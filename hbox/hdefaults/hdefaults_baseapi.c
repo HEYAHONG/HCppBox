@@ -14,6 +14,13 @@
 #ifdef __RTTHREAD__
 #include "rtthread.h"
 #endif // __RTTHREAD__
+
+#if defined(__ZEPHYR__)
+#include "zephyr/autoconf.h"
+#include "zephyr/kernel.h"
+K_MUTEX_DEFINE(g_global_mutex);
+#endif
+
 #if defined(FREERTOS_KERNEL)
 /*
  * 由h3rdparty组件引入FreeRTOS代码
@@ -89,6 +96,8 @@ static hdefaults_tick_t do_hdefaults_tick_get(void)
         return ret;
     }
 #endif
+#elif defined(__ZEPHYR__)
+    return (hdefaults_tick_t)k_uptime_get();
 #else
     return 1000ULL*clock()/(CLOCKS_PER_SEC);
 #endif // HDEFAULTS_TICK_GET
@@ -174,6 +183,8 @@ static void  do_hdefaults_mutex_lock(void *usr)
 #elif defined(__unix__) || defined(HDEFAULTS_OS_NUTTX)
     check_mutex_lock();
     pthread_mutex_lock(&g_mutex_lock);
+#elif defined(__ZEPHYR__)
+    k_mutex_lock(&g_global_mutex,K_FOREVER);
 #else
 #warning "hdefaults_mutex_lock is  invalid!"
 #endif
@@ -198,6 +209,8 @@ static void  do_hdefaults_mutex_unlock(void *usr)
 #elif defined(__unix__) || defined(HDEFAULTS_OS_NUTTX)
     check_mutex_lock();
     pthread_mutex_unlock(&g_mutex_lock);
+#elif defined(__ZEPHYR__)
+    k_mutex_unlock(&g_global_mutex);
 #else
 #warning "hdefaults_mutex_unlock is  invalid!"
 #endif
