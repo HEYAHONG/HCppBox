@@ -11,10 +11,11 @@
 #include "stdlib.h"
 #include "stdint.h"
 
-#ifndef __RTTHREAD__
+#if !defined(__RTTHREAD__) && (defined(__ZEPHYR__) && !defined(_SSIZE_T_DECLARED))
 #ifndef ssize_t
 typedef intptr_t ssize_t;
+#define _SSIZE_T_DECLARED 
 #endif // ssize_t
-#endif // __RTTHREAD__
+#endif
 
 #endif
