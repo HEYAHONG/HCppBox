@@ -149,7 +149,7 @@ hruntime_function_array_invoke((hruntime_function_t *)&HRuntimeInit$$Base,(((uin
  * gcc/clang,使用名称为.HRuntimeInit的section
  * gcc/clang必须在链接脚本中提供__hruntime_init_start与__hruntime_init_end,脚本示例如下:
  *          PROVIDE ( __hruntime_init_start = . );
- *          KEEP (*(.HRuntimeInit))
+ *          KEEP (*(SORT(.HRuntimeInit)))
  *          PROVIDE ( __hruntime_init_end = . );
  *
  */
@@ -275,7 +275,7 @@ hruntime_function_loop_cache_invoke((hruntime_function_t *)&HRuntimeLoop$$Base,(
  * gcc/clang,使用名称为.HRuntimeLoop的section
  * gcc/clang必须在链接脚本中提供__hruntime_loop_start与__hruntime_loop_end,脚本示例如下:
  *          PROVIDE ( __hruntime_loop_start = . );
- *          KEEP (*(.HRuntimeLoop))
+ *          KEEP (*(SORT(.HRuntimeLoop)))
  *          PROVIDE ( __hruntime_loop_end = . );
  *
  */
@@ -426,7 +426,7 @@ extern const  int HRuntimeSymbol$$Limit;
  * gcc/clang,使用名称为.HRuntimeSymbol的section
  * gcc/clang必须在链接脚本中提供__hruntime_symbol_start与__hruntime_symbol_end,脚本示例如下:
  *          PROVIDE ( __hruntime_symbol_start = . );
- *          KEEP (*(.HRuntimeSymbol))
+ *          KEEP (*(SORT(.HRuntimeSymbol)))
  *          PROVIDE ( __hruntime_symbol_end = . );
  *
  */

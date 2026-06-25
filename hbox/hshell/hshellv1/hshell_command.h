@@ -58,7 +58,7 @@ hshell_command_array_set(context,(hshell_command_t *)&HShellCommand$$Base,(((uin
  * gcc/clang,使用名称为.HShellCommand的section
  * gcc/clang必须在链接脚本中提供__hshell_command_start与__hshell_command_end,脚本示例如下:
  *          PROVIDE ( __hshell_command_start = . );
- *          KEEP (*(.HShellCommand))
+ *          KEEP (*(SORT(.HShellCommand)))
  *          PROVIDE ( __hshell_command_end = . );
  *
  */

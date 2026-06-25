@@ -96,20 +96,20 @@ SECTIONS
 		PROVIDE (etext = __text_end);
 
 		PROVIDE ( __hshell_command_start = . );
-		KEEP (*(.HShellCommand))
+		KEEP (*(SORT(.HShellCommand)))
 		PROVIDE ( __hshell_command_end = . );
 
 		PROVIDE ( __hruntime_init_start = . );
-		KEEP (*(.HRuntimeInit))
+		KEEP (*(SORT(.HRuntimeInit)))
 		PROVIDE ( __hruntime_init_end = . );
 
 
 		PROVIDE ( __hruntime_loop_start = . );
-		KEEP (*(.HRuntimeLoop))
+		KEEP (*(SORT(.HRuntimeLoop)))
 		PROVIDE ( __hruntime_loop_end = . );
 
 		PROVIDE ( __hruntime_symbol_start = . );
-		KEEP (*(.HRuntimeSymbol))
+		KEEP (*(SORT(.HRuntimeSymbol)))
 		PROVIDE ( __hruntime_symbol_end = . );
 
 
