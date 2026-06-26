@@ -17,7 +17,20 @@
 
 具体的说明见[https://zephyrproject.org/](https://zephyrproject.org/)。
 
-注意：本目录为应用目录，与west的工作区不同，一般用户需要在west的工作区手动指定应用目录，非west工作区有些子命令（如build）不可用。
+**注意：本目录为应用目录，与west的工作区不同，一般用户需要在west的工作区手动指定应用目录，非west工作区有些子命令（如build）不可用。**
+
+## west工作区
+
+若用户无现有west工作区，可在当前目录创建west工作区。
+
+创建好python的venv环境并安装好west后(注意需要安装好zephyr需要的工具)，可使用以下命令创建工作区:
+
+- 初始化：`west init` ,初始化一般用于下载zephyr源代码。
+- 更新：`west update`,更新一般用于更新zephyr源代码并下载子模块。
+- 安装python依赖:`west packages pip --install` ,用于安装python脚本可能用到的依赖。**注意:此步骤需要安装官方要求进入python的venv环境,否则无法执行。**
+- 获取二进制文件:`west blobs -a fetch`,某些芯片的某些功能不会发布源代码，因此需要下载其发布的二进制文件。**注意:此步骤下载了所有支持的二进制文件，如仅需要部分芯片请查看官方说明。**
+
+- 安装SDK:`west sdk install`,**注意:此步骤下载了所有支持的SDK工具，如仅需部分SDK工具请查看官方说明。**
 
 ## 工程文件
 
