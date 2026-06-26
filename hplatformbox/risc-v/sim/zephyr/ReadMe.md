@@ -23,11 +23,19 @@
 
 可使用CMake的额外选项生成工程文件，方便编辑源代码。
 
-若在ubuntu生成codeblocks的工程文件：
+若在ubuntu可使用以下命令生成codeblocks的工程文件：
 
 ```bash
 west build  --cmake-only -b [板级支持名称] -d [生成的文件存放目录]  [应用目录] -- -G "CodeBlocks - Unix Makefiles"
 ```
+
+若在windows可使用以下命令生成codeblocks的工程文件：
+
+```bash
+west build  --cmake-only -b [板级支持名称] -d [生成的文件存放目录]  [应用目录] -- -G "CodeBlocks - Ninja"
+```
+
+对于不使用codeblocks的用户，也可使用VSCode的插件进行源代码编辑。
 
 ## 测试
 
