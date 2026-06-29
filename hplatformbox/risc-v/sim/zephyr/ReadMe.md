@@ -52,10 +52,10 @@ west build  --cmake-only -b [板级支持名称] -d [生成的文件存放目录
 
 ## 测试
 
-对于zephyr对qemu的板级支持，可在zephyr工作区可指定`run_qemu`目标用于测试：
+对于zephyr对qemu的板级支持，可在zephyr工作区可指定`run`目标用于测试：
 
 ```bash
-west build -b [板级支持名称] -d [生成的文件存放目录] -t run_qemu [应用目录]
+west build -b [板级支持名称] -d [生成的文件存放目录] -t run [应用目录]
 ```
 
 # 目录说明
