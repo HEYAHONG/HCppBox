@@ -35,7 +35,13 @@ extern "C"
 #define HTHRD_SIZE_FORM_BYTES(nbytes)  (((nbytes)+sizeof(uintptr_t)-1)/(sizeof(uintptr_t)))
 #endif
 
-#if defined(HDEFAULTS_OS_WINDOWS)
+#if defined(HDEFAULTS_LIBC_HAVE_THREADS)
+#undef HTHRD_SIZE
+/*
+ * 采用C11的threads头文件
+ */
+#define HTHRD_SIZE  HTHRD_SIZE_FORM_BYTES(sizeof(thrd_t))
+#elif defined(HDEFAULTS_OS_WINDOWS)
 #undef HTHRD_SIZE
 /*
  * 见hthrd_os_windows.c
