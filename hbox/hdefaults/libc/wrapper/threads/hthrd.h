@@ -14,6 +14,7 @@ extern "C"
 {
 #endif // __cplusplus
 
+#include "hdefaults.h"
 #include "hthreads_common.h"
 #include "stdint.h"
 #include "../time/htime.h"
@@ -29,6 +30,31 @@ extern "C"
 #define HTHRD_SIZE (4)
 #endif
 #endif // HTHRD_SIZE
+
+#if !defined(HTHRD_SIZE_FORM_BYTES)
+#define HTHRD_SIZE_FORM_BYTES(nbytes)  (((nbytes)+sizeof(uintptr_t)-1)/(sizeof(uintptr_t)))
+#endif
+
+#if defined(HDEFAULTS_OS_WINDOWS)
+#undef HTHRD_SIZE
+/*
+ * 见hthrd_os_windows.c
+ */
+#define HTHRD_SIZE  HTHRD_SIZE_FORM_BYTES(sizeof(HANDLE)+sizeof(DWORD))
+#elif (defined(HDEFAULTS_OS_UNIX) || defined(HTHRD_USING_PTHREAD))
+#undef HTHRD_SIZE
+/*
+ * 见hthrd_pthread.c
+ */
+#define HTHRD_SIZE HTHRD_SIZE_FORM_BYTES(sizeof(pthread_t)+sizeof(void*))
+#elif ((defined(FREERTOS_KERNEL)) || (defined(FREERTOS) || defined(HTHRD_USING_FREERTOS)))
+#undef HTHRD_SIZE
+/*
+ * 见hthrd_rtos_freertos.c,注意：hthrd_t仅用于容纳TaskHandle_t(等效于struct tskTaskControlBlock* )
+ */
+#define HTHRD_SIZE HTHRD_SIZE_FORM_BYTES(sizeof(void*))
+#endif
+
 
 struct hthrd
 {

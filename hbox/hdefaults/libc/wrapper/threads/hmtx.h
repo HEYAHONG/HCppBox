@@ -23,6 +23,24 @@ extern "C"
 #define HMTX_SIZE (1)
 #endif
 
+#if !defined(HMTX_SIZE_FORM_BYTES)
+#define HMTX_SIZE_FORM_BYTES(nbytes)  (((nbytes)+sizeof(uintptr_t)-1)/(sizeof(uintptr_t)))
+#endif
+
+#if defined(HDEFAULTS_OS_WINDOWS)
+#undef HMTX_SIZE
+/*
+ * 见hmtx_os_windows.c
+ */
+#define HMTX_SIZE  HMTX_SIZE_FORM_BYTES(sizeof(HANDLE)+sizeof(int))
+#elif (defined(HDEFAULTS_OS_UNIX) || defined(HMTX_USING_PTHREAD))
+#undef HMTX_SIZE
+/*
+ * 见hmtx_pthread.c
+ */
+#define HMTX_SIZE HMTX_SIZE_FORM_BYTES(sizeof(pthread_mutex_t))
+#endif
+
 struct hmtx
 {
     /*
