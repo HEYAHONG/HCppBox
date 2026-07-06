@@ -46,6 +46,20 @@
 
 
 /*
+ * Nuttx Apps支持argtable3,需要通过配置启用
+ */
+#if defined(CONFIG_SYSTEM_ARGTABLE3)
+/*
+ * 使用系统argtable3
+ */
+#if !defined(H3RDPARTY_USING_SYSTEM_ARGTABLE3)
+#define H3RDPARTY_USING_SYSTEM_ARGTABLE3 1
+#endif
+#endif
+
+
+
+/*
  * 系统调用号
  */
 #include "syscall/hdefaults_os_nuttx_syscall.h"
