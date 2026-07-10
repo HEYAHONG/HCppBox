@@ -166,7 +166,11 @@ int fdt_add_mem_rsv(void *fdt, uint64_t address, uint64_t size)
 
 	FDT_RW_PROBE(fdt);
 
-	re = fdt_mem_rsv_w_(fdt, fdt_num_mem_rsv(fdt));
+	err = fdt_num_mem_rsv(fdt);
+	if (err < 0)
+		return err;
+
+	re = fdt_mem_rsv_w_(fdt, err);
 	err = fdt_splice_mem_rsv_(fdt, re, 0, 1);
 	if (err)
 		return err;
@@ -179,10 +183,15 @@ int fdt_add_mem_rsv(void *fdt, uint64_t address, uint64_t size)
 int fdt_del_mem_rsv(void *fdt, int n)
 {
 	struct fdt_reserve_entry *re = fdt_mem_rsv_w_(fdt, n);
+	int num;
 
 	FDT_RW_PROBE(fdt);
 
-	if (n >= fdt_num_mem_rsv(fdt))
+	num = fdt_num_mem_rsv(fdt);
+	if (num < 0)
+		return num;
+
+	if (n >= num)
 		return -FDT_ERR_NOTFOUND;
 
 	return fdt_splice_mem_rsv_(fdt, re, 1, 0);
@@ -283,6 +292,13 @@ int fdt_setprop_placeholder_namelen(void *fdt, int nodeoffset, const char *name,
 	return 0;
 }
 
+int fdt_setprop_placeholder(void *fdt, int nodeoffset,
+			    const char *name, int len, void **prop_data)
+{
+	return fdt_setprop_placeholder_namelen(fdt, nodeoffset, name,
+					       strlen(name), len, prop_data);
+}
+
 int fdt_setprop_namelen(void *fdt, int nodeoffset, const char *name,
 			int namelen, const void *val, int len)
 {
@@ -297,6 +313,13 @@ int fdt_setprop_namelen(void *fdt, int nodeoffset, const char *name,
 	if (len)
 		memcpy(prop_data, val, len);
 	return 0;
+}
+
+int fdt_setprop(void *fdt, int nodeoffset, const char *name,
+		const void *val, int len)
+{
+	return fdt_setprop_namelen(fdt, nodeoffset, name, strlen(name), val,
+				   len);
 }
 
 int fdt_appendprop(void *fdt, int nodeoffset, const char *name,
@@ -439,8 +462,10 @@ int fdt_open_into(const void *fdt, void *buf, int bufsize)
 
 	FDT_RO_PROBE(fdt);
 
-	mem_rsv_size = (fdt_num_mem_rsv(fdt)+1)
-		* sizeof(struct fdt_reserve_entry);
+	err = fdt_num_mem_rsv(fdt);
+	if (err < 0)
+		return err;
+	mem_rsv_size = (err + 1) * sizeof(struct fdt_reserve_entry);
 
 	if (can_assume(LATEST) || fdt_version(fdt) >= 17) {
 		struct_size = fdt_size_dt_struct(fdt);
@@ -498,12 +523,14 @@ int fdt_open_into(const void *fdt, void *buf, int bufsize)
 
 int fdt_pack(void *fdt)
 {
-	int mem_rsv_size;
+	int err, mem_rsv_size;
 
 	FDT_RW_PROBE(fdt);
 
-	mem_rsv_size = (fdt_num_mem_rsv(fdt)+1)
-		* sizeof(struct fdt_reserve_entry);
+	err = fdt_num_mem_rsv(fdt);
+	if (err < 0)
+		return err;
+	mem_rsv_size = (err+1) * sizeof(struct fdt_reserve_entry);
 	fdt_packblocks_(fdt, fdt, mem_rsv_size, fdt_size_dt_struct(fdt),
 			fdt_size_dt_strings(fdt));
 	fdt_set_totalsize(fdt, fdt_data_size_(fdt));

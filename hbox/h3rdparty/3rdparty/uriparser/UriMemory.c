@@ -44,10 +44,17 @@
 
 #include "UriConfig.h" /* for HAVE_REALLOCARRAY */
 
+// NOTE: Please keep this block in sync with its sibling in file
+//       `CMakeLists.txt`!
 #ifdef HAVE_REALLOCARRAY
 // For glibc >=2.29 of 2019-02-01
 #  if !defined(_DEFAULT_SOURCE)
 #    define _DEFAULT_SOURCE 1
+#  endif
+
+// For glibc <2.29
+#  if !defined(_GNU_SOURCE)
+#    define _GNU_SOURCE 1
 #  endif
 
 // For NetBSD (stdlib.h revision 1.122 of 2020-05-26)

@@ -1199,9 +1199,10 @@ URI_PUBLIC UriBool URI_FUNC(IsWellFormedHostIp4)(
  * @see uriIsWellFormedUserInfoA
  * @see uriParseIpSixAddressA
  * @see uriParseIpSixAddressMmA
- * @since 0.9.9
+ * @since 1.0.3
  */
-int URI_FUNC(IsWellFormedHostIp6)(const URI_CHAR * first, const URI_CHAR * afterLast);
+URI_PUBLIC int URI_FUNC(IsWellFormedHostIp6)(
+        const URI_CHAR * first, const URI_CHAR * afterLast);
 
 /**
  * Determines if the given text range contains a well-formed IPv6 address
@@ -1223,9 +1224,9 @@ int URI_FUNC(IsWellFormedHostIp6)(const URI_CHAR * first, const URI_CHAR * after
  * @see uriIsWellFormedQueryA
  * @see uriIsWellFormedSchemeA
  * @see uriIsWellFormedUserInfoA
- * @since 0.9.9
+ * @since 1.0.3
  */
-int URI_FUNC(IsWellFormedHostIp6Mm)(
+URI_PUBLIC int URI_FUNC(IsWellFormedHostIp6Mm)(
         const URI_CHAR * first, const URI_CHAR * afterLast, UriMemoryManager * memory);
 
 /**
@@ -1251,9 +1252,9 @@ int URI_FUNC(IsWellFormedHostIp6Mm)(
  * @see uriIsWellFormedUserInfoA
  * @see uriSetHostIpFutureA
  * @see uriSetHostIpFutureMmA
- * @since 0.9.9
+ * @since 1.0.3
  */
-int URI_FUNC(IsWellFormedHostIpFuture)(
+URI_PUBLIC int URI_FUNC(IsWellFormedHostIpFuture)(
         const URI_CHAR * first, const URI_CHAR * afterLast);
 
 /**
@@ -1278,9 +1279,9 @@ int URI_FUNC(IsWellFormedHostIpFuture)(
  * @see uriIsWellFormedUserInfoA
  * @see uriSetHostIpFutureA
  * @see uriSetHostIpFutureMmA
- * @since 0.9.9
+ * @since 1.0.3
  */
-int URI_FUNC(IsWellFormedHostIpFutureMm)(
+URI_PUBLIC int URI_FUNC(IsWellFormedHostIpFutureMm)(
         const URI_CHAR * first, const URI_CHAR * afterLast, UriMemoryManager * memory);
 
 /**
