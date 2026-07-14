@@ -32,6 +32,7 @@ const char * hshell_context_default_prompt_string(void)
     return "hshell>";
 }
 
+HDEFAULTS_ZI_ATTRIBUTE
 static hshell_context_t default_context= {0};
 static hshell_context_t *hshell_context_real_context_get(hshell_context_t *ctx)
 {

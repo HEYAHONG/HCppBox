@@ -80,7 +80,8 @@ static int hshell_internal_command_exit_entry(hshell_context_t *ctx,int *ret_cod
 
 
 static int hshell_internal_command_help_entry(hshell_context_t *ctx,int *ret_code,int argc,const char *argv[]);
-static struct
+HDEFAULTS_RO_ATTRIBUTE
+static const struct
 {
     int (*entry)(hshell_context_t *ctx,int *ret_code,int argc,const char *argv[]);
     const char *name;
