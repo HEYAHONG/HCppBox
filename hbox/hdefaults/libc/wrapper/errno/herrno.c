@@ -19,7 +19,8 @@ volatile herrno_t * herrno_get()
 #endif
 }
 
-static struct
+HDEFAULTS_RO_ATTRIBUTE
+static const struct
 {
     herrno_t        error_number;
     const char *    error_string;

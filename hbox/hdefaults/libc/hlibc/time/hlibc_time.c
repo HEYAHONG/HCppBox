@@ -350,10 +350,12 @@ char * hlibc_asctime_r (const htm_t *tim_p,char * result)
     {
         return NULL;
     }
+    HDEFAULTS_RO_ATTRIBUTE
     static const char day_name[7][4] =
     {
         "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
     };
+    HDEFAULTS_RO_ATTRIBUTE
     static const char mon_name[12][4] =
     {
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -376,6 +378,7 @@ char * hlibc_ctime_r(const time_t * tim_p,char * result)
 /*
  * 全局时区信息，默认东8区，无夏令时
  */
+HDEFAULTS_RW_ATTRIBUTE
 static hlibc_time_timezone_info_t hlibc_time_timezone=
 {
     (int32_t)(-8*(int32_t)HLIBC_TIME_SECSPERHOUR),

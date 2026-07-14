@@ -92,6 +92,9 @@
 |     `HAVE_THREADS_H`     |                 当前环境有`threads.h`头文件                  | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
 |    `HAVE_STDATOMIC_H`    |                当前环境有`stdatomic.h`头文件                 | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
 |        `FREERTOS`        |                    当前环境支持`FreeRTOS`                    | 通常用于外部支持的`FreeRTOS`,使用内置`FreeRTOS`内核(见[h3rdparty](../h3rdparty))时无需定义。启用此定义后，需要在配置头文件中包含`FreeRTOS`头文件（由于某些环境的头文件与官方的不一致，因此需要用户手动实现） |
+| `HDEFAULTS_ZI_ATTRIBUTE` |                   定义变量属性(初始化为0)                    |                                                              |
+| `HDEFAULTS_RW_ATTRIBUTE` |                  定义变量属性(初始化不为0)                   |                                                              |
+| `HDEFAULTS_RO_ATTRIBUTE` |                         定义常量属性                         |                                                              |
 
 # 系统调用
 

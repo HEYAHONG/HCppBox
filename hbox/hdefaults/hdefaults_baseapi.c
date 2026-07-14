@@ -326,6 +326,7 @@ HDEFAULTS_USERCALL_DEFINE1(symbol_find,HDEFAULTS_USERCALL_NUMBER_SYMBOL_FIND,voi
     return hdefaults_symbol_find(symbol_name);
 }
 
+HDEFAULTS_RO_ATTRIBUTE
 static const hdefaults_api_table_t default_api_table=
 {
     do_hdefaults_tick_get,
@@ -336,6 +337,7 @@ static const hdefaults_api_table_t default_api_table=
     do_hdefaults_usercall,
     do_hdefaults_symbol_find
 };
+HDEFAULTS_RO_ATTRIBUTE
 static const hdefaults_api_table_t * api_table=&default_api_table;
 const hdefaults_api_table_t * hdefaults_get_api_table(void)
 {

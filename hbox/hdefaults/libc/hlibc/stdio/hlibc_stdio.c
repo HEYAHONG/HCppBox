@@ -47,6 +47,7 @@ struct hfile
     hmtx_t lock;
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 static const char hlibc_stdio_file_maigc[]="FILEPTR";
 static int hlibc_stdio_file_magic_number(void)
 {
@@ -104,8 +105,11 @@ static bool hlibc_stdio_file_check(hfile_t *fp)
     return true;
 }
 
+HDEFAULTS_ZI_ATTRIBUTE
 static hatomic_int_t hlibc_stdio_stdin_flag=0;
+HDEFAULTS_ZI_ATTRIBUTE
 static hatomic_int_t hlibc_stdio_stdout_flag=0;
+HDEFAULTS_ZI_ATTRIBUTE
 static hatomic_int_t hlibc_stdio_stderr_flag=0;
 
 int hlibc_getchar(void)

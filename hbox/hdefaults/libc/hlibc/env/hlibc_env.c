@@ -36,11 +36,14 @@
 #define  HLIBC_ENV_BLOCK_SIZE     (512)
 #endif
 
+HDEFAULTS_ZI_ATTRIBUTE
 static char * hlibc_env_item[HLIBC_ENV_ITEM_COUNT+1]= {0};
 /*
  * 用于单独存储环境变量的块
  */
+HDEFAULTS_ZI_ATTRIBUTE
 static uint64_t hlibc_env_block[(HLIBC_ENV_BLOCK_SIZE+sizeof(uint64_t)-1)/sizeof(uint64_t)]= {0};
+HDEFAULTS_ZI_ATTRIBUTE
 static hmemoryheap_pool_t * hlibc_env_block_heap_ptr=NULL;
 static hmemoryheap_pool_t * hlibc_env_block_heap(void)
 {

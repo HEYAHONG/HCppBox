@@ -9,11 +9,12 @@
 #include "hdefaults.h"
 #include "hsyscall_time.h"
 
-
+HDEFAULTS_ZI_ATTRIBUTE
 static hgettimeofday_timeval_t   hsyscall_gettimeofday_current_timeval= {0};
 /*
  * 此处变量仅用于存储系统时区,不起实际作用，实际系统用户时区由libc（通常可通过环境变量或者配置文件设置）决定
  */
+HDEFAULTS_ZI_ATTRIBUTE
 static hgettimeofday_timezone_t  hsyscall_gettimeofday_current_timezone= {0};
 static void hsyscall_gettimeofday_update_timeval(void)
 {
@@ -24,6 +25,7 @@ static void hsyscall_gettimeofday_update_timeval(void)
 #else
     hdefaults_mutex_lock(NULL);
     hgettimeofday_timeval_t old_val=hsyscall_gettimeofday_current_timeval;
+    HDEFAULTS_ZI_ATTRIBUTE
     static hdefaults_tick_t hgettimeofday_last_tick=0;
     hdefaults_tick_t current_tick=hdefaults_tick_get();
     if(current_tick!=hgettimeofday_last_tick)
@@ -144,7 +146,9 @@ int hsyscall_clock_gettime(hclockid_t clockid,htimespec_t *tp)
     break;
     case HCLOCK_MONOTONIC:
     {
+        HDEFAULTS_ZI_ATTRIBUTE
         static htimespec_t hsyscall_clock_gettime_current_monotonic_clock= {0};
+        HDEFAULTS_ZI_ATTRIBUTE
         static hdefaults_tick_t hsyscall_clock_gettime_current_monotonic_clock_last_tick=0;
         ret=0;
         hdefaults_mutex_lock(NULL);

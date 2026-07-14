@@ -30,4 +30,7 @@
 #include hdefaults_xstr(HBOX_CONFIG_HEADER)
 #endif
 
+//导入默认配置
+#include "hdefaults_config_default.h"
+
 #endif
