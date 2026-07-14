@@ -9,6 +9,7 @@
 #include "hgui_gui_common.h"
 #include "hdefaults.h"
 
+HDEFAULTS_ZI_ATTRIBUTE
 static hgui_gui_malloc_t malloc_hook=NULL;
 void * hgui_gui_malloc(size_t nBytes)
 {
@@ -36,6 +37,7 @@ void * hgui_gui_default_malloc(size_t nBytes)
     return hdefaults_malloc(nBytes,NULL);
 }
 
+HDEFAULTS_ZI_ATTRIBUTE
 static hgui_gui_free_t free_hook=NULL;
 void hgui_gui_free(void *ptr)
 {

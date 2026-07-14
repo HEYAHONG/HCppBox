@@ -7,6 +7,9 @@
  * License:   MIT
  **************************************************************/
 #include "hgui_gui_driver.h"
+#include "hdefaults.h"
+
+HDEFAULTS_ZI_ATTRIBUTE
 static hgui_driver_t driver=HGUI_DRIVER_INITIALIZER;
 
 hgui_driver_t *hgui_driver_default_get(void)

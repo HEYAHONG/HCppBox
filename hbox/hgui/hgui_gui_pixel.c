@@ -7,7 +7,9 @@
  * License:   MIT
  **************************************************************/
 #include "hgui_gui_pixel.h"
+#include "hdefaults.h"
 
+HDEFAULTS_RW_ATTRIBUTE
 static hgui_pixel_mode_t pixel_mode=HGUI_PIXEL_MODE_24_BITS;//默认为24位的像素
 
 hgui_pixel_mode_t hgui_pixel_global_mode_get(void)
