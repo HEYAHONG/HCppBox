@@ -485,7 +485,7 @@ void hmemoryheap_pool_free(hmemoryheap_pool_t *pool,void *ptr)
 
 }
 
-
+HDEFAULTS_ZI_ATTRIBUTE
 static hmemoryheap_pool_t *default_pool=NULL;
 
 
@@ -501,12 +501,13 @@ static hmemoryheap_pool_t *default_pool=NULL;
 #endif // USING_HMEMORYHEAP
 
 #ifndef HMEMORYHEAP_DEFAULT_POOL_ATTRIBUTE
-#define HMEMORYHEAP_DEFAULT_POOL_ATTRIBUTE
+#define HMEMORYHEAP_DEFAULT_POOL_ATTRIBUTE HDEFAULTS_ZI_ATTRIBUTE
 #endif // HMEMORYHEAP_DEFAULT_POOL_ATTRIBUTE
 
 #if HMEMORYHEAP_DEFAULT_POOL_SIZE >= 256
 HMEMORYHEAP_DEFAULT_POOL_ATTRIBUTE
 static uint8_t pool_store[HMEMORYHEAP_DEFAULT_POOL_SIZE]= {0};
+HDEFAULTS_ZI_ATTRIBUTE
 static bool g_is_defalut_pool_init=false;
 static void check_default_pool()
 {

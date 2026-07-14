@@ -9,6 +9,7 @@
 #include "hmemorystaticallocator.h"
 #include "hdefaults.h"
 
+HDEFAULTS_RO_ATTRIBUTE
 const hmemorystaticallocator_lock_t hmemorystaticallocator_global_lock=
 {
     NULL,
@@ -792,7 +793,7 @@ void hmemorystaticallocator_free_anonymous_object(const hmemorystaticallocator_i
     }
 }
 
-
+HDEFAULTS_RO_ATTRIBUTE
 static const hmemorystaticallocator_item_t hmemorystaticallocator_memory_cache_table[]=
 {
     {0          ,1   ,16,NULL,0},

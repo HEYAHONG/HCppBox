@@ -12,6 +12,7 @@
 #include "hfiledescriptor_filev1.h"
 #include "hfiledescriptor_socketv1.h"
 
+HDEFAULTS_ZI_ATTRIBUTE
 static hfiledescriptor_std_table_t hfiledescriptor_std_table_object= {0};
 void hfiledescriptor_std_table_set_read(hfiledescriptor_fd_t fd,hfiledescriptor_ssize_t (*std_read)(hfiledescriptor_fd_t fd, void * buff, hfiledescriptor_size_t buff_length))
 {
@@ -45,14 +46,14 @@ void hfiledescriptor_std_table_set_write(hfiledescriptor_fd_t fd,hfiledescriptor
 #endif
 
 #ifndef HFILEDESCRIPTOR_COMMON_TABLE_ATTRIBUTE
-#define HFILEDESCRIPTOR_COMMON_TABLE_ATTRIBUTE
+#define HFILEDESCRIPTOR_COMMON_TABLE_ATTRIBUTE HDEFAULTS_ZI_ATTRIBUTE
 #endif // HFILEDESCRIPTOR_COMMON_TABLE_ATTRIBUTE
 
 HFILEDESCRIPTOR_COMMON_TABLE_ATTRIBUTE
 static hfiledescriptor_common_table_t hfiledescriptor_common_table_object[HFILEDESCRIPTOR_COMMON_TABLE_SIZE]= {0};
 
 #ifndef HFILEDESCRIPTOR_COMMON_TABLE_FLAG_ATTRIBUTE
-#define HFILEDESCRIPTOR_COMMON_TABLE_FLAG_ATTRIBUTE
+#define HFILEDESCRIPTOR_COMMON_TABLE_FLAG_ATTRIBUTE HDEFAULTS_ZI_ATTRIBUTE
 #endif // HFILEDESCRIPTOR_COMMON_TABLE_FLAG_ATTRIBUTE
 
 HFILEDESCRIPTOR_COMMON_TABLE_FLAG_ATTRIBUTE
@@ -200,6 +201,8 @@ static int  hfiledescriptor_reserved_file_nul_write(hfiledescriptor_fd_t fd,cons
     (void)buff;
     return buff_len;
 }
+
+HDEFAULTS_RO_ATTRIBUTE
 static const hfiledescriptor_filev1_t hfiledescriptor_reserved_file_nul=
 {
     NULL,
@@ -221,6 +224,8 @@ static int  hfiledescriptor_reserved_file_con_write(hfiledescriptor_fd_t fd,cons
     (void)fd;
     return hfiledescriptor_write(HFILEDESCRIPTOR_STDOUT,buff,buff_len);
 }
+
+HDEFAULTS_RO_ATTRIBUTE
 static const hfiledescriptor_filev1_t hfiledescriptor_reserved_file_con=
 {
     NULL,

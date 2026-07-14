@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 #include "hsoftwarevirtualmemory.h"
+#include "hdefaults.h"
 
 static size_t hsoftwarevirtualmemory_default_read(const hsoftwarevirtualmemory_map_item_t *map_item,uintptr_t address,uint8_t *data,size_t length)
 {
@@ -36,7 +37,7 @@ static size_t hsoftwarevirtualmemory_default_write(const hsoftwarevirtualmemory_
     return length;
 };
 
-
+HDEFAULTS_RO_ATTRIBUTE
 static const hsoftwarevirtualmemory_map_item_t hsoftwarevirtualmemory_default_map_table[]=
 {
     {0,0,hsoftwarevirtualmemory_default_read,hsoftwarevirtualmemory_default_write,NULL,0}
