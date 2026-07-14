@@ -137,6 +137,7 @@ hstacklesscoroutine2_running_state_t hstacklesscoroutine2_ccb_running_state_get(
     return (hstacklesscoroutine2_running_state_t)ccb->state.running_state;
 }
 
+HDEFAULTS_ZI_ATTRIBUTE
 static hstacklesscoroutine2_scheduler_t hstacklesscoroutine2_default_scheduler= {0};
 static hstacklesscoroutine2_scheduler_t *hstacklesscoroutine2_scheduler_check(hstacklesscoroutine2_scheduler_t * scheduler)
 {

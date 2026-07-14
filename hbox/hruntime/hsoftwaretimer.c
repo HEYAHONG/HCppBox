@@ -9,6 +9,7 @@
 #include "hsoftwaretimer.h"
 #include "hmemory.h"
 
+HDEFAULTS_ZI_ATTRIBUTE
 static const hsoftwaretimer_lock_t *hsoftwaretimer_global_lock=NULL;
 
 void hsoftwaretimer_lock_set(const hsoftwaretimer_lock_t *lock)
@@ -49,7 +50,7 @@ void hsoftwaretimer_loop_hruntime(void)
 #endif // HSOFTWARETIMER_CUSTOM_LOOP
 }
 
-
+HDEFAULTS_ZI_ATTRIBUTE
 static hsoftwaretimer_timer_t hsoftwaretimer_default_timer= {0};
 static void hsoftwaretimer_default_timer_init(void)
 {

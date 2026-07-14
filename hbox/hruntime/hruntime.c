@@ -27,6 +27,7 @@ enum
     HRUNTIME_INTERNAL_FLAG_END
 };
 
+HDEFAULTS_ZI_ATTRIBUTE
 static hatomic_int_t hruntime_internal_flag[(((size_t)HRUNTIME_INTERNAL_FLAG_END)+sizeof(hatomic_int_t)*8-1)/(sizeof(hatomic_int_t)*8)]= {0};
 
 static void hruntime_internal_flag_set(size_t flag)
@@ -90,6 +91,7 @@ void hruntime_init_hdefaults(void)
 #define HRUNTIME_INIT_LOWLEVEL_LIST4
 #endif
 
+HDEFAULTS_RO_ATTRIBUTE
 static const hruntime_internal_function_t hruntime_internal_function_init_lowlevel[]=
 {
 #ifndef HRUNTIME_NO_H3RDPARTY
@@ -171,6 +173,7 @@ void hruntime_init_hsoftplc(void)
 #define HRUNTIME_INIT_LIST4
 #endif
 
+HDEFAULTS_RO_ATTRIBUTE
 static const hruntime_internal_function_t hruntime_internal_function_init[]=
 {
     hruntime_init_section,
@@ -321,6 +324,7 @@ void hruntime_loop_hsoftplc(void)
 #define HRUNTIME_LOOP_LIST4
 #endif
 
+HDEFAULTS_RO_ATTRIBUTE
 static const hruntime_internal_function_t hruntime_internal_function_loop[]=
 {
     hruntime_loop_section,
@@ -466,6 +470,8 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
 #ifndef HRUNTIME_USING_LOOP_CACHE_TABLE_ITEM_COUNT
 #define HRUNTIME_USING_LOOP_CACHE_TABLE_ITEM_COUNT   16
 #endif
+
+HDEFAULTS_ZI_ATTRIBUTE
 static hruntime_function_t hruntime_loop_cache_table[HRUNTIME_USING_LOOP_CACHE_TABLE_ITEM_COUNT]= {0};
 
 static void hruntime_loop_cache_table_sort(hruntime_function_t *array_base,size_t array_size)
@@ -628,6 +634,7 @@ bool hruntime_function_loop_cache_table_remove(const hruntime_function_t * hrunt
 #include "symbol/hbox_h3rdparty_symbol.c"
 #include "symbol/libc_symbol.c"
 
+HDEFAULTS_RO_ATTRIBUTE
 const struct
 {
     const hruntime_symbol_t *   array_base;
@@ -730,6 +737,7 @@ const hruntime_symbol_t *hruntime_symbol_find(const char *name)
     return ret;
 }
 
+HDEFAULTS_ZI_ATTRIBUTE
 static hdoublylinkedlist_head_t hruntime_symbol_dynamic_table_list_head= {0};
 typedef struct
 {
