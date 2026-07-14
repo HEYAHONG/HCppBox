@@ -410,6 +410,7 @@ void  heventloop_set_max_events_number(heventloop_t *loop,uint32_t max_event_num
     loop->max_event_number=max_event_number;
 }
 
+HDEFAULTS_ZI_ATTRIBUTE
 static heventloop_t * heventloop_table[HEVENTLOOP_SYSTEM_LOOP_COUNT+(HEVENTLOOP_USER_LOOP_COUNT)]= {0};
 heventloop_t *heventloop_get_loop_from_table(int id)
 {

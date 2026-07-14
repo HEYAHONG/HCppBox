@@ -395,6 +395,7 @@ void heventchain_uninstall_all_hook(heventchain_t *chain)
 
 }
 
+HDEFAULTS_ZI_ATTRIBUTE
 static heventchain_t * heventchain_table[HEVENTCHAIN_SYSTEM_CHAIN_COUNT+(HEVENTCHAIN_USER_CHAIN_COUNT)]= {0};
 heventchain_t *heventchain_get_chain_from_table(int id)
 {

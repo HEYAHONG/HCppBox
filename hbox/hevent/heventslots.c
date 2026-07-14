@@ -364,6 +364,7 @@ void heventslots_unregister_all_slot(heventslots_t *slots)
     }
 }
 
+HDEFAULTS_ZI_ATTRIBUTE
 static heventslots_t * heventslots_table[HEVENTSLOTS_SYSTEM_SLOTS_COUNT+(HEVENTSLOTS_USER_SLOTS_COUNT)]= {0};
 heventslots_t *heventslots_get_slots_from_table(int id)
 {
