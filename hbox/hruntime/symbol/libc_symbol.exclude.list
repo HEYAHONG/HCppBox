@@ -21,3 +21,4 @@ write
 stdin
 stderr
 stdout
+fcntl

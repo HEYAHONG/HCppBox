@@ -68,7 +68,7 @@ filename="hbox_symbol.c"
 
 #初始化文件
 echo "#include \"hbox.h\"" >${filename}
-echo "static const hruntime_symbol_t hruntime_hbox_symbol[]=" >>${filename}
+echo -e "HDEFAULTS_ZI_ATTRIBUTE\nstatic const hruntime_symbol_t hruntime_hbox_symbol[]=" >>${filename}
 echo "{" >>${filename}
 
 #扫描hbox目录

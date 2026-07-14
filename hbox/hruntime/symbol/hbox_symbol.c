@@ -1,4 +1,5 @@
 #include "hbox.h"
+HDEFAULTS_ZI_ATTRIBUTE
 static const hruntime_symbol_t hruntime_hbox_symbol[]=
 {
 //h3rdparty.c
@@ -2111,6 +2112,11 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hs_risc_v_core_rv32_io),(uintptr_t)&hs_risc_v_core_rv32_io},
     {hdefaults_str(hs_risc_v_core_rv32_sets_get),(uintptr_t)&hs_risc_v_core_rv32_sets_get},
     {hdefaults_str(hs_risc_v_core_rv32_sets_disable_set),(uintptr_t)&hs_risc_v_core_rv32_sets_disable_set},
+    {hdefaults_str(hs_risc_v_core_rv32_exception_clear),(uintptr_t)&hs_risc_v_core_rv32_exception_clear},
+    {hdefaults_str(hs_risc_v_core_rv32_wfi),(uintptr_t)&hs_risc_v_core_rv32_wfi},
+    {hdefaults_str(hs_risc_v_core_rv32_wfi_clear),(uintptr_t)&hs_risc_v_core_rv32_wfi_clear},
+    {hdefaults_str(hs_risc_v_core_rv32_clint_mtime),(uintptr_t)&hs_risc_v_core_rv32_clint_mtime},
+    {hdefaults_str(hs_risc_v_core_rv32_clint_mtimecmp),(uintptr_t)&hs_risc_v_core_rv32_clint_mtimecmp},
 //huuid.c
     {hdefaults_str(huuid_null_uuid),(uintptr_t)&huuid_null_uuid},
     {hdefaults_str(huuid_clear),(uintptr_t)&huuid_clear},

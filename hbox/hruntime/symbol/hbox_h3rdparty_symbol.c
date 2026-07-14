@@ -1,4 +1,5 @@
 #include "hbox.h"
+HDEFAULTS_ZI_ATTRIBUTE
 static const hruntime_symbol_t hruntime_hbox_h3rdparty_symbol[]=
 {
 //h3rdparty/h3rdparty_argtable3_arg_cmd.c

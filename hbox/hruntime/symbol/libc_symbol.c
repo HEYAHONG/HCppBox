@@ -5,6 +5,7 @@
 #include "setjmp.h"
 #include "ctype.h"
 #include "time.h"
+HDEFAULTS_ZI_ATTRIBUTE
 static const hruntime_symbol_t hruntime_libc_symbol[]=
 {
     {hdefaults_str(abort),(uintptr_t)&abort},

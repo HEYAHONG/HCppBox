@@ -82,7 +82,7 @@ echo "#include \"string.h\"" >>${filename}
 echo "#include \"setjmp.h\"" >>${filename}
 echo "#include \"ctype.h\"" >>${filename}
 echo "#include \"time.h\"" >>${filename}
-echo "static const hruntime_symbol_t hruntime_libc_symbol[]=" >>${filename}
+echo -e "HDEFAULTS_ZI_ATTRIBUTE\nstatic const hruntime_symbol_t hruntime_libc_symbol[]=" >>${filename}
 echo "{" >>${filename}
 
 symbol=""
