@@ -16,13 +16,6 @@ else()
 endif()
 
 
-find_program(RISCV64_UNKNOWN_ELF_GCC riscv64-unknown-elf-gcc)
-if(RISCV64_UNKNOWN_ELF_GCC)
-    message(STATUS "riscv64-unknown-elf-gcc:" ${RISCV64_UNKNOWN_ELF_GCC})
-    message(STATUS "Enable hplatformbox/risc-v")
-    add_subdirectory(risc-v)
-else()
-    message(STATUS "riscv64-unknown-elf-gcc is not found!")
-endif()
+add_subdirectory(risc-v)
 
 
