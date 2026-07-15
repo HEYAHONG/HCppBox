@@ -22,3 +22,9 @@ target_compile_options(HBox PRIVATE -Wno-restrict )
 
 #使用zephyr的链接脚本处理功能
 zephyr_linker_sources(SECTIONS "${CMAKE_CURRENT_LIST_DIR}/../hbox.ld")
+
+#安装路径
+if(DEFINED HPLATFORMBOX_RISC_V_INSTALL_DIR)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/zephyr/zephyr.elf
+            DESTINATION ${HPLATFORMBOX_RISC_V_INSTALL_DIR}/)
+endif()
