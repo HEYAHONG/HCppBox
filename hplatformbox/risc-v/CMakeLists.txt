@@ -42,11 +42,11 @@ file(GLOB RISC_V_ROM_SIMS sim/zephyr/*)
         if(IS_DIRECTORY ${RISC_V_ROM_SIM} AND EXISTS "${RISC_V_ROM_SIM}/CMakeLists.txt")
             file(RELATIVE_PATH RISC_V_ROM_SIM_NAME ${CMAKE_CURRENT_SOURCE_DIR}/sim/zephyr/ ${RISC_V_ROM_SIM})
             message(STATUS "Add RISC-V Zephyr SIM ROM ${RISC_V_ROM_SIM_NAME}")
-            add_custom_target(risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv32  ${CMAKE_COMMAND} -E make_directory risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv32 && ${CMAKE_COMMAND} -DBOARD=qemu_riscv32 -DHPLATFORMBOX_RISC_V_INSTALL_DIR="${HPLATFORMBOX_INSTALL_DIR}/risc-v/sim/zephyr/${RISC_V_ROM_SIM_NAME}/riscv32"  -S ${RISC_V_ROM_SIM}/ -B risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv32 && ${CMAKE_COMMAND} --build risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv32 -t install
+            add_custom_target(risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv32  ${CMAKE_COMMAND} -E make_directory risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv32 && ${CMAKE_COMMAND} -DBOARD=qemu_riscv32 -DHPLATFORMBOX_RISC_V_INSTALL_DIR="${HPLATFORMBOX_INSTALL_DIR}/risc-v/sim/zephyr/${RISC_V_ROM_SIM_NAME}/riscv32"  -G Ninja -S ${RISC_V_ROM_SIM}/ -B risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv32 && ${CMAKE_COMMAND} --build risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv32 -t install
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
                 USES_TERMINAL)
             add_dependencies(risc-v_rom risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv32)
-            add_custom_target(risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv64  ${CMAKE_COMMAND} -E make_directory risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv64 && ${CMAKE_COMMAND} -DBOARD=qemu_riscv64 -DHPLATFORMBOX_RISC_V_INSTALL_DIR="${HPLATFORMBOX_INSTALL_DIR}/risc-v/sim/zephyr/${RISC_V_ROM_SIM_NAME}/riscv64"  -S ${RISC_V_ROM_SIM}/ -B risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv64 && ${CMAKE_COMMAND} --build risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv64 -t install
+            add_custom_target(risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv64  ${CMAKE_COMMAND} -E make_directory risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv64 && ${CMAKE_COMMAND} -DBOARD=qemu_riscv64 -DHPLATFORMBOX_RISC_V_INSTALL_DIR="${HPLATFORMBOX_INSTALL_DIR}/risc-v/sim/zephyr/${RISC_V_ROM_SIM_NAME}/riscv64"  -G Ninja  -S ${RISC_V_ROM_SIM}/ -B risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv64 && ${CMAKE_COMMAND} --build risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv64 -t install
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
                 USES_TERMINAL)
             add_dependencies(risc-v_rom risc-v_rom_sim_zephyr_${RISC_V_ROM_SIM_NAME}_riscv64)
