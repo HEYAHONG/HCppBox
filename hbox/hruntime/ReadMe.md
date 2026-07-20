@@ -41,6 +41,7 @@
 |            `HRUNTIME_LOOP_LIST2`             |     循环列表2     |                 格式同`HRUNTIME_LOOP_LIST1`                  |
 |            `HRUNTIME_LOOP_LIST3`             |     循环列表3     |                 格式同`HRUNTIME_LOOP_LIST1`                  |
 |            `HRUNTIME_LOOP_LIST4`             |     循环列表4     |                 格式同`HRUNTIME_LOOP_LIST1`                  |
+|           `HRUNTIME_PRIORITY_TINY`           |    简易优先级     | 使用简易优先级时执行顺序由链接顺序决定（需要链接脚本支持），且只能使用`HRUNTIME_PRIORITY_0`～`HRUNTIME_PRIORITY_9`作为优先级。 |
 
 **注意:**
 

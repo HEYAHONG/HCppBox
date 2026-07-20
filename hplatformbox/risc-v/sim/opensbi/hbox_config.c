@@ -106,5 +106,3 @@ static int cmd_ps_entry(int argc,const char *argv[])
     return 0;
 };
 HSHELL_COMMAND_EXPORT(ps,cmd_ps_entry,show process info);
-
-

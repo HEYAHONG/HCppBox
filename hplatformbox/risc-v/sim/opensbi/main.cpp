@@ -226,7 +226,7 @@ void  main_init(const hruntime_function_t *func)
     xTaskCreate( shell_task, "shell_task",8192, NULL, 1, NULL );
 
 }
-HRUNTIME_INIT_EXPORT(main,255,main_init,NULL);
+HRUNTIME_INIT_EXPORT(main,HRUNTIME_PRIORITY_8,main_init,NULL);
 HRUNTIME_SYMBOL_EXPORT(main_init);
 
 /*
@@ -236,5 +236,5 @@ void  main_loop(const hruntime_function_t *func)
 {
 
 }
-HRUNTIME_LOOP_EXPORT(main,255,main_loop,NULL);
+HRUNTIME_LOOP_EXPORT(main,HRUNTIME_PRIORITY_8,main_loop,NULL);
 HRUNTIME_SYMBOL_EXPORT(main_loop);

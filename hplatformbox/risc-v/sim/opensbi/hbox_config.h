@@ -12,6 +12,10 @@
  */
 #define HCPPRT_USE_CTORS       1
 
+/*
+ * 启用简易优先级
+ */
+#define HRUNTIME_PRIORITY_TINY     1
 
 /*
  * 启用初始化段
@@ -23,15 +27,6 @@
  */
 #define HRUNTIME_USING_LOOP_SECTION 1
 
-/*
- * 启用循环段缓存表
- */
-#define HRUNTIME_USING_LOOP_CACHE_TABLE 1
-
-/*
- * 循环段缓存表表大小
- */
-#define HRUNTIME_USING_LOOP_CACHE_TABLE_ITEM_COUNT 128
 
 /*
  * 启用符号段

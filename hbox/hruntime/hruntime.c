@@ -225,7 +225,7 @@ bool hruntime_init_done(void)
 void hruntime_loop_section(void)
 {
 #ifdef HRUNTIME_USING_LOOP_SECTION
-#ifdef HRUNTIME_USING_LOOP_SECTION_CACHE
+#if defined(HRUNTIME_USING_LOOP_SECTION_CACHE) && !defined(HRUNTIME_PRIORITY_TINY)
     HRUNTIME_LOOP_CACHE_INVOKE();
 #else
     HRUNTIME_LOOP_INVOKE();
@@ -464,6 +464,21 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
         }
     }
 
+}
+
+void hruntime_function_array_invoke_ignore_priority(const hruntime_function_t *array_base,size_t array_size)
+{
+    if(array_base==NULL || array_size==0)
+    {
+        return;
+    }
+    for(size_t i=0;i<array_size;i++)
+    {
+        if(array_base[i].entry!=NULL)
+        {
+            array_base[i].entry(&array_base[i]);
+        }
+    }
 }
 
 #if defined(HRUNTIME_USING_LOOP_CACHE_TABLE)

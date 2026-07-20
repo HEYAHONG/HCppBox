@@ -92,6 +92,20 @@ struct hruntime_function
     void *                      usr;                /**< 用户参数 */
 };
 
+/*
+ * 定义常用优先级(0~9)
+ */
+#define HRUNTIME_PRIORITY_0 500000000
+#define HRUNTIME_PRIORITY_1 500000001
+#define HRUNTIME_PRIORITY_2 500000002
+#define HRUNTIME_PRIORITY_3 500000003
+#define HRUNTIME_PRIORITY_4 500000004
+#define HRUNTIME_PRIORITY_5 500000005
+#define HRUNTIME_PRIORITY_6 500000006
+#define HRUNTIME_PRIORITY_7 500000007
+#define HRUNTIME_PRIORITY_8 500000008
+#define HRUNTIME_PRIORITY_9 500000009
+
 
 /** \brief 运行时函数数组
  * 一般用于使用段进行初始化与循环时，供内部使用
@@ -101,6 +115,23 @@ struct hruntime_function
  *
  */
 void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t array_size);
+void hruntime_function_array_invoke_ignore_priority(const hruntime_function_t *array_base,size_t array_size);
+
+/*
+ * 定义extern c
+ */
+#if defined(__cplusplus)
+#define HRUNTTIME_EXTERN_C extern "C"
+#else
+#define HRUNTTIME_EXTERN_C
+#endif
+
+#if !defined(HRUNTIME_PRIORITY_TINY)
+#define HRUNTIME_PRIORITY_SECTION_NAME(priority)
+#else
+#define HRUNTIME_PRIORITY_SECTION_NAME_FINALLY(priority)  hdefaults_xstr(.##priority)
+#define HRUNTIME_PRIORITY_SECTION_NAME(priority)          HRUNTIME_PRIORITY_SECTION_NAME_FINALLY(priority)
+#endif
 
 /*
  * 定义导出的HRuntimeInit数据项
@@ -113,13 +144,24 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
  * 定义导出的HRuntimeInit结构体
  */
 #ifndef HRUNTIME_INIT_STRUCT
+#if !defined(HRUNTIME_PRIORITY_TINY)
 #define HRUNTIME_INIT_STRUCT(name,priority,entry,usr) \
-    static const hruntime_function_t hruntime_init_##name = \
+    const hruntime_function_t hruntime_init_section_##name = \
     {\
         (priority),\
         (entry) ,\
         (usr) \
     }
+#else
+#define HRUNTIME_INIT_STRUCT_FINALLY(name,priority,entry,usr) \
+    const hruntime_function_t hruntime_init_section_##priority##name = \
+    {\
+        (priority),\
+        (entry) ,\
+        (usr) \
+    }
+#define HRUNTIME_INIT_STRUCT(name,priority,entry,usr) HRUNTIME_INIT_STRUCT_FINALLY(name,priority,entry,usr)
+#endif
 #endif // HRUNTIME_INIT_STRUCT
 
 #if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
@@ -132,6 +174,7 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
  */
 #define HRUNTIME_INIT_EXPORT(name,priority,entry,usr) \
     HRUNTIME_INIT_DATA(name,priority,entry,usr) \
+    HRUNTTIME_EXTERN_C\
     __USED\
     __SECTION("HRuntimeInit")\
     HRUNTIME_INIT_STRUCT(name,priority,entry,usr)
@@ -141,15 +184,20 @@ void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t
  */
 extern const  int HRuntimeInit$$Base;
 extern const  int HRuntimeInit$$Limit;
+#if !defined(HRUNTIME_PRIORITY_TINY)
 #define HRUNTIME_INIT_INVOKE() \
 hruntime_function_array_invoke((hruntime_function_t *)&HRuntimeInit$$Base,(((uintptr_t)(hruntime_function_t *)&HRuntimeInit$$Limit)-((uintptr_t)(hruntime_function_t *)&HRuntimeInit$$Base))/sizeof(hruntime_function_t))
+#else
+#define HRUNTIME_INIT_INVOKE() \
+hruntime_function_array_invoke_ignore_priority((hruntime_function_t *)&HRuntimeInit$$Base,(((uintptr_t)(hruntime_function_t *)&HRuntimeInit$$Limit)-((uintptr_t)(hruntime_function_t *)&HRuntimeInit$$Base))/sizeof(hruntime_function_t))
+#endif
 
 #elif defined(HCOMPILER_GCC) || defined(HCOMPILER_CLANG)
 /*
  * gcc/clang,使用名称为.HRuntimeInit的section
  * gcc/clang必须在链接脚本中提供__hruntime_init_start与__hruntime_init_end,脚本示例如下:
  *          PROVIDE ( __hruntime_init_start = . );
- *          KEEP (*(SORT(.HRuntimeInit)))
+ *          KEEP (*(SORT(.HRuntimeInit*)))
  *          PROVIDE ( __hruntime_init_end = . );
  *
  */
@@ -159,8 +207,9 @@ hruntime_function_array_invoke((hruntime_function_t *)&HRuntimeInit$$Base,(((uin
 */
 #define HRUNTIME_INIT_EXPORT(name,priority,entry,usr) \
     HRUNTIME_INIT_DATA(name,priority,entry,usr) \
+    HRUNTTIME_EXTERN_C\
     __USED\
-    __SECTION(".HRuntimeInit")\
+    __SECTION(".HRuntimeInit" HRUNTIME_PRIORITY_SECTION_NAME(priority) )\
     HRUNTIME_INIT_STRUCT(name,priority,entry,usr)
 
 /*
@@ -168,9 +217,13 @@ hruntime_function_array_invoke((hruntime_function_t *)&HRuntimeInit$$Base,(((uin
  */
 extern const  hruntime_function_t __hruntime_init_start[];
 extern const  hruntime_function_t __hruntime_init_end[];
+#if !defined(HRUNTIME_PRIORITY_TINY)
 #define HRUNTIME_INIT_INVOKE() \
 hruntime_function_array_invoke(__hruntime_init_start,(((uintptr_t)__hruntime_init_end)-((uintptr_t)__hruntime_init_start))/sizeof(hruntime_function_t))
-
+#else
+#define HRUNTIME_INIT_INVOKE() \
+hruntime_function_array_invoke_ignore_priority(__hruntime_init_start,(((uintptr_t)__hruntime_init_end)-((uintptr_t)__hruntime_init_start))/sizeof(hruntime_function_t))
+#endif
 
 
 
@@ -234,13 +287,24 @@ bool hruntime_function_loop_cache_table_remove(const hruntime_function_t * hrunt
  * 定义导出的HRuntimeLoop结构体
  */
 #ifndef HRUNTIME_LOOP_STRUCT
+#if !defined(HRUNTIME_PRIORITY_TINY)
 #define HRUNTIME_LOOP_STRUCT(name,priority,entry,usr) \
-    static const hruntime_function_t hruntime_loop_##name = \
+    const hruntime_function_t hruntime_loop_section_##name = \
     {\
         (priority),\
         (entry) ,\
         (usr) \
     }
+#else
+#define HRUNTIME_LOOP_STRUCT_FINALLY(name,priority,entry,usr) \
+    const hruntime_function_t hruntime_loop_section_##priority##name = \
+    {\
+        (priority),\
+        (entry) ,\
+        (usr) \
+    }
+#define HRUNTIME_LOOP_STRUCT(name,priority,entry,usr) HRUNTIME_LOOP_STRUCT_FINALLY(name,priority,entry,usr)
+#endif
 #endif
 
 #if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
@@ -253,6 +317,7 @@ bool hruntime_function_loop_cache_table_remove(const hruntime_function_t * hrunt
  */
 #define HRUNTIME_LOOP_EXPORT(name,priority,entry,usr) \
     HRUNTIME_LOOP_DATA(name,priority,entry,usr)\
+    HRUNTTIME_EXTERN_C\
     __USED\
     __SECTION("HRuntimeLoop")\
     HRUNTIME_LOOP_STRUCT(name,priority,entry,usr)
@@ -262,9 +327,13 @@ bool hruntime_function_loop_cache_table_remove(const hruntime_function_t * hrunt
  */
 extern const  int HRuntimeLoop$$Base;
 extern const  int HRuntimeLoop$$Limit;
+#if !defined(HRUNTIME_PRIORITY_TINY)
 #define HRUNTIME_LOOP_INVOKE() \
 hruntime_function_array_invoke((hruntime_function_t *)&HRuntimeLoop$$Base,(((uintptr_t)(hruntime_function_t *)&HRuntimeLoop$$Limit)-((uintptr_t)(hruntime_function_t *)&HRuntimeLoop$$Base))/sizeof(hruntime_function_t))
-
+#else
+#define HRUNTIME_LOOP_INVOKE() \
+hruntime_function_array_invoke_ignore_priority((hruntime_function_t *)&HRuntimeLoop$$Base,(((uintptr_t)(hruntime_function_t *)&HRuntimeLoop$$Limit)-((uintptr_t)(hruntime_function_t *)&HRuntimeLoop$$Base))/sizeof(hruntime_function_t))
+#endif
 
 #define HRUNTIME_LOOP_CACHE_INVOKE() \
 hruntime_function_loop_cache_invoke((hruntime_function_t *)&HRuntimeLoop$$Base,(((uintptr_t)(hruntime_function_t *)&HRuntimeLoop$$Limit)-((uintptr_t)(hruntime_function_t *)&HRuntimeLoop$$Base))/sizeof(hruntime_function_t))
@@ -275,7 +344,7 @@ hruntime_function_loop_cache_invoke((hruntime_function_t *)&HRuntimeLoop$$Base,(
  * gcc/clang,使用名称为.HRuntimeLoop的section
  * gcc/clang必须在链接脚本中提供__hruntime_loop_start与__hruntime_loop_end,脚本示例如下:
  *          PROVIDE ( __hruntime_loop_start = . );
- *          KEEP (*(SORT(.HRuntimeLoop)))
+ *          KEEP (*(SORT(.HRuntimeLoop*)))
  *          PROVIDE ( __hruntime_loop_end = . );
  *
  */
@@ -285,8 +354,9 @@ hruntime_function_loop_cache_invoke((hruntime_function_t *)&HRuntimeLoop$$Base,(
 */
 #define HRUNTIME_LOOP_EXPORT(name,priority,entry,usr) \
     HRUNTIME_LOOP_DATA(name,priority,entry,usr)\
+    HRUNTTIME_EXTERN_C\
     __USED\
-    __SECTION(".HRuntimeLoop")\
+    __SECTION(".HRuntimeLoop" HRUNTIME_PRIORITY_SECTION_NAME(priority) )\
     HRUNTIME_LOOP_STRUCT(name,priority,entry,usr)
 
 /*
@@ -294,8 +364,13 @@ hruntime_function_loop_cache_invoke((hruntime_function_t *)&HRuntimeLoop$$Base,(
  */
 extern const  hruntime_function_t __hruntime_loop_start[];
 extern const  hruntime_function_t __hruntime_loop_end[];
+#if !defined(HRUNTIME_PRIORITY_TINY)
 #define HRUNTIME_LOOP_INVOKE() \
 hruntime_function_array_invoke(__hruntime_loop_start,(((uintptr_t)__hruntime_loop_end)-((uintptr_t)__hruntime_loop_start))/sizeof(hruntime_function_t))
+#else
+#define HRUNTIME_LOOP_INVOKE() \
+hruntime_function_array_invoke_ignore_priority(__hruntime_loop_start,(((uintptr_t)__hruntime_loop_end)-((uintptr_t)__hruntime_loop_start))/sizeof(hruntime_function_t))
+#endif
 
 #define HRUNTIME_LOOP_CACHE_INVOKE() \
 hruntime_function_loop_cache_invoke(__hruntime_loop_start,(((uintptr_t)__hruntime_loop_end)-((uintptr_t)__hruntime_loop_start))/sizeof(hruntime_function_t))
