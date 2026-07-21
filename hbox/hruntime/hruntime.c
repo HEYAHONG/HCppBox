@@ -412,6 +412,25 @@ void hruntime_loop_enable_softwatchdog(bool enable)
     }
 }
 
+#if defined(HRUNTIME_PRIORITY_TINY) && (defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG))
+
+#if defined(HRUNTIME_USING_INIT_SECTION)
+__SECTION("HRuntimeInit" HRUNTIME_PRIORITY_SECTION_NAME(HRUNTIME_PRIORITY_S ) )
+const hruntime_function_t hruntime_init_section_start={0};
+
+__SECTION("HRuntimeInit" HRUNTIME_PRIORITY_SECTION_NAME(HRUNTIME_PRIORITY_E ) )
+const hruntime_function_t hruntime_init_section_end={0};
+#endif
+
+#if defined(HRUNTIME_USING_LOOP_SECTION)
+ __SECTION("HRuntimeLoop" HRUNTIME_PRIORITY_SECTION_NAME(HRUNTIME_PRIORITY_S ) )
+const hruntime_function_t hruntime_loop_section_start={0};
+
+ __SECTION("HRuntimeLoop" HRUNTIME_PRIORITY_SECTION_NAME(HRUNTIME_PRIORITY_E ) )
+const hruntime_function_t hruntime_loop_section_end={0};
+#endif
+
+#endif
 void hruntime_function_array_invoke(const hruntime_function_t *array_base,size_t array_size)
 {
     if(array_base==NULL || array_size == 0)
