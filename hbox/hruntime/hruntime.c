@@ -974,8 +974,8 @@ size_t hruntime_symbol_enum(uint32_t type,hruntime_symbol_enum_callback_t callba
 #ifdef HRUNTIME_USING_SYMBOL_SECTION
 #if defined(HCOMPILER_ARMCC) || defined(HCOMPILER_ARMCLANG)
         {
-            array_base=(hruntime_symbol_t *)&HRuntimeLoop$$Base;
-            array_size=(((uintptr_t)(hruntime_symbol_t *)&HRuntimeLoop$$Limit)-((uintptr_t)(hruntime_symbol_t *)&HRuntimeLoop$$Base))/sizeof(hruntime_symbol_t);
+            array_base=(hruntime_symbol_t *)&HRuntimeSymbol$$Base;
+            array_size=(((uintptr_t)(hruntime_symbol_t *)&HRuntimeSymbol$$Limit)-((uintptr_t)(hruntime_symbol_t *)&HRuntimeSymbol$$Base))/sizeof(hruntime_symbol_t);
         }
 #elif  defined(HCOMPILER_GCC) || defined(HCOMPILER_CLANG)
         {
