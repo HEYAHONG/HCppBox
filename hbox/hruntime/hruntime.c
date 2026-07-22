@@ -173,6 +173,10 @@ void hruntime_init_hsoftplc(void)
 #define HRUNTIME_INIT_LIST4
 #endif
 
+#if defined(HOPENBLT) && !defined(HRUNTIME_NO_SOFTPLC)
+void BootInit(void);
+#endif
+
 HDEFAULTS_RO_ATTRIBUTE
 static const hruntime_internal_function_t hruntime_internal_function_init[]=
 {
@@ -185,6 +189,9 @@ static const hruntime_internal_function_t hruntime_internal_function_init[]=
     HRUNTIME_INIT_LIST2
     HRUNTIME_INIT_LIST3
     HRUNTIME_INIT_LIST4
+#if defined(HOPENBLT) && !defined(HRUNTIME_NO_SOFTPLC)
+    BootInit,
+#endif
     NULL
 };
 
@@ -324,6 +331,10 @@ void hruntime_loop_hsoftplc(void)
 #define HRUNTIME_LOOP_LIST4
 #endif
 
+#if defined(HOPENBLT) && !defined(HRUNTIME_NO_SOFTPLC)
+void BootTask(void);
+#endif
+
 HDEFAULTS_RO_ATTRIBUTE
 static const hruntime_internal_function_t hruntime_internal_function_loop[]=
 {
@@ -349,6 +360,9 @@ static const hruntime_internal_function_t hruntime_internal_function_loop[]=
     HRUNTIME_LOOP_LIST2
     HRUNTIME_LOOP_LIST3
     HRUNTIME_LOOP_LIST4
+#if defined(HOPENBLT) && !defined(HRUNTIME_NO_SOFTPLC)
+    BootTask,
+#endif
     NULL
 };
 
