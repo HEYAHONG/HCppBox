@@ -20,7 +20,7 @@
 
 #ifdef HDEFAULTS_SYSCALL_HSETTIMEOFDAY
 
-#if defined(HDEFAULTS_OS_UNIX)  || ( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) )
+#if defined(HDEFAULTS_OS_RTTHREAD) || defined(HDEFAULTS_OS_UNIX)  || ( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) )
 #include <sys/time.h>
 #elif defined(HDEFAULTS_OS_WINDOWS)
 #include <windows.h>
@@ -36,7 +36,7 @@ HDEFAULTS_USERCALL_DEFINE2(hsettimeofday,HDEFAULTS_SYSCALL_HSETTIMEOFDAY,int,con
     int ret=-1;
 #if defined(HSETTIMEOFDAY)
     ret=HSETTIMEOFDAY(tv,tz);
-#elif (defined(HDEFAULTS_OS_UNIX)  || ( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) ))  && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
+#elif ( defined(HDEFAULTS_OS_RTTHREAD) || defined(HDEFAULTS_OS_UNIX)  || ( defined(HDEFAULTS_PLATFORM_ESP) && defined(IDF_VER) ))  && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     {
         struct timeval _tv= {0};
         struct timezone _tz= {0};
