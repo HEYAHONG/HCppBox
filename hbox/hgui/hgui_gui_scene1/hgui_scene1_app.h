@@ -59,6 +59,8 @@ size_t hgui_scene1_app_height_get(const hgui_scene1_app_t *app);
 
 /** \brief App初始化
  *
+ * * hgui_scene1_app_init系列函数不可嵌套使用，即不可以在任何回调中调用hgui_scene1_app_init，应当在主（GUI）线程入口函数调用
+ *
  * \param app const hgui_scene1_app_t* App指针
  * \param usr void* 用户自定义参数
  * \return bool 是否成功初始化
@@ -76,12 +78,29 @@ bool hgui_scene1_app_was_init(const hgui_scene1_app_t *app);
 
 /** \brief App更新,注意：在某些场景下不进行更新将导致异常。
  *
+ * hgui_scene1_app_update系列函数不可嵌套使用，即不可以在任何回调中调用hgui_scene1_app_update，应当在主（GUI）线程入口函数调用
+ *
  * \param app const hgui_scene1_app_t* App指针
  * \param usr void* 用户自定义参数
  * \return bool 是否成功
  *
  */
 bool hgui_scene1_app_update(const hgui_scene1_app_t *app,void *usr);
+
+/** \brief 事件处理输入,注意：若不在主(GUI)线程，需要加锁
+ *
+ *
+ * \param app const hgui_scene1_app_t* App指针
+ * \param event_type uint8_t 事件类型
+ * \param event_param void* 事件参数
+ * \param event_param_length size_t 事件参数长度
+ * \param usr void* 用户参数。
+ * \return bool 是否处理完成
+ *
+ */
+bool  hgui_scene1_app_event_input(const hgui_scene1_app_t *app,uint8_t event_type,void *event_param,size_t event_param_length,void *usr);
+
+
 
 /** \brief App设置刷新标志，调用此函数后下次App更新时将进行App刷新操作。
  *

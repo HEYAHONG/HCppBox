@@ -7,7 +7,7 @@
 - 显示简易的图片文字。
 - 提供简易的交互(如菜单等)。
 
-更加复杂的交互(如音视频、动画、字体效果等)应当使用更加成熟的库,如[Qt](https://www.qt.io/)、[minigui](https://github.com/VincentWei/MiniGUI.git)、[lvgl](https://github.com/lvgl/lvgl.git)、[u8g2](https://github.com/olikraus/u8g2.git)等
+更加复杂的交互(如音视频、动画、字体效果等)应当使用更加成熟的库,如[Qt](https://www.qt.io/)、[minigui](https://github.com/VincentWei/MiniGUI.git)、[lvgl](https://github.com/lvgl/lvgl.git)、[u8g2](https://github.com/olikraus/u8g2.git)、[simplegui](https://gitee.com/Polarix/simplegui)等
 
 主要目标硬件为以下类型的硬件:
 

@@ -306,6 +306,24 @@ bool hgui_scene1_app_update(const hgui_scene1_app_t *app,void *usr)
     return g_hgui_scene1_app.update(app,usr);
 }
 
+bool  hgui_scene1_app_event_input(const hgui_scene1_app_t *app,uint8_t event_type,void *event_param,size_t event_param_length,void *usr)
+{
+    if(app==NULL)
+    {
+        app=&g_hgui_scene1_app;
+    }
+
+    hgui_driver_t * driver=hgui_scene1_app_driver_get(app);
+
+    if(driver == NULL)
+    {
+        return false;
+    }
+
+    return hgui_driver_event_input(driver,event_type,event_param,event_param_length,usr);
+
+}
+
 void hgui_scene1_app_need_refresh(const hgui_scene1_app_t *app)
 {
     if(app==NULL)
