@@ -286,7 +286,7 @@ static void output_crc8_table(std::string basename,hcrc_crc8_t config)
         c_source_begin(basename,c_header_name,ss);
         {
             {
-                ss<<"static uint8_t " <<  "__"<< basename << "_table" << "_data[]=" <<std::endl;
+                ss<<"static const uint8_t " <<  "__"<< basename << "_table" << "_data[]=" <<std::endl;
                 ss<<"{"<<std::endl;
                 for(size_t i=0; i<256; i++)
                 {
@@ -480,7 +480,7 @@ static void output_crc16_table(std::string basename,hcrc_crc16_t config)
         c_source_begin(basename,c_header_name,ss);
         {
             {
-                ss<<"static uint16_t " <<  "__"<<basename << "_table" << "_data[]=" <<std::endl;
+                ss<<"static const uint16_t " <<  "__"<<basename << "_table" << "_data[]=" <<std::endl;
                 ss<<"{"<<std::endl;
                 for(size_t i=0; i<256; i++)
                 {
@@ -673,7 +673,7 @@ static void output_crc32_table(std::string basename,hcrc_crc32_t config)
         c_source_begin(basename,c_header_name,ss);
         {
             {
-                ss<<"static uint32_t " <<  "__"<<basename << "_table" << "_data[]=" <<std::endl;
+                ss<<"static const uint32_t " <<  "__"<<basename << "_table" << "_data[]=" <<std::endl;
                 ss<<"{"<<std::endl;
                 for(size_t i=0; i<256; i++)
                 {
@@ -866,7 +866,7 @@ static void output_crc64_table(std::string basename,hcrc_crc64_t config)
         c_source_begin(basename,c_header_name,ss);
         {
             {
-                ss<<"static uint64_t " <<  "__"<<basename << "_table" << "_data[]=" <<std::endl;
+                ss<<"static const uint64_t " <<  "__"<<basename << "_table" << "_data[]=" <<std::endl;
                 ss<<"{"<<std::endl;
                 for(size_t i=0; i<256; i++)
                 {
