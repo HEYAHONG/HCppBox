@@ -8,6 +8,7 @@
  **************************************************************/
 #include "hrng_mt.h"
 
+HDEFAULTS_RW_ATTRIBUTE
 static hrng_mt_context_t hrng_mt_context_default=HRNG_MT_CONTEXT_INIT;
 
 void hrng_mt_srand(hrng_mt_context_t *ctx,uint32_t seed)

@@ -8,11 +8,13 @@
  **************************************************************/
 #include "hrng_linearcongruential.h"
 
+HDEFAULTS_RW_ATTRIBUTE
 hrng_linearcongruential_context_t hrng_linearcongruential_context_rand48=
 {
     0x00001234abcd330e
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hrng_linearcongruential_config_t hrng_linearcongruential_config_rand48=
 {
     0x00000005deece66d,

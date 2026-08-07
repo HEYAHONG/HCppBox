@@ -8,6 +8,7 @@
  **************************************************************/
 #include "hcrc_base.h"
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc8_t  hcrc_crc8_default=
 {
     0,
@@ -17,6 +18,7 @@ const hcrc_crc8_t  hcrc_crc8_default=
     false
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc8_t  hcrc_crc8_itu=
 {
     0,
@@ -26,6 +28,7 @@ const hcrc_crc8_t  hcrc_crc8_itu=
     false
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc8_t  hcrc_crc8_rohc=
 {
     0xFF,
@@ -35,6 +38,7 @@ const hcrc_crc8_t  hcrc_crc8_rohc=
     true
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc8_t  hcrc_crc8_maxim=
 {
     0,
@@ -240,6 +244,7 @@ bool hcrc_crc8_check(const hcrc_crc8_t *config,const uint8_t *data,size_t datale
     return check==hcrc_crc8_calculate(config,data,datalen);
 }
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc16_t  hcrc_crc16_ibm=
 {
     0x0000,
@@ -248,6 +253,8 @@ const hcrc_crc16_t  hcrc_crc16_ibm=
     true,
     true
 };
+
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc16_t  hcrc_crc16_maxim=
 {
     0x0000,
@@ -256,6 +263,8 @@ const hcrc_crc16_t  hcrc_crc16_maxim=
     true,
     true
 };
+
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc16_t  hcrc_crc16_usb=
 {
     0xFFFF,
@@ -264,6 +273,8 @@ const hcrc_crc16_t  hcrc_crc16_usb=
     true,
     true
 };
+
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc16_t  hcrc_crc16_modbus=
 {
     0xFFFF,
@@ -272,6 +283,8 @@ const hcrc_crc16_t  hcrc_crc16_modbus=
     true,
     true
 };
+
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc16_t  hcrc_crc16_ccitt=
 {
     0x0000,
@@ -280,6 +293,8 @@ const hcrc_crc16_t  hcrc_crc16_ccitt=
     true,
     true
 };
+
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc16_t  hcrc_crc16_ccitt_false=
 {
     0xFFFF,
@@ -288,6 +303,8 @@ const hcrc_crc16_t  hcrc_crc16_ccitt_false=
     false,
     false
 };
+
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc16_t  hcrc_crc16_x25=
 {
     0xFFFF,
@@ -296,6 +313,8 @@ const hcrc_crc16_t  hcrc_crc16_x25=
     true,
     true
 };
+
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc16_t  hcrc_crc16_xmodem=
 {
     0x0000,
@@ -304,6 +323,8 @@ const hcrc_crc16_t  hcrc_crc16_xmodem=
     false,
     false
 };
+
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc16_t  hcrc_crc16_dnp=
 {
     0x0000,
@@ -514,7 +535,7 @@ bool hcrc_crc16_check(const hcrc_crc16_t *config,const uint8_t *data,size_t data
     return check==hcrc_crc16_calculate(config,data,datalen);
 }
 
-
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc32_t hcrc_crc32_default=
 {
     0xFFFFFFFF,
@@ -524,6 +545,7 @@ const hcrc_crc32_t hcrc_crc32_default=
     true
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc32_t hcrc_crc32_mpeg_2=
 {
     0xFFFFFFFF,
@@ -533,6 +555,7 @@ const hcrc_crc32_t hcrc_crc32_mpeg_2=
     false
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc32_t hcrc_crc32_bzip2=
 {
     0xFFFFFFFF,
@@ -542,6 +565,7 @@ const hcrc_crc32_t hcrc_crc32_bzip2=
     false
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc32_t hcrc_crc32_cksum=
 {
     0x00000000,
@@ -551,6 +575,7 @@ const hcrc_crc32_t hcrc_crc32_cksum=
     false
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc32_t hcrc_crc32_32c=
 {
     0xFFFFFFFF,
@@ -560,6 +585,7 @@ const hcrc_crc32_t hcrc_crc32_32c=
     true
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc32_t hcrc_crc32_32d=
 {
     0xFFFFFFFF,
@@ -569,6 +595,7 @@ const hcrc_crc32_t hcrc_crc32_32d=
     true
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc32_t hcrc_crc32_32q=
 {
     0x00000000,
@@ -781,7 +808,7 @@ bool hcrc_crc32_check(const hcrc_crc32_t *config,const uint8_t *data,size_t data
     return check==hcrc_crc32_calculate(config,data,datalen);
 }
 
-
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc64_t hcrc_crc64_default=
 {
     0x0000000000000000ull,
@@ -791,6 +818,7 @@ const hcrc_crc64_t hcrc_crc64_default=
     false
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc64_t hcrc_crc64_we=
 {
     0xffffffffffffffffull,
@@ -800,6 +828,7 @@ const hcrc_crc64_t hcrc_crc64_we=
     false
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc64_t hcrc_crc64_wev2=
 {
     0xffffffffffffffffull,
@@ -809,6 +838,7 @@ const hcrc_crc64_t hcrc_crc64_wev2=
     true
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 const hcrc_crc64_t hcrc_crc64_iso=
 {
     0xffffffffffffffffull,

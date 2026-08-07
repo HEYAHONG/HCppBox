@@ -11,6 +11,7 @@
 #define HECDSA256_NUM_DIGITS        (HECDSA256_BYTES / sizeof(uint64_t))
 #define HECDSA256_MAX_RETRY         (16)
 
+HDEFAULTS_RO_ATTRIBUTE
 const hecdsa256_curve_t hecdsa256_curve_secp256r1=
 {
     /*

@@ -19,6 +19,7 @@ typedef struct hwatchdog_watch
     hwatchdog_tick_t tick;
 } hwatchdog_watch_t;
 
+HDEFAULTS_ZI_ATTRIBUTE
 static struct
 {
     //用户参数

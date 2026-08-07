@@ -23,11 +23,14 @@
         (p)[3] = (i) & 0xff;                        \
         } while(0)
 
+
+HDEFAULTS_RO_ATTRIBUTE
 static const uint32_t hsm4_fk[4] =
 {
     0xa3b1bac6, 0x56aa3350, 0x677d9197, 0xb27022dc
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 static const uint32_t hsm4_ck[32] =
 {
     0x00070e15, 0x1c232a31, 0x383f464d, 0x545b6269,
@@ -40,6 +43,7 @@ static const uint32_t hsm4_ck[32] =
     0x10171e25, 0x2c333a41, 0x484f565d, 0x646b7279
 };
 
+HDEFAULTS_RO_ATTRIBUTE
 static const uint8_t hsm4_sbox[256] =
 {
     0xd6, 0x90, 0xe9, 0xfe, 0xcc, 0xe1, 0x3d, 0xb7,
