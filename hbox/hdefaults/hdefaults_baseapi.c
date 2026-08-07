@@ -337,7 +337,7 @@ static const hdefaults_api_table_t default_api_table=
     do_hdefaults_usercall,
     do_hdefaults_symbol_find
 };
-HDEFAULTS_RO_ATTRIBUTE
+HDEFAULTS_RW_ATTRIBUTE
 static const hdefaults_api_table_t * api_table=&default_api_table;
 const hdefaults_api_table_t * hdefaults_get_api_table(void)
 {
