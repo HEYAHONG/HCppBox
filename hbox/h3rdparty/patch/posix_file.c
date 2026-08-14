@@ -14,3 +14,5 @@
 #define lseek64  hlseek64
 #undef  fcntl
 #define fcntl    hfcntl
+#undef  fsync
+#define fsync    hfsync

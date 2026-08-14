@@ -142,6 +142,19 @@
 | `HCLOSE`                      | 用户实现的`close` | 参数与返回值同`close` |
 | `HDEFAULTS_SYSCALL_NO_HCLOSE` | 不实现`close`     |                       |
 
+## `fsync`
+
+清空文件缓存
+
+当系统支持`fsync`时，采用系统的实现。
+
+可外部配置的宏定义如下:
+
+| 宏定义                        | 说明              | 备注                  |
+| ----------------------------- | ----------------- | --------------------- |
+| `HFSYNC`                      | 用户实现的`fsync` | 参数与返回值同`close` |
+| `HDEFAULTS_SYSCALL_NO_HFSYNC` | 不实现`fsync`     |                       |
+
 ## `read`
 
 从文件描述符读取数据

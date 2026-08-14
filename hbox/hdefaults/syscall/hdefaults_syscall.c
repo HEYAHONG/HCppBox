@@ -31,6 +31,7 @@
 #include "wrapper/hmunmap.c"
 #include "wrapper/hmprotect.c"
 #include "wrapper/hclose.c"
+#include "wrapper/hfsync.c"
 #include "wrapper/hread.c"
 #include "wrapper/hwrite.c"
 #include "wrapper/hlseek.c"
@@ -53,6 +54,7 @@
 #include "implementation/hmunmap.c"
 #include "implementation/hmprotect.c"
 #include "implementation/hclose.c"
+#include "implementation/hfsync.c"
 #include "implementation/hread.c"
 #include "implementation/hwrite.c"
 #include "implementation/hlseek.c"
@@ -98,6 +100,10 @@
 #ifdef HDEFAULTS_SYSCALL_NO_HCLOSE
 #undef HDEFAULTS_SYSCALL_HCLOSE
 #endif // HDEFAULTS_SYSCALL_NO_HCLOSE
+
+#ifdef HDEFAULTS_SYSCALL_NO_HFSYNC
+#undef HDEFAULTS_SYSCALL_HFSYNC
+#endif // HDEFAULTS_SYSCALL_NO_HFSYNC
 
 #ifdef HDEFAULTS_SYSCALL_NO_HREAD
 #undef HDEFAULTS_SYSCALL_HREAD
@@ -198,6 +204,13 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
     case HDEFAULTS_SYSCALL_HCLOSE:
     {
         ret=__hdefaults_usercall_hclose;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HFSYNC
+    case HDEFAULTS_SYSCALL_HFSYNC:
+    {
+        ret=__hdefaults_usercall_hfsync;
     }
     break;
 #endif
