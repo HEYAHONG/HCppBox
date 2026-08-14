@@ -8,6 +8,8 @@
 #define fwrite   hfwrite
 #undef  fclose
 #define fclose   hfclose
+#undef  fflush
+#define fflush   hfflush
 #undef  ferror
 #define ferror   hferror
 #undef  fseek
