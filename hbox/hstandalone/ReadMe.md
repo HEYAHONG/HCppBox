@@ -22,3 +22,11 @@
 
 具体实现见[hopenblt](hopenblt)目录。
 
+## hflashdb
+
+辅助实现[flashdb](https://github.com/armink/FlashDB.git) 设备端。 
+
+具体实现见[hflashdb](hflashdb)目录。
+
+
+
