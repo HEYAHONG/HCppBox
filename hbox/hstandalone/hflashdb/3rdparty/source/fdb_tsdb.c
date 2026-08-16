@@ -57,15 +57,15 @@
 
 #define SECTOR_HDR_DATA_SIZE                     (FDB_WG_ALIGN(sizeof(struct sector_hdr_data)))
 #define LOG_IDX_DATA_SIZE                        (FDB_WG_ALIGN(sizeof(struct log_idx_data)))
-#define LOG_IDX_TS_OFFSET                        ((unsigned long)(&((struct log_idx_data *)0)->time))
-#define SECTOR_MAGIC_OFFSET                      ((unsigned long)(&((struct sector_hdr_data *)0)->magic))
-#define SECTOR_START_TIME_OFFSET                 ((unsigned long)(&((struct sector_hdr_data *)0)->start_time))
-#define SECTOR_END0_TIME_OFFSET                  ((unsigned long)(&((struct sector_hdr_data *)0)->end_info[0].time))
-#define SECTOR_END0_IDX_OFFSET                   ((unsigned long)(&((struct sector_hdr_data *)0)->end_info[0].index))
-#define SECTOR_END0_STATUS_OFFSET                ((unsigned long)(&((struct sector_hdr_data *)0)->end_info[0].status))
-#define SECTOR_END1_TIME_OFFSET                  ((unsigned long)(&((struct sector_hdr_data *)0)->end_info[1].time))
-#define SECTOR_END1_IDX_OFFSET                   ((unsigned long)(&((struct sector_hdr_data *)0)->end_info[1].index))
-#define SECTOR_END1_STATUS_OFFSET                ((unsigned long)(&((struct sector_hdr_data *)0)->end_info[1].status))
+#define LOG_IDX_TS_OFFSET                        ((uintptr_t)(&((struct log_idx_data *)0)->time))
+#define SECTOR_MAGIC_OFFSET                      ((uintptr_t)(&((struct sector_hdr_data *)0)->magic))
+#define SECTOR_START_TIME_OFFSET                 ((uintptr_t)(&((struct sector_hdr_data *)0)->start_time))
+#define SECTOR_END0_TIME_OFFSET                  ((uintptr_t)(&((struct sector_hdr_data *)0)->end_info[0].time))
+#define SECTOR_END0_IDX_OFFSET                   ((uintptr_t)(&((struct sector_hdr_data *)0)->end_info[0].index))
+#define SECTOR_END0_STATUS_OFFSET                ((uintptr_t)(&((struct sector_hdr_data *)0)->end_info[0].status))
+#define SECTOR_END1_TIME_OFFSET                  ((uintptr_t)(&((struct sector_hdr_data *)0)->end_info[1].time))
+#define SECTOR_END1_IDX_OFFSET                   ((uintptr_t)(&((struct sector_hdr_data *)0)->end_info[1].index))
+#define SECTOR_END1_STATUS_OFFSET                ((uintptr_t)(&((struct sector_hdr_data *)0)->end_info[1].status))
 
 /* the next address is get failed */
 #define FAILED_ADDR                              0xFFFFFFFF

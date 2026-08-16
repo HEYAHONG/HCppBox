@@ -78,4 +78,6 @@ then
 		cp "flashdb_fal_template_c" "../flashdb_${c_file}"
 		sed -i "s/flashdb_filename/${c_file}/g"  "../flashdb_${c_file}"
 	done
+	#64位兼容性patch
+	sed -i 's/(unsigned long)/(uintptr_t)/g' *.c
 fi
