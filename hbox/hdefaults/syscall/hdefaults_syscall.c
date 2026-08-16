@@ -38,6 +38,7 @@
 #include "wrapper/hopen.c"
 #include "wrapper/hfcntl.c"
 #include "wrapper/hopenat.c"
+#include "wrapper/hmkdir.c"
 #include "wrapper/hioctl.c"
 #include "wrapper/hclock_getres.c"
 #include "wrapper/hclock_gettime.c"
@@ -61,6 +62,7 @@
 #include "implementation/hopen.c"
 #include "implementation/hfcntl.c"
 #include "implementation/hopenat.c"
+#include "implementation/hmkdir.c"
 #include "implementation/hioctl.c"
 #include "implementation/hclock_getres.c"
 #include "implementation/hclock_gettime.c"
@@ -128,6 +130,10 @@
 #ifdef HDEFAULTS_SYSCALL_NO_HOPENAT
 #undef HDEFAULTS_SYSCALL_HOPENAT
 #endif // HDEFAULTS_SYSCALL_NO_HOPENAT
+
+#ifdef HDEFAULTS_SYSCALL_NO_HMKDIR
+#undef HDEFAULTS_SYSCALL_HMKDIR
+#endif // HDEFAULTS_SYSCALL_NO_HMKDIR
 
 #ifdef HDEFAULTS_SYSCALL_NO_HIOCTL
 #undef HDEFAULTS_SYSCALL_HIOCTL
@@ -253,6 +259,13 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
     case HDEFAULTS_SYSCALL_HOPENAT:
     {
         ret=__hdefaults_usercall_hopenat;
+    }
+    break;
+#endif
+#ifdef HDEFAULTS_SYSCALL_HMKDIR
+    case HDEFAULTS_SYSCALL_HMKDIR:
+    {
+        ret=__hdefaults_usercall_hmkdir;
     }
     break;
 #endif

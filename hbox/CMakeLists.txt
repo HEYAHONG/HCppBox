@@ -54,6 +54,12 @@ if(HAVE_SYS_IOCTL_H)
     target_compile_definitions(HBox PUBLIC  HAVE_SYS_IOCTL_H=1)
 endif()
 
+#查找sys/stat.h
+check_include_file(sys/stat.h HAVE_SYS_STAT_H)
+if(HAVE_SYS_STAT_H)
+    target_compile_definitions(HBox PUBLIC  HAVE_SYS_STAT_H=1)
+endif()
+
 
 #查找unistd.h
 check_include_file(unistd.h HAVE_UNISTD_H)
