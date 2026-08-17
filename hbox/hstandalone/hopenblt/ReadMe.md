@@ -4,6 +4,20 @@
 
 主机端的工具见[https://github.com/feaser/openblt](https://github.com/feaser/openblt)。
 
+# 头文件目录
+
+若不采用CMake，需要将下列目录添加至头文件搜索目录：
+
+-  [port](port)
+- [3rdparty](3rdparty)
+
+# 源代码文件目录
+
+若不采用CMake，需要将下列目录的文件（不包括子目录）添加至源代码树。
+
+-  [port](port)
+- [3rdparty](3rdparty)
+
 # 移植
 
 ## 主任务
