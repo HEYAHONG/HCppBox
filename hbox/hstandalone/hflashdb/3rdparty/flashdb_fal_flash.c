@@ -21,6 +21,10 @@
 
 #include "source/flashdb.h"
 
+#if defined(HFLASHDB_NO_RTT)
+#undef  RT_VER_NUM 
+#endif
+
 #ifndef  HFLASHDB_USING_SYSTEM_FLASHDB
 
 #ifdef FDB_USING_FAL_MODE
