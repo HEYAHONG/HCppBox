@@ -299,6 +299,9 @@ hdefaults_syscall_function_t hdefaults_syscall_function_find(uintptr_t number)
 #endif
     default:
     {
+#ifdef  HDEFAULTS_SYSCALL_FUNCTION_FIND_DEFAULT
+        ret=HDEFAULTS_SYSCALL_FUNCTION_FIND_DEFAULT(number);
+#endif // HDEFAULTS_SYSCALL_FUNCTION_FIND_DEFAULT
     }
     break;
     }

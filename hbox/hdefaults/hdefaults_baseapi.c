@@ -279,7 +279,9 @@ intptr_t do_hdefaults_usercall(uintptr_t number,...)
         break;
         default:
         {
-
+#ifdef HDEFAULTS_USERCALL_FUNCTION_DEFAULT
+            ret=HDEFAULTS_USERCALL_FUNCTION_DEFAULT(number,va);
+#endif // HDEFAULTS_USERCALL_FUNCTION_DEFAULT
         }
         break;
         }
