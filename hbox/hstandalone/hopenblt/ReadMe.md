@@ -108,6 +108,8 @@ openblt的主任务主要采用以下函数：
 
 定义`BOOT_COM_NET_ENABLE`为1时启用。
 
+由于uip协议栈相对老旧，此处提供了[net_patch.c](port/net_patch.c)用于用户在不使用uip时编译连接(即启用NET但不使用uip)，定义`HOPENBLT_NET_NO_IMPLEMENTATION`可禁用此实现。若用户需要NET正常工作，需要自行实现net_patch.c相关函数。
+
  **注意:[net.c](3rdparty/net.c)已实现接口,依赖[uip](https://github.com/feaser/openblt/tree/master/Target/Source/third_party/uip),若为其他环境可能需要重新实现net.c。**
 
 #### 自定义通信
