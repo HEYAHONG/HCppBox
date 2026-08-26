@@ -98,7 +98,7 @@ HOPENBLT_NET_FUNCTION_ATTRIBUTE
 void      uip_input(void)
 {
     /*
-     * 处理网络设备层数据输入,具体内容通过全局变量uip_buf与uip_len传递
+     * 处理网络数据输入,具体内容通过全局变量uip_buf与uip_len传递
      */
 
 
