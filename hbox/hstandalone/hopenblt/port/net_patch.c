@@ -101,6 +101,19 @@ void      uip_input(void)
      * 处理网络设备层数据输入,具体内容通过全局变量uip_buf与uip_len传递
      */
 
+
+    if(uip_conn==NULL)
+    {
+        uip_conn=&uip_conns[0];
+    }
+
+    if(uip_udp_conn==NULL)
+    {
+        uip_udp_conn=&uip_udp_conns[0];
+    }
+
+    UIP_APPCALL();          /**< 调用APPCALL,调用APPCALL时应当设置好全局变量uip_conn、uip_appdata、uip_len */
+
 }
 
 HOPENBLT_NET_FUNCTION_ATTRIBUTE

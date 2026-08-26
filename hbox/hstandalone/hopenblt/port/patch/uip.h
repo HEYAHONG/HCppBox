@@ -84,7 +84,7 @@ struct uip_conn
 
 
 #if !defined(UIP_CONNS)
-#define UIP_CONNS 4
+#define UIP_CONNS 1
 #endif
 
 extern struct uip_conn *uip_conn;
@@ -107,7 +107,7 @@ struct uip_udp_conn
 };
 
 #ifndef UIP_UDP_CONNS
-#define UIP_UDP_CONNS 4
+#define UIP_UDP_CONNS 1
 #endif
 extern struct uip_udp_conn *uip_udp_conn;
 extern struct uip_udp_conn uip_udp_conns[UIP_UDP_CONNS];
