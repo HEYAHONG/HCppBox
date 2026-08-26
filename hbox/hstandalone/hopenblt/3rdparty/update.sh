@@ -71,4 +71,5 @@ then
 	sed -i 's/blt_int32u mta/blt_addr   mta/g' xcp.c
 	sed -i 's/(blt_addr)(blt_int32u)/(blt_addr)/g' xcp.c
 	sed -i 's/(blt_int32u)\&/(blt_addr)\&/g' xcp.c
+	sed -i 's/ff.h/patch\/ff.h/g' file.h
 fi

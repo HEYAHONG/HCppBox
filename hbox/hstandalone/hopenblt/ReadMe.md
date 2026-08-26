@@ -70,6 +70,8 @@ openblt的主任务主要采用以下函数：
 
 定义`BOOT_FILE_SYS_ENABLE`为1时启用。
 
+此处提供了[file_patch.c](port/file_patch.c)用于用户在不使用fatfs时编译连接(即启用文件但不使用fatfs)，定义`HOPENBLT_FILE_NO_IMPLEMENTATION`可禁用此实现。若用户需要文件正常工作，需要使C库文件正常工作或者自行实现file_patch.c。
+
 **注意:[file.c](3rdparty/file.c)已实现接口,依赖[fatfs](https://github.com/feaser/openblt/tree/master/Target/Source/third_party/fatfs)。**
 
 ### 通信接口
