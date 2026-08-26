@@ -80,17 +80,14 @@ char*   f_gets (char* buff, intptr_t len, FIL* fp)
         hfread(&ch,sizeof(ch),1,(FILE *)fp->ptr[0]);
         if(ch > 0)
         {
-            if(ch == '\n')
+            buff[index++]=ch;
+            if(index==len)
             {
                 return buff;
             }
-            else if(ch != '\r' )
+            if(ch == '\n')
             {
-                buff[index++]=ch;
-                if(index==len)
-                {
-                    return buff;
-                }
+                return buff;
             }
         }
         else
