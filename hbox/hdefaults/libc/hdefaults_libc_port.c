@@ -60,6 +60,7 @@
 #include "wrapper/stdio/hfprintf.c"
 #include "wrapper/stdio/hputs.c"
 #include "wrapper/stdio/hferror.c"
+#include "wrapper/stdio/hfeof.c"
 #include "wrapper/stdio/hfread.c"
 #include "wrapper/stdio/hfwrite.c"
 #include "wrapper/stdio/hfclose.c"
