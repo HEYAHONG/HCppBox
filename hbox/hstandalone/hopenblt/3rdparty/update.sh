@@ -68,4 +68,7 @@ then
 	sed -i "s/netdev.h/patch\/netdev.h/g" net.c
 	sed -i "s/uip.h/patch\/uip.h/g" net.c
 	sed -i "s/uip_arp.h/patch\/uip_arp.h/g" net.c
+	sed -i 's/blt_int32u mta/blt_addr   mta/g' xcp.c
+	sed -i 's/(blt_addr)(blt_int32u)/(blt_addr)/g' xcp.c
+	sed -i 's/(blt_int32u)\&/(blt_addr)\&/g' xcp.c
 fi

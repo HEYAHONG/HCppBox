@@ -45,7 +45,7 @@ typedef struct
   blt_int8u  s_n_k_resource;                        /**< for seed/key sequence         */
   blt_int8u  ctoPending;                            /**< cto transmission pending flag */
   blt_int16s ctoLen;                                /**< cto current packet length     */
-  blt_int32u mta;                                   /**< memory transfer address       */
+  blt_addr   mta;                                   /**< memory transfer address       */
   blt_int8u  node_id;                               /**> node id from connection mode  */
 } tXcpInfo;
 
@@ -720,7 +720,7 @@ static void XcpCmdGetId(blt_int8u *data)
   xcpInfo.ctoData[0] = XCP_PID_RES;
 
   /* point mta to start of station id string */
-  xcpInfo.mta = (blt_int32u)&xcpStationId[0];
+  xcpInfo.mta = (blt_addr)&xcpStationId[0];
 
   /* set station id mode to 0 */
   xcpInfo.ctoData[1] = 0;
@@ -781,7 +781,7 @@ static void XcpCmdUpload(blt_int8u *data)
   /* read out the length of the requested upload operation */
   len = data[1];
   /* set the destination pointer */
-  destPtr = (blt_int8u *)((blt_addr)(blt_int32u)&xcpInfo.ctoData[1]);
+  destPtr = (blt_int8u *)((blt_addr)&xcpInfo.ctoData[1]);
 
 #if (XCP_UPLOAD_EN == 1)
   /* according to the XCP specification memory read/upload functionality is always
@@ -849,7 +849,7 @@ static void XcpCmdShortUpload(blt_int8u *data)
   /* read out the length of the requested upload operation */
   len = data[1];
   /* set the destination pointer */
-  destPtr = (blt_int8u *)((blt_addr)(blt_int32u)&xcpInfo.ctoData[1]);
+  destPtr = (blt_int8u *)((blt_addr)&xcpInfo.ctoData[1]);
 
 #if (XCP_UPLOAD_EN == 1)
   /* according to the XCP specification memory read/upload functionality is always
@@ -921,7 +921,7 @@ static void XcpCmdDownload(blt_int8u *data)
   }
 
   /* copy the data from the data packet to memory */
-  CpuMemCopy((blt_addr)xcpInfo.mta, (blt_addr)((blt_int32u)&data[2]), data[1]);
+  CpuMemCopy((blt_addr)xcpInfo.mta, (blt_addr)((blt_addr)&data[2]), data[1]);
   /* set packet id to command response packet */
   xcpInfo.ctoData[0] = XCP_PID_RES;
 
@@ -953,7 +953,7 @@ static void XcpCmdDownloadMax(blt_int8u *data)
 #endif
 
   /* copy the data from the data packet to memory */
-  CpuMemCopy((blt_addr)xcpInfo.mta, (blt_addr)((blt_int32u)&data[1]), \
+  CpuMemCopy((blt_addr)xcpInfo.mta, (blt_addr)((blt_addr)&data[1]), \
              XCP_CTO_PACKET_LEN-1);
 
   /* set packet id to command response packet */
