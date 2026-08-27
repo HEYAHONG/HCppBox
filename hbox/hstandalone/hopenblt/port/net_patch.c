@@ -85,7 +85,7 @@ struct uip_udp_conn *uip_udp_conn=NULL;                 /**< 当前UDP连接 */
 struct uip_udp_conn uip_udp_conns[UIP_UDP_CONNS]= {};   /**< UDP连接 */
 
 void *   uip_appdata=NULL;                              /**< 调用UIP_APPCALL接收用户数据时需要将此指针设置为接收数据的地址  */
-//uint8_t  uip_buf[sizeof(struct uip_eth_hdr)];         /**< uip缓冲区,用户自行定义 */
+uint8_t  uip_buf[(UIP_BUFSIZE)>sizeof(struct uip_eth_hdr)?(UIP_BUFSIZE):(sizeof(struct uip_eth_hdr))];           /**< uip缓冲区,用户自行定义 */
 uint16_t uip_len=0;                                     /**< uip各种长度的传递均使用此全局变量 */
 
 HOPENBLT_NET_FUNCTION_ATTRIBUTE

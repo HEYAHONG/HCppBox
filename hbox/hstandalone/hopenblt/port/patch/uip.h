@@ -114,6 +114,12 @@ extern struct uip_udp_conn uip_udp_conns[UIP_UDP_CONNS];
 
 extern void *   uip_appdata;
 
+#ifndef UIP_CONF_BUFFER_SIZE
+#define UIP_BUFSIZE     400
+#else /* UIP_CONF_BUFFER_SIZE */
+#define UIP_BUFSIZE UIP_CONF_BUFFER_SIZE
+#endif /* UIP_CONF_BUFFER_SIZE */
+
 extern uint8_t  uip_buf[];
 extern uint16_t uip_len;
 
