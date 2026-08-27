@@ -36,10 +36,10 @@ void      uip_udp_periodic(size_t index);
 void      uip_poll_conn(void *conn);
 
 
-static inline uint16_t htons(uint16_t para)
-{
-    return hhtobe16(para);
-}
+#ifndef htons
+#define htons hhtobe16
+#endif
+
 
 #ifndef HTONS
 #define HTONS htons
