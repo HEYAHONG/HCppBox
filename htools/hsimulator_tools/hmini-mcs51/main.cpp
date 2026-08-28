@@ -23,15 +23,17 @@ static void show_banner()
 
 
 static std::string filename="rom.hex";
+bool    disbable_openblt_flag=false;
 static void check_args(int argc,char *argv[])
 {
     struct arg_lit  * help=NULL;
-    struct arg_lit  * display_dtb=NULL;
+    struct arg_lit  * disable_openblt=NULL;
     struct arg_file *file=NULL;
     struct arg_file *dtbfile=NULL;
     void *argtable[]=
     {
         help=arg_lit0("h","help",                                      "print this help and exit"),
+        disable_openblt=arg_lit0("O","no-openblt",                                "disable openblt"),
         file=arg_file0(NULL,NULL,"<file>",                             "program name(default:rom.hex)"),
         arg_end(20)
     };
@@ -57,6 +59,11 @@ static void check_args(int argc,char *argv[])
         hexit(-1);
     }
 
+    if(disable_openblt->count > 0)
+    {
+        disbable_openblt_flag=true;
+    }
+
     if(file->count > 0)
     {
         filename=std::string(file->filename[0]);
@@ -71,6 +78,7 @@ static void check_args(int argc,char *argv[])
     }
     else
     {
+        if(disbable_openblt_flag)
         {
             std::fstream file;
             file.open(filename.c_str(),std::ios::in|std::ios::binary);
@@ -91,7 +99,7 @@ static void check_args(int argc,char *argv[])
 void console_init(void)
 {
     /*
-     * 启用虚拟终端处理 
+     * 启用虚拟终端处理
      */
 #if defined(ENABLE_VIRTUAL_TERMINAL_INPUT)
     {
@@ -356,6 +364,75 @@ public:
 
 } g_vm;
 
+static bool load_rom_from_file(void)
+{
+    //加载程序
+    std::fstream file;
+    bool is_hex=false;
+    {
+        std::string filename_suffix=filename.substr(filename.length()-3);
+        if(filename_suffix.length()>=3)
+        {
+            std::transform(filename_suffix.begin(), filename_suffix.end(), filename_suffix.begin(), ::toupper);
+            if(filename_suffix=="HEX" || filename_suffix=="IHX")
+            {
+                is_hex=true;
+            }
+        }
+    }
+    if(is_hex)
+    {
+        file.open(filename.c_str(),std::ios::in);
+    }
+    else
+    {
+        file.open(filename.c_str(),std::ios::in|std::ios::binary);
+    }
+    if(!file.is_open())
+    {
+        hfprintf(stderr,"open %s failed!\r\n",filename.c_str());
+        return false;
+    }
+
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    uint8_t rom[256*1024]= {0};
+    if(is_hex)
+    {
+        hintelhex_reader reader;
+        hintelhex_reader_init(&reader,[](hintelhex_reader_t *reader,hintelhex_reader_operate_t op,uint32_t address,const uint8_t *data,size_t data_len)
+        {
+            uint8_t *code=(uint8_t *)reader->usr;
+            if(op==HINTELHEX_READER_OPERATE_DATA)
+            {
+                if(address+data_len < 256*1024)
+                {
+                    memcpy(&code[address],data,data_len);
+                }
+            }
+        },rom);
+        hintelhex_reader_input(&reader,content.c_str(),content.length());
+    }
+    else
+    {
+        memcpy(rom,content.c_str(),content.length()>sizeof(rom)?sizeof(rom):content.length());
+    }
+
+    g_vm.load_rom(rom,sizeof(rom));
+
+    file.close();
+
+    return true;
+}
+
+extern "C" bool openblt_process(uint8_t *rom,size_t romlen);
+static bool load_rom_from_openblt(void)
+{
+    uint8_t rom[256*1024]= {0};
+    bool ret=openblt_process(rom,sizeof(rom));
+    g_vm.load_rom(rom,sizeof(rom));
+    return ret;
+}
+
 static void run_vm(int argc,char *argv[])
 {
     /*
@@ -371,61 +448,17 @@ static void run_vm(int argc,char *argv[])
 
     while(vm_running)
     {
+
+        bool is_load_rom=load_rom_from_file();
+
+        if(!is_load_rom && !disbable_openblt_flag)
         {
-            //加载程序
-            std::fstream file;
-            bool is_hex=false;
-            {
-                std::string filename_suffix=filename.substr(filename.length()-3);
-                if(filename_suffix.length()>=3)
-                {
-                    std::transform(filename_suffix.begin(), filename_suffix.end(), filename_suffix.begin(), ::toupper);
-                    if(filename_suffix=="HEX" || filename_suffix=="IHX")
-                    {
-                        is_hex=true;
-                    }
-                }
-            }
-            if(is_hex)
-            {
-                file.open(filename.c_str(),std::ios::in);
-            }
-            else
-            {
-                file.open(filename.c_str(),std::ios::in|std::ios::binary);
-            }
-            if(!file.is_open())
-            {
-                hfprintf(stderr,"open %s failed!\r\n",filename.c_str());
-                hexit(-1);
-            }
+            is_load_rom=load_rom_from_openblt();
+        }
 
-            std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-            uint8_t rom[256*1024]= {0};
-            if(is_hex)
-            {
-                hintelhex_reader reader;
-                hintelhex_reader_init(&reader,[](hintelhex_reader_t *reader,hintelhex_reader_operate_t op,uint32_t address,const uint8_t *data,size_t data_len)
-                {
-                    uint8_t *code=(uint8_t *)reader->usr;
-                    if(op==HINTELHEX_READER_OPERATE_DATA)
-                    {
-                        if(address+data_len < 256*1024)
-                        {
-                            memcpy(&code[address],data,data_len);
-                        }
-                    }
-                },rom);
-                hintelhex_reader_input(&reader,content.c_str(),content.length());
-            }
-            else
-            {
-                memcpy(rom,content.c_str(),content.length()>sizeof(rom)?sizeof(rom):content.length());
-            }
-
-            g_vm.load_rom(rom,sizeof(rom));
-
-            file.close();
+        if(!is_load_rom)
+        {
+            hexit(-1);
         }
 
         bool cpu_cycle=true;

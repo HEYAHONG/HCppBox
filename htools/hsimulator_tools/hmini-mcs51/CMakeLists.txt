@@ -30,6 +30,17 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../common/  common EXCLUDE_FROM_
 #启用HCppBox、HRC
 hcppbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})
+#启用hopenblt
+target_link_libraries(${PROJECT_NAME} hopenblt)
+target_compile_definitions(hopenblt PUBLIC 
+-DBOOT_COM_NET_ENABLE=1
+-DBOOT_NVM_SIZE_KB=256
+-DBOOT_COM_NET_DEFERRED_INIT_ENABLE=0
+-DHOPENBLT_NVM_NO_IMPLEMENTATION=1
+-DHOPENBLT_NET_PATCH_HEADER=1
+-DHOPENBLT_NET_NO_IMPLEMENTATION=1
+-DBOOT_COM_NET_PORT=51000
+)
 
 include(GNUInstallDirs)
 if(NOT DEFINED HTOOLS_INSTALL_DIR)
