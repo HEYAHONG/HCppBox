@@ -1,25 +1,27 @@
 /***************************************************************
- * Name:      hnet.h
- * Purpose:   声明hnet接口
+ * Name:      hdlt645.h
+ * Purpose:   声明hdlt645接口
  * Author:    HYH (hyhsystem.cn)
- * Created:   2025-05-03
+ * Created:   2026-08-28
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#ifndef __HNET_H__
-#define __HNET_H__
+#ifndef __HDLT645_H_INCLUDED__
+#define __HDLT645_H_INCLUDED__
+
+
+#include "hdlt645_common.h"
+#include "hdlt645_utils.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
 
-#include "fieldbus/hmodbus.h"
-#include "fieldbus/hdlt645.h"
+
 
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
-
-#endif // __HNET_H__
+#endif // HDLT645_H_INCLUDED

@@ -1,13 +1,14 @@
 /***************************************************************
- * Name:      hnet.c
- * Purpose:   实现hnet接口
+ * Name:      hdlt645.c
+ * Purpose:   实现hdlt645接口
  * Author:    HYH (hyhsystem.cn)
- * Created:   2025-05-03
+ * Created:   2026-08-28
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "hnet.h"
 
-#include "fieldbus/hmodbus.c"
-#include "fieldbus/hdlt645.c"
+#include "hdlt645.h"
+
+#include "hdlt645/hdlt645_common.c"
+#include "hdlt645/hdlt645_utils.c"
 
