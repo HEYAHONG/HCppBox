@@ -90,7 +90,7 @@ uint16_t uip_len=0;                                     /**< uip各种长度的�
 
 void         netdev_init(void)
 {
-
+    HCPPSocketInit();
 }
 
 
@@ -110,7 +110,7 @@ unsigned int netdev_read(void)
     /*
      * 整个过程不会使用uip_buf,但是需要将类型字段设置为UIP_ETHTYPE_IP触发uip_input
      */
-    hdr->type=htobe16(UIP_ETHTYPE_IP);
+    hdr->type=hhtobe16(UIP_ETHTYPE_IP);
     return  sizeof(uip_buf);
 }
 
@@ -136,12 +136,22 @@ static SOCKET client_fd=INVALID_SOCKET;
 
 void      uip_init(void)
 {
+#ifdef  SOCK_NONBLOCK
     server_fd=socket(AF_INET,SOCK_STREAM | SOCK_NONBLOCK,0);
+#elif defined(FIONBIO)
+    server_fd=socket(AF_INET,SOCK_STREAM,0);
+#endif
     if(server_fd==INVALID_SOCKET)
     {
         hprintf("openblt:new socket error!\r\n");
         throw -1;
     }
+#if !defined(SOCK_NONBLOCK) && defined(FIONBIO)
+    {
+        u_long mode=1;
+        ioctlsocket(server_fd, FIONBIO, &mode);
+    }
+#endif
 }
 
 
@@ -175,6 +185,13 @@ void      uip_input(void)
                 tv.tv_usec = 5*1000;
                 setsockopt(client_fd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof(tv));
             }
+#if !defined(SOCK_NONBLOCK) && defined(FIONBIO)
+            {
+                u_long mode=1;
+                ioctlsocket(client_fd, FIONBIO, &mode);
+            }
+#endif
+
         }
     }
     else
@@ -187,7 +204,7 @@ void      uip_input(void)
             uip_len=recvlen;
         }
 #ifdef WIN32
-        if(recvlen==0 || (recvlen < 0 &&errno!=EWOULDBLOCK))
+        if(recvlen==0 || (recvlen < 0 && WSAGetLastError()!= WSAEWOULDBLOCK))
 #else
         if(recvlen==0 || (recvlen < 0 && errno!=EAGAIN))
 #endif
@@ -380,6 +397,18 @@ bool openblt_process(uint8_t *rom,size_t romlen)
         while(!openblt_load_rom_ok)
         {
             BootTask();
+        }
+
+        if(server_fd!=INVALID_SOCKET)
+        {
+            closesocket(server_fd);
+            server_fd=INVALID_SOCKET;
+        }
+
+        if(client_fd!=INVALID_SOCKET)
+        {
+            closesocket(client_fd);
+            client_fd=INVALID_SOCKET;
         }
 
         if(romlen > sizeof(nvm_rom))
