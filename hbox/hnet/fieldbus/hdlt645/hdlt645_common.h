@@ -87,6 +87,30 @@ uint64_t hdlt645_bcd_addr_get(hdlt645_bcd_addr_t *addr);
 /*
  * 控制码（共1字节）
  */
+typedef struct
+{
+    uint8_t fct:5;              /**< 功能码 */
+    uint8_t ext:1;              /**< 后续数据 */
+    uint8_t ack:1;              /**< 应答编码 */
+    uint8_t dir:1;              /**< 方向 */
+} hdlt645_control_t;
+
+/** \brief 控制码解码
+ *
+ * \param control_code uint8_t 待解码的控制码
+ * \return hdlt645_control_t 控制码
+ *
+ */
+hdlt645_control_t hdlt645_control_decode(uint8_t control_code);
+
+/** \brief 控制码编码
+ *
+ * \param control hdlt645_control_t 控制码
+ * \return uint8_t 编码后的控制码
+ *
+ */
+uint8_t hdlt645_control_encode(hdlt645_control_t control);
+
 #define HDLT645_FRAME_CONTROL_DIR_MASK      (0x80)
 #define HDLT645_FRAME_CONTROL_DIR_MASTER    (0x00)
 #define HDLT645_FRAME_CONTROL_DIR_SLAVE     (0x80)

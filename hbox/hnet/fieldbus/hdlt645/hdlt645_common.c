@@ -86,11 +86,82 @@ uint64_t hdlt645_bcd_addr_get(hdlt645_bcd_addr_t *addr)
     return ret;
 }
 
+hdlt645_control_t hdlt645_control_decode(uint8_t control_code)
+{
+    hdlt645_control_t ret;
+
+    if((control_code&HDLT645_FRAME_CONTROL_DIR_MASK)==HDLT645_FRAME_CONTROL_DIR_SLAVE)
+    {
+        ret.dir=1;
+    }
+    else
+    {
+        ret.dir=0;
+    }
+
+    if((control_code&HDLT645_FRAME_CONTROL_ACK_MASK)==HDLT645_FRAME_CONTROL_ACK_ERROR)
+    {
+        ret.ack=1;
+    }
+    else
+    {
+        ret.ack=0;
+    }
+
+    if((control_code&HDLT645_FRAME_CONTROL_EXT_MASK)==HDLT645_FRAME_CONTROL_EXT_ON)
+    {
+        ret.ext=1;
+    }
+    else
+    {
+        ret.ext=0;
+    }
+
+    ret.fct=(control_code&HDLT645_FRAME_CONTROL_FCT_MASK);
+
+    return ret;
+}
+
+uint8_t hdlt645_control_encode(hdlt645_control_t control)
+{
+    uint8_t ret=0;
+    if(control.dir==1)
+    {
+        ret+=HDLT645_FRAME_CONTROL_DIR_SLAVE;
+    }
+    else
+    {
+        ret+=HDLT645_FRAME_CONTROL_DIR_MASTER;
+    }
+
+    if(control.ack==1)
+    {
+        ret+=HDLT645_FRAME_CONTROL_ACK_ERROR;
+    }
+    else
+    {
+        ret+=HDLT645_FRAME_CONTROL_ACK_NORMAL;
+    }
+
+    if(control.ext==1)
+    {
+        ret+=HDLT645_FRAME_CONTROL_EXT_ON;
+    }
+    else
+    {
+        ret+=HDLT645_FRAME_CONTROL_EXT_OFF;
+    }
+
+    ret+= control.fct;
+
+    return ret;
+}
+
 void hdlt645_data_pack(uint8_t *data,size_t datalen)
 {
     if(data!=NULL &&datalen > 0)
     {
-        for(size_t i=0;i<datalen;i++)
+        for(size_t i=0; i<datalen; i++)
         {
             data[i]+=0x33;
         }
@@ -101,7 +172,7 @@ void hdlt645_data_unpack(uint8_t *data,size_t datalen)
 {
     if(data!=NULL &&datalen > 0)
     {
-        for(size_t i=0;i<datalen;i++)
+        for(size_t i=0; i<datalen; i++)
         {
             data[i]-=0x33;
         }
@@ -113,7 +184,7 @@ uint8_t hdlt645_checksum_calculate(const uint8_t *frame,size_t frame_check_len)
     uint8_t ret=0;
     if(frame!=NULL &&frame_check_len > 0)
     {
-        for(size_t i=0;i<frame_check_len;i++)
+        for(size_t i=0; i<frame_check_len; i++)
         {
             ret+=frame[i];
         }
