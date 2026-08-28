@@ -9,7 +9,7 @@ extern "C"
 {
 #endif
 
-#if !defined(HOPENBLT_NET_NO_IMPLEMENTATION)
+#if !defined(HOPENBLT_NET_NO_IMPLEMENTATION) || defined(HOPENBLT_NET_PATCH_HEADER)
 
 
 struct uip_eth_hdr

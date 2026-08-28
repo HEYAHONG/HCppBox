@@ -10,7 +10,7 @@ extern "C"
 {
 #endif
 
-#if !defined(HOPENBLT_NET_NO_IMPLEMENTATION)
+#if !defined(HOPENBLT_NET_NO_IMPLEMENTATION) || defined(HOPENBLT_NET_PATCH_HEADER)
 
 typedef uint8_t uip_ip4addr_t[4];
 typedef uip_ip4addr_t uip_ipaddr_t;

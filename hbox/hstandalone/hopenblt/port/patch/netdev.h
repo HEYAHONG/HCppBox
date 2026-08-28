@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-#if !defined(HOPENBLT_NET_NO_IMPLEMENTATION)
+#if !defined(HOPENBLT_NET_NO_IMPLEMENTATION) || defined(HOPENBLT_NET_PATCH_HEADER)
 
 void         netdev_init(void);
 void         netdev_init_mac(void);
