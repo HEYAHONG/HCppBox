@@ -1,6 +1,18 @@
 #ifndef __BLT_CONFIG_H__
 #define __BLT_CONFIG_H__
 
+
+/*
+ * 修复FreeBSD下libc的__WEAK宏定义问题
+ */
+#if !defined(__WEAK)
+#include "stdint.h"
+#include "stdlib.h"
+#if defined(__WEAK)
+#undef   __WEAK
+#endif
+#endif
+
 #include "hcompiler.h"
 #include "hdefaults.h"
 
