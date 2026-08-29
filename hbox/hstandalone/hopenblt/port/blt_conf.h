@@ -1,6 +1,7 @@
 #ifndef __BLT_CONFIG_H__
 #define __BLT_CONFIG_H__
 
+#include "hcompiler.h"
 #include "hdefaults.h"
 
 /*
