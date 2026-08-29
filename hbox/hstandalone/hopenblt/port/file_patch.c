@@ -9,6 +9,7 @@
 
 #define HOPENBLT_FILE_IMPLEMENTATION  1
 
+#include "blt_conf.h"
 #include "boot.h"
 #include "hbox.h"
 

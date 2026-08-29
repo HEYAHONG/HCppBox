@@ -9,6 +9,7 @@
 
 #define HOPENBLT_NVM_IMPLEMENTATION  1
 
+#include "blt_conf.h"
 #include "boot.h"
 #include "hbox.h"
 

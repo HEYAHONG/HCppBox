@@ -9,6 +9,7 @@
 
 #define HOPENBLT_TIMER_IMPLEMENTATION  1
 
+#include "blt_conf.h"
 #include "boot.h"
 #include "hbox.h"
 
