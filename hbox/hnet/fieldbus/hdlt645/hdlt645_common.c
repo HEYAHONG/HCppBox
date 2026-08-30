@@ -157,6 +157,38 @@ uint8_t hdlt645_control_encode(hdlt645_control_t control)
     return ret;
 }
 
+bool hdlt645_data_di_match(hdlt645_data_di_t *di_src,hdlt645_data_di_t *di_dst)
+{
+    if(di_src == NULL || di_dst == NULL)
+    {
+        return false;
+    }
+
+    bool ret=true;
+
+    if(di_src->di[0]!=di_dst->di[0] && di_src->di[0]!=HDLT645_DATA_DI_WILDCARD && di_dst->di[0]!=HDLT645_DATA_DI_WILDCARD)
+    {
+        ret=false;
+    }
+
+    if(di_src->di[1]!=di_dst->di[1] && di_src->di[1]!=HDLT645_DATA_DI_WILDCARD && di_dst->di[1]!=HDLT645_DATA_DI_WILDCARD)
+    {
+        ret=false;
+    }
+
+    if(di_src->di[2]!=di_dst->di[2] && di_src->di[2]!=HDLT645_DATA_DI_WILDCARD && di_dst->di[2]!=HDLT645_DATA_DI_WILDCARD)
+    {
+        ret=false;
+    }
+
+    if(di_src->di[3]!=di_dst->di[3] && di_src->di[3]!=HDLT645_DATA_DI_WILDCARD && di_dst->di[3]!=HDLT645_DATA_DI_WILDCARD)
+    {
+        ret=false;
+    }
+
+    return ret;
+}
+
 void hdlt645_data_di_set(hdlt645_data_di_t *di,uint32_t di_num)
 {
     if(di!=NULL)

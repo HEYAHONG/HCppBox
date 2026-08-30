@@ -149,6 +149,16 @@ typedef struct
     uint8_t di[4];
 } hdlt645_data_di_t;
 
+#define HDLT645_DATA_DI_WILDCARD   (0xFF)          /**<数据标识通配符，通常用于标识数据块  */
+
+/** \brief 数据标识是否匹配
+ *
+ * \param di_src hdlt645_data_di_t* 源数据标识
+ * \param di_dst hdlt645_data_di_t* 目的数据标识
+ * \return bool 是否匹配
+ *
+ */
+bool hdlt645_data_di_match(hdlt645_data_di_t *di_src,hdlt645_data_di_t *di_dst);
 
 /** \brief 设置数据标识
  *
