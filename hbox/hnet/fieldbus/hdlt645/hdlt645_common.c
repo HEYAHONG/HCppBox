@@ -157,6 +157,89 @@ uint8_t hdlt645_control_encode(hdlt645_control_t control)
     return ret;
 }
 
+void hdlt645_data_di_set(hdlt645_data_di_t *di,uint32_t di_num)
+{
+    if(di!=NULL)
+    {
+        di->di[0]=((di_num >> (0))&0xFF);
+        di->di[1]=((di_num >> (8))&0xFF);
+        di->di[2]=((di_num >> (16))&0xFF);
+        di->di[3]=((di_num >> (24))&0xFF);
+    }
+}
+
+uint32_t hdlt645_data_di_get(const hdlt645_data_di_t *di)
+{
+    uint32_t ret=0;
+    if(di!=NULL)
+    {
+        ret+=di->di[3];
+        ret<<=8;
+        ret+=di->di[2];
+        ret<<=8;
+        ret+=di->di[1];
+        ret<<=8;
+        ret+=di->di[0];
+    }
+    return ret;
+}
+
+void hdlt645_data_p_set(hdlt645_data_p_t *p,uint32_t p_num)
+{
+    if(p!=NULL)
+    {
+        p->pa=((p_num >> (0))&0xFF);
+        p->p0=((p_num >> (8))&0xFF);
+        p->p1=((p_num >> (16))&0xFF);
+        p->p2=((p_num >> (24))&0xFF);
+    }
+}
+
+uint32_t hdlt645_data_p_get(const hdlt645_data_p_t *p)
+{
+    uint32_t ret=0;
+    if(p!=NULL)
+    {
+        ret+=p->p2;
+        ret<<=8;
+        ret+=p->p1;
+        ret<<=8;
+        ret+=p->p0;
+        ret<<=8;
+        ret+=p->pa;
+    }
+    return ret;
+}
+
+void hdlt645_data_c_set(hdlt645_data_c_t *c,uint32_t c_num)
+{
+    if(c!=NULL)
+    {
+        c->c[0]=((c_num >> (0))&0xFF);
+        c->c[1]=((c_num >> (8))&0xFF);
+        c->c[2]=((c_num >> (16))&0xFF);
+        c->c[3]=((c_num >> (24))&0xFF);
+    }
+}
+
+uint32_t hdlt645_data_c_get(const hdlt645_data_c_t *c)
+{
+    uint32_t ret=0;
+    if(c!=NULL)
+    {
+        ret+=c->c[3];
+        ret<<=8;
+        ret+=c->c[2];
+        ret<<=8;
+        ret+=c->c[1];
+        ret<<=8;
+        ret+=c->c[0];
+    }
+    return ret;
+}
+
+
+
 void hdlt645_data_pack(uint8_t *data,size_t datalen)
 {
     if(data!=NULL &&datalen > 0)

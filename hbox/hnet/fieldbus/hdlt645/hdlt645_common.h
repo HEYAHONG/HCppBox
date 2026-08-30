@@ -144,6 +144,76 @@ uint8_t hdlt645_control_encode(hdlt645_control_t control);
 #define HDLT645_FRAME_DATALENGTH_MAX_READ       (200)
 #define HDLT645_FRAME_DATALENGTH_MAX_WRITE      (50)
 
+typedef struct
+{
+    uint8_t di[4];
+} hdlt645_data_di_t;
+
+
+/** \brief 设置数据标识
+ *
+ * \param di hdlt645_data_di_t* 数据标识
+ * \param di_num uint32_t 数据标识
+ *
+ */
+void hdlt645_data_di_set(hdlt645_data_di_t *di,uint32_t di_num);
+
+
+/** \brief 读取数据标识
+ *
+ * \param di const hdlt645_data_di_t* 数据标识
+ * \return uint32_t 数据标识
+ *
+ */
+uint32_t hdlt645_data_di_get(const hdlt645_data_di_t *di);
+
+typedef struct
+{
+    uint8_t pa;     /**< 操作权限 */
+    uint8_t p0;     /**< 密码 */
+    uint8_t p1;     /**< 密码 */
+    uint8_t p2;     /**< 密码 */
+} hdlt645_data_p_t;
+
+/** \brief 设置密码
+ *
+ * \param p hdlt645_data_p_t* 密码
+ * \param p_num uint32_t 密码
+ *
+ */
+void hdlt645_data_p_set(hdlt645_data_p_t *p,uint32_t p_num);
+
+
+/** \brief 读取密码
+ *
+ * \param p const hdlt645_data_p_t* 密码
+ * \return uint32_t 密码
+ *
+ */
+uint32_t hdlt645_data_p_get(const hdlt645_data_p_t *p);
+
+typedef struct
+{
+    uint8_t c[4];
+} hdlt645_data_c_t;
+
+/** \brief 设置操作者
+ *
+ * \param c hdlt645_data_c_t* 操作者
+ * \param c_num uint32_t 操作者
+ *
+ */
+void hdlt645_data_c_set(hdlt645_data_c_t *c,uint32_t c_num);
+
+
+/** \brief 读取操作者
+ *
+ * \param c const hdlt645_data_c_t* 操作者
+ * \return uint32_t 操作者
+ *
+ */
+uint32_t hdlt645_data_c_get(const hdlt645_data_c_t *c);
+
 
 /** \brief 数据域数据打包(避免大量0对通信的影响)
  *
