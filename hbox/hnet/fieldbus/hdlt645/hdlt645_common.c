@@ -307,3 +307,221 @@ uint8_t hdlt645_checksum_calculate(const uint8_t *frame,size_t frame_check_len)
     return ret;
 }
 
+hdlt645_bcd_addr_t *hdlt645_frame_get_bcd_addr(uint8_t *frame,size_t frame_len)
+{
+    if(frame==NULL || frame_len < 12)
+    {
+        return NULL;
+    }
+
+    while((*frame)==HDLT645_FRAME_PREAMBLE)
+    {
+        frame++;
+        frame_len--;
+    }
+
+    if(frame_len < 12)
+    {
+        return NULL;
+    }
+
+    return (hdlt645_bcd_addr_t *)&frame[1];
+}
+
+
+uint8_t * hdlt645_frame_get_c(uint8_t *frame,size_t frame_len)
+{
+    if(frame==NULL || frame_len < 12)
+    {
+        return NULL;
+    }
+
+    while((*frame)==HDLT645_FRAME_PREAMBLE)
+    {
+        frame++;
+        frame_len--;
+    }
+
+    if(frame_len < 12)
+    {
+        return NULL;
+    }
+
+    return &frame[8];
+}
+
+
+uint8_t * hdlt645_frame_get_datalen(uint8_t *frame,size_t frame_len)
+{
+    if(frame==NULL || frame_len < 12)
+    {
+        return NULL;
+    }
+
+    while((*frame)==HDLT645_FRAME_PREAMBLE)
+    {
+        frame++;
+        frame_len--;
+    }
+
+    if(frame_len < 12)
+    {
+        return NULL;
+    }
+
+    return &frame[9];
+}
+
+
+uint8_t * hdlt645_frame_get_data(uint8_t *frame,size_t frame_len)
+{
+    if(frame==NULL || frame_len < 12)
+    {
+        return NULL;
+    }
+
+    while((*frame)==HDLT645_FRAME_PREAMBLE)
+    {
+        frame++;
+        frame_len--;
+    }
+
+    if(frame_len < 12)
+    {
+        return NULL;
+    }
+
+    return &frame[10];
+}
+
+
+size_t hdlt645_frame_pack(uint8_t *frame,size_t frame_len)
+{
+    if(frame==NULL || frame_len < 12)
+    {
+        return 0;
+    }
+
+    while((*frame)==HDLT645_FRAME_PREAMBLE)
+    {
+        frame++;
+        frame_len--;
+    }
+
+    if(frame_len < 12)
+    {
+        return 0;
+    }
+
+    uint8_t datalen=frame[9];
+    size_t ret=datalen+12;
+
+    if(ret > frame_len || (datalen > (HDLT645_FRAME_DATALENGTH_MAX_READ>HDLT645_FRAME_DATALENGTH_MAX_WRITE?(HDLT645_FRAME_DATALENGTH_MAX_READ):(HDLT645_FRAME_DATALENGTH_MAX_WRITE))))
+    {
+        return 0;
+    }
+
+    /*
+     * 帧起始符
+     */
+    frame[0]=HDLT645_FRAME_SOF;
+    frame[7]=HDLT645_FRAME_SOF;
+
+    /*
+     * 数据域打包
+     */
+    if(datalen > 0)
+    {
+        uint8_t *data=&frame[10];
+        hdlt645_data_pack(data,datalen);
+    }
+
+    /*
+     * 校验
+     */
+    frame[ret-2]=hdlt645_checksum_calculate(frame,ret-2);
+
+    /*
+     * 结束符
+     */
+    frame[ret-1]=HDLT645_FRAME_EOF;
+
+    return ret;
+}
+
+bool hdlt645_frame_unpack(uint8_t *frame,size_t frame_len)
+{
+    if(!hdlt645_frame_check(frame,frame_len))
+    {
+        return false;
+    }
+
+    if(frame==NULL || frame_len < 12)
+    {
+        return false;
+    }
+
+    while((*frame)==HDLT645_FRAME_PREAMBLE)
+    {
+        frame++;
+        frame_len--;
+    }
+
+    if(frame_len < 12)
+    {
+        return false;
+    }
+
+    bool ret=true;
+
+    uint8_t datalen=frame[9];
+
+    /*
+     * 数据域解包
+     */
+    if(datalen > 0)
+    {
+        uint8_t *data=&frame[10];
+        hdlt645_data_unpack(data,datalen);
+    }
+
+    return ret;
+}
+
+bool hdlt645_frame_check(const uint8_t *frame,size_t frame_len)
+{
+    if(frame==NULL || frame_len < 12)
+    {
+        return false;
+    }
+
+    while((*frame)==HDLT645_FRAME_PREAMBLE)
+    {
+        frame++;
+        frame_len--;
+    }
+
+    if(frame_len < 12)
+    {
+        return false;
+    }
+
+
+    uint8_t datalen=frame[9];
+
+    if(frame_len < datalen+12)
+    {
+        return false;
+    }
+
+    frame_len=datalen+12;
+
+    bool ret=true;
+
+    if(frame[0]!=frame[7] || frame[0]!=HDLT645_FRAME_SOF || frame[frame_len-2]!= hdlt645_checksum_calculate(frame,frame_len-2)||frame[frame_len-1]!=HDLT645_FRAME_EOF)
+    {
+        ret=false;
+    }
+
+    return ret;
+}

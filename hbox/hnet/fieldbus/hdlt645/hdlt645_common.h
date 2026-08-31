@@ -258,6 +258,72 @@ uint8_t hdlt645_checksum_calculate(const uint8_t *frame,size_t frame_check_len);
 #define HDLT645_FRAME_EOF               (0x16)
 
 
+/** \brief 帧获取地址
+ *
+ * \param frame uint8_t* 帧缓冲
+ * \param frame_len size_t 帧缓冲长度
+ * \return hdlt645_bcd_addr_t* 地址
+ *
+ */
+hdlt645_bcd_addr_t *hdlt645_frame_get_bcd_addr(uint8_t *frame,size_t frame_len);
+
+/** \brief 帧获取控制码
+ *
+ * \param frame uint8_t* 帧缓冲
+ * \param frame_len size_t 帧缓冲长度
+ * \return hdlt645_bcd_addr_t* 控制码(数值)指针
+ *
+ */
+uint8_t * hdlt645_frame_get_c(uint8_t *frame,size_t frame_len);
+
+/** \brief 帧获取数据长度
+ *
+ * \param frame uint8_t* 帧缓冲
+ * \param frame_len size_t 帧缓冲长度
+ * \return hdlt645_bcd_addr_t* 数据长度指针
+ *
+ */
+uint8_t * hdlt645_frame_get_datalen(uint8_t *frame,size_t frame_len);
+
+/** \brief 帧获取数据
+ *
+ * \param frame uint8_t* 帧缓冲
+ * \param frame_len size_t 帧缓冲长度
+ * \return hdlt645_bcd_addr_t* 数据指针
+ *
+ */
+uint8_t * hdlt645_frame_get_data(uint8_t *frame,size_t frame_len);
+
+
+
+/** \brief 帧打包
+ *
+ * \param frame uint8_t* 数据帧，需要填写好地址、控制码、数据域长度及数据域
+ * \param frame_len size_t 帧缓冲长度
+ * \return size_t 实际帧长度
+ *
+ */
+size_t hdlt645_frame_pack(uint8_t *frame,size_t frame_len);
+
+/** \brief 帧解包
+ *
+ * \param frame uint8_t* 数据帧
+ * \param frame_len size_t 数据帧长度
+ * \return bool 是否解包成功
+ *
+ */
+bool hdlt645_frame_unpack(uint8_t *frame,size_t frame_len);
+
+
+/** \brief 帧检查
+ *
+ * \param frame const uint8_t* 数据帧
+ * \param frame_len size_t 数据帧长度
+ * \return bool 是否为合法数据帧
+ *
+ */
+bool hdlt645_frame_check(const uint8_t *frame,size_t frame_len);
+
 
 #ifdef __cplusplus
 }
