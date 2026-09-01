@@ -210,6 +210,8 @@ void hdlt645_slave_io_ctx_process_io(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_i
 
     bool reply=true;
 
+    memset(reply_buffer,0,reply_buffer_len);
+
     uint8_t *frame=io->rx_buffer;
 
 
@@ -240,6 +242,13 @@ void hdlt645_slave_io_ctx_process_io(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_i
         }
     }
 
+    {
+        /*
+         * 设定回复地址
+         */
+        memcpy(hdlt645_frame_get_bcd_addr(reply_buffer,reply_buffer_len),&ctx->addr,sizeof(ctx->addr));
+    }
+
     hdlt645_control_t c;
     {
         /*
@@ -253,6 +262,16 @@ void hdlt645_slave_io_ctx_process_io(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_i
         }
 
         c=hdlt645_control_decode(*c_num_ptr);
+    }
+
+    {
+        /*
+         * 设定回复控制码及数据长度
+         */
+        hdlt645_control_t reply_c=c;
+        reply_c.dir=1;
+        (*hdlt645_frame_get_c(reply_buffer,reply_buffer_len))=hdlt645_control_encode(reply_c);
+        (*hdlt645_frame_get_datalen(reply_buffer,reply_buffer_len))=0;
     }
 
     {
