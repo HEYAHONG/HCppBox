@@ -151,6 +151,36 @@ size_t hdlt645_slave_io_rx_input(hdlt645_slave_io_t *io,uint8_t *data,size_t dat
     return ret;
 }
 
+#if !defined(HDLT645_SLAVE_DI_TABLE)
+#define HDLT645_SLAVE_DI_TABLE NULL
+#endif
+#if !defined(HDLT645_SLAVE_DI_TABLE_SIZE)
+#define HDLT645_SLAVE_DI_TABLE_SIZE 0
+#endif
+
+#if !defined(HDLT645_SLAVE_READ_DI_TABLE)
+#define HDLT645_SLAVE_READ_DI_TABLE HDLT645_SLAVE_DI_TABLE
+#endif
+#if !defined(HDLT645_SLAVE_READ_DI_TABLE_SIZE)
+#define HDLT645_SLAVE_READ_DI_TABLE_SIZE HDLT645_SLAVE_DI_TABLE_SIZE
+#endif
+
+#if !defined(HDLT645_SLAVE_WRITE_DI_TABLE)
+#define HDLT645_SLAVE_WRITE_DI_TABLE HDLT645_SLAVE_DI_TABLE
+#endif
+#if !defined(HDLT645_SLAVE_WRITE_DI_TABLE_SIZE)
+#define HDLT645_SLAVE_WRITE_DI_TABLE_SIZE HDLT645_SLAVE_DI_TABLE_SIZE
+#endif
+
+
+static const hdlt645_slave_io_ctx_cmd_t hdlt645_slave_io_ctx_cmd_default[]=
+{
+    HDLT645_SLAVE_IO_CTX_CMD_READ(hdlt645_slave_io_ctx_cmd_read_process,HDLT645_SLAVE_READ_DI_TABLE,HDLT645_SLAVE_READ_DI_TABLE_SIZE),
+    HDLT645_SLAVE_IO_CTX_CMD_READEXT(hdlt645_slave_io_ctx_cmd_readext_process,HDLT645_SLAVE_READ_DI_TABLE,HDLT645_SLAVE_READ_DI_TABLE_SIZE),
+    HDLT645_SLAVE_IO_CTX_CMD_WRITE(hdlt645_slave_io_ctx_cmd_write_process,HDLT645_SLAVE_WRITE_DI_TABLE,HDLT645_SLAVE_WRITE_DI_TABLE_SIZE),
+    HDLT645_SLAVE_IO_CTX_CMD_END(),
+};
+
 void hdlt645_slave_io_ctx_init(hdlt645_slave_io_ctx_t *ctx,hdlt645_bcd_addr_t *addr,hdlt645_slave_io_ctx_cmd_t *cmd_table,void *usr)
 {
     if(ctx==NULL)
@@ -166,6 +196,11 @@ void hdlt645_slave_io_ctx_init(hdlt645_slave_io_ctx_t *ctx,hdlt645_bcd_addr_t *a
     }
 
     ctx->cmd_table=cmd_table;
+
+    if(ctx->cmd_table==NULL)
+    {
+        ctx->cmd_table=hdlt645_slave_io_ctx_cmd_default;
+    }
 
     ctx->usr=usr;
 }
@@ -461,6 +496,213 @@ size_t hdlt645_slave_di_write(const hdlt645_slave_di_t *di_table,size_t di_table
         ret+=write_len;
 
     }
+
+    return ret;
+}
+
+
+bool hdlt645_slave_io_ctx_cmd_read_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len)
+{
+    if(ctx==NULL || io == NULL || cmd == NULL || data == NULL || datalen < 4 || reply_buffer == NULL || reply_buffer_len < 12+4)
+    {
+        return false;
+    }
+
+    const hdlt645_slave_di_t *di_table=(const hdlt645_slave_di_t *)cmd->usr[0];
+    size_t di_table_len=cmd->usr[1];
+    size_t reply_data_buffer_len=reply_buffer_len-12-4;
+    uint8_t *reply_data_buffer=&(hdlt645_frame_get_data(reply_buffer,reply_buffer_len)[4]);
+    hdlt645_data_di_t *reply_di=(hdlt645_data_di_t *)&(hdlt645_frame_get_data(reply_buffer,reply_buffer_len)[0]);
+
+    hdlt645_control_t c=hdlt645_control_decode(0);
+
+    c.dir=1;
+
+    c.fct=cmd->fct;
+
+    hdlt645_data_di_t *di_src=(hdlt645_data_di_t *)data;
+    if(reply_di!=NULL)
+    {
+        memcpy(reply_di,di_src,sizeof(*di_src));
+    }
+
+    size_t index=0;
+
+    if(datalen >= 5)
+    {
+        index=data[4];
+    }
+
+    if(datalen >=10)
+    {
+        if(di_table != NULL)
+        {
+            for(size_t i=0; i<di_table_len; i++)
+            {
+                if(di_table[i].set_time!=NULL)
+                {
+                    hdlt645_data_di_t di_dst;
+                    hdlt645_data_di_set(&di_dst,di_table[i].di_num);
+                    if(!hdlt645_data_di_match(di_src,&di_dst))
+                    {
+                        continue;
+                    }
+                    di_table[i].set_time(&di_table[i],data[5],data[6],data[7],data[8],data[9]);
+                }
+            }
+        }
+
+    }
+    else
+    {
+        if(di_table != NULL)
+        {
+            for(size_t i=0; i<di_table_len; i++)
+            {
+                if(di_table[i].set_time!=NULL)
+                {
+                    hdlt645_data_di_t di_dst;
+                    hdlt645_data_di_set(&di_dst,di_table[i].di_num);
+                    if(!hdlt645_data_di_match(di_src,&di_dst))
+                    {
+                        continue;
+                    }
+                    di_table[i].reset_time(&di_table[i]);
+                }
+            }
+        }
+    }
+
+    if(hdlt645_slave_di_count(di_table,di_table_len,hdlt645_data_di_get(di_src),reply_data_buffer_len) > index+1)
+    {
+        c.ext=1;
+    }
+
+    bool ret=true;
+
+    /*
+     * 读取数据
+     */
+    reply_data_buffer_len=hdlt645_slave_di_read(di_table,di_table_len,hdlt645_data_di_get(di_src),index,reply_data_buffer,reply_data_buffer_len);
+
+    /*
+     * 设置控制码
+     */
+    (*hdlt645_frame_get_c(reply_buffer,reply_buffer_len))=hdlt645_control_encode(c);
+
+
+    /*
+     * 设置数据长度
+     */
+    size_t l=reply_data_buffer_len+sizeof(*di_src);
+    (*hdlt645_frame_get_datalen(reply_buffer,reply_buffer_len))=l;
+
+    return ret;
+}
+
+bool hdlt645_slave_io_ctx_cmd_readext_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len)
+{
+    if(ctx==NULL || io == NULL || cmd == NULL || data == NULL || datalen < 4 || reply_buffer == NULL || reply_buffer_len < 12)
+    {
+        return false;
+    }
+
+    bool ret=true;
+
+    /*
+     *  在本协议栈中，读后续数据中序号等效于读数据的记录块数。注意：这是非标实现，用户如需其它实现请自行实现处理函数
+     */
+    ret=hdlt645_slave_io_ctx_cmd_read_process(ctx,io,cmd,data,datalen,reply_buffer,reply_buffer_len);
+
+    return ret;
+}
+
+bool hdlt645_slave_io_ctx_cmd_write_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len)
+{
+    if(ctx==NULL || io == NULL || cmd == NULL || data == NULL || datalen < 12 || reply_buffer == NULL || reply_buffer_len < 12)
+    {
+        return false;
+    }
+
+    const hdlt645_slave_di_t *di_table=(const hdlt645_slave_di_t *)cmd->usr[0];
+    size_t di_table_len=cmd->usr[1];
+
+    hdlt645_control_t c=hdlt645_control_decode(0);
+
+    c.dir=1;
+
+    c.fct=cmd->fct;
+
+    hdlt645_data_di_t *di_src=(hdlt645_data_di_t *)data;
+    hdlt645_data_p_t *p_src=(hdlt645_data_p_t *)&data[4];
+    hdlt645_data_c_t *c_src=(hdlt645_data_c_t *)&data[8];
+    const uint8_t *data_src=(const uint8_t *)&data[12];
+    size_t data_src_len=datalen-12;
+
+
+    bool ret=true;
+
+    /*
+     * 写入数据
+     */
+    {
+        /*
+         * 写使能
+         */
+        if(di_table != NULL)
+        {
+            for(size_t i=0; i<di_table_len; i++)
+            {
+                if(di_table[i].set_time!=NULL)
+                {
+                    hdlt645_data_di_t di_dst;
+                    hdlt645_data_di_set(&di_dst,di_table[i].di_num);
+                    if(!hdlt645_data_di_match(di_src,&di_dst))
+                    {
+                        continue;
+                    }
+                    di_table[i].write_enable(&di_table[i],p_src,c_src);
+                }
+            }
+        }
+
+    }
+
+    hdlt645_slave_di_write(di_table,di_table_len,hdlt645_data_di_get(di_src),data_src,data_src_len);
+
+    {
+        /*
+         * 写使能（关闭）
+         */
+        if(di_table != NULL)
+        {
+            for(size_t i=0; i<di_table_len; i++)
+            {
+                if(di_table[i].set_time!=NULL)
+                {
+                    hdlt645_data_di_t di_dst;
+                    hdlt645_data_di_set(&di_dst,di_table[i].di_num);
+                    if(!hdlt645_data_di_match(di_src,&di_dst))
+                    {
+                        continue;
+                    }
+                    di_table[i].write_disable(&di_table[i]);
+                }
+            }
+        }
+    }
+
+    /*
+     * 设置控制码
+     */
+    (*hdlt645_frame_get_c(reply_buffer,reply_buffer_len))=hdlt645_control_encode(c);
+
+
+    /*
+     * 设置数据长度
+     */
+    size_t l=0;
+    (*hdlt645_frame_get_datalen(reply_buffer,reply_buffer_len))=l;
 
     return ret;
 }

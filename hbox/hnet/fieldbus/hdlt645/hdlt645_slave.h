@@ -124,8 +124,14 @@ struct hdlt645_slave_io_ctx_cmd
     uintptr_t usr[2];                                   /**< 用户参数 */
 };
 
-
-#define HDLT645_SLAVE_IO_CTX_CMD_END {0,NULL,{0,0}}                                                                                 /**< 命令结束，命令表最后一个成员必须是命令结束 */
+#define HDLT645_SLAVE_IO_CTX_CMD_READ(PROCESS,DI_TABLE,DI_TABLE_SIZE) \
+            {HDLT645_FRAME_CONTROL_FCT_READ,PROCESS,{(uintptr_t)(DI_TABLE),DI_TABLE_SIZE}}                      /**< 读取数据 */
+#define HDLT645_SLAVE_IO_CTX_CMD_READEXT(PROCESS,DI_TABLE,DI_TABLE_SIZE) \
+            {HDLT645_FRAME_CONTROL_FCT_READEXT,PROCESS,{(uintptr_t)(DI_TABLE),DI_TABLE_SIZE}}                   /**< 读取后续数据 */
+#define HDLT645_SLAVE_IO_CTX_CMD_WRITE(PROCESS,DI_TABLE,DI_TABLE_SIZE) \
+            {HDLT645_FRAME_CONTROL_FCT_WRITE,PROCESS,{(uintptr_t)(DI_TABLE),DI_TABLE_SIZE}}                     /**< 读取后续数据 */
+#define HDLT645_SLAVE_IO_CTX_CMD_END() \
+            {0,NULL,{0,0}}                                                                                      /**< 命令结束，命令表最后一个成员必须是命令结束 */
 
 /*
  * 数据标识，可用于读数据、读剩余数据、写数据
@@ -134,11 +140,15 @@ struct hdlt645_slave_di;
 typedef struct hdlt645_slave_di hdlt645_slave_di_t;
 struct hdlt645_slave_di
 {
-    uint32_t di_num;                                                                    /**< 数据标识 */
-    size_t (*getlen)(const hdlt645_slave_di_t *di);                                     /**< 获取长度，一般情况下，长度是固定值 */
-    size_t (*write)(const hdlt645_slave_di_t *di,const uint8_t *buff,size_t length);    /**< 写数据，返回已写入的值 */
-    size_t (*read)(const hdlt645_slave_di_t *di,uint8_t *buff,size_t length);           /**< 读数据，返回已读取的值 */
-    uintptr_t usr;                                                                      /**< 用户参数 */
+    uint32_t di_num;                                                                                                    /**< 数据标识 */
+    void (*set_time)(const hdlt645_slave_di_t *di,uint8_t mm,uint8_t hh,uint8_t DD,uint8_t MM,uint8_t YY);              /**< 设定查询时间,可选 */
+    void (*reset_time)(const hdlt645_slave_di_t *di);                                                                   /**< 取消查询时间限制，可选 */
+    void (*write_enable)(const hdlt645_slave_di_t *di,hdlt645_data_p_t *p,hdlt645_data_c_t *c);                         /**< 写使能，可选 */
+    void (*write_disable)(const hdlt645_slave_di_t *di);                                                                /**< 写使能关闭,可选 */
+    size_t (*getlen)(const hdlt645_slave_di_t *di);                                                                     /**< 获取长度，一般情况下，长度是固定值,不可为空 */
+    size_t (*write)(const hdlt645_slave_di_t *di,const uint8_t *buff,size_t length);                                    /**< 写数据，返回已写入的值,不可为空 */
+    size_t (*read)(const hdlt645_slave_di_t *di,uint8_t *buff,size_t length);                                           /**< 读数据，返回已读取的值，不可为空 */
+    uintptr_t usr;                                                                                                      /**< 用户参数 */
 };
 
 #define HDLT645_SLAVE_DI_DEFINE(DI0,DI1,DI2,DI3)                                        ((DI0)+(DI1)*(1UL << (8))+(DI2)*(1UL << (16))+(DI3)*(1UL << (24)))
@@ -179,6 +189,14 @@ size_t hdlt645_slave_di_read(const hdlt645_slave_di_t *di_table,size_t di_table_
  *
  */
 size_t hdlt645_slave_di_write(const hdlt645_slave_di_t *di_table,size_t di_table_len,uint32_t di_dst_num,const uint8_t *data,size_t datalen);
+
+/*
+ * 读数据、读后续数据、写数据
+ */
+bool hdlt645_slave_io_ctx_cmd_read_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
+bool hdlt645_slave_io_ctx_cmd_readext_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
+bool hdlt645_slave_io_ctx_cmd_write_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
+
 
 #ifdef __cplusplus
 }
