@@ -286,7 +286,7 @@ void hdlt645_slave_io_ctx_process_io(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_i
         const hdlt645_slave_io_ctx_cmd_t *cmd_table=ctx->cmd_table;
         while(true)
         {
-            if(cmd_table->fct==0)
+            if(cmd_table->fct==0 && cmd_table->process==NULL)
             {
                 break;
             }
@@ -319,3 +319,148 @@ void hdlt645_slave_io_ctx_process_io(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_i
     hdlt645_slave_io_rx_reset(io);
 }
 
+size_t hdlt645_slave_di_count(const hdlt645_slave_di_t *di_table,size_t di_table_len,uint32_t di_dst_num,size_t max_len)
+{
+    if(di_table==NULL || di_table_len == 0 || max_len == 0)
+    {
+        return 0;
+    }
+
+    size_t len=0;
+
+    size_t ret=0;
+
+    for(size_t i=0; i<di_table_len; i++)
+    {
+        if(di_table[i].getlen==NULL || di_table[i].read == NULL || di_table[i].write == NULL)
+        {
+            break;
+        }
+        hdlt645_data_di_t di_src;
+        hdlt645_data_di_set(&di_src,di_table[i].di_num);
+        hdlt645_data_di_t di_dst;
+        hdlt645_data_di_set(&di_dst,di_dst_num);
+        if(!hdlt645_data_di_match(&di_src,&di_src))
+        {
+            continue;
+        }
+
+        size_t di_len=di_table[i].getlen(&di_table[i]);
+
+        if(di_len + len > max_len)
+        {
+            len=di_len;
+            ret++;
+        }
+        else
+        {
+            len+=di_len;
+        }
+    }
+
+    if(len != 0)
+    {
+        ret++;
+    }
+    return ret;
+}
+
+size_t hdlt645_slave_di_read(const hdlt645_slave_di_t *di_table,size_t di_table_len,uint32_t di_dst_num,size_t index,uint8_t *data,size_t datalen)
+{
+    size_t ret=0;
+
+    if(di_table==NULL || di_table_len == 0 || data == NULL || datalen == 0 || index >=  hdlt645_slave_di_count(di_table,di_table_len,di_dst_num,datalen))
+    {
+        return 0;
+    }
+
+    size_t index_dst=0;
+    size_t index_dst_len=0;
+
+    for(size_t i=0; i<di_table_len; i++)
+    {
+        if(di_table[i].getlen==NULL || di_table[i].read == NULL || di_table[i].write == NULL)
+        {
+            break;
+        }
+        hdlt645_data_di_t di_src;
+        hdlt645_data_di_set(&di_src,di_table[i].di_num);
+        hdlt645_data_di_t di_dst;
+        hdlt645_data_di_set(&di_dst,di_dst_num);
+        if(!hdlt645_data_di_match(&di_src,&di_src))
+        {
+            continue;
+        }
+
+        size_t read_len=di_table[i].getlen(&di_table[i]);
+
+        if(read_len + index_dst_len > datalen)
+        {
+            index_dst_len=read_len;
+            index_dst++;
+        }
+        else
+        {
+            index_dst_len+=read_len;
+        }
+
+        if(index!=index_dst)
+        {
+            continue;
+        }
+
+        if((datalen-ret) < read_len)
+        {
+            read_len=datalen-ret;
+        }
+
+        read_len=di_table[i].read(&di_table[i],&data[ret],read_len);
+
+        ret+=read_len;
+
+    }
+
+    return ret;
+
+
+}
+
+size_t hdlt645_slave_di_write(const hdlt645_slave_di_t *di_table,size_t di_table_len,uint32_t di_dst_num,const uint8_t *data,size_t datalen)
+{
+    size_t ret=0;
+
+    if(di_table==NULL || di_table_len == 0 || data == NULL || datalen == 0)
+    {
+        return 0;
+    }
+
+    for(size_t i=0; i<di_table_len; i++)
+    {
+        if(di_table[i].getlen==NULL || di_table[i].read == NULL || di_table[i].write == NULL)
+        {
+            break;
+        }
+        hdlt645_data_di_t di_src;
+        hdlt645_data_di_set(&di_src,di_table[i].di_num);
+        hdlt645_data_di_t di_dst;
+        hdlt645_data_di_set(&di_dst,di_dst_num);
+        if(!hdlt645_data_di_match(&di_src,&di_src))
+        {
+            continue;
+        }
+
+        size_t write_len=di_table[i].getlen(&di_table[i]);
+
+        if((datalen-ret) < write_len)
+        {
+            write_len=datalen-ret;
+        }
+
+        write_len=di_table[i].write(&di_table[i],&data[ret],write_len);
+
+        ret+=write_len;
+
+    }
+
+    return ret;
+}

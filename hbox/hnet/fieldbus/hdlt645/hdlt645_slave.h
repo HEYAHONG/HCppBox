@@ -113,13 +113,72 @@ void hdlt645_slave_io_ctx_init(hdlt645_slave_io_ctx_t *ctx,hdlt645_bcd_addr_t *a
  */
 void hdlt645_slave_io_ctx_process_io(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io);
 
+/*
+ * 从机命令，最多可定义32个命令（包括功能码0），其中DL/T 645协议已使用13个命令
+ */
 typedef bool (*hdlt645_slave_io_ctx_cmd_cb_process_t)(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 struct hdlt645_slave_io_ctx_cmd
 {
     uint8_t fct;                                        /**< 功能码，0表示结束 */
     hdlt645_slave_io_ctx_cmd_cb_process_t process;      /**< 处理函数，返回true回复 */
-    uintptr_t usr[2];                                     /**< 用户参数 */
+    uintptr_t usr[2];                                   /**< 用户参数 */
 };
+
+
+#define HDLT645_SLAVE_IO_CTX_CMD_END {0,NULL,{0,0}}                                                                                 /**< 命令结束，命令表最后一个成员必须是命令结束 */
+
+/*
+ * 数据标识，可用于读数据、读剩余数据、写数据
+ */
+struct hdlt645_slave_di;
+typedef struct hdlt645_slave_di hdlt645_slave_di_t;
+struct hdlt645_slave_di
+{
+    uint32_t di_num;                                                                    /**< 数据标识 */
+    size_t (*getlen)(const hdlt645_slave_di_t *di);                                     /**< 获取长度，一般情况下，长度是固定值 */
+    size_t (*write)(const hdlt645_slave_di_t *di,const uint8_t *buff,size_t length);    /**< 写数据，返回已写入的值 */
+    size_t (*read)(const hdlt645_slave_di_t *di,uint8_t *buff,size_t length);           /**< 读数据，返回已读取的值 */
+    uintptr_t usr;                                                                      /**< 用户参数 */
+};
+
+#define HDLT645_SLAVE_DI_DEFINE(DI0,DI1,DI2,DI3)                                        ((DI0)+(DI1)*(1UL << (8))+(DI2)*(1UL << (16))+(DI3)*(1UL << (24)))
+#define HDLT645_SLAVE_DI_DEFINE2(DI3,DI2,DI1,DI0)                                       HDLT645_SLAVE_DI_DEFINE(DI0,DI1,DI2,DI3)
+
+/** \brief 获取数据操作计数
+ *
+ * \param di_table const hdlt645_slave_di_t* 数据表
+ * \param di_table_len size_t 数据表长度
+ * \param di_dst uint32_t 目标数据标识
+ * \param max_len 单次操作长度
+ * \return size_t 操作计数
+ *
+ */
+size_t hdlt645_slave_di_count(const hdlt645_slave_di_t *di_table,size_t di_table_len,uint32_t di_dst_num,size_t max_len);
+
+/** \brief 读取数据
+ *
+ * \param di_table const hdlt645_slave_di_t* 数据表
+ * \param di_table_len size_t 数据表长度
+ * \param di_dst_num uint32_t 目标数据标识
+ * \param index size_t 从0开始的引索，小于操作计数
+ * \param data uint8_t* 数据
+ * \param datalen size_t 数据缓冲指针
+ * \return size_t 读取的数据长度
+ *
+ */
+size_t hdlt645_slave_di_read(const hdlt645_slave_di_t *di_table,size_t di_table_len,uint32_t di_dst_num,size_t index,uint8_t *data,size_t datalen);
+
+/** \brief 写入数据
+ *
+ * \param di_table const hdlt645_slave_di_t* 数据表
+ * \param di_table_len size_t 数据表长度
+ * \param di_dst_num uint32_t 目标数据标识
+ * \param data const uint8_t* 数据
+ * \param datalen size_t 数据长度
+ * \return size_t 写入的数据长度
+ *
+ */
+size_t hdlt645_slave_di_write(const hdlt645_slave_di_t *di_table,size_t di_table_len,uint32_t di_dst_num,const uint8_t *data,size_t datalen);
 
 #ifdef __cplusplus
 }
