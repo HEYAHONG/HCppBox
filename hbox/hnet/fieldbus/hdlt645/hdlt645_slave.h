@@ -124,6 +124,8 @@ struct hdlt645_slave_io_ctx_cmd
     uintptr_t usr[2];                                   /**< 用户参数 */
 };
 
+#define HDLT645_SLAVE_IO_CTX_CMD_TIME(PROCESS,TIME_SYNC) \
+            {HDLT645_FRAME_CONTROL_FCT_TIME,PROCESS,{(uintptr_t)(TIME_SYNC),0}}                                 /**< 广播校时 */
 #define HDLT645_SLAVE_IO_CTX_CMD_READ(PROCESS,DI_TABLE,DI_TABLE_SIZE) \
             {HDLT645_FRAME_CONTROL_FCT_READ,PROCESS,{(uintptr_t)(DI_TABLE),DI_TABLE_SIZE}}                      /**< 读取数据 */
 #define HDLT645_SLAVE_IO_CTX_CMD_READEXT(PROCESS,DI_TABLE,DI_TABLE_SIZE) \
@@ -132,6 +134,19 @@ struct hdlt645_slave_io_ctx_cmd
             {HDLT645_FRAME_CONTROL_FCT_WRITE,PROCESS,{(uintptr_t)(DI_TABLE),DI_TABLE_SIZE}}                     /**< 读取后续数据 */
 #define HDLT645_SLAVE_IO_CTX_CMD_END() \
             {0,NULL,{0,0}}                                                                                      /**< 命令结束，命令表最后一个成员必须是命令结束 */
+
+/*
+ * 时间，用于广播校时
+ */
+struct hdlt645_slave_time;
+typedef struct hdlt645_slave_time hdlt645_slave_time_t;
+struct hdlt645_slave_time
+{
+    void (*time_sync)(const hdlt645_slave_time_t *time,uint8_t ss,uint8_t mm,uint8_t hh,uint8_t DD,uint8_t MM,uint8_t YY);                       /**< 时间同步，参数一般为BCD码 */
+    uintptr_t usr;
+};
+
+extern const hdlt645_slave_time_t hdlt645_slave_time_default;
 
 /*
  * 数据标识，可用于读数据、读剩余数据、写数据
@@ -191,8 +206,9 @@ size_t hdlt645_slave_di_read(const hdlt645_slave_di_t *di_table,size_t di_table_
 size_t hdlt645_slave_di_write(const hdlt645_slave_di_t *di_table,size_t di_table_len,uint32_t di_dst_num,const uint8_t *data,size_t datalen);
 
 /*
- * 读数据、读后续数据、写数据
+ * 广播校时、数据、读后续数据、写数据
  */
+bool hdlt645_slave_io_ctx_cmd_time_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 bool hdlt645_slave_io_ctx_cmd_read_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 bool hdlt645_slave_io_ctx_cmd_readext_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 bool hdlt645_slave_io_ctx_cmd_write_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);

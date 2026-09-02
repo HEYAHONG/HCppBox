@@ -8,6 +8,7 @@
  **************************************************************/
 
 #include "hdlt645_slave.h"
+#include "hdlt645_utils.h"
 
 void hdlt645_slave_io_init(hdlt645_slave_io_t *io,hdlt645_slave_io_cb_timeout_t timeout,hdlt645_slave_io_cb_reply_t reply,void *usr)
 {
@@ -151,6 +152,34 @@ size_t hdlt645_slave_io_rx_input(hdlt645_slave_io_t *io,uint8_t *data,size_t dat
     return ret;
 }
 
+#if !defined(HDLT645_SLAVE_TIME_SYNC)
+#include "hdefaults.h"
+
+void hdlt645_slave_time_sync_default(const hdlt645_slave_time_t *time,uint8_t ss,uint8_t mm,uint8_t hh,uint8_t DD,uint8_t MM,uint8_t YY)
+{
+    htimeval_t tv= {0};
+    {
+        htm_t tm= {0};
+        tm.tm_sec=hdlt645_bcd_to_uint64(ss);
+        tm.tm_min=hdlt645_bcd_to_uint64(mm);
+        tm.tm_hour=hdlt645_bcd_to_uint64(hh);
+        tm.tm_mday=hdlt645_bcd_to_uint64(DD);
+        tm.tm_mon=hdlt645_bcd_to_uint64(MM)-1;
+        tm.tm_year=hdlt645_bcd_to_uint64(YY)+2000;
+        tv.tv_sec=hlibc_mktime(&tm);
+    }
+    hsettimeofday(&tv,NULL);
+}
+
+const hdlt645_slave_time_t hdlt645_slave_time_default=
+{
+    hdlt645_slave_time_sync_default,
+    0
+};
+
+#define HDLT645_SLAVE_TIME_SYNC (&hdlt645_slave_time_default)
+#endif
+
 #if !defined(HDLT645_SLAVE_DI_TABLE)
 #define HDLT645_SLAVE_DI_TABLE NULL
 #endif
@@ -175,6 +204,7 @@ size_t hdlt645_slave_io_rx_input(hdlt645_slave_io_t *io,uint8_t *data,size_t dat
 
 static const hdlt645_slave_io_ctx_cmd_t hdlt645_slave_io_ctx_cmd_default[]=
 {
+    HDLT645_SLAVE_IO_CTX_CMD_TIME(hdlt645_slave_io_ctx_cmd_time_process,HDLT645_SLAVE_TIME_SYNC),
     HDLT645_SLAVE_IO_CTX_CMD_READ(hdlt645_slave_io_ctx_cmd_read_process,HDLT645_SLAVE_READ_DI_TABLE,HDLT645_SLAVE_READ_DI_TABLE_SIZE),
     HDLT645_SLAVE_IO_CTX_CMD_READEXT(hdlt645_slave_io_ctx_cmd_readext_process,HDLT645_SLAVE_READ_DI_TABLE,HDLT645_SLAVE_READ_DI_TABLE_SIZE),
     HDLT645_SLAVE_IO_CTX_CMD_WRITE(hdlt645_slave_io_ctx_cmd_write_process,HDLT645_SLAVE_WRITE_DI_TABLE,HDLT645_SLAVE_WRITE_DI_TABLE_SIZE),
@@ -496,6 +526,28 @@ size_t hdlt645_slave_di_write(const hdlt645_slave_di_t *di_table,size_t di_table
         ret+=write_len;
 
     }
+
+    return ret;
+}
+
+bool hdlt645_slave_io_ctx_cmd_time_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len)
+{
+    if(ctx==NULL || io == NULL || cmd == NULL || data == NULL || datalen < 6 || reply_buffer == NULL || reply_buffer_len < 12)
+    {
+        return false;
+    }
+
+    const hdlt645_slave_time_t *m_time=(const hdlt645_slave_time_t *)cmd->usr[0];
+
+    if(m_time!=NULL)
+    {
+        if(m_time->time_sync!=NULL)
+        {
+            m_time->time_sync(m_time,data[0],data[1],data[2],data[3],data[4],data[5]);
+        }
+    }
+
+    bool ret=false;
 
     return ret;
 }
