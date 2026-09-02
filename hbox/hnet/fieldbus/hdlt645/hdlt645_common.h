@@ -325,6 +325,20 @@ bool hdlt645_frame_unpack(uint8_t *frame,size_t frame_len);
 bool hdlt645_frame_check(const uint8_t *frame,size_t frame_len);
 
 
+/*
+ * 错误字（单个字节）
+ */
+#define HDLT645_ERR_RESERVED                (0x80)          /**< 保留 */
+#define HDLT645_ERR_RATE                    (0x40)          /**< 费率数超 */
+#define HDLT645_ERR_DAY                     (0x20)          /**< 日时区错误 */
+#define HDLT645_ERR_YEAR                    (0x10)          /**< 年时区错误 */
+#define HDLT645_ERR_COM                     (0x08)          /**< 通信设置错误，如无法更改速率 */
+#define HDLT645_ERR_DENY                    (0x04)          /**< 密码错/未授权 */
+#define HDLT645_ERR_NODATA                  (0x02)          /**< 无数据 */
+#define HDLT645_ERR_OTHER                   (0x01)          /**< 其它错误，包括除开其它位已定义的错误的所有错误 */
+
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
