@@ -337,6 +337,23 @@ bool hdlt645_frame_check(const uint8_t *frame,size_t frame_len);
 #define HDLT645_ERR_NODATA                  (0x02)          /**< 无数据 */
 #define HDLT645_ERR_OTHER                   (0x01)          /**< 其它错误，包括除开其它位已定义的错误的所有错误 */
 
+/** \brief 帧获取错误字
+ *
+ * \param frame uint8_t* 帧缓冲
+ * \param frame_len size_t 帧缓冲长度
+ * \return hdlt645_bcd_addr_t* 错误字指针
+ *
+ */
+uint8_t * hdlt645_frame_get_data_err(uint8_t *frame,size_t frame_len);
+
+/** \brief 帧设置错误字
+ *
+ * \param frame uint8_t* 帧缓冲
+ * \param frame_len size_t 帧缓冲长度
+ * \param err uint8_t 错误字
+ *
+ */
+void  hdlt645_frame_set_data_err(uint8_t *frame,size_t frame_len,uint8_t err);
 
 
 #ifdef __cplusplus

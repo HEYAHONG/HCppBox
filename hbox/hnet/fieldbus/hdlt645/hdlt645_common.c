@@ -525,3 +525,42 @@ bool hdlt645_frame_check(const uint8_t *frame,size_t frame_len)
 
     return ret;
 }
+
+
+uint8_t * hdlt645_frame_get_data_err(uint8_t *frame,size_t frame_len)
+{
+    return hdlt645_frame_get_data(frame,frame_len);
+}
+
+void  hdlt645_frame_set_data_err(uint8_t *frame,size_t frame_len,uint8_t err)
+{
+    {
+        uint8_t *err_ptr=hdlt645_frame_get_data_err(frame,frame_len);
+        if(err_ptr!=NULL)
+        {
+            (*err_ptr)=err;
+        }
+    }
+    {
+        uint8_t *datalen_ptr=hdlt645_frame_get_datalen(frame,frame_len);
+        if(datalen_ptr!=NULL)
+        {
+            /*
+             * 设定错误字后，数据域长度固定为1
+             */
+            (*datalen_ptr)=1;
+        }
+    }
+    {
+        uint8_t *control_ptr=hdlt645_frame_get_c(frame,frame_len);
+        if(control_ptr!=NULL)
+        {
+            /*
+             * 设定错误字后，从站将设定错误应答
+             */
+            hdlt645_control_t c=hdlt645_control_decode(*control_ptr);
+            c.ack=1;
+            (*control_ptr)=hdlt645_control_encode(c);
+        }
+    }
+}
