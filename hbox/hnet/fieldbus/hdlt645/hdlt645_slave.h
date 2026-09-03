@@ -136,6 +136,8 @@ struct hdlt645_slave_io_ctx_cmd
             {HDLT645_FRAME_CONTROL_FCT_WRITE,PROCESS,{(uintptr_t)(DI_TABLE),DI_TABLE_SIZE}}                     /**< 写入数据 */
 #define HDLT645_SLAVE_IO_CTX_CMD_WRITEADDR(PROCESS,WRITEADDR) \
             {HDLT645_FRAME_CONTROL_FCT_WRITEADDR,PROCESS,{(uintptr_t)(WRITEADDR),0}}                            /**< 写入通信地址 */
+#define HDLT645_SLAVE_IO_CTX_CMD_FREEZE(PROCESS,FREEZE) \
+            {HDLT645_FRAME_CONTROL_FCT_FREEZE,PROCESS,{(uintptr_t)(FREEZE),0}}                                  /**< 冻结数据 */
 #define HDLT645_SLAVE_IO_CTX_CMD_END() \
             {0,NULL,{0,0}}                                                                                      /**< 命令结束，命令表最后一个成员必须是命令结束 */
 
@@ -219,6 +221,15 @@ typedef struct hdlt645_slave_writeaddr
 } hdlt645_slave_writeaddr_t;
 
 /*
+ * 冻结，用于冻结命令(用于设置冻结（电量）时间)
+ */
+typedef struct hdlt645_slave_freeze
+{
+    void (*freeze)(struct hdlt645_slave_freeze *freeze,uint8_t mm,uint8_t hh,uint8_t DD,uint8_t MM);                        /**< 可设定冻结时间（月日时分，BCD码，0x99表示通配符*/
+    uintptr_t usr;                                                                                                          /**< 用户参数 */
+} hdlt645_slave_freeze_t;
+
+/*
  *支持功能
  *      广播校时
  *      读数据
@@ -226,6 +237,7 @@ typedef struct hdlt645_slave_writeaddr
  *      读通信地址
  *      写数据
  *      写通信地址
+ *      冻结命令
  */
 bool hdlt645_slave_io_ctx_cmd_time_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 bool hdlt645_slave_io_ctx_cmd_read_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
@@ -233,6 +245,7 @@ bool hdlt645_slave_io_ctx_cmd_readext_process(hdlt645_slave_io_ctx_t *ctx,hdlt64
 bool hdlt645_slave_io_ctx_cmd_readaddr_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 bool hdlt645_slave_io_ctx_cmd_write_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 bool hdlt645_slave_io_ctx_cmd_writeaddr_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
+bool hdlt645_slave_io_ctx_cmd_freeze_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 
 
 #ifdef __cplusplus

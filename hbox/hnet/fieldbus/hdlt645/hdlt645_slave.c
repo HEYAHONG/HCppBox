@@ -205,6 +205,10 @@ const hdlt645_slave_time_t hdlt645_slave_time_default=
 #define HDLT645_SLAVE_WRITEADDR NULL
 #endif
 
+#if !defined(HDLT645_SLAVE_FREEZE)
+#define HDLT645_SLAVE_FREEZE NULL
+#endif
+
 
 static const hdlt645_slave_io_ctx_cmd_t hdlt645_slave_io_ctx_cmd_default[]=
 {
@@ -214,6 +218,7 @@ static const hdlt645_slave_io_ctx_cmd_t hdlt645_slave_io_ctx_cmd_default[]=
     HDLT645_SLAVE_IO_CTX_CMD_READADDR(hdlt645_slave_io_ctx_cmd_readaddr_process),
     HDLT645_SLAVE_IO_CTX_CMD_WRITE(hdlt645_slave_io_ctx_cmd_write_process,HDLT645_SLAVE_WRITE_DI_TABLE,HDLT645_SLAVE_WRITE_DI_TABLE_SIZE),
     HDLT645_SLAVE_IO_CTX_CMD_WRITEADDR(hdlt645_slave_io_ctx_cmd_writeaddr_process,HDLT645_SLAVE_WRITEADDR),
+    HDLT645_SLAVE_IO_CTX_CMD_FREEZE(hdlt645_slave_io_ctx_cmd_freeze_process,HDLT645_SLAVE_FREEZE),
     HDLT645_SLAVE_IO_CTX_CMD_END(),
 };
 
@@ -840,6 +845,42 @@ bool hdlt645_slave_io_ctx_cmd_writeaddr_process(hdlt645_slave_io_ctx_t *ctx,hdlt
             }
 
         }
+    }
+
+    /*
+     * 设置数据长度
+     */
+    size_t l=0;
+    (*hdlt645_frame_get_datalen(reply_buffer,reply_buffer_len))=l;
+
+    return ret;
+}
+
+bool hdlt645_slave_io_ctx_cmd_freeze_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len)
+{
+    if(ctx==NULL || io == NULL || cmd == NULL || data == NULL || datalen < 4 || reply_buffer == NULL || reply_buffer_len < 12)
+    {
+        return false;
+    }
+
+    hdlt645_control_t c=hdlt645_control_decode(0);
+
+    c.dir=1;
+
+    c.fct=cmd->fct;
+
+    hdlt645_slave_freeze_t *freeze=(hdlt645_slave_freeze_t *)cmd->usr[0];
+
+    bool ret=true;
+
+    /*
+    * 设置控制码
+    */
+    (*hdlt645_frame_get_c(reply_buffer,reply_buffer_len))=hdlt645_control_encode(c);
+
+    if(freeze!=NULL)
+    {
+        freeze->freeze(freeze,data[0],data[1],data[2],data[3]);
     }
 
     /*
