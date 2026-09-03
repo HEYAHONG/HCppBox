@@ -132,7 +132,7 @@ uint8_t hdlt645_control_encode(hdlt645_control_t control);
 #define HDLT645_FRAME_CONTROL_FCT_CHCOM     (0b10111)
 #define HDLT645_FRAME_CONTROL_FCT_CHPASS    (0b11000)
 #define HDLT645_FRAME_CONTROL_FCT_CLRMR     (0b11001)
-#define HDLT645_FRAME_CONTROL_FCT_CLRENERGY (0b11010)
+#define HDLT645_FRAME_CONTROL_FCT_CLRALL    (0b11010)
 #define HDLT645_FRAME_CONTROL_FCT_CLREVENT  (0b11011)
 
 
@@ -354,6 +354,20 @@ uint8_t * hdlt645_frame_get_data_err(uint8_t *frame,size_t frame_len);
  *
  */
 void  hdlt645_frame_set_data_err(uint8_t *frame,size_t frame_len,uint8_t err);
+
+
+/*
+ * 通信速率特征字(单个字节)
+ */
+#define HDLT645_COM_Z_RESERVED0     (0x80)
+#define HDLT645_COM_Z_19200         (0x40)
+#define HDLT645_COM_Z_9600          (0x20)
+#define HDLT645_COM_Z_4800          (0x10)
+#define HDLT645_COM_Z_2400          (0x08)
+#define HDLT645_COM_Z_1200          (0x04)
+#define HDLT645_COM_Z_600           (0x02)
+#define HDLT645_COM_Z_RESERVED1     (0x01)
+
 
 
 #ifdef __cplusplus
