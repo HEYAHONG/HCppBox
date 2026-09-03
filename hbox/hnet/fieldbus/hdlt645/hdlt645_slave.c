@@ -880,7 +880,10 @@ bool hdlt645_slave_io_ctx_cmd_freeze_process(hdlt645_slave_io_ctx_t *ctx,hdlt645
 
     if(freeze!=NULL)
     {
-        freeze->freeze(freeze,data[0],data[1],data[2],data[3]);
+        if(freeze->freeze!=NULL)
+        {
+            freeze->freeze(freeze,data[0],data[1],data[2],data[3]);
+        }
     }
 
     /*
