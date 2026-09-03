@@ -8,20 +8,22 @@ DL/T 645采用主从模式，默认情况下采用RS-485总线标准（串口参
 
 ## 可外部配置的宏定义
 
-| 宏定义                              | 说明                  | 备注                                   |
-| ----------------------------------- | --------------------- | -------------------------------------- |
-| `HDLT645_SLAVE_IO_NO_TX_BUFFER`     | 不单独分配发送缓冲区  | 定义此宏定义后，将使用栈作为发送缓冲区 |
-| `HDLT645_SLAVE_TIME_SYNC`           | 时间同步              | 若不定义则采用`hsettimeofday`设置时间  |
-| `HDLT645_SLAVE_DI_TABLE`            | 数据标识表指针        | 当对读写的数据表单独设置时无效         |
-| `HDLT645_SLAVE_DI_TABLE_SIZE`       | 数据标识表长度        | 当对读写的数据表单独设置时无效         |
-| `HDLT645_SLAVE_READ_DI_TABLE`       | (读取）数据标识表指针 |                                        |
-| `HDLT645_SLAVE_READ_DI_TABLE_SIZE`  | (读取）数据标识表长度 |                                        |
-| `HDLT645_SLAVE_WRITE_DI_TABLE`      | (写入）数据标识表指针 |                                        |
-| `HDLT645_SLAVE_WRITE_DI_TABLE_SIZE` | (写入）数据标识表长度 |                                        |
-| `HDLT645_SLAVE_WRITEADDR`           | 写入通信地址          |                                        |
-| `HDLT645_SLAVE_FREEZE`              | 冻结                  |                                        |
-| `HDLT645_SLAVE_COM_Z`               | 通信速率特征字        |                                        |
-| `HDLT645_SLAVE_PASS`                | 密码                  |                                        |
+| 宏定义                                     | 说明                  | 备注                                   |
+| ------------------------------------------ | --------------------- | -------------------------------------- |
+| `HDLT645_SLAVE_IO_NO_TX_BUFFER`            | 不单独分配发送缓冲区  | 定义此宏定义后，将使用栈作为发送缓冲区 |
+| `HDLT645_SLAVE_IO_CTX_CMD_USR_EXTEND_LIST` | 用户扩展的命令列表    | 每项以逗号(,)结尾                      |
+| `HDLT645_SLAVE_TIME_SYNC`                  | 时间同步              | 若不定义则采用`hsettimeofday`设置时间  |
+| `HDLT645_SLAVE_DI_TABLE`                   | 数据标识表指针        | 当对读写的数据表单独设置时无效         |
+| `HDLT645_SLAVE_DI_TABLE_SIZE`              | 数据标识表长度        | 当对读写的数据表单独设置时无效         |
+| `HDLT645_SLAVE_READ_DI_TABLE`              | (读取）数据标识表指针 |                                        |
+| `HDLT645_SLAVE_READ_DI_TABLE_SIZE`         | (读取）数据标识表长度 |                                        |
+| `HDLT645_SLAVE_WRITE_DI_TABLE`             | (写入）数据标识表指针 |                                        |
+| `HDLT645_SLAVE_WRITE_DI_TABLE_SIZE`        | (写入）数据标识表长度 |                                        |
+| `HDLT645_SLAVE_WRITEADDR`                  | 写入通信地址          |                                        |
+| `HDLT645_SLAVE_FREEZE`                     | 冻结                  |                                        |
+| `HDLT645_SLAVE_COM_Z`                      | 通信速率特征字        |                                        |
+| `HDLT645_SLAVE_PASS`                       | 密码                  |                                        |
+| `HDLT645_SLAVE_CLEAR`                      | 清零                  | 用于最大需量清零、电表清零、事件清零   |
 
 ## 数据项
 

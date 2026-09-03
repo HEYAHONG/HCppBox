@@ -177,6 +177,10 @@ const hdlt645_slave_time_t hdlt645_slave_time_default=
     0
 };
 
+#if !defined(HDLT645_SLAVE_IO_CTX_CMD_USR_EXTEND_LIST)
+#define HDLT645_SLAVE_IO_CTX_CMD_USR_EXTEND_LIST
+#endif
+
 #define HDLT645_SLAVE_TIME_SYNC (&hdlt645_slave_time_default)
 #endif
 
@@ -217,9 +221,14 @@ const hdlt645_slave_time_t hdlt645_slave_time_default=
 #define HDLT645_SLAVE_PASS NULL
 #endif
 
+#if !defined(HDLT645_SLAVE_CLEAR)
+#define HDLT645_SLAVE_CLEAR NULL
+#endif
+
 
 static const hdlt645_slave_io_ctx_cmd_t hdlt645_slave_io_ctx_cmd_default[]=
 {
+    HDLT645_SLAVE_IO_CTX_CMD_USR_EXTEND_LIST
     HDLT645_SLAVE_IO_CTX_CMD_TIME(hdlt645_slave_io_ctx_cmd_time_process,HDLT645_SLAVE_TIME_SYNC),
     HDLT645_SLAVE_IO_CTX_CMD_READ(hdlt645_slave_io_ctx_cmd_read_process,HDLT645_SLAVE_READ_DI_TABLE,HDLT645_SLAVE_READ_DI_TABLE_SIZE),
     HDLT645_SLAVE_IO_CTX_CMD_READEXT(hdlt645_slave_io_ctx_cmd_readext_process,HDLT645_SLAVE_READ_DI_TABLE,HDLT645_SLAVE_READ_DI_TABLE_SIZE),
@@ -229,6 +238,9 @@ static const hdlt645_slave_io_ctx_cmd_t hdlt645_slave_io_ctx_cmd_default[]=
     HDLT645_SLAVE_IO_CTX_CMD_FREEZE(hdlt645_slave_io_ctx_cmd_freeze_process,HDLT645_SLAVE_FREEZE),
     HDLT645_SLAVE_IO_CTX_CMD_CHCOM(hdlt645_slave_io_ctx_cmd_chcom_process,HDLT645_SLAVE_COM_Z),
     HDLT645_SLAVE_IO_CTX_CMD_CHPASS(hdlt645_slave_io_ctx_cmd_chpass_process,HDLT645_SLAVE_PASS),
+    HDLT645_SLAVE_IO_CTX_CMD_CLRMR(hdlt645_slave_io_ctx_cmd_clear_process,HDLT645_SLAVE_CLEAR),
+    HDLT645_SLAVE_IO_CTX_CMD_CLRALL(hdlt645_slave_io_ctx_cmd_clear_process,HDLT645_SLAVE_CLEAR),
+    HDLT645_SLAVE_IO_CTX_CMD_CLREVENT(hdlt645_slave_io_ctx_cmd_clear_process,HDLT645_SLAVE_CLEAR),
     HDLT645_SLAVE_IO_CTX_CMD_END(),
 };
 
@@ -996,6 +1008,65 @@ bool hdlt645_slave_io_ctx_cmd_chpass_process(hdlt645_slave_io_ctx_t *ctx,hdlt645
     (*hdlt645_frame_get_datalen(reply_buffer,reply_buffer_len))=l;
 
     if(!pass_change_ok)
+    {
+        /*
+         * 返回错误字
+         */
+        hdlt645_frame_set_data_err( reply_buffer,reply_buffer_len,HDLT645_ERR_DENY);
+    }
+
+    return ret;
+}
+
+bool hdlt645_slave_io_ctx_cmd_clear_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len)
+{
+    if(ctx==NULL || io == NULL || cmd == NULL || data == NULL || datalen < 8 || reply_buffer == NULL || reply_buffer_len < 12+1)
+    {
+        return false;
+    }
+
+    hdlt645_control_t c=hdlt645_control_decode(0);
+
+    c.dir=1;
+
+    c.fct=cmd->fct;
+
+    hdlt645_slave_clear_t *clear=(hdlt645_slave_clear_t *)cmd->usr[0];
+    hdlt645_data_p_t *data_p=(hdlt645_data_p_t *)&data[0];
+    hdlt645_data_c_t *data_c=(hdlt645_data_c_t *)&data[4];
+    hdlt645_data_di_t *data_di=NULL;
+    if(datalen >= 12)
+    {
+        data_di=(hdlt645_data_di_t *)&data[8];
+    }
+
+
+
+    bool ret=true;
+
+    /*
+    * 设置控制码
+    */
+    (*hdlt645_frame_get_c(reply_buffer,reply_buffer_len))=hdlt645_control_encode(c);
+
+    bool clear_ok=false;
+
+    if(clear!=NULL)
+    {
+        if(clear->clear_data!=NULL)
+        {
+            clear_ok=clear->clear_data(clear,c.fct,data_p,data_c,data_di);
+        }
+    }
+
+
+    /*
+     * 设置数据长度
+     */
+    size_t l=0;
+    (*hdlt645_frame_get_datalen(reply_buffer,reply_buffer_len))=l;
+
+    if(!clear_ok)
     {
         /*
          * 返回错误字
