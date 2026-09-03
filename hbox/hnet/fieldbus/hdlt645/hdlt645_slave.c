@@ -201,13 +201,19 @@ const hdlt645_slave_time_t hdlt645_slave_time_default=
 #define HDLT645_SLAVE_WRITE_DI_TABLE_SIZE HDLT645_SLAVE_DI_TABLE_SIZE
 #endif
 
+#if !defined(HDLT645_SLAVE_WRITEADDR)
+#define HDLT645_SLAVE_WRITEADDR NULL
+#endif
+
 
 static const hdlt645_slave_io_ctx_cmd_t hdlt645_slave_io_ctx_cmd_default[]=
 {
     HDLT645_SLAVE_IO_CTX_CMD_TIME(hdlt645_slave_io_ctx_cmd_time_process,HDLT645_SLAVE_TIME_SYNC),
     HDLT645_SLAVE_IO_CTX_CMD_READ(hdlt645_slave_io_ctx_cmd_read_process,HDLT645_SLAVE_READ_DI_TABLE,HDLT645_SLAVE_READ_DI_TABLE_SIZE),
     HDLT645_SLAVE_IO_CTX_CMD_READEXT(hdlt645_slave_io_ctx_cmd_readext_process,HDLT645_SLAVE_READ_DI_TABLE,HDLT645_SLAVE_READ_DI_TABLE_SIZE),
+    HDLT645_SLAVE_IO_CTX_CMD_READADDR(hdlt645_slave_io_ctx_cmd_readaddr_process),
     HDLT645_SLAVE_IO_CTX_CMD_WRITE(hdlt645_slave_io_ctx_cmd_write_process,HDLT645_SLAVE_WRITE_DI_TABLE,HDLT645_SLAVE_WRITE_DI_TABLE_SIZE),
+    HDLT645_SLAVE_IO_CTX_CMD_WRITEADDR(hdlt645_slave_io_ctx_cmd_writeaddr_process,HDLT645_SLAVE_WRITEADDR),
     HDLT645_SLAVE_IO_CTX_CMD_END(),
 };
 
@@ -669,6 +675,42 @@ bool hdlt645_slave_io_ctx_cmd_readext_process(hdlt645_slave_io_ctx_t *ctx,hdlt64
     return ret;
 }
 
+bool hdlt645_slave_io_ctx_cmd_readaddr_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len)
+{
+    if(ctx==NULL || io == NULL || cmd == NULL || reply_buffer == NULL || reply_buffer_len < 12+6)
+    {
+        return false;
+    }
+
+    bool ret=true;
+
+    hdlt645_control_t c=hdlt645_control_decode(0);
+
+    c.dir=1;
+
+    c.fct=cmd->fct;
+
+
+    /*
+    * 设置控制码
+    */
+    (*hdlt645_frame_get_c(reply_buffer,reply_buffer_len))=hdlt645_control_encode(c);
+
+    /*
+     * 读取地址
+     */
+    memcpy(hdlt645_frame_get_data(reply_buffer,reply_buffer_len),&ctx->addr,sizeof(ctx->addr));
+
+
+    /*
+     * 设置数据长度
+     */
+    size_t l=sizeof(hdlt645_bcd_addr_t);
+    (*hdlt645_frame_get_datalen(reply_buffer,reply_buffer_len))=l;
+
+    return ret;
+}
+
 bool hdlt645_slave_io_ctx_cmd_write_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len)
 {
     if(ctx==NULL || io == NULL || cmd == NULL || data == NULL || datalen < 12 || reply_buffer == NULL || reply_buffer_len < 12)
@@ -749,6 +791,56 @@ bool hdlt645_slave_io_ctx_cmd_write_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_
      */
     (*hdlt645_frame_get_c(reply_buffer,reply_buffer_len))=hdlt645_control_encode(c);
 
+
+    /*
+     * 设置数据长度
+     */
+    size_t l=0;
+    (*hdlt645_frame_get_datalen(reply_buffer,reply_buffer_len))=l;
+
+    return ret;
+}
+
+bool hdlt645_slave_io_ctx_cmd_writeaddr_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len)
+{
+    if(ctx==NULL || io == NULL || cmd == NULL || data == NULL || datalen < 6 || reply_buffer == NULL || reply_buffer_len < 12)
+    {
+        return false;
+    }
+
+    hdlt645_control_t c=hdlt645_control_decode(0);
+
+    c.dir=1;
+
+    c.fct=cmd->fct;
+
+    hdlt645_bcd_addr_t *addr=(hdlt645_bcd_addr_t *)data;
+
+    hdlt645_slave_writeaddr_t *writeaddr=(hdlt645_slave_writeaddr_t *)cmd->usr[0];
+
+    bool ret=true;
+
+    /*
+    * 设置控制码
+    */
+    (*hdlt645_frame_get_c(reply_buffer,reply_buffer_len))=hdlt645_control_encode(c);
+
+    /*
+     * 写地址
+     */
+    if(writeaddr!=NULL)
+    {
+        if(writeaddr->write!=NULL)
+        {
+            ret=writeaddr->write(writeaddr,ctx,addr);
+
+            if(ret)
+            {
+                memcpy(&ctx->addr,addr,sizeof(*addr));
+            }
+
+        }
+    }
 
     /*
      * 设置数据长度
