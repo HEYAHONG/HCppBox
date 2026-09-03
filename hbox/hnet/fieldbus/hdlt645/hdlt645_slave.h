@@ -140,6 +140,8 @@ struct hdlt645_slave_io_ctx_cmd
             {HDLT645_FRAME_CONTROL_FCT_FREEZE,PROCESS,{(uintptr_t)(FREEZE),0}}                                  /**< 冻结数据 */
 #define HDLT645_SLAVE_IO_CTX_CMD_CHCOM(PROCESS,COM_Z) \
             {HDLT645_FRAME_CONTROL_FCT_CHCOM,PROCESS,{(uintptr_t)(COM_Z),0}}                                    /**< 更改通信速率 */
+#define HDLT645_SLAVE_IO_CTX_CMD_CHPASS(PROCESS,PASS) \
+            {HDLT645_FRAME_CONTROL_FCT_CHPASS,PROCESS,{(uintptr_t)(PASS),0}}                                    /**< 更改密码 */
 #define HDLT645_SLAVE_IO_CTX_CMD_END() \
             {0,NULL,{0,0}}                                                                                      /**< 命令结束，命令表最后一个成员必须是命令结束 */
 
@@ -243,6 +245,16 @@ typedef struct hdlt645_slave_com_z
 
 
 /*
+ * 密码，用于修改密码
+ */
+typedef struct hdlt645_slave_pass
+{
+    bool (*ch_pass)(struct hdlt645_slave_pass *pass,hdlt645_data_di_t *di,hdlt645_data_p_t *p,hdlt645_data_p_t *new_p);
+    uintptr_t usr;
+} hdlt645_slave_pass_t;
+
+
+/*
  *支持功能
  *      广播校时
  *      读数据
@@ -252,6 +264,7 @@ typedef struct hdlt645_slave_com_z
  *      写通信地址
  *      冻结命令
  *      更改通信速率
+ *      修改密码
  */
 bool hdlt645_slave_io_ctx_cmd_time_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 bool hdlt645_slave_io_ctx_cmd_read_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
@@ -261,6 +274,7 @@ bool hdlt645_slave_io_ctx_cmd_write_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_
 bool hdlt645_slave_io_ctx_cmd_writeaddr_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 bool hdlt645_slave_io_ctx_cmd_freeze_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 bool hdlt645_slave_io_ctx_cmd_chcom_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
+bool hdlt645_slave_io_ctx_cmd_chpass_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len);
 
 
 #ifdef __cplusplus
