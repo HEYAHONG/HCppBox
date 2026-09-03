@@ -209,6 +209,10 @@ const hdlt645_slave_time_t hdlt645_slave_time_default=
 #define HDLT645_SLAVE_FREEZE NULL
 #endif
 
+#if !defined(HDLT645_SLAVE_COM_Z)
+#define HDLT645_SLAVE_COM_Z NULL
+#endif
+
 
 static const hdlt645_slave_io_ctx_cmd_t hdlt645_slave_io_ctx_cmd_default[]=
 {
@@ -219,6 +223,7 @@ static const hdlt645_slave_io_ctx_cmd_t hdlt645_slave_io_ctx_cmd_default[]=
     HDLT645_SLAVE_IO_CTX_CMD_WRITE(hdlt645_slave_io_ctx_cmd_write_process,HDLT645_SLAVE_WRITE_DI_TABLE,HDLT645_SLAVE_WRITE_DI_TABLE_SIZE),
     HDLT645_SLAVE_IO_CTX_CMD_WRITEADDR(hdlt645_slave_io_ctx_cmd_writeaddr_process,HDLT645_SLAVE_WRITEADDR),
     HDLT645_SLAVE_IO_CTX_CMD_FREEZE(hdlt645_slave_io_ctx_cmd_freeze_process,HDLT645_SLAVE_FREEZE),
+    HDLT645_SLAVE_IO_CTX_CMD_CHCOM(hdlt645_slave_io_ctx_cmd_chcom_process,HDLT645_SLAVE_COM_Z),
     HDLT645_SLAVE_IO_CTX_CMD_END(),
 };
 
@@ -890,6 +895,51 @@ bool hdlt645_slave_io_ctx_cmd_freeze_process(hdlt645_slave_io_ctx_t *ctx,hdlt645
      * 设置数据长度
      */
     size_t l=0;
+    (*hdlt645_frame_get_datalen(reply_buffer,reply_buffer_len))=l;
+
+    return ret;
+}
+
+bool hdlt645_slave_io_ctx_cmd_chcom_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len)
+{
+    if(ctx==NULL || io == NULL || cmd == NULL || data == NULL || datalen < 1 || reply_buffer == NULL || reply_buffer_len < 12+1)
+    {
+        return false;
+    }
+
+    hdlt645_control_t c=hdlt645_control_decode(0);
+
+    c.dir=1;
+
+    c.fct=cmd->fct;
+
+    hdlt645_slave_com_z_t *com_z=(hdlt645_slave_com_z_t *)cmd->usr[0];
+    uint8_t *z=(uint8_t *)&data[0];
+
+    bool ret=true;
+
+    /*
+    * 设置控制码
+    */
+    (*hdlt645_frame_get_c(reply_buffer,reply_buffer_len))=hdlt645_control_encode(c);
+
+    if(com_z!=NULL)
+    {
+        if(com_z->change_com_z!=NULL)
+        {
+            com_z->change_com_z(com_z,io,z);
+        }
+    }
+
+    /*
+     * 设定返回的特征字
+     */
+    hdlt645_frame_get_data(reply_buffer,reply_buffer_len)[0]=(*z);
+
+    /*
+     * 设置数据长度
+     */
+    size_t l=1;
     (*hdlt645_frame_get_datalen(reply_buffer,reply_buffer_len))=l;
 
     return ret;

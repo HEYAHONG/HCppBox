@@ -20,6 +20,7 @@ DL/T 645采用主从模式，默认情况下采用RS-485总线标准（串口参
 | `HDLT645_SLAVE_WRITE_DI_TABLE_SIZE` | (写入）数据标识表长度 |                                        |
 | `HDLT645_SLAVE_WRITEADDR`           | 写入通信地址          |                                        |
 | `HDLT645_SLAVE_FREEZE`              | 冻结                  |                                        |
+| `HDLT645_SLAVE_COM_Z`               | 通信速率特征字        |                                        |
 
 ## 数据项
 
