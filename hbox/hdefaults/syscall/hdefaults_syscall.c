@@ -343,10 +343,14 @@ void hdefaults_syscall_init(void)
 void hdefaults_syscall_loop(void)
 {
 
+    uint64_t seconds=hdefaults_tick_get()/1000;
+    (void)seconds;
+
 #if !defined(HDEFAULTS_SYSCALL_NO_IMPLEMENTATION) && !defined(HDEFAULTS_SYSCALL_NO_HGETTIMEOFDAY) && !defined(HGETTIMEOFDAY) && !defined(HSYSCALL_GETTIMEOFDAY_UPDATE)
     /*
      * 调用一次hgettimeofday更新内部时间
      */
+    if((seconds/3600)==0)
     {
         hgettimeofday_timeval_t tv;
         hgettimeofday_timezone_t tz;
@@ -358,8 +362,9 @@ void hdefaults_syscall_loop(void)
     /*
      * 更新内部单调时钟时间
      */
+    if((seconds/3600)==0)
     {
-        htimespec_t tp={0};
+        htimespec_t tp= {0};
         hclock_gettime(HCLOCK_MONOTONIC,&tp);
     }
 #endif
