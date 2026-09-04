@@ -11,11 +11,12 @@
 #include "stdlib.h"
 
 #if defined(FREERTOS_KERNEL)
-#include "hthrd_rtos_freertos.c"
 #if !defined(HTHRD_USING_FREERTOS)
 #define  HTHRD_USING_FREERTOS   1
 #endif
-#elif defined(HTHRD_USING_FREERTOS) || defined(FREERTOS)
+#endif
+
+#if defined(HTHRD_USING_FREERTOS) || defined(FREERTOS)
 
 
 #if defined(FREERTOS)
