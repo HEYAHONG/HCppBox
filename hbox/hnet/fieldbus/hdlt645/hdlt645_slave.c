@@ -105,7 +105,7 @@ hdlt645_slave_io_status_t hdlt645_slave_io_status(hdlt645_slave_io_t *io)
     break;
     }
 
-    return HDLT645_SLAVE_IO_STATUS_IDLE;
+    return status;
 }
 
 void hdlt645_slave_io_rx_reset(hdlt645_slave_io_t *io)
