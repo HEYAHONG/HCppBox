@@ -216,7 +216,7 @@ static inline  uint32_t hs_risc_v_core_rv32_csr_read_default_value(hs_risc_v_cor
     }
     break;
     }
-    return 0;
+    return reg_value;
 }
 
 static inline  uint32_t hs_risc_v_core_rv32_csr_read(hs_risc_v_core_rv32_t *core,size_t address)
