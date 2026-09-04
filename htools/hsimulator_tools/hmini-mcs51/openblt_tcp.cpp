@@ -134,11 +134,16 @@ void dhcpc_request(void)
 static SOCKET server_fd=INVALID_SOCKET;
 static SOCKET client_fd=INVALID_SOCKET;
 
+#if !defined(SOCK_NONBLOCK) || defined(__CYGWIN__)
+extern "C" void openblt_socket_set_nonblock(int socket_fd);
+extern "C" bool openblt_socket_is_egain(void);
+#endif
+
 void      uip_init(void)
 {
-#ifdef  SOCK_NONBLOCK
+#if defined(SOCK_NONBLOCK) && !defined(__CYGWIN__)
     server_fd=socket(AF_INET,SOCK_STREAM | SOCK_NONBLOCK,0);
-#elif defined(FIONBIO)
+#else
     server_fd=socket(AF_INET,SOCK_STREAM,0);
 #endif
     if(server_fd==INVALID_SOCKET)
@@ -146,10 +151,9 @@ void      uip_init(void)
         hprintf("openblt:new socket error!\r\n");
         throw -1;
     }
-#if !defined(SOCK_NONBLOCK) && defined(FIONBIO)
+#if !defined(SOCK_NONBLOCK) || defined(__CYGWIN__)
     {
-        u_long mode=1;
-        ioctlsocket(server_fd, FIONBIO, &mode);
+        openblt_socket_set_nonblock(server_fd);
     }
 #endif
 }
@@ -185,16 +189,15 @@ void      uip_input(void)
                 tv.tv_usec = 5*1000;
                 setsockopt(client_fd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof(tv));
             }
-#if !defined(SOCK_NONBLOCK) && defined(FIONBIO)
+#if !defined(SOCK_NONBLOCK) || defined(__CYGWIN__)
             {
-                u_long mode=1;
-                ioctlsocket(client_fd, FIONBIO, &mode);
+                openblt_socket_set_nonblock(client_fd);
             }
 #endif
 
         }
     }
-    else
+    else if(((uip_tcp_appstate_t *)&(uip_conn->appstate))->dto_tx_req != BLT_TRUE)
     {
         uint8_t packet[4096]= {0};
         int recvlen=recv(client_fd,(char *)packet,sizeof(packet),0);
@@ -203,8 +206,8 @@ void      uip_input(void)
             uip_appdata=packet;
             uip_len=recvlen;
         }
-#ifdef WIN32
-        if(recvlen==0 || (recvlen < 0 && WSAGetLastError()!= WSAEWOULDBLOCK))
+#if !defined(SOCK_NONBLOCK) || defined(__CYGWIN__)
+        if(recvlen==0 || (recvlen < 0 && !openblt_socket_is_egain()))
 #else
         if(recvlen==0 || (recvlen < 0 && errno!=EAGAIN))
 #endif
@@ -325,7 +328,6 @@ void      uip_send(const void *data, int len)
                 offset=len;
                 closesocket(client_fd);
             }
-
         }
         while(offset < len);
     }
