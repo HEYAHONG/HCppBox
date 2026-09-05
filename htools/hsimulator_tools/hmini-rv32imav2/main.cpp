@@ -24,15 +24,18 @@ static void show_banner()
 static std::string filename="Image";
 static std::string dtbfilename;
 static bool displaydtb=false;
+bool    disbable_openblt_flag=false;
 static void check_args(int argc,char *argv[])
 {
     struct arg_lit  * help=NULL;
     struct arg_lit  * display_dtb=NULL;
     struct arg_file *file=NULL;
     struct arg_file *dtbfile=NULL;
+    struct arg_lit  * disable_openblt=NULL;
     void *argtable[]=
     {
         help=arg_lit0("h","help",                                      "print this help and exit"),
+        disable_openblt=arg_lit0("O","no-openblt",                                "disable openblt"),
         display_dtb=arg_lit0("D","displaydtb",                          "display dtb before vm start"),
         file=arg_file0(NULL,NULL,"<file>",                              "image file name(default:Image)"),
         dtbfile=arg_file0("d","dtb","<file>",                           "dtb file name"),
@@ -60,6 +63,12 @@ static void check_args(int argc,char *argv[])
         hexit(-1);
     }
 
+    if(disable_openblt->count > 0)
+    {
+        disbable_openblt_flag=true;
+    }
+
+
     if(display_dtb->count>0)
     {
         displaydtb=true;
@@ -84,6 +93,7 @@ static void check_args(int argc,char *argv[])
     }
     else
     {
+        if(disbable_openblt_flag)
         {
             std::fstream file;
             file.open(filename.c_str(),std::ios::in|std::ios::binary);
@@ -394,6 +404,31 @@ static void dtb_display(void)
     hprintf("\r\n");
 }
 
+static bool load_image_from_file(void)
+{
+    //加载Image
+    std::fstream file;
+    file.open(filename.c_str(),std::ios::in|std::ios::binary);
+    if(!file.is_open())
+    {
+        hfprintf(stderr,"open %s failed!\r\n",filename.c_str());
+        return false;
+    }
+
+    file.read((char *)machine.ram,sizeof(machine.ram));
+
+    file.close();
+
+    return true;
+}
+
+extern "C" bool openblt_process(uint8_t *rom,size_t romlen);
+static bool load_image_from_openblt(void)
+{
+    bool ret=openblt_process(machine.ram,sizeof(machine.ram));
+    return ret;
+}
+
 
 static void run_vm(int argc,char *argv[])
 {
@@ -421,19 +456,16 @@ static void run_vm(int argc,char *argv[])
     {
         hminirv32ima_machine_default64mb_reset(&machine);
 
+        bool load_image_ok=load_image_from_file();
+
+        if(!load_image_ok)
         {
-            //加载Image
-            std::fstream file;
-            file.open(filename.c_str(),std::ios::in|std::ios::binary);
-            if(!file.is_open())
-            {
-                hfprintf(stderr,"open %s failed!\r\n",filename.c_str());
-                hexit(-1);
-            }
+            load_image_ok=load_image_from_openblt();
+        }
 
-            file.read((char *)machine.ram,sizeof(machine.ram));
-
-            file.close();
+        if(!load_image_ok)
+        {
+            hexit(-1);
         }
 
         if(!dtbfilename.empty())

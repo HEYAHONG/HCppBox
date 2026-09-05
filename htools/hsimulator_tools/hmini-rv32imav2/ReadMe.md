@@ -2,6 +2,24 @@
 
 基于[mini-rv32ima](https://github.com/cnlohr/mini-rv32ima)的第二版。
 
+# openblt
+
+当用户未指定程序文件且未禁止openblt时,本模拟器将打开监听51001端口，此时用户可使用openblt的主机工具`BootCommander`或者`MicroBoot`。
+
+对于`BootCommander`可使用以下命令上传程序文件:
+
+```bash
+BootCommander  -t=xcp_net -a=IP地址(本机则使用127.0.0.1) -p=51001 srec程序
+```
+
+对于`MicroBoot`，其为GUI工具，直接设定协议xcp_net并设定好端口地址即可上传程序文件。
+
+注意：由于openblt使用的是srec格式的文件，可能不能直接使用Image文件，可通过binutils工具中的objcopy转换：
+
+```bash
+objcopy -I binary -O srec --image-base=0 Image文件 srec程序文件
+```
+
 # 设备树
 
 本程序使用内置设备树，一般不需要修改，但如需修改chosen选项（内核启动命令），重新生成设备树二进制文件并且使用命令选项加载。
