@@ -46,6 +46,18 @@ cmake ../
 cmake --build .
 ```
 
+# 使用
+
+编译完成后，可得到bin二进制文件，可使用以下指令启动测试:
+
+```bash
+#使用hmini-rv32ima加载
+hmini-rv32ima -f bin文件
+
+#使用hmini-rv32imav2加载
+hmini-rv32imav2 bin文件
+```
+
 
 
 # 目录说明

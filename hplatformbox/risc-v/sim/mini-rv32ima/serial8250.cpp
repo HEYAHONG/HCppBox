@@ -24,6 +24,8 @@ int serial8250_putchar(volatile serial8250_t *serial,uint8_t ch)
         return -1;
     }
 
+    while((serial->lsr&0x40)==0);
+
     /*
      * 虚拟环境直接发送，不检查状态
      */
