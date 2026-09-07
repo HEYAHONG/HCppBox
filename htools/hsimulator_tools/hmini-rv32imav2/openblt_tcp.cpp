@@ -24,6 +24,7 @@ void     NvmInit(void)
 
 blt_bool NvmWrite(blt_addr addr, blt_int32u len, blt_int8u *data)
 {
+    addr &= 0x0FFFFFFF;
     if(addr > nvm_size)
     {
         return BLT_FALSE;
