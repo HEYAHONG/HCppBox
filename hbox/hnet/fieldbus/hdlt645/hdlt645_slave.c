@@ -333,7 +333,7 @@ void hdlt645_slave_io_ctx_process_io(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_i
             return;
         }
 
-        if(hdlt645_bcd_addr_match(frame_addr,&public_bcd_addr))
+        if(hdlt645_bcd_addr_match(frame_addr,&public_bcd_addr) && frame_addr->A[5] != HDLT645_FRAME_ADDR_WILDCARD_BYTE)
         {
             reply=false;
         }
