@@ -7,6 +7,7 @@
  * License:   MIT
  **************************************************************/
 
+#include "hdefaults.h"
 #include "hdlt645_slave.h"
 #include "hdlt645_utils.h"
 
@@ -152,6 +153,11 @@ size_t hdlt645_slave_io_rx_input(hdlt645_slave_io_t *io,uint8_t *data,size_t dat
     return ret;
 }
 
+#if !defined(HDLT645_SLAVE_IO_CTX_CMD_USR_EXTEND_LIST)
+#define HDLT645_SLAVE_IO_CTX_CMD_USR_EXTEND_LIST
+#endif
+
+
 #if !defined(HDLT645_SLAVE_TIME_SYNC)
 #include "hdefaults.h"
 
@@ -177,12 +183,10 @@ const hdlt645_slave_time_t hdlt645_slave_time_default=
     0
 };
 
-#if !defined(HDLT645_SLAVE_IO_CTX_CMD_USR_EXTEND_LIST)
-#define HDLT645_SLAVE_IO_CTX_CMD_USR_EXTEND_LIST
-#endif
-
 #define HDLT645_SLAVE_TIME_SYNC (&hdlt645_slave_time_default)
 #endif
+
+
 
 #if !defined(HDLT645_SLAVE_DI_TABLE)
 #define HDLT645_SLAVE_DI_TABLE NULL
