@@ -78,7 +78,7 @@ hdlt645_slave_io_status_t hdlt645_slave_io_status(hdlt645_slave_io_t *io)
 
         if(i >= 11)
         {
-            uint8_t datalen=io->buffer[9];
+            uint8_t datalen=io->rx_buffer[9];
             if(datalen > HDLT645_FRAME_DATALENGTH_MAX_WRITE)
             {
                 status=HDLT645_SLAVE_IO_STATUS_ERROR;
@@ -95,7 +95,7 @@ hdlt645_slave_io_status_t hdlt645_slave_io_status(hdlt645_slave_io_t *io)
                 status=HDLT645_SLAVE_IO_STATUS_CKSUM;
                 break;
             }
-            else if(i == 10+datalen+2)
+            else if(i >= 10+datalen+2)
             {
                 status=HDLT645_SLAVE_IO_STATUS_EOF;
                 break;
