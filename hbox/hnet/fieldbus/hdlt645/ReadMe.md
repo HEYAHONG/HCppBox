@@ -24,6 +24,8 @@ DL/T 645采用主从模式，默认情况下采用RS-485总线标准（串口参
 | `HDLT645_SLAVE_COM_Z`                      | 通信速率特征字        |                                        |
 | `HDLT645_SLAVE_PASS`                       | 密码                  |                                        |
 | `HDLT645_SLAVE_CLEAR`                      | 清零                  | 用于最大需量清零、电表清零、事件清零   |
+| `HDLT645_SLAVE_EXTERN_HEADER_FILENAME`     | 额外的从机头文件      |                                        |
+| `HDLT645_SLAVE_EXTERN_SOURCE_FILENAME`     | 额外的从机源代码文件  | 此文件不应编译                         |
 
 ## 数据项
 

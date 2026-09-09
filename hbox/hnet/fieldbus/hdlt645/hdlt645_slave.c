@@ -11,6 +11,11 @@
 #include "hdlt645_slave.h"
 #include "hdlt645_utils.h"
 
+#if defined(HDLT645_SLAVE_EXTERN_SOURCE_FILENAME)
+#include HDLT645_SLAVE_EXTERN_SOURCE_FILENAME
+#endif
+
+
 void hdlt645_slave_io_init(hdlt645_slave_io_t *io,hdlt645_slave_io_cb_timeout_t timeout,hdlt645_slave_io_cb_reply_t reply,void *usr)
 {
     if(io!=NULL)
