@@ -6,31 +6,6 @@
 #include "serial8250.h"
 #include "syscon.h"
 
-hdefaults_tick_t hbox_tick_get(void)
-{
-    return 0;
-}
-
-void hbox_enter_critical()
-{
-
-}
-
-void hbox_exit_critical()
-{
-
-}
-
-void * hbox_malloc(size_t bytes)
-{
-    return malloc(bytes);
-}
-
-void hbox_free(void *ptr)
-{
-    free(ptr);
-}
-
 int hbox_putchar( int ch )
 {
     return serial8250_putchar((volatile serial8250_t *)CONSOLE_8250_BASE,ch);
@@ -61,5 +36,34 @@ static int hbox_reboot_entry(int argc,const char *argv[])
 }
 HSHELL_COMMAND_EXPORT(reboot,hbox_reboot_entry,reboot);
 
+static int hbox_sleep_entry(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    if(argc<2)
+    {
+        hshell_printf(hshell_ctx,"sleep [n]\r\n");
+    }
+    else
+    {
+        int n=atoi(argv[1]);
+        if(n>0)
+        {
+            vTaskDelay(n*1000);
+        }
+    }
+    return 0;
+}
+HSHELL_COMMAND_EXPORT(sleep,hbox_sleep_entry,sleep);
+
+static int cmd_ps_entry(int argc,const char *argv[])
+{
+    hshell_context_t * hshell_ctx=hshell_context_get_from_main_argv(argc,argv);
+    char strbuff[4096];
+    strbuff[sizeof(strbuff)-1]='\0';
+    vTaskList(strbuff);
+    hshell_printf(hshell_ctx,"%s\r\n",strbuff);
+    return 0;
+};
+HSHELL_COMMAND_EXPORT(ps,cmd_ps_entry,show process info);
 
 

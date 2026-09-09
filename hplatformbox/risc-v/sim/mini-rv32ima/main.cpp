@@ -2,17 +2,62 @@
 #include "stdlib.h"
 #include "hbox.h"
 
-
-int main()
+extern "C" void vApplicationStackOverflowHook( TaskHandle_t xTask,char * pcTaskName );
+void vApplicationStackOverflowHook( TaskHandle_t xTask,char * pcTaskName )
 {
-    hruntime_init_lowlevel();
+    hshell_printf(NULL,"%s StackOverflow!\r\n",pcTaskName);
+    while(true);
+}
+
+extern "C" void vApplicationIdleHook( void );
+void vApplicationIdleHook( void )
+{
+    if(hwatchdog_is_valid())
+    {
+        HWATCHDOG_FEED();
+    }
+    else
+    {
+        hruntime_loop_enable_softwatchdog(false);
+    }
+}
+
+void main_task(void *arg)
+{
+
+    hshell_printf(NULL,"main task enter!\r\n");
 
     hruntime_init();
 
     while(true)
     {
         hruntime_loop();
+        vTaskDelay(1);
     }
+}
+
+extern "C" void freertos_risc_v_trap_handler(void);
+
+int main()
+{
+    /*
+     * 设定trap入口
+     */
+    asm volatile ("csrw mtvec,%0"::"r"(&freertos_risc_v_trap_handler));
+
+    hshell_printf(NULL,"main enter!\r\n");
+
+    hruntime_init_lowlevel();
+
+    xTaskCreate( main_task, "main_task",8192/sizeof(StackType_t), NULL, 2, NULL );
+
+    hshell_printf(NULL,"start scheduler!\r\n");
+    vTaskStartScheduler();
+
+    hshell_printf(NULL,"main leave!\r\n");
+
+    return 0;
+
 }
 
 /*

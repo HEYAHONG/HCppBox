@@ -283,18 +283,20 @@ SECTIONS
 
 	/* Make the rest of memory available for heap storage */
 	PROVIDE (__heap_start = __end);
-	PROVIDE (__heap_end = __stack - (DEFINED(__stack_size) ? __stack_size : 0x00001000));
+	PROVIDE (__heap_end = __stack - (DEFINED(__stack_size) ? __stack_size : 0x00004000));
 	PROVIDE (__heap_size = __heap_end - __heap_start);
 
         /* Allow a minimum heap size to be specified */
         .heap (NOLOAD) : {
-                . += (DEFINED(__heap_size_min) ? __heap_size_min : 0x00010000);
+                . += (DEFINED(__heap_size_min) ? __heap_size_min : 0x00000000);
         } >ram :ram
 
 	/* Define a stack region to make sure it fits in memory */
 	.stack (NOLOAD) : {
 		. += (DEFINED(__stack_size) ? __stack_size : 0x00004000);
+		. = ALIGN(16);
 		PROVIDE(__stack = .);
+		PROVIDE(__freertos_irq_stack_top = .);
 	} >ram :ram
 
 

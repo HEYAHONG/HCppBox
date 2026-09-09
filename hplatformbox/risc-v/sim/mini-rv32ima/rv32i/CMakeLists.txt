@@ -3,11 +3,11 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../toolchain.cmake")
 set(PROJECT_NAME rom)
 project(${PROJECT_NAME} C CXX ASM)
 
-file(GLOB C_CXX_FILES ../*.h ../*.c ../*.cpp ../*.s *.h *.c *.cpp)
+file(GLOB C_CXX_FILES ../*.h ../*.c ../*.cpp ../*.S *.h *.c *.cpp)
 
 if(${PICOLIBC})
     set(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} \
-        -march=rv32ima\
+        -march=rv32ima_zicsr\
         -mabi=ilp32\
         -std=gnu11\
         -fPIC\
@@ -16,7 +16,7 @@ if(${PICOLIBC})
         --specs=picolibcpp.specs\
         ")
     set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
-        -march=rv32ima\
+        -march=rv32ima_zicsr\
         -mabi=ilp32\
         -std=gnu++11\
         -fPIC\
@@ -25,7 +25,7 @@ if(${PICOLIBC})
         --specs=picolibcpp.specs\
         ")
     set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS}\
-        -march=rv32ima\
+        -march=rv32ima_zicsr\
         -mabi=ilp32\
         -nostdlib++\
         -T${CMAKE_CURRENT_SOURCE_DIR}/../rom.ld\
@@ -37,7 +37,7 @@ endif()
 
 if(${NEWLIB})
     set(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} \
-        -march=rv32ima\
+        -march=rv32ima_zicsr\
         -mabi=ilp32\
         -std=gnu11\
         -fPIC\
@@ -46,7 +46,7 @@ if(${NEWLIB})
         --specs=nano.specs\
         ")
     set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} \
-        -march=rv32ima\
+        -march=rv32ima_zicsr\
         -mabi=ilp32\
         -std=gnu++11\
         -fPIC\
@@ -55,7 +55,7 @@ if(${NEWLIB})
         --specs=nano.specs\
         ")
     set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS}\
-        -march=rv32ima\
+        -march=rv32ima_zicsr\
         -mabi=ilp32\
         -nostdlib++\
         -T${CMAKE_CURRENT_SOURCE_DIR}/../rom.ld\
