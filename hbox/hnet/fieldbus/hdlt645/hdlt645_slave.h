@@ -9,6 +9,7 @@
 #ifndef __HDLT645_SLAVE_H_INCLUDED__
 #define __HDLT645_SLAVE_H_INCLUDED__
 
+#include "hdefaults.h"
 #include "hdlt645_common.h"
 
 #if defined(HDLT645_SLAVE_EXTERN_HEADER_FILENAME)
