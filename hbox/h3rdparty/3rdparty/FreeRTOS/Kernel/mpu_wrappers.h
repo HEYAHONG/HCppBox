@@ -250,6 +250,9 @@
         #if ( ( configUSE_MPU_WRAPPERS_V1 == 0 ) && ( configENABLE_ACCESS_CONTROL_LIST == 1 ) )
 
             #define vGrantAccessToTask( xTask, xTaskToGrantAccess )                        vGrantAccessToKernelObject( ( xTask ), ( int32_t ) ( xTaskToGrantAccess ) )
+
+/* A privileged task must revoke access to the object before deletion,
+ * otherwise index reuse may result in accidental permissions. */
             #define vRevokeAccessToTask( xTask, xTaskToRevokeAccess )                      vRevokeAccessToKernelObject( ( xTask ), ( int32_t ) ( xTaskToRevokeAccess ) )
 
             #define vGrantAccessToSemaphore( xTask, xSemaphoreToGrantAccess )              vGrantAccessToKernelObject( ( xTask ), ( int32_t ) ( xSemaphoreToGrantAccess ) )
@@ -283,9 +286,17 @@
 
 #else /* portUSING_MPU_WRAPPERS */
 
-    #define PRIVILEGED_FUNCTION
-    #define PRIVILEGED_DATA
-    #define FREERTOS_SYSTEM_CALL
+    #ifndef PRIVILEGED_FUNCTION
+        #define PRIVILEGED_FUNCTION
+    #endif
+
+    #ifndef PRIVILEGED_DATA
+        #define PRIVILEGED_DATA
+    #endif
+
+    #ifndef FREERTOS_SYSTEM_CALL
+        #define FREERTOS_SYSTEM_CALL
+    #endif
 
 #endif /* portUSING_MPU_WRAPPERS */
 
