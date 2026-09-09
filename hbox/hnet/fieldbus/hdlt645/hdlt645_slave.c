@@ -442,7 +442,7 @@ size_t hdlt645_slave_di_count(const hdlt645_slave_di_t *di_table,size_t di_table
         hdlt645_data_di_set(&di_src,di_table[i].di_num);
         hdlt645_data_di_t di_dst;
         hdlt645_data_di_set(&di_dst,di_dst_num);
-        if(!hdlt645_data_di_match(&di_src,&di_src))
+        if(!hdlt645_data_di_match(&di_src,&di_dst))
         {
             continue;
         }
@@ -489,7 +489,7 @@ size_t hdlt645_slave_di_read(const hdlt645_slave_di_t *di_table,size_t di_table_
         hdlt645_data_di_set(&di_src,di_table[i].di_num);
         hdlt645_data_di_t di_dst;
         hdlt645_data_di_set(&di_dst,di_dst_num);
-        if(!hdlt645_data_di_match(&di_src,&di_src))
+        if(!hdlt645_data_di_match(&di_src,&di_dst))
         {
             continue;
         }
@@ -546,7 +546,7 @@ size_t hdlt645_slave_di_write(const hdlt645_slave_di_t *di_table,size_t di_table
         hdlt645_data_di_set(&di_src,di_table[i].di_num);
         hdlt645_data_di_t di_dst;
         hdlt645_data_di_set(&di_dst,di_dst_num);
-        if(!hdlt645_data_di_match(&di_src,&di_src))
+        if(!hdlt645_data_di_match(&di_src,&di_dst))
         {
             continue;
         }
