@@ -24,13 +24,13 @@ static void hminirv32ima_state_csr_read(struct hminirv32ima_state *state,uint32_
     (void)csrvalue;
 }
 
- void hminirv32ima_state_post_exec(struct hminirv32ima_state *state,uint32_t *pc,uint32_t *ir,uint32_t *trap)
- {
-     (void)state;
-     (void)pc;
-     (void)ir;
-     (void)trap;
- }
+void hminirv32ima_state_post_exec(struct hminirv32ima_state *state,uint32_t *pc,uint32_t *ir,uint32_t *trap)
+{
+    (void)state;
+    (void)pc;
+    (void)ir;
+    (void)trap;
+}
 
 
 static size_t hminirv32ima_memory_load(const struct hminirv32ima_memory *mem,uintptr_t ram_addr,void *ptr,size_t length)
@@ -444,6 +444,284 @@ bool hminirv32ima_machine_default64mb_load_dtb(hminirv32ima_machine_default64mb_
 }
 
 int hminirv32ima_machine_default64mb_step(hminirv32ima_machine_default64mb_t *machine,uint32_t elapsedUs, int insn_count )
+{
+    if(machine==NULL)
+    {
+        return -1;
+    }
+
+    if(machine->syscon==0x5555 || machine->syscon==0x7777)
+    {
+        /*
+         * 关机与重启直接返回
+         */
+        return machine->syscon;
+    }
+
+    hs_common_serial_8250_bus_tick(&machine->serial8250);
+
+    return hminirv32ima_core_step(&machine->core,elapsedUs,insn_count);
+}
+
+void hminirv32ima_machine_embed_init(hminirv32ima_machine_embed_t *machine)
+{
+    if(machine!=NULL)
+    {
+
+        /*
+         * 设置回调
+         */
+        machine->console_has_data=NULL;
+        machine->console_put_data=NULL;
+        machine->console_get_data=NULL;
+        machine->mem_load=NULL;
+        machine->mem_store=NULL;
+        machine->mem_size=0;
+
+        /*
+         * 复位机器
+         */
+        hminirv32ima_machine_embed_reset(machine);
+
+    }
+}
+
+static size_t hminirv32ima_machine_embed_mmio_load(const struct hminirv32ima_mmio *mmio,uintptr_t mmio_addr,void *ptr,size_t length)
+{
+    const hminirv32ima_core_t                   *   core=GET_STRUCT_PTR_BY_MEMBER_PTR(mmio,hminirv32ima_core_t,mmio);
+    const hminirv32ima_machine_embed_t    *   machine=GET_STRUCT_PTR_BY_MEMBER_PTR(core,hminirv32ima_machine_embed_t,core);
+    if(length==4)
+    {
+        uint32_t *data=(uint32_t *)ptr;
+        if(mmio_addr>=0x10000000 && mmio_addr < (0x10000000+0x100))
+        {
+            /*
+             * 8250串口
+             */
+            size_t offset=mmio_addr-0x10000000;
+            uint8_t reg_value=0;
+            hs_common_serial_8250_bus_read((hs_common_serial_8250_t *)&machine->serial8250,offset,&reg_value);
+            (*data)=reg_value;
+        }
+        else if(mmio_addr>=0x11000000 && mmio_addr < (0x11000000+0x10000))
+        {
+            /*
+             * clint
+             */
+            size_t offset=mmio_addr-0x11000000;
+            switch(offset)
+            {
+            case 0xBFF8:
+            {
+                (*data)=machine->core.state.timerl;
+            }
+            break;
+            case 0xBFFC:
+            {
+                (*data)=machine->core.state.timerh;
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
+
+        }
+        else if(machine->mmio_load!=NULL)
+        {
+            machine->mmio_load(mmio,mmio_addr,ptr,length);
+        }
+        return length;
+    }
+    return 0;
+}
+
+static size_t hminirv32ima_machine_embed_mmio_store(const struct hminirv32ima_mmio *mmio,uintptr_t mmio_addr,const void *ptr,size_t length)
+{
+    const hminirv32ima_core_t                   *   core=GET_STRUCT_PTR_BY_MEMBER_PTR(mmio,hminirv32ima_core_t,mmio);
+    hminirv32ima_machine_embed_t          *   machine=(hminirv32ima_machine_embed_t *)GET_STRUCT_PTR_BY_MEMBER_PTR(core,hminirv32ima_machine_embed_t,core);
+    if(length==4)
+    {
+        const uint32_t *data=(const uint32_t *)ptr;
+        if(mmio_addr>=0x10000000 && mmio_addr < (0x10000000+0x100))
+        {
+            /*
+             * 8250串口
+             */
+            size_t offset=mmio_addr-0x10000000;
+            hs_common_serial_8250_bus_write(&machine->serial8250,offset,(*data));
+
+        }
+        else if(mmio_addr>=0x11000000 && mmio_addr < (0x11000000+0x10000))
+        {
+            /*
+             * clint
+             */
+            size_t offset=mmio_addr-0x11000000;
+            switch(offset)
+            {
+            case 0x4000:
+            {
+                machine->core.state.timermatchl=(*data);
+            }
+            break;
+            case 0x4004:
+            {
+                machine->core.state.timermatchh=(*data);
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
+
+        }
+        else if(mmio_addr>= 0x11100000 && mmio_addr < (0x11100000+0x1000))
+        {
+            /*
+             * syscon
+             */
+            size_t offset=mmio_addr-0x11100000;
+            switch(offset)
+            {
+            case 0:
+            {
+                machine->syscon=(*data);
+            }
+            break;
+            default:
+            {
+
+            }
+            break;
+            }
+
+        }
+        else if(machine->mmio_store!=NULL)
+        {
+            machine->mmio_store(mmio,mmio_addr,ptr,length);
+        }
+        return length;
+    }
+    return 0;
+}
+
+static bool hminirv32ima_machine_embed_serial_8250_io_callback(struct hs_common_serial_8250 *dev,hs_common_serial_8250_io_operate_t io_operate,uint8_t *data)
+{
+    if(dev==NULL)
+    {
+        return false;
+    }
+    bool ret=false;
+    const hminirv32ima_machine_embed_t    *   machine=GET_STRUCT_PTR_BY_MEMBER_PTR(dev,hminirv32ima_machine_embed_t,serial8250);
+    switch(io_operate)
+    {
+    case HS_COMMON_SERIAL_8250_IO_OPERATE_TICK:
+    {
+        /*
+         * 更新LSR寄存器
+         */
+        dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR]=0x60;
+
+        if(machine->console_has_data!=NULL)
+        {
+            dev->registers[HS_COMMON_SERIAL_8250_REGISTER_LSR] |=  machine->console_has_data(machine)?0x01:0x00;
+        }
+        ret=true;
+    }
+    break;
+    case HS_COMMON_SERIAL_8250_IO_OPERATE_TRANSMIT_BYTE:
+    {
+        if(machine->console_put_data!=NULL)
+        {
+            machine->console_put_data(machine,(*data));
+        }
+        ret=true;
+    }
+    break;
+    case HS_COMMON_SERIAL_8250_IO_OPERATE_RECEIVE_BYTE:
+    {
+        if(machine->console_get_data!=NULL)
+        {
+            (*data)=machine->console_get_data(machine);
+        }
+        ret=true;
+    }
+    break;
+    default:
+    {
+
+    }
+    break;
+    }
+    return ret;
+}
+
+void hminirv32ima_machine_embed_reset(hminirv32ima_machine_embed_t *machine)
+{
+    if(machine!=NULL)
+    {
+        /*
+         * 初始化core
+         */
+        hminirv32ima_core_init(&machine->core,machine->mem_size);
+
+
+        /*
+         * 设置内存
+         */
+        if(machine->mem_load!=NULL)
+        {
+            machine->core.memory.mem_load=machine->mem_load;
+        }
+        if(machine->mem_store!=NULL)
+        {
+            machine->core.memory.mem_store=machine->mem_store;
+        }
+
+        /*
+         * 设置MMIO
+         */
+        machine->core.mmio.mmio_load=hminirv32ima_machine_embed_mmio_load;
+        machine->core.mmio.mmio_store=hminirv32ima_machine_embed_mmio_store;
+
+        /*
+         * serial 8250
+         */
+        hs_common_serial_8250_init(&machine->serial8250,hminirv32ima_machine_embed_serial_8250_io_callback,NULL,HS_COMMON_SERIAL_8250_CLK_FREQ);
+
+        /*
+         * syscon
+         */
+        machine->syscon=0;
+
+
+        /*
+         * 初始化寄存器
+         */
+        machine->core.state.pc = machine->core.memory.ram_base;                                         /**< 初始化PC值 */
+        machine->core.state.regs[2]=machine->core.memory.ram_base+machine->core.memory.ram_size;        /**< 初始化SP指针 */
+        machine->core.state.regs[10]=0;                                                                 /**< 初始化A0（HART地址） */
+        machine->core.state.regs[11]=0;                                                                 /**< 初始化A1(DTS地址) */
+    }
+}
+
+bool hminirv32ima_machine_embed_load_image(hminirv32ima_machine_embed_t *machine,const uint8_t *image,size_t image_size)
+{
+    if(machine!=NULL && image != NULL && image_size < machine->core.memory.ram_size && machine->core.memory.mem_store != NULL)
+    {
+        machine->core.memory.mem_store(&machine->core.memory,machine->core.memory.ram_base,image,image_size);
+        return true;
+    }
+    return false;
+}
+
+
+int hminirv32ima_machine_embed_step(hminirv32ima_machine_embed_t *machine,uint32_t elapsedUs, int insn_count )
 {
     if(machine==NULL)
     {

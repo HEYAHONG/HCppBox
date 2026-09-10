@@ -187,21 +187,21 @@ struct hminirv32ima_machine_default64mb
     uint32_t syscon;
     /** \brief 控制台是否有数据，此项由用户设置
      *
-     * \param *machine const structhminirv32ima_machine_default64mb 机器指针
+     * \param *machine const struct hminirv32ima_machine_default64mb 机器指针
      * \return bool 是否有数据
      *
      */
     bool (*console_has_data)(const struct hminirv32ima_machine_default64mb *machine);
     /** \brief 控制台输出数据，此项由用户设置
      *
-     * \param *machine const structhminirv32ima_machine_default64mb 机器指针
+     * \param *machine const struct hminirv32ima_machine_default64mb 机器指针
      * \param data uint8_t 数据
      *
      */
     void (*console_put_data)(const struct hminirv32ima_machine_default64mb *machine,uint8_t data);
     /** \brief
      *
-     * \param *machine const structhminirv32ima_machine_default64mb 机器指针
+     * \param *machine const struct hminirv32ima_machine_default64mb 机器指针
      * \return uint8_t 数据
      *
      */
@@ -254,6 +254,88 @@ bool hminirv32ima_machine_default64mb_load_dtb(hminirv32ima_machine_default64mb_
  *
  */
 int hminirv32ima_machine_default64mb_step(hminirv32ima_machine_default64mb_t *machine,uint32_t elapsedUs, int insn_count );
+
+/*
+ * 嵌入式机器:
+ *      -内存:由用户指定
+ *      -8250串口：地址0x10000000
+ *      -syscon:地址0x11100000,用于处理重启(0x7777)与关机(0x5555)
+ *      -clint: 地址0x11000000
+ */
+typedef size_t    (*hminirv32ima_machine_embed_mem_load_t)(const struct hminirv32ima_memory *mem,uintptr_t ram_addr,void *ptr,size_t length);
+typedef size_t    (*hminirv32ima_machine_embed_mem_store_t)(const struct hminirv32ima_memory *mem,uintptr_t ram_addr,const void *ptr,size_t length);
+typedef size_t    (*hminirv32ima_machine_embed_mmio_load_t)(const struct hminirv32ima_mmio *mmio,uintptr_t mmio_addr,void *ptr,size_t length);
+typedef size_t    (*hminirv32ima_machine_embed_mmio_store_t)(const struct hminirv32ima_mmio *mmio,uintptr_t mmio_addr,const void *ptr,size_t length);
+struct hminirv32ima_machine_embed
+{
+    hminirv32ima_core_t core;
+    hs_common_serial_8250_t serial8250;
+    uint32_t syscon;
+    /** \brief 控制台是否有数据，此项由用户设置
+     *
+     * \param *machine const struct hminirv32ima_machine_embed机器指针
+     * \return bool 是否有数据
+     *
+     */
+    bool (*console_has_data)(const struct hminirv32ima_machine_embed*machine);
+    /** \brief 控制台输出数据，此项由用户设置
+     *
+     * \param *machine const struct hminirv32ima_machine_embed机器指针
+     * \param data uint8_t 数据
+     *
+     */
+    void (*console_put_data)(const struct hminirv32ima_machine_embed*machine,uint8_t data);
+    /** \brief  控制台获取数据，此项由用户设置
+     *
+     * \param *machine const struct hminirv32ima_machine_embed机器指针
+     * \return uint8_t 数据
+     *
+     */
+    uint8_t (*console_get_data)(const struct hminirv32ima_machine_embed*machine);
+    hminirv32ima_machine_embed_mem_load_t   mem_load;   /**< 内存读取, 此项由用户设置*/
+    hminirv32ima_machine_embed_mem_store_t  mem_store;  /**< 内存写入,此项由用户设置 */
+    size_t mem_size;    /**< 内存大小,此项由用户设置 */
+    hminirv32ima_machine_embed_mmio_load_t mmio_load;  /**< mmio内存读取, 此项由用户设置*/
+    hminirv32ima_machine_embed_mmio_store_t mmio_store;  /**< mmio内存读取, 此项由用户设置*/
+};
+
+typedef struct hminirv32ima_machine_embed hminirv32ima_machine_embed_t;
+
+
+/** \brief 初始化嵌入式机器
+ *
+ * \param machine hminirv32ima_machine_embed_t* 机器指针
+ *
+ */
+void hminirv32ima_machine_embed_init(hminirv32ima_machine_embed_t *machine);
+
+/** \brief 嵌入式机器复位，与初始化的区别为不会清除内存中的数据
+ *
+ * \param machine hminirv32ima_machine_embed_t* 机器指针
+ *
+ */
+void hminirv32ima_machine_embed_reset(hminirv32ima_machine_embed_t *machine);
+
+/** \brief 嵌入式机器加载镜像，注意：需要在初始化后使用
+ *
+ * \param machine hminirv32ima_machine_embed_t* 机器指针
+ * \param image const uint8_t* 内存镜像地址
+ * \param image_size size_t 镜像大小
+ * \return bool 是否成功
+ *
+ */
+bool hminirv32ima_machine_embed_load_image(hminirv32ima_machine_embed_t *machine,const uint8_t *image,size_t image_size);
+
+
+/** \brief 嵌入式机器步进
+ *
+ * \param machine hminirv32ima_machine_embed_t* 机器指针
+ * \param elapsedUs uint32_t 上一步到本步间隔的微秒数，用于维护RISCV内部的定时器
+ * \param insn_count int 执行指令的条数
+ * \return int 错误代码，0=正常运行，1=WFI指令,0x5555=已关机,0x7777=已重启（需要用户自行重新初始化）,-1=参数错误
+ *
+ */
+int hminirv32ima_machine_embed_step(hminirv32ima_machine_embed_t *machine,uint32_t elapsedUs, int insn_count );
 
 #ifdef __cplusplus
 }
