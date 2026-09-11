@@ -83,7 +83,7 @@ struct hmodbus_rtu_slave_tiny_io
 /** \brief 精简板modbus rtu IO初始化
  *
  * \param io modbus_rtu_slave_tiny_io_t* IO指针
- * \param reply void (*)(modbus_rtu_slave_tiny_context_t* ctx,const uint8_t *adu,size_t adu_length)超时函数
+ * \param reply void (*)(modbus_rtu_slave_tiny_context_t* ctx,const uint8_t *adu,size_t adu_length)回复函数
  * \param timeout bool (*)(modbus_rtu_slave_tiny_io_t *io) 超时函数
  * \param usr uintptr_t 用户参数
  *
