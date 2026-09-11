@@ -12,6 +12,7 @@
 #include "stdbool.h"
 #include "stdlib.h"
 #include "string.h"
+#include "hmodbus_common.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -67,6 +68,61 @@ modbus_rtu_slave_tiny_context_t modbus_rtu_slave_tiny_context_default(void);
  */
 bool modbus_rtu_slave_tiny_parse_input(modbus_rtu_slave_tiny_context_t* ctx,uint8_t *adu,size_t adu_length);
 
+
+struct hmodbus_rtu_slave_tiny_io;
+typedef struct hmodbus_rtu_slave_tiny_io hmodbus_rtu_slave_tiny_io_t;
+struct hmodbus_rtu_slave_tiny_io
+{
+    uint8_t buffer[MODBUS_RTU_MAX_ADU_LENGTH];
+    size_t  buffer_index;
+    void (*reply)(modbus_rtu_slave_tiny_context_t* ctx,const uint8_t *adu,size_t adu_length);
+    bool (*timeout)(hmodbus_rtu_slave_tiny_io_t *io);
+    uintptr_t usr;
+};
+
+/** \brief 精简板modbus rtu IO初始化
+ *
+ * \param io modbus_rtu_slave_tiny_io_t* IO指针
+ * \param reply void (*)(modbus_rtu_slave_tiny_context_t* ctx,const uint8_t *adu,size_t adu_length)超时函数
+ * \param timeout bool (*)(modbus_rtu_slave_tiny_io_t *io) 超时函数
+ * \param usr uintptr_t 用户参数
+ *
+ */
+void hmodbus_rtu_slave_tiny_io_init(hmodbus_rtu_slave_tiny_io_t *io,void (*reply)(modbus_rtu_slave_tiny_context_t* ctx,const uint8_t *adu,size_t adu_length),bool (*timeout)(hmodbus_rtu_slave_tiny_io_t *io),void *usr);
+
+/** \brief 精简板modbus rtu IO超时
+ *
+ * \param io modbus_rtu_slave_tiny_io_t* IO指针
+ * \return bool 是否超时
+ *
+ */
+bool hmodbus_rtu_slave_tiny_io_timeout(hmodbus_rtu_slave_tiny_io_t *io);
+
+
+/** \brief 精简板modbus rtu 数据输入
+ *
+ * \param io modbus_rtu_slave_tiny_io_t* IO指针
+ * \param data uint8_t* 数据指针
+ * \param datalen size_t 数据长度
+ *
+ */
+void hmodbus_rtu_slave_tiny_io_rx_input(hmodbus_rtu_slave_tiny_io_t *io,uint8_t *data,size_t datalen);
+
+/** \brief 精简板modbus rtu 复位接收
+ *
+ * \param io modbus_rtu_slave_tiny_io_t* IO指针
+ *
+ */
+void hmodbus_rtu_slave_tiny_io_rx_reset(hmodbus_rtu_slave_tiny_io_t *io);
+
+/** \brief 精简板modbus rtu 处理数据
+ *
+ * \param ctx modbus_rtu_slave_tiny_context_t* 上下文指针
+ * \param io hmodbus_rtu_slave_tiny_io_t* IO指针
+ * \return bool 是否成功
+ *
+ */
+bool hmodbus_rtu_slave_tiny_context_process_io(modbus_rtu_slave_tiny_context_t* ctx,hmodbus_rtu_slave_tiny_io_t *io);
 
 #ifdef __cplusplus
 }

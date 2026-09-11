@@ -533,3 +533,70 @@ modbus_rtu_slave_tiny_context_t modbus_rtu_slave_tiny_context_default(void)
     return ctx;
 }
 
+void hmodbus_rtu_slave_tiny_io_init(hmodbus_rtu_slave_tiny_io_t *io,void (*reply)(modbus_rtu_slave_tiny_context_t* ctx,const uint8_t *adu,size_t adu_length),bool (*timeout)(hmodbus_rtu_slave_tiny_io_t *io),void *usr)
+{
+    if(io==NULL)
+    {
+        return;
+    }
+    memset(io,0,sizeof(*io));
+    io->reply=reply;
+    io->timeout=timeout;
+    io->usr=(uintptr_t)usr;
+}
+
+bool hmodbus_rtu_slave_tiny_io_timeout(hmodbus_rtu_slave_tiny_io_t *io)
+{
+    if(io!=NULL && io->timeout!=NULL && io->buffer_index >=4)
+    {
+        return io->timeout(io);
+    }
+    return false;
+}
+
+void hmodbus_rtu_slave_tiny_io_rx_input(hmodbus_rtu_slave_tiny_io_t *io,uint8_t *data,size_t datalen)
+{
+    if(io==NULL || data == NULL || datalen == 0)
+    {
+        return;
+    }
+    for(size_t i=0; i<datalen; i++)
+    {
+        if(io->buffer_index >= sizeof(io->buffer))
+        {
+            break;
+        }
+        io->buffer[io->buffer_index++]=data[i];
+    }
+}
+
+void hmodbus_rtu_slave_tiny_io_rx_reset(hmodbus_rtu_slave_tiny_io_t *io)
+{
+    if(io==NULL)
+    {
+        return;
+    }
+    io->buffer_index=0;
+}
+
+bool hmodbus_rtu_slave_tiny_context_process_io(modbus_rtu_slave_tiny_context_t* ctx,hmodbus_rtu_slave_tiny_io_t *io)
+{
+    bool ret=false;
+    if(ctx==NULL ||io==NULL)
+    {
+        return ret;
+    }
+
+    if(!hmodbus_rtu_slave_tiny_io_timeout(io))
+    {
+        return ret;
+    }
+
+    ctx->reply=io->reply;
+
+    ret=modbus_rtu_slave_tiny_parse_input(ctx,io->buffer,io->buffer_index);
+
+    hmodbus_rtu_slave_tiny_io_rx_reset(io);
+
+    return ret;
+}
