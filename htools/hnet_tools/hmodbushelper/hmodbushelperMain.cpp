@@ -134,7 +134,7 @@ void hmodbushelperFrame::OnMenuSelection_New_Modbus_Session_TCP_Gateway_Serialpo
 
 void hmodbushelperFrame::OnMenuSelection_Modbus_Protocol( wxCommandEvent& event )
 {
-    wxLaunchDefaultBrowser(_T("https://modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf"));
+    wxLaunchDefaultBrowser(_T("https://www.modbus.org/file/secure/modbusprotocolspecification.pdf"));
 }
 
 void hmodbushelperFrame::OnMSTimer( wxTimerEvent& event )
