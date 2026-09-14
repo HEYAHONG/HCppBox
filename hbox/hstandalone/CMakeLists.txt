@@ -6,3 +6,5 @@ add_subdirectory(hsoftplc)
 add_subdirectory(hopenblt)
 
 add_subdirectory(hflashdb)
+
+add_subdirectory(hsimplegui)
