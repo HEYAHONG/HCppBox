@@ -23,7 +23,10 @@ CheckTool mkdir
 [ $? -eq 0 ] || exit;
 CheckTool rsync
 [ $? -eq 0 ] || exit;
-
+CheckTool file
+[ $? -eq 0 ] || exit;
+CheckTool iconv
+[ $? -eq 0 ] || exit;
 
 #获取当前目录
 slef_path=
@@ -72,8 +75,10 @@ then
 	do
 		cp "simplegui_template_c" "../simplegui_${c_file}"
 		sed -i "s/simplegui_filename/${c_file}/g"  "../simplegui_${c_file}"
+		iconv -f gbk -t utf8 ${c_file} > ${c_file}.utf8
+		mv ${c_file}.utf8 ${c_file}
 	done
 	sed -i '/\#include <windows.h>/d' SGUI_Interface.c
 	sed -i '/\#include "RTC.h"/d' SGUI_Interface.c
-	sed -i 's/\#define _SIMPLE_GUI_IN_VIRTUAL_SDK_/\/\/\#define _SIMPLE_GUI_IN_VIRTUAL_SDK_/g' SGUI_Config.h 
+	sed -i 's/\#define _SIMPLE_GUI_IN_VIRTUAL_SDK_/\/\/\#define _SIMPLE_GUI_IN_VIRTUAL_SDK_/g' SGUI_Config.h
 fi
