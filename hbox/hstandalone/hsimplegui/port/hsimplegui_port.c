@@ -47,6 +47,7 @@ bool hgui_gui_event_callback(uint8_t type,void *eventparam,size_t eventparam_len
      */
     hhmi_event_hgui_t event;
     memset(&event,0,sizeof(event));
+    HMI_EVENT_INIT(event);
     event.Head.iID=HHMI_EVENT_HGUI;
     event.Data.type=type;
     event.Data.eventparam=eventparam;
@@ -116,6 +117,7 @@ void hsimplegui_update(hsimplegui_t *gui)
          */
         hhmi_event_update_t event;
         memset(&event,0,sizeof(event));
+        HMI_EVENT_INIT(event);
         event.Head.iID=HHMI_EVENT_UPDATE;
         event.Data.gui=gui;
         HMI_ProcessEvent((HMI_EVENT_BASE *)&event);
