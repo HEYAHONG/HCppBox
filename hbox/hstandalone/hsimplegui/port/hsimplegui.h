@@ -19,6 +19,7 @@
 
 
 #include "hsimplegui_port.h"
+#include "hsimplegui_font.h"
 
 #ifdef __cplusplus
 extern "C"
