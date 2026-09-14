@@ -4,6 +4,12 @@
 
 simplegui一般用于单色屏显示。
 
+## 字体
+
+显示中文时需要根据实际需要的汉字进行字体生成，可使用官方工具[SimplePixelTools](https://gitee.com/HEYAHONG/SimplePixelTools.git)。
+
+**注意:生成的字体为Unicode编码，显示汉字的C/C++源代码文件必须为UTF-8编码（方便转换为unicode编码），否则要进行编码转换**
+
 # 目录说明
 
 - [3rdparty](3rdparty):第三方源代码。
