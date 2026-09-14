@@ -2,6 +2,8 @@
 
 本目录主要用于辅助实现[simplegui](https://gitee.com/Polarix/simplegui.git)。
 
+simplegui一般用于单色屏显示。
+
 # 目录说明
 
 - [3rdparty](3rdparty):第三方源代码。
@@ -26,4 +28,7 @@
 |             宏定义             |       说明        |                         备注                         |
 | :----------------------------: | :---------------: | :--------------------------------------------------: |
 | `HSIMPLEGUI_USING_SYSTEM_SIMPLEGUI` | 使用系统simplegui库 | 需要手动引入第三方库，只定义此宏定义可能不能通过编译 |
+| `HSIMPLEGUI_BMP_DATA_BUFFER_SIZE` | simplegui默认bmp缓冲大小 |  |
+| `HSIMPLEGUI_BKGCLR` | 背景色 | 默认32位,仅当使用hgui时有效 |
+| `HSIMPLEGUI_FRGCLR` | 前景色 | 默认32位，仅当使用hgui时有效 |
 
