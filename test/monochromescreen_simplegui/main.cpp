@@ -30,13 +30,23 @@ static HMI_SCREEN_OBJECT *screen_ptr_list[]
     &screen_main,
 };
 
-int main()
+static void init(void)
 {
     hgui_init();
     hsimplegui_init(&gui,gui_w,gui_h,screen_ptr_list,sizeof(screen_ptr_list)/sizeof(screen_ptr_list[0]),GUI_SCREEN_ID_MIAN,NULL);
+}
+
+static void loop(void)
+{
+     hsimplegui_update(&gui);
+}
+
+int main()
+{
+    init();
     while(hgui_driver_update(NULL))
     {
-        hsimplegui_update(&gui);
+        loop();
 #ifdef WIN32
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
 #else
