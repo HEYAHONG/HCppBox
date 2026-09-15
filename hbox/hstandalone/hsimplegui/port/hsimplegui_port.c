@@ -11,10 +11,10 @@
 #include "hsimplegui_port.h"
 
 #ifndef HSIMPLEGUI_BKGCLR
-#define HSIMPLEGUI_BKGCLR (0xFF00000)
+#define HSIMPLEGUI_BKGCLR (0xFFFAF208)
 #endif // HSIMPLEGUI_BKGCLR
 #ifndef HSIMPLEGUI_FRGCLR
-#define HSIMPLEGUI_FRGCLR (0xFFFFFFFF)
+#define HSIMPLEGUI_FRGCLR (0xFF000000)
 #endif // HSIMPLEGUI_FRGCLR
 
 static SGUI_INT sgui_scr_dev_lcd_init(void)
@@ -37,6 +37,11 @@ static void sgui_scr_dev_lcd_fillrect(SGUI_INT iX, SGUI_INT iY, SGUI_INT iWidth,
     pixel.mode=HGUI_PIXEL_MODE_32_BITS;
     pixel.pixel_32_bits=(iColor==SGUI_COLOR_BKGCLR?(HSIMPLEGUI_BKGCLR):(HSIMPLEGUI_FRGCLR));
     hgui_driver_fill_rectangle(NULL,iX,iY,iWidth,iHeight,pixel);
+}
+
+static void sgui_scr_dev_lcd_sync(void)
+{
+
 }
 
 
@@ -77,6 +82,7 @@ void hsimplegui_init(hsimplegui_t *gui,size_t w,size_t h,HMI_SCREEN_OBJECT** scr
     gui->DeviceInterface.fnInitialize=sgui_scr_dev_lcd_init;
     gui->DeviceInterface.fnSetPixel=sgui_scr_dev_lcd_set_pixel;
     gui->DeviceInterface.fnFillRect=sgui_scr_dev_lcd_fillrect;
+    gui->DeviceInterface.fnSyncBuffer=sgui_scr_dev_lcd_sync;
 
     SGUI_Basic_ResetMask(&gui->DeviceInterface);
     gui->Engine.ScreenCount = screen_count;
