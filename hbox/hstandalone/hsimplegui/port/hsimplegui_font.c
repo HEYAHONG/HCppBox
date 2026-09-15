@@ -298,5 +298,165 @@ const SGUI_FONT_RES hsimplegui_font_ascii_16=
 };
 
 
+static const uint8_t Chinese_font_12_bytes[]=
+{
+#include "font/Chinese_font_12.txt"
+};
+
+static const uint8_t Chinese_font_16_bytes[]=
+{
+#include "font/Chinese_font_16.txt"
+};
+
+static const struct
+{
+    uint32_t uiCode;
+    uint32_t uiAddr;
+    uint8_t  uiSize;
+    uint8_t  uiWidth;
+} Chinese_font_12_fonts[] =
+{
+#include "font/Chinese_font_12.c"
+};
+
+static const struct
+{
+    uint32_t uiCode;
+    uint32_t uiAddr;
+    uint8_t  uiSize;
+    uint8_t  uiWidth;
+} Chinese_font_16_fonts[] =
+{
+#include "font/Chinese_font_16.c"
+};
+
+/*
+ * 使用此变量传参,不使用原函数的sStartAddr
+ */
+static uintptr_t  Chinese_font_12_start_addr=0;
+static uintptr_t  Chinese_font_12_is_ascii=false;
 
 
+static SGUI_INT        hsimplegui_font_chinese_12_get_char_index(SGUI_UINT32 uiCode)
+{
+    Chinese_font_12_is_ascii=(uiCode < 0x80);
+    if(Chinese_font_12_is_ascii)
+    {
+        return hsimplegui_font_ascii_12_get_char_index(uiCode);
+    }
+    bool is_found=false;
+    for(size_t i=0; i<sizeof(Chinese_font_12_fonts)/sizeof(Chinese_font_12_fonts[0]); i++)
+    {
+        if(Chinese_font_12_fonts[i].uiCode==uiCode)
+        {
+            Chinese_font_12_start_addr=Chinese_font_12_fonts[i].uiAddr;
+            is_found=true;
+            break;
+        }
+    }
+    if(!is_found)
+    {
+        return SGUI_INVALID_INDEX;
+    }
+    return 0;
+}
+
+
+static SGUI_SIZE       hsimplegui_font_chinese_12_get_font_data(SGUI_SIZE sStartAddr, SGUI_BYTE* pDataBuffer, SGUI_SIZE sReadSize)
+{
+    if(Chinese_font_12_is_ascii)
+    {
+        return hsimplegui_font_ascii_12_get_font_data(sStartAddr,pDataBuffer,sReadSize);
+    }
+    /*
+     * 使用全局变量传参
+     */
+    sStartAddr=Chinese_font_12_start_addr;
+    if(sStartAddr+sReadSize > sizeof(Chinese_font_12_bytes))
+    {
+        sReadSize=sizeof(Chinese_font_12_bytes)-sStartAddr;
+    }
+
+    memcpy(pDataBuffer,Chinese_font_12_bytes+sStartAddr,sReadSize);
+
+    return sReadSize;
+}
+
+
+
+const SGUI_FONT_RES hsimplegui_font_chinese_12=
+{
+    6,
+    12,
+    12,
+    hsimplegui_font_chinese_12_get_char_index,
+    hsimplegui_font_chinese_12_get_font_data,
+    hsimplegui_font_utf8_step_next,
+    hsimplegui_font_utf8_is_full_width
+};
+
+
+/*
+ * 使用此变量传参,不使用原函数的sStartAddr
+ */
+static uintptr_t  Chinese_font_16_start_addr=0;
+static uintptr_t  Chinese_font_16_is_ascii=false;
+
+
+static SGUI_INT        hsimplegui_font_chinese_16_get_char_index(SGUI_UINT32 uiCode)
+{
+    Chinese_font_16_is_ascii=(uiCode < 0x80);
+    if(Chinese_font_16_is_ascii)
+    {
+        return hsimplegui_font_ascii_16_get_char_index(uiCode);
+    }
+    bool is_found=false;
+    for(size_t i=0; i<sizeof(Chinese_font_16_fonts)/sizeof(Chinese_font_16_fonts[0]); i++)
+    {
+        if(Chinese_font_16_fonts[i].uiCode==uiCode)
+        {
+            Chinese_font_16_start_addr=Chinese_font_16_fonts[i].uiAddr;
+            is_found=true;
+            break;
+        }
+    }
+    if(!is_found)
+    {
+        return SGUI_INVALID_INDEX;
+    }
+    return 0;
+}
+
+
+static SGUI_SIZE       hsimplegui_font_chinese_16_get_font_data(SGUI_SIZE sStartAddr, SGUI_BYTE* pDataBuffer, SGUI_SIZE sReadSize)
+{
+    if(Chinese_font_16_is_ascii)
+    {
+        return hsimplegui_font_ascii_16_get_font_data(sStartAddr,pDataBuffer,sReadSize);
+    }
+    /*
+     * 使用全局变量传参
+     */
+    sStartAddr=Chinese_font_16_start_addr;
+    if(sStartAddr+sReadSize > sizeof(Chinese_font_16_bytes))
+    {
+        sReadSize=sizeof(Chinese_font_16_bytes)-sStartAddr;
+    }
+
+    memcpy(pDataBuffer,Chinese_font_16_bytes+sStartAddr,sReadSize);
+
+    return sReadSize;
+}
+
+
+
+const SGUI_FONT_RES hsimplegui_font_chinese_16=
+{
+    8,
+    16,
+    16,
+    hsimplegui_font_chinese_16_get_char_index,
+    hsimplegui_font_chinese_16_get_font_data,
+    hsimplegui_font_utf8_step_next,
+    hsimplegui_font_utf8_is_full_width
+};

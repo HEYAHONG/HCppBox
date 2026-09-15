@@ -75,10 +75,10 @@ static HMI_ENGINE_RESULT screen_main_action_repaint(SGUI_SCR_DEV* Interface, con
          * 显示标题
          */
         char buffer[64]= {0};
-        hsprintf(buffer," Main ");
+        hsprintf(buffer," 主屏幕 ");
         SGUI_AREA_SIZE title_area= {0};
-        SGUI_Text_GetTextExtent(buffer,&hsimplegui_font_ascii_12,&title_area);
-        SGUI_Text_DrawMultipleLinesText(Interface,buffer,&hsimplegui_font_ascii_12,(Interface->stSize.iWidth-title_area.iWidth)/2,offset_y,Interface->stSize.iWidth,SGUI_DRAW_REVERSE);
+        SGUI_Text_GetTextExtent(buffer,&hsimplegui_font_chinese_12,&title_area);
+        SGUI_Text_DrawMultipleLinesText(Interface,buffer,&hsimplegui_font_chinese_12,(Interface->stSize.iWidth-title_area.iWidth)/2,offset_y,Interface->stSize.iWidth,SGUI_DRAW_REVERSE);
         offset_y+=title_area.iHeight;
     }
 
@@ -90,15 +90,15 @@ static HMI_ENGINE_RESULT screen_main_action_repaint(SGUI_SCR_DEV* Interface, con
         htm_t current_tm= {0};
         hlibc_localtime_r(&current_time,&current_tm);
         char buffer[64]= {0};
-        hsprintf(buffer," %04d-%02d-%02d ",current_tm.tm_year+1900,current_tm.tm_mon+1,current_tm.tm_mday);
+        hsprintf(buffer," %04d年%02d月%02d日 ",current_tm.tm_year+1900,current_tm.tm_mon+1,current_tm.tm_mday);
         SGUI_AREA_SIZE date_area= {0};
-        SGUI_Text_GetTextExtent(buffer,&hsimplegui_font_ascii_12,&date_area);
-        SGUI_Text_DrawMultipleLinesText(Interface,buffer,&hsimplegui_font_ascii_12,(Interface->stSize.iWidth-date_area.iWidth)/2,offset_y,Interface->stSize.iWidth,SGUI_DRAW_NORMAL);
+        SGUI_Text_GetTextExtent(buffer,&hsimplegui_font_chinese_12,&date_area);
+        SGUI_Text_DrawMultipleLinesText(Interface,buffer,&hsimplegui_font_chinese_12,(Interface->stSize.iWidth-date_area.iWidth)/2,offset_y,Interface->stSize.iWidth,SGUI_DRAW_NORMAL);
         offset_y+=date_area.iHeight;
-        hsprintf(buffer," %02d:%02d:%02d ",current_tm.tm_hour,current_tm.tm_min,current_tm.tm_sec);
+        hsprintf(buffer," %02d时%02d分%02d秒 ",current_tm.tm_hour,current_tm.tm_min,current_tm.tm_sec);
         SGUI_AREA_SIZE time_area= {0};
-        SGUI_Text_GetTextExtent(buffer,&hsimplegui_font_ascii_12,&time_area);
-        SGUI_Text_DrawMultipleLinesText(Interface,buffer,&hsimplegui_font_ascii_12,(Interface->stSize.iWidth-time_area.iWidth)/2,offset_y,Interface->stSize.iWidth,SGUI_DRAW_NORMAL);
+        SGUI_Text_GetTextExtent(buffer,&hsimplegui_font_chinese_12,&time_area);
+        SGUI_Text_DrawMultipleLinesText(Interface,buffer,&hsimplegui_font_chinese_12,(Interface->stSize.iWidth-time_area.iWidth)/2,offset_y,Interface->stSize.iWidth,SGUI_DRAW_NORMAL);
         offset_y+=time_area.iHeight;
     }
 

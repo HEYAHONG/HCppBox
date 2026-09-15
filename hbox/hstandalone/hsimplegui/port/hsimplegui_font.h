@@ -26,6 +26,8 @@ extern "C"
 extern const SGUI_FONT_RES hsimplegui_font_ascii_8;
 extern const SGUI_FONT_RES hsimplegui_font_ascii_12;
 extern const SGUI_FONT_RES hsimplegui_font_ascii_16;
+extern const SGUI_FONT_RES hsimplegui_font_chinese_12;
+extern const SGUI_FONT_RES hsimplegui_font_chinese_16;
 
 #ifdef __cplusplus
 }

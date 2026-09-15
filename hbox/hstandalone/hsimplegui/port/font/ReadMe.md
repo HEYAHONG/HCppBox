@@ -25,3 +25,18 @@
 - 字体数据：[ASCII_font_16.txt](ASCII_font_16.txt)
 - 字体信息：[ASCII_font_16.c](ASCII_font_16.c)
 
+# Chinese
+
+中文字体。仅包含极少数用于测试的字，实际使用中需要另外生成字体。
+
+- 字体列表:[Chinese.txt](Chinese.txt)
+
+## 12
+
+- 字体数据： [Chinese_font_12.txt](Chinese_font_12.txt)
+- 字体信息： [Chinese_font_12.c](Chinese_font_12.c)
+
+## 16
+
+- 字体数据： [Chinese_font_16.txt](Chinese_font_16.txt)
+- 字体信息： [Chinese_font_16.c](Chinese_font_16.c)
