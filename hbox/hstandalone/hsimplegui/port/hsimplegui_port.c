@@ -30,6 +30,20 @@ static void sgui_scr_dev_lcd_set_pixel(SGUI_INT iX, SGUI_INT iY, SGUI_UINT iColo
     hgui_driver_draw_pixel(NULL,iX,iY,pixel);
 }
 
+static void sgui_scr_dev_lcd_clear(void)
+{
+    ssize_t w=-1;
+    ssize_t h=-1;
+    hgui_driver_resize(NULL,&w,&h);
+    if(w > 0 &&h > 0)
+    {
+        hgui_pixel_t pixel;
+        pixel.mode=HGUI_PIXEL_MODE_32_BITS;
+        pixel.pixel_32_bits=(HSIMPLEGUI_BKGCLR);
+        hgui_driver_fill_rectangle(NULL,0,0,w,h,pixel);
+    }
+}
+
 
 static void sgui_scr_dev_lcd_fillrect(SGUI_INT iX, SGUI_INT iY, SGUI_INT iWidth, SGUI_INT iHeight, SGUI_UINT iColor)
 {
@@ -82,6 +96,7 @@ void hsimplegui_init(hsimplegui_t *gui,size_t w,size_t h,HMI_SCREEN_OBJECT** scr
     gui->DeviceInterface.fnInitialize=sgui_scr_dev_lcd_init;
     gui->DeviceInterface.fnSetPixel=sgui_scr_dev_lcd_set_pixel;
     gui->DeviceInterface.fnFillRect=sgui_scr_dev_lcd_fillrect;
+    gui->DeviceInterface.fnClear=sgui_scr_dev_lcd_clear;
     gui->DeviceInterface.fnSyncBuffer=sgui_scr_dev_lcd_sync;
 
     SGUI_Basic_ResetMask(&gui->DeviceInterface);
