@@ -38,7 +38,7 @@ static void init(void)
 
 static void loop(void)
 {
-     hsimplegui_update(&gui);
+    hsimplegui_update(&gui);
 }
 
 int main()
@@ -59,6 +59,27 @@ int main()
 /*
  * 主屏幕
  */
+static bool screen_main_menu_is_show=false;
+static SGUI_MENU screen_main_menu= {};
+static SGUI_ITEMS_ITEM screen_main_menu_item_list[]=
+{
+    {
+        "菜单1",
+        NULL
+    },
+    {
+        "菜单2",
+        NULL
+    },
+    {
+        "菜单3",
+        NULL
+    },
+    {
+        "菜单4",
+        NULL
+    }
+};
 static HMI_ENGINE_RESULT screen_main_action_initialize(SGUI_SCR_DEV* Interface)
 {
     return HMI_RET_NORMAL;
@@ -69,6 +90,15 @@ static HMI_ENGINE_RESULT screen_main_action_prepare(SGUI_SCR_DEV* Interface, con
     SGUI_Basic_ClearScreen(Interface);
     /* Refresh display. */
     SGUI_Basic_ResetMask(Interface);
+
+    {
+        SGUI_RECT menu_layout= {};
+        menu_layout.iX=0;
+        menu_layout.iY=12;
+        menu_layout.iWidth=36;
+        menu_layout.iHeight=48;
+        SGUI_Menu_Initialize(&screen_main_menu,&menu_layout,&hsimplegui_font_chinese_12,screen_main_menu_item_list,sizeof(screen_main_menu_item_list)/sizeof(screen_main_menu_item_list[0]));
+    }
 
     return HMI_RET_NORMAL;
 }
@@ -112,6 +142,42 @@ static HMI_ENGINE_RESULT screen_main_action_repaint(SGUI_SCR_DEV* Interface, con
         offset_y+=time_area.iHeight;
     }
 
+    {
+        /*
+         * 显示操作栏
+         */
+        if(!screen_main_menu_is_show)
+        {
+            /*
+             * 未显示菜单
+             */
+            char buffer[64]= {0};
+            hsprintf(buffer,"菜单(F1)");
+            SGUI_AREA_SIZE area= {0};
+            SGUI_Text_GetTextExtent(buffer,&hsimplegui_font_chinese_12,&area);
+            SGUI_Text_DrawMultipleLinesText(Interface,buffer,&hsimplegui_font_chinese_12,0,max_y-area.iHeight,Interface->stSize.iWidth,SGUI_DRAW_REVERSE);
+        }
+        else
+        {
+            /*
+             * 已显示菜单
+             */
+            char buffer[64]= {0};
+            hsprintf(buffer,"返回(F3)");
+            SGUI_AREA_SIZE area= {0};
+            SGUI_Text_GetTextExtent(buffer,&hsimplegui_font_chinese_12,&area);
+            SGUI_Text_DrawMultipleLinesText(Interface,buffer,&hsimplegui_font_chinese_12,max_x-area.iWidth,max_y-area.iHeight,Interface->stSize.iWidth,SGUI_DRAW_REVERSE);
+        }
+    }
+
+    if(screen_main_menu_is_show)
+    {
+        /*
+         * 画菜单
+         */
+        SGUI_Menu_Repaint(Interface,&screen_main_menu);
+    }
+
 
     return HMI_RET_NORMAL;
 }
@@ -138,6 +204,66 @@ static HMI_ENGINE_RESULT  screen_main_action_processevent(SGUI_SCR_DEV* Interfac
             {
                 switch(key.key_value)
                 {
+                case  HGUI_GUI_EVENT_KEY_VALUE_F1:
+                case  HGUI_GUI_EVENT_KEY_VALUE_RETURN:
+                {
+                    /* Clean screen display. */
+                    SGUI_Basic_ClearScreen(Interface);
+                    /* Refresh display. */
+                    SGUI_Basic_ResetMask(Interface);
+                    if(!screen_main_menu_is_show)
+                    {
+                        screen_main_menu_is_show=true;
+                    }
+                }
+                break;
+                case  HGUI_GUI_EVENT_KEY_VALUE_ESCAPE:
+                case  HGUI_GUI_EVENT_KEY_VALUE_F3:
+                {
+                    /* Clean screen display. */
+                    SGUI_Basic_ClearScreen(Interface);
+                    /* Refresh display. */
+                    SGUI_Basic_ResetMask(Interface);
+                    if(screen_main_menu_is_show)
+                    {
+                        screen_main_menu_is_show=false;
+                    }
+                }
+                break;
+                case  HGUI_GUI_EVENT_KEY_VALUE_UP:
+                case  HGUI_GUI_EVENT_KEY_VALUE_w:
+                {
+                    /* Clean screen display. */
+                    SGUI_Basic_ClearScreen(Interface);
+                    /* Refresh display. */
+                    SGUI_Basic_ResetMask(Interface);
+                    if(screen_main_menu_is_show)
+                    {
+                        if(SGUI_Menu_GetSelection((&screen_main_menu))->iIndex > 0)
+                        {
+                            SGUI_Menu_Selecte((&screen_main_menu), SGUI_Menu_GetSelection((&screen_main_menu))->iIndex-1);
+                            SGUI_Menu_Repaint(Interface, (&screen_main_menu));
+                        }
+                    }
+                }
+                break;
+                case  HGUI_GUI_EVENT_KEY_VALUE_DOWN:
+                case  HGUI_GUI_EVENT_KEY_VALUE_s:
+                {
+                    /* Clean screen display. */
+                    SGUI_Basic_ClearScreen(Interface);
+                    /* Refresh display. */
+                    SGUI_Basic_ResetMask(Interface);
+                    if(screen_main_menu_is_show)
+                    {
+                        if(SGUI_Menu_GetSelection((&screen_main_menu))->iIndex < (&screen_main_menu)->stItems.iCount-1)
+                        {
+                            SGUI_Menu_Selecte((&screen_main_menu), SGUI_Menu_GetSelection((&screen_main_menu))->iIndex+1);
+                            SGUI_Menu_Repaint(Interface, (&screen_main_menu));
+                        }
+                    }
+                }
+                break;
                 default:
                 {
 
@@ -154,7 +280,7 @@ static HMI_ENGINE_RESULT  screen_main_action_processevent(SGUI_SCR_DEV* Interfac
         /*
          * Update事件
          */
-         screen_main_action_repaint(Interface,NULL);
+        screen_main_action_repaint(Interface,NULL);
     }
 
     return HMI_RET_NORMAL;
