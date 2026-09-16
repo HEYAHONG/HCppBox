@@ -647,7 +647,9 @@ public:
                     SDL_FillRect(screen, &fill_rect, final_pixel.pixel_32_bits);
                 }
             }
-            SDL_Flip(screen);
+            /*
+             * 此处不刷新，在update时刷新
+             */
             return true;
         }
         return false;
@@ -785,6 +787,12 @@ public:
                 }
             }
         }
+
+        if(screen!=NULL)
+        {
+            SDL_Flip(screen);
+        }
+
         return true;
     }
     static bool g_is_ok(hgui_driver_t *driver)
