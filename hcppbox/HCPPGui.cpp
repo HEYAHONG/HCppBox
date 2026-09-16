@@ -184,52 +184,57 @@ public:
         }
 
         {
-            RECT rect= {0};
-            if(GetClientRect(hwnd,&rect))
+            RECT rect = { 0 };
+            bool need_resize = ((*w) > 0 || (*h) > 0);
+            if (GetClientRect(hwnd, &rect))
             {
-                if((*w) < 0 )
+                if ((*w) < 0)
                 {
                     (*w) = rect.right - rect.left;
                 }
 
-                if((*h) < 0 )
+                if ((*h) < 0)
                 {
                     (*h) = rect.bottom - rect.top;
                 }
             }
 
-            ssize_t new_w = (*w);
-            ssize_t new_h = (*h);
-
-            bool ret = (MoveWindow(hwnd,rect.left,rect.top,new_w,new_h,TRUE)!=0);
-
-            if(GetClientRect(hwnd,&rect))
+            bool ret = true;
+            if(need_resize)
             {
-                (*w) = rect.right - rect.left;
-                if((*w) < 0)
-                {
-                    (*w)=-(*w);
-                }
-                (*h) = rect.bottom - rect.top;
-                if((*h) < 0)
-                {
-                    (*h)=-(*h);
-                }
-            }
+                ssize_t new_w = (*w);
+                ssize_t new_h = (*h);
 
-            ret = (MoveWindow(hwnd,rect.left,rect.top,2*new_w-(*w),2*new_h-(*h),TRUE)!=0);
+                ret = (MoveWindow(hwnd, rect.left, rect.top, new_w, new_h, TRUE) != 0);
 
-            if(GetClientRect(hwnd,&rect))
-            {
-                (*w) = rect.right - rect.left;
-                if((*w) < 0)
+                if (GetClientRect(hwnd, &rect))
                 {
-                    (*w)=-(*w);
+                    (*w) = rect.right - rect.left;
+                    if ((*w) < 0)
+                    {
+                        (*w) = -(*w);
+                    }
+                    (*h) = rect.bottom - rect.top;
+                    if ((*h) < 0)
+                    {
+                        (*h) = -(*h);
+                    }
                 }
-                (*h) = rect.bottom - rect.top;
-                if((*h) < 0)
+
+                ret = (MoveWindow(hwnd, rect.left, rect.top, 2 * new_w - (*w), 2 * new_h - (*h), TRUE) != 0);
+
+                if (GetClientRect(hwnd, &rect))
                 {
-                    (*h)=-(*h);
+                    (*w) = rect.right - rect.left;
+                    if ((*w) < 0)
+                    {
+                        (*w) = -(*w);
+                    }
+                    (*h) = rect.bottom - rect.top;
+                    if ((*h) < 0)
+                    {
+                        (*h) = -(*h);
+                    }
                 }
             }
 
