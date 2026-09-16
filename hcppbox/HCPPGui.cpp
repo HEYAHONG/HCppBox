@@ -384,6 +384,18 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         }
         switch (wParam)
         {
+        case VK_RETURN:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_RETURN;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_ESCAPE:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_ESCAPE;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
         case VK_INSERT:
         {
             key.key_value = HGUI_GUI_EVENT_KEY_VALUE_INSERT;
