@@ -29,6 +29,7 @@ static class HCPPGuiDriver
     bool IsRegisterClass;
     HWND hwnd;
     HDC hdc;
+    HBITMAP hbitmap;
     friend LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
     std::recursive_mutex m_lock;
 public:
@@ -42,7 +43,6 @@ public:
             {
                 return false;
             }
-            HBITMAP hbitmap=CreateCompatibleBitmap(hdc,w,h);
             if(hbitmap==NULL)
             {
                 DeleteDC(memdc);
@@ -56,12 +56,10 @@ public:
                     //每个像素都进行一次转换
                     hgui_pixel_t final_pixel=hgui_pixel_bits_get(pixel,i+x,j+y);
                     COLORREF color = RGB((final_pixel.pixel_32_bits >> 16) & 0xFF, (final_pixel.pixel_32_bits >> 8) & 0xFF, (final_pixel.pixel_32_bits) & 0xFF);
-                    SetPixel(memdc, i, j, color);
+                    SetPixel(memdc, i+x, j+y, color);
                 }
             }
-            BitBlt(hdc, x, y, w, h, memdc, 0, 0, SRCCOPY);
             SelectObject(memdc,NULL);
-            DeleteObject(hbitmap);
             DeleteDC(memdc);
             return true;
         }
@@ -139,6 +137,16 @@ public:
             }
         }
 
+        if (hbitmap != NULL)
+        {
+            DeleteObject(hbitmap);
+            hbitmap = CreateCompatibleBitmap(hdc, 320, 240);
+        }
+        else
+        {
+            hbitmap = CreateCompatibleBitmap(hdc, 320, 240);
+        }
+
         return true;
     }
     static bool g_reset(hgui_driver_t *driver)
@@ -168,6 +176,13 @@ public:
         {
             return false;
         }
+
+        if (hbitmap != NULL && ((*w) > 0 || (*h) > 0))
+        {
+            DeleteObject(hbitmap);
+            hbitmap = NULL;
+        }
+
         {
             RECT rect= {0};
             if(GetClientRect(hwnd,&rect))
@@ -218,8 +233,20 @@ public:
                 }
             }
 
+            if (hbitmap == NULL)
+            {
+                hbitmap = CreateCompatibleBitmap(hdc, *w, *h);
+            }
+
             return ret;
         }
+
+        if (hbitmap == NULL)
+        {
+            hbitmap = CreateCompatibleBitmap(hdc, *w, *h);
+        }
+
+
         return false;
     }
 
@@ -246,6 +273,23 @@ public:
                 DispatchMessage(&messages);
             }
         }
+
+        if (hbitmap != NULL)
+        {
+            HDC memdc = CreateCompatibleDC(hdc);
+            if (memdc != NULL)
+            {
+                SelectObject(memdc, hbitmap);
+                BITMAP bmp;
+                if (GetObject(hbitmap, sizeof(BITMAP), &bmp) != 0)
+                {
+                    BitBlt(hdc, 0, 0, bmp.bmWidth, bmp.bmHeight, memdc, 0, 0, SRCCOPY);
+                }
+                SelectObject(memdc, NULL);
+                DeleteDC(memdc);
+            }
+        }
+
         return true;
     }
     static bool g_is_ok(hgui_driver_t *driver)
@@ -258,7 +302,7 @@ public:
         obj.update(driver);
         return obj.is_ok(driver);
     }
-    HCPPGuiDriver():IsRegisterClass(false),hwnd(NULL),hdc(NULL)
+    HCPPGuiDriver():IsRegisterClass(false),hwnd(NULL),hdc(NULL),hbitmap(NULL)
     {
         driver.usr=this;
         driver.fill_rectangle=g_fill_rectangle;
@@ -270,6 +314,12 @@ public:
     ~HCPPGuiDriver()
     {
         std::lock_guard<std::recursive_mutex> lock(m_lock);
+        if (hbitmap != NULL)
+        {
+            DeleteObject(hbitmap);
+            hbitmap = NULL;
+        }
+
         if(hwnd!=NULL)
         {
             if(hdc!=NULL)
