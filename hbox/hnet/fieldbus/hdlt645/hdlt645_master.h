@@ -186,6 +186,7 @@ struct hdlt645_master_ctx_cmd_read
     hdlt645_bcd_addr_t addr;                                                    /**< 目标地址，读取回复后将修改为回复的地址 */
     uint8_t request_buffer[10];
     uint8_t request_buffer_length;
+    bool    need_readext;                                                       /**< 需要读取后续数据 */
     hdlt645_master_ctx_cmd_read_callback_t read;                                /**< 读取成功回调 */
     hdlt645_master_ctx_cmd_read_error_callback_t error;                         /**< 读取失败回调 */
     uintptr_t usr;                                                              /**< 用户参数 */

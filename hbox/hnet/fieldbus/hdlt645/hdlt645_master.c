@@ -440,6 +440,11 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
 
             {
                 c=hdlt645_control_decode(*hdlt645_frame_get_c(buffer,buffer_size));
+
+                if(c.ext == 1)
+                {
+                    cmd->need_readext=true;
+                }
             }
 
             {
@@ -612,11 +617,11 @@ bool hdlt645_master_ctx_cmd_read_init3(hdlt645_master_ctx_cmd_read_t *cmd,hdlt64
     {
         htm_t timestamp_tm;
         hlibc_localtime_r(&timestamp,&timestamp_tm);
-        cmd->request_buffer[sizeof(*di)+0]=hdlt645_uint64_to_bcd(timestamp_tm.tm_min);
-        cmd->request_buffer[sizeof(*di)+1]=hdlt645_uint64_to_bcd(timestamp_tm.tm_hour);
-        cmd->request_buffer[sizeof(*di)+2]=hdlt645_uint64_to_bcd(timestamp_tm.tm_mday);
-        cmd->request_buffer[sizeof(*di)+3]=hdlt645_uint64_to_bcd(timestamp_tm.tm_mon+1);
-        cmd->request_buffer[sizeof(*di)+4]=hdlt645_uint64_to_bcd(timestamp_tm.tm_year%100);
+        cmd->request_buffer[sizeof(*di)+sizeof(n)+0]=hdlt645_uint64_to_bcd(timestamp_tm.tm_min);
+        cmd->request_buffer[sizeof(*di)+sizeof(n)+1]=hdlt645_uint64_to_bcd(timestamp_tm.tm_hour);
+        cmd->request_buffer[sizeof(*di)+sizeof(n)+2]=hdlt645_uint64_to_bcd(timestamp_tm.tm_mday);
+        cmd->request_buffer[sizeof(*di)+sizeof(n)+3]=hdlt645_uint64_to_bcd(timestamp_tm.tm_mon+1);
+        cmd->request_buffer[sizeof(*di)+sizeof(n)+4]=hdlt645_uint64_to_bcd(timestamp_tm.tm_year%100);
 
     }
     cmd->request_buffer_length=sizeof(*di)+sizeof(n)+5;
