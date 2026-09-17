@@ -11,5 +11,6 @@
 
 #include "hdlt645/hdlt645_common.c"
 #include "hdlt645/hdlt645_slave.c"
+#include "hdlt645/hdlt645_master.c"
 #include "hdlt645/hdlt645_utils.c"
 

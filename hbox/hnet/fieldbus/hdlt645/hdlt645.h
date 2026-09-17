@@ -12,6 +12,7 @@
 
 #include "hdlt645_common.h"
 #include "hdlt645_slave.h"
+#include "hdlt645_master.h"
 #include "hdlt645_utils.h"
 
 #ifdef __cplusplus
