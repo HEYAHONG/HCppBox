@@ -703,17 +703,72 @@ bool hdlt645_slave_io_ctx_cmd_read_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_s
 
 bool hdlt645_slave_io_ctx_cmd_readext_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_slave_io_t *io,const hdlt645_slave_io_ctx_cmd_t *cmd,uint8_t *data,size_t datalen,uint8_t *reply_buffer,size_t reply_buffer_len)
 {
-    if(ctx==NULL || io == NULL || cmd == NULL || data == NULL || datalen < 4 || reply_buffer == NULL || reply_buffer_len < 12)
+    if(ctx==NULL || io == NULL || cmd == NULL || data == NULL || datalen < 4 || reply_buffer == NULL || reply_buffer_len < 12+4)
     {
         return false;
+    }
+
+    const hdlt645_slave_di_t *di_table=(const hdlt645_slave_di_t *)cmd->usr[0];
+    size_t di_table_len=cmd->usr[1];
+    size_t reply_data_buffer_len=reply_buffer_len-12-4;
+    uint8_t *reply_data_buffer=&(hdlt645_frame_get_data(reply_buffer,reply_buffer_len)[4]);
+    hdlt645_data_di_t *reply_di=(hdlt645_data_di_t *)&(hdlt645_frame_get_data(reply_buffer,reply_buffer_len)[0]);
+
+    hdlt645_control_t c=hdlt645_control_decode(0);
+
+    c.dir=1;
+
+    c.fct=cmd->fct;
+
+    hdlt645_data_di_t *di_src=(hdlt645_data_di_t *)data;
+    if(reply_di!=NULL)
+    {
+        memcpy(reply_di,di_src,sizeof(*di_src));
+    }
+
+    size_t index=0;
+
+    if(datalen >= 5)
+    {
+        /*
+         * 序号从1开始，一直到255，内部引索从0开始
+         */
+        index=data[4];
+        if(index > 0)
+        {
+            index-=1;
+        }
+    }
+
+    if(hdlt645_slave_di_count(di_table,di_table_len,hdlt645_data_di_get(di_src),reply_data_buffer_len-1) > index+1)
+    {
+        c.ext=1;
     }
 
     bool ret=true;
 
     /*
-     *  在本协议栈中，读后续数据中序号等效于读数据的记录块数。注意：这是非标实现，用户如需其它实现请自行实现处理函数
+     * 读取数据
      */
-    ret=hdlt645_slave_io_ctx_cmd_read_process(ctx,io,cmd,data,datalen,reply_buffer,reply_buffer_len);
+    reply_data_buffer_len=hdlt645_slave_di_read(di_table,di_table_len,hdlt645_data_di_get(di_src),index,reply_data_buffer,reply_data_buffer_len-1);
+
+    /*
+     * 设置序号
+     */
+    reply_data_buffer[reply_data_buffer_len]=index+1;
+
+
+    /*
+     * 设置控制码
+     */
+    (*hdlt645_frame_get_c(reply_buffer,reply_buffer_len))=hdlt645_control_encode(c);
+
+
+    /*
+     * 设置数据长度
+     */
+    size_t l=reply_data_buffer_len+sizeof(*di_src)+1;
+    (*hdlt645_frame_get_datalen(reply_buffer,reply_buffer_len))=l;
 
     return ret;
 }
