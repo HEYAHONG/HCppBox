@@ -52,3 +52,12 @@ DL/T 645采用主从模式，默认情况下采用RS-485总线标准（串口参
 | `HDLT645_MASTER_IO_NO_TX_BUFFER`        | 不单独分配发送缓冲区(主机) | 定义此宏定义后，将使用栈作为发送缓冲区 |
 | `HDLT645_MASTER_EXTERN_HEADER_FILENAME` | 额外的主机头文件           |                                        |
 | `HDLT645_MASTER_EXTERN_SOURCE_FILENAME` | 额外的主机源代码文件       | 此文件不应编译                         |
+
+## 调用关系
+
+组件中从机分为IO端口及上下文（操作上下文、命令上下文）。每个IO端口对应单个硬件（如串口），单个上下文单次操作仅可使用同一个IO端口,操作完成后可使用其他IO端口进行新的操作。
+
+- IO端口及上下文的初始化均有主线程（或IO处理线程）完成。
+- IO端口的数据输入(`hdlt645_master_io_rx_input`)可由中断完成。
+- 上下文的处理函数( `hdlt645_master_ctx_process`)必须在主线程（或IO处理线程）中循环调用,当其返回`HDLT645_MASTER_CTX_STATUS_FINISHED`或者`HDLT645_MASTER_CTX_STATUS_ERROR`表示本次操作结束，需要重新初始化上下文以进行下一次操作。
+
