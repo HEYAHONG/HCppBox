@@ -631,7 +631,41 @@ bool hdlt645_slave_io_ctx_cmd_read_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_s
 
     if(datalen >= 5)
     {
-        index=data[4];
+        if(di_table != NULL)
+        {
+            for(size_t i=0; i<di_table_len; i++)
+            {
+                if(di_table[i].set_n!=NULL)
+                {
+                    hdlt645_data_di_t di_dst;
+                    hdlt645_data_di_set(&di_dst,di_table[i].di_num);
+                    if(!hdlt645_data_di_match(di_src,&di_dst))
+                    {
+                        continue;
+                    }
+                    di_table[i].set_n(&di_table[i],data[4]);
+                }
+            }
+        }
+    }
+    else
+    {
+        if(di_table != NULL)
+        {
+            for(size_t i=0; i<di_table_len; i++)
+            {
+                if(di_table[i].unset_n!=NULL)
+                {
+                    hdlt645_data_di_t di_dst;
+                    hdlt645_data_di_set(&di_dst,di_table[i].di_num);
+                    if(!hdlt645_data_di_match(di_src,&di_dst))
+                    {
+                        continue;
+                    }
+                    di_table[i].unset_n(&di_table[i]);
+                }
+            }
+        }
     }
 
     if(datalen >=10)
@@ -660,7 +694,7 @@ bool hdlt645_slave_io_ctx_cmd_read_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_s
         {
             for(size_t i=0; i<di_table_len; i++)
             {
-                if(di_table[i].set_time!=NULL)
+                if(di_table[i].reset_time!=NULL)
                 {
                     hdlt645_data_di_t di_dst;
                     hdlt645_data_di_set(&di_dst,di_table[i].di_num);
@@ -845,7 +879,7 @@ bool hdlt645_slave_io_ctx_cmd_write_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_
         {
             for(size_t i=0; i<di_table_len; i++)
             {
-                if(di_table[i].set_time!=NULL)
+                if(di_table[i].write_enable!=NULL)
                 {
                     hdlt645_data_di_t di_dst;
                     hdlt645_data_di_set(&di_dst,di_table[i].di_num);
@@ -870,7 +904,7 @@ bool hdlt645_slave_io_ctx_cmd_write_process(hdlt645_slave_io_ctx_t *ctx,hdlt645_
         {
             for(size_t i=0; i<di_table_len; i++)
             {
-                if(di_table[i].set_time!=NULL)
+                if(di_table[i].write_disable!=NULL)
                 {
                     hdlt645_data_di_t di_dst;
                     hdlt645_data_di_set(&di_dst,di_table[i].di_num);
