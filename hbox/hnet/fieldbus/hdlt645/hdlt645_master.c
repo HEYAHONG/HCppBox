@@ -167,8 +167,20 @@ bool hdlt645_master_ctx_init(hdlt645_master_ctx_t *ctx,int fct,void *cmd_ctx,siz
         return ret;
     }
 
+    ctx->cmd.fct=fct;
+    ctx->cmd.ctx=cmd_ctx;
+    ctx->cmd.ctx_size=cmd_ctx_size;
+
     switch(fct)
     {
+    case HDLT645_FRAME_CONTROL_FCT_TIME:
+    {
+        if(ctx->cmd.ctx == NULL || ctx->cmd.ctx_size != sizeof(hdlt645_master_ctx_cmd_time_t))
+        {
+            ret=false;
+        }
+    }
+    break;
     default:
     {
         ret=true;
@@ -212,6 +224,14 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
          */
         switch(ctx->cmd.fct)
         {
+        case HDLT645_FRAME_CONTROL_FCT_TIME:
+        {
+            if(ctx->cmd.ctx == NULL || ctx->cmd.ctx_size != sizeof(hdlt645_master_ctx_cmd_time_t))
+            {
+                ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
+            }
+        }
+        break;
         default:
         {
             ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
@@ -239,8 +259,48 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
         size_t   buffer_size=sizeof(buffer);
 #endif
 
+        bool need_reply=true;
+
         switch(ctx->cmd.fct)
         {
+        case HDLT645_FRAME_CONTROL_FCT_TIME:
+        {
+            need_reply=false;
+            hdlt645_master_ctx_cmd_time_t *cmd=(hdlt645_master_ctx_cmd_time_t *)ctx->cmd.ctx;
+
+            {
+                /*
+                 * 设置地址
+                 */
+                hdlt645_bcd_addr_t *frame_addr=hdlt645_frame_get_bcd_addr(buffer,buffer_size);
+                if(frame_addr!=NULL)
+                {
+                    hdlt645_bcd_addr_set(frame_addr,HDLT645_FRAME_BOARDCAST_BCD_ADDR);
+                }
+            }
+
+            {
+                /*
+                 * 设置数据
+                 */
+                uint8_t *data=hdlt645_frame_get_data(buffer,buffer_size);
+                uint8_t *datalen=hdlt645_frame_get_datalen(buffer,buffer_size);
+                if(data != NULL &&datalen != NULL)
+                {
+                    (*datalen)=6;
+                    htime_t current_time=hdlt645_master_ctx_cmd_time_current(cmd);
+                    htm_t current_tm;
+                    hlibc_localtime_r(&current_time,&current_tm);
+                    data[0]=hdlt645_uint64_to_bcd(current_tm.tm_sec);
+                    data[1]=hdlt645_uint64_to_bcd(current_tm.tm_min);
+                    data[2]=hdlt645_uint64_to_bcd(current_tm.tm_hour);
+                    data[3]=hdlt645_uint64_to_bcd(current_tm.tm_mday);
+                    data[4]=hdlt645_uint64_to_bcd(current_tm.tm_mon+1);
+                    data[5]=hdlt645_uint64_to_bcd(current_tm.tm_year-2000);
+                }
+            }
+        }
+        break;
         default:
         {
             ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
@@ -284,11 +344,18 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
                 break;
             }
 
-            ctx->status =  HDLT645_MASTER_CTX_STATUS_WAIT_REPLY;
+            if(need_reply)
+            {
+                ctx->status =  HDLT645_MASTER_CTX_STATUS_WAIT_REPLY;
+            }
+            else
+            {
+                ctx->status =  HDLT645_MASTER_CTX_STATUS_FINISHED;
+            }
         }
     }
     break;
-    HDLT645_MASTER_CTX_STATUS_WAIT_REPLY:
+    case HDLT645_MASTER_CTX_STATUS_WAIT_REPLY:
     {
         /*
          * 此步骤用于接收数据并处理数据
@@ -333,4 +400,23 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
 
     return hdlt645_master_ctx_status(ctx);
 
+}
+
+void hdlt645_master_ctx_cmd_time_init(hdlt645_master_ctx_cmd_time_t *cmd,hdlt645_master_ctx_cmd_time_callback_t cb,void *usr)
+{
+    if(cmd!=NULL)
+    {
+        cmd->cb=cb;
+        cmd->usr=(uintptr_t)usr;
+    }
+}
+
+htime_t hdlt645_master_ctx_cmd_time_current(hdlt645_master_ctx_cmd_time_t *cmd)
+{
+    if(cmd == NULL || cmd->cb == NULL)
+    {
+        return htime(NULL);
+    }
+
+    return cmd->cb(cmd);
 }

@@ -142,6 +142,38 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_status(hdlt645_master_ctx_t *ctx)
  */
 hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx,hdlt645_master_io_t *io);
 
+
+/*
+ * 广播时间（功能码:HDLT645_FRAME_CONTROL_FCT_TIME）
+ */
+struct hdlt645_master_ctx_cmd_time;
+typedef struct hdlt645_master_ctx_cmd_time hdlt645_master_ctx_cmd_time_t;
+typedef htime_t (*hdlt645_master_ctx_cmd_time_callback_t)(hdlt645_master_ctx_cmd_time_t *cmd);
+struct hdlt645_master_ctx_cmd_time
+{
+    hdlt645_master_ctx_cmd_time_callback_t cb;                              /**< 读取时间的回调 */
+    uintptr_t usr;                                                          /**< 用户参数 */
+};
+
+/** \brief 广播时间命令初始化
+ *
+ * \param cmd hdlt645_master_ctx_cmd_time_t* 广播时间命令
+ * \param cb hdlt645_master_ctx_cmd_time_callback_t 回调
+ * \param usr void* 用户参数
+ *
+ */
+void hdlt645_master_ctx_cmd_time_init(hdlt645_master_ctx_cmd_time_t *cmd,hdlt645_master_ctx_cmd_time_callback_t cb,void *usr);
+
+
+/** \brief 广播时间命令获取当前时间
+ *
+ * \param cmd hdlt645_master_ctx_cmd_time_t* 广播时间命令
+ * \return htime_t 当前时间
+ *
+ */
+htime_t hdlt645_master_ctx_cmd_time_current(hdlt645_master_ctx_cmd_time_t *cmd);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
