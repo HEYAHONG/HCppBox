@@ -181,6 +181,14 @@ bool hdlt645_master_ctx_init(hdlt645_master_ctx_t *ctx,int fct,void *cmd_ctx,siz
         }
     }
     break;
+    case HDLT645_FRAME_CONTROL_FCT_READ:
+    {
+        if(ctx->cmd.ctx == NULL || ctx->cmd.ctx_size != sizeof(hdlt645_master_ctx_cmd_read_t))
+        {
+            ret=false;
+        }
+    }
+    break;
     default:
     {
         ret=true;
@@ -227,6 +235,14 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
         case HDLT645_FRAME_CONTROL_FCT_TIME:
         {
             if(ctx->cmd.ctx == NULL || ctx->cmd.ctx_size != sizeof(hdlt645_master_ctx_cmd_time_t))
+            {
+                ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
+            }
+        }
+        break;
+        case HDLT645_FRAME_CONTROL_FCT_READ:
+        {
+            if(ctx->cmd.ctx == NULL || ctx->cmd.ctx_size != sizeof(hdlt645_master_ctx_cmd_read_t))
             {
                 ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
             }
@@ -296,7 +312,36 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
                     data[2]=hdlt645_uint64_to_bcd(current_tm.tm_hour);
                     data[3]=hdlt645_uint64_to_bcd(current_tm.tm_mday);
                     data[4]=hdlt645_uint64_to_bcd(current_tm.tm_mon+1);
-                    data[5]=hdlt645_uint64_to_bcd(current_tm.tm_year-2000);
+                    data[5]=hdlt645_uint64_to_bcd(current_tm.tm_year%100);
+                }
+            }
+        }
+        break;
+        case HDLT645_FRAME_CONTROL_FCT_READ:
+        {
+            hdlt645_master_ctx_cmd_read_t *cmd=(hdlt645_master_ctx_cmd_read_t *)ctx->cmd.ctx;
+
+            {
+                /*
+                 * 设置地址
+                 */
+                hdlt645_bcd_addr_t *frame_addr=hdlt645_frame_get_bcd_addr(buffer,buffer_size);
+                if(frame_addr!=NULL)
+                {
+                    memcpy(frame_addr,&cmd->addr,sizeof(cmd->addr));
+                }
+            }
+
+            {
+                /*
+                 * 设置数据
+                 */
+                uint8_t *data=hdlt645_frame_get_data(buffer,buffer_size);
+                uint8_t *datalen=hdlt645_frame_get_datalen(buffer,buffer_size);
+                if(data != NULL &&datalen != NULL)
+                {
+                    (*datalen)=cmd->request_buffer_length;
+                    memcpy(data,cmd->request_buffer,(*datalen));
                 }
             }
         }
@@ -376,6 +421,53 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
 
         switch(ctx->cmd.fct)
         {
+        case HDLT645_FRAME_CONTROL_FCT_READ:
+        {
+            hdlt645_master_ctx_cmd_read_t *cmd=(hdlt645_master_ctx_cmd_read_t *)ctx->cmd.ctx;
+
+            {
+                /*
+                 * 读取地址
+                 */
+                hdlt645_bcd_addr_t *frame_addr=hdlt645_frame_get_bcd_addr(buffer,buffer_size);
+                if(frame_addr!=NULL)
+                {
+                    memcpy(&cmd->addr,frame_addr,sizeof(cmd->addr));
+                }
+            }
+
+            hdlt645_control_t c;
+
+            {
+                c=hdlt645_control_decode(*hdlt645_frame_get_c(buffer,buffer_size));
+            }
+
+            {
+                /*
+                 * 读取数据
+                 */
+                uint8_t *data=hdlt645_frame_get_data(buffer,buffer_size);
+                uint8_t *datalen=hdlt645_frame_get_datalen(buffer,buffer_size);
+                if(data != NULL &&datalen != NULL)
+                {
+                    if(c.ack==1)
+                    {
+                        if((*datalen) >= 1 &&cmd->error!=NULL)
+                        {
+                            cmd->error(cmd,data[0]);
+                        }
+                    }
+                    else
+                    {
+                        if((*datalen) >= 4 &&cmd->read!=NULL)
+                        {
+                            cmd->read(cmd,(hdlt645_data_di_t *)&data[0],&data[sizeof(hdlt645_data_di_t)],(*datalen)-sizeof(hdlt645_data_di_t));
+                        }
+                    }
+                }
+            }
+        }
+        break;
         default:
         {
             ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
@@ -419,4 +511,119 @@ htime_t hdlt645_master_ctx_cmd_time_current(hdlt645_master_ctx_cmd_time_t *cmd)
     }
 
     return cmd->cb(cmd);
+}
+
+bool hdlt645_master_ctx_cmd_read_init1(hdlt645_master_ctx_cmd_read_t *cmd,hdlt645_bcd_addr_t *dst_addr,hdlt645_data_di_t *di,hdlt645_master_ctx_cmd_read_callback_t read,hdlt645_master_ctx_cmd_read_error_callback_t error,void *usr)
+{
+    if(cmd==NULL)
+    {
+        return false;
+    }
+
+    memset(cmd,0,sizeof(*cmd));
+
+    bool ret=true;
+
+    if(dst_addr != NULL)
+    {
+        memcpy(&cmd->addr,dst_addr,sizeof(*dst_addr));
+    }
+    else
+    {
+        hdlt645_bcd_addr_set(&cmd->addr,HDLT645_FRAME_ANYCAST_BCD_ADDR);
+    }
+
+    if(di!=NULL)
+    {
+        memcpy(cmd->request_buffer,di,sizeof(*di));
+        cmd->request_buffer_length=sizeof(*di);
+    }
+
+    cmd->read=read;
+    cmd->error=error;
+    cmd->usr=(uintptr_t)usr;
+
+    return ret;
+}
+
+bool hdlt645_master_ctx_cmd_read_init2(hdlt645_master_ctx_cmd_read_t *cmd,hdlt645_bcd_addr_t *dst_addr,hdlt645_data_di_t *di,uint8_t n,hdlt645_master_ctx_cmd_read_callback_t read,hdlt645_master_ctx_cmd_read_error_callback_t error,void *usr)
+{
+    if(cmd==NULL)
+    {
+        return false;
+    }
+
+    memset(cmd,0,sizeof(*cmd));
+
+    bool ret=true;
+
+    if(dst_addr != NULL)
+    {
+        memcpy(&cmd->addr,dst_addr,sizeof(*dst_addr));
+    }
+    else
+    {
+        hdlt645_bcd_addr_set(&cmd->addr,HDLT645_FRAME_ANYCAST_BCD_ADDR);
+    }
+
+    if(di!=NULL)
+    {
+        memcpy(cmd->request_buffer,di,sizeof(*di));
+    }
+
+    cmd->request_buffer[sizeof(*di)]=n;
+
+    cmd->request_buffer_length=sizeof(*di)+sizeof(n);
+
+    cmd->read=read;
+    cmd->error=error;
+    cmd->usr=(uintptr_t)usr;
+
+    return ret;
+}
+
+bool hdlt645_master_ctx_cmd_read_init3(hdlt645_master_ctx_cmd_read_t *cmd,hdlt645_bcd_addr_t *dst_addr,hdlt645_data_di_t *di,uint8_t n,htime_t timestamp,hdlt645_master_ctx_cmd_read_callback_t read,hdlt645_master_ctx_cmd_read_error_callback_t error,void *usr)
+{
+    if(cmd==NULL)
+    {
+        return false;
+    }
+
+    memset(cmd,0,sizeof(*cmd));
+
+    bool ret=true;
+
+    if(dst_addr != NULL)
+    {
+        memcpy(&cmd->addr,dst_addr,sizeof(*dst_addr));
+    }
+    else
+    {
+        hdlt645_bcd_addr_set(&cmd->addr,HDLT645_FRAME_ANYCAST_BCD_ADDR);
+    }
+
+    if(di!=NULL)
+    {
+        memcpy(cmd->request_buffer,di,sizeof(*di));
+    }
+
+    cmd->request_buffer[sizeof(*di)]=n;
+
+    {
+        htm_t timestamp_tm;
+        hlibc_localtime_r(&timestamp,&timestamp_tm);
+        cmd->request_buffer[sizeof(*di)+0]=hdlt645_uint64_to_bcd(timestamp_tm.tm_min);
+        cmd->request_buffer[sizeof(*di)+1]=hdlt645_uint64_to_bcd(timestamp_tm.tm_hour);
+        cmd->request_buffer[sizeof(*di)+2]=hdlt645_uint64_to_bcd(timestamp_tm.tm_mday);
+        cmd->request_buffer[sizeof(*di)+3]=hdlt645_uint64_to_bcd(timestamp_tm.tm_mon+1);
+        cmd->request_buffer[sizeof(*di)+4]=hdlt645_uint64_to_bcd(timestamp_tm.tm_year%100);
+
+    }
+    cmd->request_buffer_length=sizeof(*di)+sizeof(n)+5;
+
+    cmd->read=read;
+    cmd->error=error;
+    cmd->usr=(uintptr_t)usr;
+
+    return ret;
 }

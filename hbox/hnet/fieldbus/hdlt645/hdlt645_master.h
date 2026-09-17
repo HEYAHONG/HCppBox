@@ -174,6 +174,68 @@ void hdlt645_master_ctx_cmd_time_init(hdlt645_master_ctx_cmd_time_t *cmd,hdlt645
 htime_t hdlt645_master_ctx_cmd_time_current(hdlt645_master_ctx_cmd_time_t *cmd);
 
 
+/*
+ * 读数据（功能码:HDLT645_FRAME_CONTROL_FCT_READ）
+ */
+struct hdlt645_master_ctx_cmd_read;
+typedef struct hdlt645_master_ctx_cmd_read hdlt645_master_ctx_cmd_read_t;
+typedef void (*hdlt645_master_ctx_cmd_read_callback_t)(hdlt645_master_ctx_cmd_read_t *cmd,hdlt645_data_di_t *di,const uint8_t *data,size_t datalen);
+typedef void (*hdlt645_master_ctx_cmd_read_error_callback_t)(hdlt645_master_ctx_cmd_read_t *cmd,uint8_t err);
+struct hdlt645_master_ctx_cmd_read
+{
+    hdlt645_bcd_addr_t addr;                                                    /**< 目标地址，读取回复后将修改为回复的地址 */
+    uint8_t request_buffer[10];
+    uint8_t request_buffer_length;
+    hdlt645_master_ctx_cmd_read_callback_t read;                                /**< 读取成功回调 */
+    hdlt645_master_ctx_cmd_read_error_callback_t error;                         /**< 读取失败回调 */
+    uintptr_t usr;                                                              /**< 用户参数 */
+};
+
+/** \brief 读取命令初始化（格式1）
+ *
+ * \param cmd hdlt645_master_ctx_cmd_read_t* 读取命令
+ * \param dst_addr hdlt645_bcd_addr_t * 目标地址
+ * \param di hdlt645_data_di_t* 数据标识
+ * \param read hdlt645_master_ctx_cmd_read_callback_t 读取成功回调
+ * \param error hdlt645_master_ctx_cmd_read_error_callback_t 失败回调
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hdlt645_master_ctx_cmd_read_init1(hdlt645_master_ctx_cmd_read_t *cmd,hdlt645_bcd_addr_t *dst_addr,hdlt645_data_di_t *di,hdlt645_master_ctx_cmd_read_callback_t read,hdlt645_master_ctx_cmd_read_error_callback_t error,void *usr);
+
+
+/** \brief 读取命令初始化（格式2）
+ *
+ * \param cmd hdlt645_master_ctx_cmd_read_t* 读取命令
+ * \param dst_addr hdlt645_bcd_addr_t * 目标地址
+ * \param di hdlt645_data_di_t* 数据标识
+ * \param n uint8_t 负荷记录块数
+ * \param read hdlt645_master_ctx_cmd_read_callback_t 读取成功回调
+ * \param error hdlt645_master_ctx_cmd_read_error_callback_t 失败回调
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hdlt645_master_ctx_cmd_read_init2(hdlt645_master_ctx_cmd_read_t *cmd,hdlt645_bcd_addr_t *dst_addr,hdlt645_data_di_t *di,uint8_t n,hdlt645_master_ctx_cmd_read_callback_t read,hdlt645_master_ctx_cmd_read_error_callback_t error,void *usr);
+
+
+/** \brief 读取命令初始化（格式3）
+ *
+ * \param cmd hdlt645_master_ctx_cmd_read_t* 读取命令
+ * \param dst_addr hdlt645_bcd_addr_t * 目标地址
+ * \param di hdlt645_data_di_t* 数据标识
+ * \param n uint8_t 负荷记录块数
+ * \param timestamp htime_t 指定时间
+ * \param read hdlt645_master_ctx_cmd_read_callback_t 读取成功回调
+ * \param error hdlt645_master_ctx_cmd_read_error_callback_t 失败回调
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hdlt645_master_ctx_cmd_read_init3(hdlt645_master_ctx_cmd_read_t *cmd,hdlt645_bcd_addr_t *dst_addr,hdlt645_data_di_t *di,uint8_t n,htime_t timestamp,hdlt645_master_ctx_cmd_read_callback_t read,hdlt645_master_ctx_cmd_read_error_callback_t error,void *usr);
+
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
