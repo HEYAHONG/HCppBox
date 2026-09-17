@@ -238,7 +238,7 @@ bool hdlt645_master_ctx_cmd_read_init3(hdlt645_master_ctx_cmd_read_t *cmd,hdlt64
 
 
 /*
- * 读后续数据（HDLT645_FRAME_CONTROL_FCT_READ）
+ * 读后续数据（功能码:HDLT645_FRAME_CONTROL_FCT_READEXT）
  */
 struct hdlt645_master_ctx_cmdext_read;
 typedef struct hdlt645_master_ctx_cmd_readext hdlt645_master_ctx_cmd_readext_t;
@@ -269,6 +269,10 @@ struct hdlt645_master_ctx_cmd_readext
  *
  */
 bool hdlt645_master_ctx_cmd_readext_init(hdlt645_master_ctx_cmd_readext_t *cmd,hdlt645_bcd_addr_t *dst_addr,hdlt645_data_di_t *di,uint8_t seq,hdlt645_master_ctx_cmd_readext_callback_t read,hdlt645_master_ctx_cmd_readext_error_callback_t error,void *usr);
+
+
+
+
 
 
 #ifdef __cplusplus
