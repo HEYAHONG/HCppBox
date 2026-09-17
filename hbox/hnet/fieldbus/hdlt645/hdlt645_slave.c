@@ -169,14 +169,21 @@ size_t hdlt645_slave_io_rx_input(hdlt645_slave_io_t *io,uint8_t *data,size_t dat
 void hdlt645_slave_time_sync_default(const hdlt645_slave_time_t *time,uint8_t ss,uint8_t mm,uint8_t hh,uint8_t DD,uint8_t MM,uint8_t YY)
 {
     htimeval_t tv= {0};
+    hgettimeofday(&tv,NULL);
     {
         htm_t tm= {0};
+        htime_t current_time=tv.tv_sec;
+        hlibc_localtime_r(&current_time,&tm);
+        if(tm.tm_year+1900 < 2000)
+        {
+            tm.tm_year=2000-1900;
+        }
         tm.tm_sec=hdlt645_bcd_to_uint64(ss);
         tm.tm_min=hdlt645_bcd_to_uint64(mm);
         tm.tm_hour=hdlt645_bcd_to_uint64(hh);
         tm.tm_mday=hdlt645_bcd_to_uint64(DD);
         tm.tm_mon=hdlt645_bcd_to_uint64(MM)-1;
-        tm.tm_year=hdlt645_bcd_to_uint64(YY)+2000;
+        tm.tm_year=((unsigned)tm.tm_year)/100*100+hdlt645_bcd_to_uint64(YY);
         tv.tv_sec=hlibc_mktime(&tm);
     }
     hsettimeofday(&tv,NULL);
