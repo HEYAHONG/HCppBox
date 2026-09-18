@@ -490,7 +490,6 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
         break;
         case HDLT645_FRAME_CONTROL_FCT_READADDR:
         {
-            hdlt645_master_ctx_cmd_readaddr_t *cmd=(hdlt645_master_ctx_cmd_readaddr_t *)ctx->cmd.ctx;
 
             {
                 /*
