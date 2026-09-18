@@ -394,6 +394,36 @@ struct hdlt645_master_ctx_cmd_chcom
 bool hdlt645_master_ctx_cmd_chcom_init(hdlt645_master_ctx_cmd_chcom_t *cmd,hdlt645_bcd_addr_t *dst_addr,uint8_t z,hdlt645_master_ctx_cmd_chcom_error_callback_t error,void *usr);
 
 
+/*
+ * 修改密码（功能码:HDLT645_FRAME_CONTROL_FCT_CHPASS）
+ */
+struct hdlt645_master_ctx_cmd_chpass;
+typedef struct hdlt645_master_ctx_cmd_chpass hdlt645_master_ctx_cmd_chpass_t;
+typedef void (*hdlt645_master_ctx_cmd_chpass_error_callback_t)(hdlt645_master_ctx_cmd_chpass_t *cmd,uint8_t err);
+struct hdlt645_master_ctx_cmd_chpass
+{
+    hdlt645_bcd_addr_t addr;                                            /**< 目标地址，回复后将修改为回复的地址*/
+    hdlt645_data_di_t  di;                                              /**< 数据标识 */
+    hdlt645_data_p_t   p;                                               /**< 密码 */
+    hdlt645_data_p_t   new_p;                                           /**< 新密码 */
+    hdlt645_master_ctx_cmd_chpass_error_callback_t error;               /**< 错误回调 */
+    uintptr_t usr;                                                      /**< 用户参数 */
+};
+
+/** \brief 修改密码命令初始化
+ *
+ * \param cmd hdlt645_master_ctx_cmd_chpass_t* 修改密码命令
+ * \param dst_addr hdlt645_bcd_addr_t* 目标地址
+ * \param di hdlt645_data_di_t* 数据标识
+ * \param p hdlt645_data_p_t* 密码
+ * \param new_p hdlt645_data_p_t* 新密码
+ * \param error hdlt645_master_ctx_cmd_chpass_error_callback_t 错误回调
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hdlt645_master_ctx_cmd_chpass_init(hdlt645_master_ctx_cmd_chpass_t *cmd,hdlt645_bcd_addr_t *dst_addr,hdlt645_data_di_t *di,hdlt645_data_p_t *p,hdlt645_data_p_t *new_p,hdlt645_master_ctx_cmd_chpass_error_callback_t error,void *usr);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
