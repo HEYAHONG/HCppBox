@@ -367,6 +367,32 @@ struct hdlt645_master_ctx_cmd_freeze
  */
 bool hdlt645_master_ctx_cmd_freeze_init(hdlt645_master_ctx_cmd_freeze_t *cmd,hdlt645_bcd_addr_t *dst_addr,uint8_t mm,uint8_t hh,uint8_t DD,uint8_t MM,hdlt645_master_ctx_cmd_freeze_error_callback_t error,void *usr);
 
+/*
+ * 修改通信速率（功能码:HDLT645_FRAME_CONTROL_FCT_CHCOM）
+ */
+struct hdlt645_master_ctx_cmd_chcom;
+typedef struct hdlt645_master_ctx_cmd_chcom hdlt645_master_ctx_cmd_chcom_t;
+typedef void (*hdlt645_master_ctx_cmd_chcom_error_callback_t)(hdlt645_master_ctx_cmd_chcom_t *cmd,uint8_t err);
+struct hdlt645_master_ctx_cmd_chcom
+{
+    hdlt645_bcd_addr_t addr;                                            /**< 目标地址，回复后将修改为回复的地址*/
+    uint8_t z;                                                          /**< 通信特征字 */
+    hdlt645_master_ctx_cmd_chcom_error_callback_t error;                /**< 错误回调 */
+    uintptr_t usr;                                                      /**< 用户参数 */
+};
+
+/** \brief 更改通信速率命令初始化
+ *
+ * \param cmd hdlt645_master_ctx_cmd_chcom_t* 更改通信速率命令
+ * \param dst_addr hdlt645_bcd_addr_t* 目标地址
+ * \param z uint8_t 通信特征字
+ * \param error hdlt645_master_ctx_cmd_chcom_error_callback_t 错误回调
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hdlt645_master_ctx_cmd_chcom_init(hdlt645_master_ctx_cmd_chcom_t *cmd,hdlt645_bcd_addr_t *dst_addr,uint8_t z,hdlt645_master_ctx_cmd_chcom_error_callback_t error,void *usr);
+
 
 #ifdef __cplusplus
 }
