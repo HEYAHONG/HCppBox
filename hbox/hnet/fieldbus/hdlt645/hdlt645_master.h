@@ -278,8 +278,38 @@ struct hdlt645_master_ctx_cmd_readaddr;
 typedef struct hdlt645_master_ctx_cmd_readaddr hdlt645_master_ctx_cmd_readaddr_t;
 struct hdlt645_master_ctx_cmd_readaddr
 {
-    hdlt645_bcd_addr_t addr;
+    hdlt645_bcd_addr_t addr;                                            /**< 通信地址，用于存储读取的地址 */
 };
+
+
+/*
+ * 写数据（功能码:HDLT645_FRAME_CONTROL_FCT_WRITE）
+ */
+struct hdlt645_master_ctx_cmd_write;
+typedef struct hdlt645_master_ctx_cmd_write hdlt645_master_ctx_cmd_write_t;
+struct hdlt645_master_ctx_cmd_write
+{
+    hdlt645_bcd_addr_t addr;                                            /**< 目标地址，回复后将修改为回复的地址*/
+    hdlt645_data_di_t  di;                                              /**< 数据标识 */
+    hdlt645_data_p_t   p;                                               /**< 密码 */
+    hdlt645_data_c_t   c;                                               /**< 操作者 */
+    uint8_t * data;                                                     /**< 数据 */
+    size_t    data_length;                                              /**< 数据长度 */
+};
+
+/** \brief 写入数据命令初始化
+ *
+ * \param cmd hdlt645_master_ctx_cmd_write_t* 写数据命令
+ * \param dst_addr hdlt645_bcd_addr_t* 目标地址
+ * \param di hdlt645_data_di_t* 数据标识
+ * \param p hdlt645_data_p_t* 密码
+ * \param c hdlt645_data_c_t* 操作者
+ * \param data uint8_t* 数据
+ * \param data_length size_t 数据长度
+ * \return bool 是否成功
+ *
+ */
+bool hdlt645_master_ctx_cmd_write_init(hdlt645_master_ctx_cmd_write_t *cmd,hdlt645_bcd_addr_t *dst_addr,hdlt645_data_di_t  *di,hdlt645_data_p_t *p,hdlt645_data_c_t   *c,uint8_t *data,size_t data_length);
 
 
 
