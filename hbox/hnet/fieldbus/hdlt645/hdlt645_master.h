@@ -311,6 +311,24 @@ struct hdlt645_master_ctx_cmd_write
  */
 bool hdlt645_master_ctx_cmd_write_init(hdlt645_master_ctx_cmd_write_t *cmd,hdlt645_bcd_addr_t *dst_addr,hdlt645_data_di_t  *di,hdlt645_data_p_t *p,hdlt645_data_c_t   *c,uint8_t *data,size_t data_length);
 
+/*
+ * 写通信地址（功能码:HDLT645_FRAME_CONTROL_FCT_WRITEADDR）
+ */
+struct hdlt645_master_ctx_cmd_writeaddr;
+typedef struct hdlt645_master_ctx_cmd_writeaddr hdlt645_master_ctx_cmd_writeaddr_t;
+struct hdlt645_master_ctx_cmd_writeaddr
+{
+    hdlt645_bcd_addr_t addr;                                            /**< 待写入的地址，回复后将修改为回复的地址*/
+};
+
+/** \brief 写入地址命令初始化
+ *
+ * \param cmd hdlt645_master_ctx_cmd_writeaddr_t* 写入地址命令
+ * \param addr hdlt645_bcd_addr_t* 待写入的地址
+ * \return bool 是否成功
+ *
+ */
+bool hdlt645_master_ctx_cmd_writeaddr_init(hdlt645_master_ctx_cmd_writeaddr_t *cmd,hdlt645_bcd_addr_t *addr);
 
 
 #ifdef __cplusplus

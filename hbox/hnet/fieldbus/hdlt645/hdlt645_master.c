@@ -213,6 +213,14 @@ bool hdlt645_master_ctx_init(hdlt645_master_ctx_t *ctx,int fct,void *cmd_ctx,siz
         }
     }
     break;
+    case HDLT645_FRAME_CONTROL_FCT_WRITEADDR:
+    {
+        if(ctx->cmd.ctx == NULL || ctx->cmd.ctx_size != sizeof(hdlt645_master_ctx_cmd_writeaddr_t))
+        {
+            ret=false;
+        }
+    }
+    break;
     default:
     {
         ret=true;
@@ -291,6 +299,14 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
         case HDLT645_FRAME_CONTROL_FCT_WRITE:
         {
             if(ctx->cmd.ctx == NULL || ctx->cmd.ctx_size != sizeof(hdlt645_master_ctx_cmd_write_t))
+            {
+                ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
+            }
+        }
+        break;
+        case HDLT645_FRAME_CONTROL_FCT_WRITEADDR:
+        {
+            if(ctx->cmd.ctx == NULL || ctx->cmd.ctx_size != sizeof(hdlt645_master_ctx_cmd_writeaddr_t))
             {
                 ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
             }
@@ -492,6 +508,35 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
             }
         }
         break;
+        case HDLT645_FRAME_CONTROL_FCT_WRITEADDR:
+        {
+            hdlt645_master_ctx_cmd_writeaddr_t *cmd=(hdlt645_master_ctx_cmd_writeaddr_t *)ctx->cmd.ctx;
+
+            {
+                /*
+                 * 设置地址
+                 */
+                hdlt645_bcd_addr_t *frame_addr=hdlt645_frame_get_bcd_addr(buffer,buffer_size);
+                if(frame_addr!=NULL)
+                {
+                    hdlt645_bcd_addr_set(frame_addr,HDLT645_FRAME_ANYCAST_BCD_ADDR);
+                }
+            }
+
+            {
+                /*
+                 * 设置数据
+                 */
+                uint8_t *data=hdlt645_frame_get_data(buffer,buffer_size);
+                uint8_t *datalen=hdlt645_frame_get_datalen(buffer,buffer_size);
+                if(data != NULL &&datalen != NULL)
+                {
+                    (*datalen)=sizeof(cmd->addr);
+                    memcpy(data,&cmd->addr,sizeof(cmd->addr));
+                }
+            }
+        }
+        break;
         default:
         {
             ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
@@ -689,6 +734,21 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
         case HDLT645_FRAME_CONTROL_FCT_WRITE:
         {
             hdlt645_master_ctx_cmd_write_t *cmd=(hdlt645_master_ctx_cmd_write_t *)ctx->cmd.ctx;
+            {
+                /*
+                 * 读取地址
+                 */
+                hdlt645_bcd_addr_t *frame_addr=hdlt645_frame_get_bcd_addr(buffer,buffer_size);
+                if(frame_addr!=NULL)
+                {
+                    memcpy(&cmd->addr,frame_addr,sizeof(cmd->addr));
+                }
+            }
+        }
+        break;
+        case HDLT645_FRAME_CONTROL_FCT_WRITEADDR:
+        {
+            hdlt645_master_ctx_cmd_writeaddr_t *cmd=(hdlt645_master_ctx_cmd_writeaddr_t *)ctx->cmd.ctx;
             {
                 /*
                  * 读取地址
@@ -944,3 +1004,23 @@ bool hdlt645_master_ctx_cmd_write_init(hdlt645_master_ctx_cmd_write_t *cmd,hdlt6
 
     return ret;
 }
+
+bool hdlt645_master_ctx_cmd_writeaddr_init(hdlt645_master_ctx_cmd_writeaddr_t *cmd,hdlt645_bcd_addr_t *addr)
+{
+    if(cmd==NULL)
+    {
+        return false;
+    }
+
+    memset(cmd,0,sizeof(*cmd));
+
+    bool ret=true;
+
+    if(addr != NULL)
+    {
+        memcpy(&cmd->addr,addr,sizeof(*addr));
+    }
+
+    return ret;
+}
+
