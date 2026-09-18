@@ -42,4 +42,35 @@ uint64_t hdlt645_bcd_to_uint64(uint64_t bcd)
     return data;
 }
 
+void hdlt645_bcd_le_set(uint8_t *bcd,size_t bcd_length,uint64_t data)
+{
+    if(bcd == NULL || bcd_length== 0)
+    {
+        return;
+    }
+
+    data = hdlt645_uint64_to_bcd(data);
+
+    for(size_t i=0; i<bcd_length; i++)
+    {
+        bcd[i]=(data&0xFF);
+        data >>= 8;
+    }
+
+}
+
+uint64_t hdlt645_bcd_le_get(uint8_t *bcd,size_t bcd_length)
+{
+    uint64_t ret=0;
+
+    for(size_t i=0; i<bcd_length; i++)
+    {
+        ret+=bcd[i];
+        ret <<= 8;
+    }
+
+    ret = hdlt645_bcd_to_uint64(ret);
+
+    return ret;
+}
 
