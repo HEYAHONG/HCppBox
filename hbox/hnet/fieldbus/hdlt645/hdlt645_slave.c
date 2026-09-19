@@ -189,6 +189,7 @@ void hdlt645_slave_time_sync_default(const hdlt645_slave_time_t *time,uint8_t ss
     hsettimeofday(&tv,NULL);
 }
 
+HDEFAULTS_RO_ATTRIBUTE
 const hdlt645_slave_time_t hdlt645_slave_time_default=
 {
     hdlt645_slave_time_sync_default,
@@ -241,7 +242,7 @@ const hdlt645_slave_time_t hdlt645_slave_time_default=
 #define HDLT645_SLAVE_CLEAR NULL
 #endif
 
-
+HDEFAULTS_RO_ATTRIBUTE
 static const hdlt645_slave_io_ctx_cmd_t hdlt645_slave_io_ctx_cmd_default[]=
 {
     HDLT645_SLAVE_IO_CTX_CMD_USR_EXTEND_LIST
