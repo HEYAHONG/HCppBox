@@ -455,6 +455,20 @@ struct hdlt645_master_ctx_cmd_clear
 bool hdlt645_master_ctx_cmd_clear_init(hdlt645_master_ctx_cmd_clear_t *cmd,hdlt645_bcd_addr_t *dst_addr,hdlt645_data_di_t *di,hdlt645_data_p_t *p,hdlt645_data_c_t *c,hdlt645_master_ctx_cmd_clear_error_callback_t error,void *usr);
 
 
+/*
+ * 自定义命令 (功能码:除开标准功能码的功能码，包括保留功能码)，所有数据由用户填充
+ */
+struct hdlt645_master_ctx_cmd_custom;
+typedef struct hdlt645_master_ctx_cmd_custom hdlt645_master_ctx_cmd_custom_t;
+typedef bool (*hdlt645_master_ctx_cmd_custom_send_t)(const hdlt645_master_ctx_cmd_custom_t *cmd,hdlt645_master_ctx_t *ctx,bool *need_reply,uint8_t *buffer,size_t buffer_size);
+typedef bool (*hdlt645_master_ctx_cmd_custom_receive_t)(const hdlt645_master_ctx_cmd_custom_t *cmd,hdlt645_master_ctx_t *ctx,uint8_t *buffer,size_t buffer_size);
+struct hdlt645_master_ctx_cmd_custom
+{
+    hdlt645_master_ctx_cmd_custom_send_t send;                              /**< 发送函数，返回false表示不支持  */
+    hdlt645_master_ctx_cmd_custom_receive_t receive;                        /**< 接收函数，返回false表示不支持 */
+    uintptr_t usr[2];
+} ;
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

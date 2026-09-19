@@ -257,6 +257,14 @@ bool hdlt645_master_ctx_init(hdlt645_master_ctx_t *ctx,int fct,void *cmd_ctx,siz
     break;
     default:
     {
+        if(ctx->cmd.ctx != NULL && ctx->cmd.ctx_size != sizeof(hdlt645_master_ctx_cmd_custom_t))
+        {
+            const hdlt645_master_ctx_cmd_custom_t *cmd=(const hdlt645_master_ctx_cmd_custom_t *)ctx->cmd.ctx;
+            if(cmd->send!=NULL)
+            {
+                break;
+            }
+        }
         ret=false;
     }
     break;
@@ -382,6 +390,14 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
         break;
         default:
         {
+            if(ctx->cmd.ctx != NULL && ctx->cmd.ctx_size != sizeof(hdlt645_master_ctx_cmd_custom_t))
+            {
+                const hdlt645_master_ctx_cmd_custom_t *cmd=(const hdlt645_master_ctx_cmd_custom_t *)ctx->cmd.ctx;
+                if(cmd->send!=NULL)
+                {
+                    break;
+                }
+            }
             ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
         }
         break;
@@ -747,6 +763,14 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
         break;
         default:
         {
+            const hdlt645_master_ctx_cmd_custom_t *cmd=(const hdlt645_master_ctx_cmd_custom_t *)ctx->cmd.ctx;
+            if(cmd->send!=NULL)
+            {
+                if(cmd->send(cmd,ctx,&need_reply,buffer,buffer_size))
+                {
+                    break;
+                }
+            }
             ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
         }
         break;
@@ -1171,6 +1195,14 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
         break;
         default:
         {
+            const hdlt645_master_ctx_cmd_custom_t *cmd=(const hdlt645_master_ctx_cmd_custom_t *)ctx->cmd.ctx;
+            if(cmd->receive!=NULL)
+            {
+                if(cmd->receive(cmd,ctx,buffer,buffer_size))
+                {
+                    break;
+                }
+            }
             ctx->status=HDLT645_MASTER_CTX_STATUS_ERROR;
         }
         break;
