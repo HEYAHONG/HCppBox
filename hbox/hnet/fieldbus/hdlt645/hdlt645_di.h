@@ -21,6 +21,8 @@ typedef enum
 {
     HDLT645_DI_DATA_DESC_TYPE_XXXXXX_XX=0,
     HDLT645_DI_DATA_DESC_TYPE_XXXXXX_XX_SIGNED,
+    HDLT645_DI_DATA_DESC_TYPE_XX_XXXX_YYMMDDHHMM,
+    HDLT645_DI_DATA_DESC_TYPE_XX_XXXX_YYMMDDHHMM_SIGNED,
 } hdlt645_di_data_desc_type_t;
 
 /*
@@ -38,6 +40,33 @@ typedef struct
 {
     double data;
 } hdlt645_di_data_desc_type_xxxxxx_xx_signed_t;
+
+
+/*
+ * HDLT645_DI_DATA_DESC_TYPE_XX_XXXX_YYMMDDHHMM
+ */
+typedef struct
+{
+    double val;                                             /**< 值 */
+    uint8_t YY;                                             /**< 年,只取后两位,数值 */
+    uint8_t MM;                                             /**< 月,数值 */
+    uint8_t DD;                                             /**< 日,数值 */
+    uint8_t HH;                                             /**< 时,数值 */
+    uint8_t mm;                                             /**< 分,数值 */
+} hdlt645_di_data_desc_type_xx_xxxx_yymmddhhmm_t;
+
+/*
+ * HDLT645_DI_DATA_DESC_TYPE_XX_XXXX_YYMMDDHHMM_SIGNED
+ */
+typedef struct
+{
+    double val;                                             /**< 值 */
+    uint8_t YY;                                             /**< 年,只取后两位,数值 */
+    uint8_t MM;                                             /**< 月,数值 */
+    uint8_t DD;                                             /**< 日,数值 */
+    uint8_t HH;                                             /**< 时,数值 */
+    uint8_t mm;                                             /**< 分,数值 */
+} hdlt645_di_data_desc_type_xx_xxxx_yymmddhhmm_signed_t;
 
 struct hdlt645_di_data_desc;
 typedef struct hdlt645_di_data_desc hdlt645_di_data_desc_t;
