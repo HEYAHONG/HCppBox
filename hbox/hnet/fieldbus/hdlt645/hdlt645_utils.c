@@ -65,8 +65,11 @@ uint64_t hdlt645_bcd_le_get(const uint8_t *bcd,size_t bcd_length)
 
     for(size_t i=0; i<bcd_length; i++)
     {
-        ret+=bcd[i];
-        ret <<= 8;
+        ret+=bcd[bcd_length-1-i];
+        if(i!=(bcd_length-1))
+        {
+            ret <<= 8;
+        }
     }
 
     ret = hdlt645_bcd_to_uint64(ret);
