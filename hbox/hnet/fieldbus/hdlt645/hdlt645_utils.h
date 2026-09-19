@@ -50,7 +50,7 @@ void hdlt645_bcd_le_set(uint8_t *bcd,size_t bcd_length,uint64_t data);
  * \return uint64_t 数字（普通）
  *
  */
-uint64_t hdlt645_bcd_le_get(uint8_t *bcd,size_t bcd_length);
+uint64_t hdlt645_bcd_le_get(const uint8_t *bcd,size_t bcd_length);
 
 #ifdef __cplusplus
 }
