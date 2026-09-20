@@ -52,6 +52,24 @@ void hdlt645_bcd_le_set(uint8_t *bcd,size_t bcd_length,uint64_t data);
  */
 uint64_t hdlt645_bcd_le_get(const uint8_t *bcd,size_t bcd_length);
 
+/** \brief 设置BCD码（小端,有符号）
+ *
+ * \param bcd uint8_t* BCD码指针
+ * \param bcd_length size_t BCD码长度
+ * \param data int64_t 数字（普通）
+ *
+ */
+void hdlt645_bcd_le_signed_set(uint8_t *bcd,size_t bcd_length,int64_t data);
+
+/** \brief 读取BCD码（小端，有符号）
+ *
+ * \param bcd uint8_t* BCD码指针
+ * \param bcd_length size_t BCD码长度
+ * \return int64_t 数字（普通）
+ *
+ */
+int64_t hdlt645_bcd_le_signed_get(const uint8_t *bcd,size_t bcd_length);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

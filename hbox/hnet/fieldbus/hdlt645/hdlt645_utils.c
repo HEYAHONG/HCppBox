@@ -61,6 +61,12 @@ void hdlt645_bcd_le_set(uint8_t *bcd,size_t bcd_length,uint64_t data)
 
 uint64_t hdlt645_bcd_le_get(const uint8_t *bcd,size_t bcd_length)
 {
+
+    if(bcd == NULL || bcd_length== 0)
+    {
+        return 0;
+    }
+
     uint64_t ret=0;
 
     for(size_t i=0; i<bcd_length; i++)
@@ -77,3 +83,66 @@ uint64_t hdlt645_bcd_le_get(const uint8_t *bcd,size_t bcd_length)
     return ret;
 }
 
+void hdlt645_bcd_le_signed_set(uint8_t *bcd,size_t bcd_length,int64_t data)
+{
+    if(bcd == NULL || bcd_length== 0)
+    {
+        return;
+    }
+
+    bool data_signed=false;
+
+    if(data < 0)
+    {
+        data_signed=true;
+        data = -data;
+    }
+
+    hdlt645_bcd_le_set(bcd,bcd_length,data);
+
+    if(data_signed)
+    {
+        bcd[bcd_length-1] |= 0x80;
+    }
+
+}
+
+
+int64_t hdlt645_bcd_le_signed_get(const uint8_t *bcd,size_t bcd_length)
+{
+    if(bcd == NULL || bcd_length== 0)
+    {
+        return 0;
+    }
+
+    int64_t ret=0;
+
+    bool data_signed=false;
+
+    for(size_t i=0; i<bcd_length; i++)
+    {
+        ret+=bcd[bcd_length-1-i];
+        if(i == 0)
+        {
+            if((ret & 0x80)!=0)
+            {
+                data_signed=true;
+            }
+
+            ret &= (~(0x80));
+        }
+        if(i!=(bcd_length-1))
+        {
+            ret <<= 8;
+        }
+    }
+
+    ret = hdlt645_bcd_to_uint64(ret);
+
+    if(data_signed)
+    {
+        ret = -ret;
+    }
+
+    return ret;
+}
