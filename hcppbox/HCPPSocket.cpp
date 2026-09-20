@@ -9,6 +9,20 @@
 
 #define HCPPSOCKET_IMPLEMENTATION  1
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+
+#include "_mingw.h"
+
+/*
+ * 有些api要求vista及更新版本的windows
+ */
+#if !defined(_WIN32_WINNT) || ((_WIN32_WINNT) < (0x0600))
+#undef  _WIN32_WINNT
+#define _WIN32_WINNT 0x0600
+#endif
+
+#endif
+
 #include "HCPPSocket.h"
 #ifdef HCPPSOCKET_HAVE_SOCKET
 #ifdef __CYGWIN__
