@@ -783,6 +783,9 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
                  * 检查控制码
                  */
                 hdlt645_control_t c;
+                c.ack=0;
+                c.dir=0;
+                c.ext=0;
                 c.fct=ctx->cmd.fct;
                 (*hdlt645_frame_get_c(buffer,buffer_size))=hdlt645_control_encode(c);
             }
