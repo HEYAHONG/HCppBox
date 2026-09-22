@@ -182,10 +182,13 @@ static bool hmktime_time_compare_eq(const htm_t *res1,const htm_t *res2)
         {
             return false;
         }
+
+        /*
         if(res1->tm_wday!=res2->tm_wday)
         {
             return false;
         }
+        */
 
         /*
         if(res1->tm_isdst!=res2->tm_isdst)
@@ -307,7 +310,7 @@ htime_t hlibc_mktime(const htm_t *res)
             {
                 ret&=(~(1ULL <<  (HMKTIME_MAX_BITS-1-i)));
             }
-            if(i==(HMKTIME_MAX_BITS-1))
+            else if(i==(HMKTIME_MAX_BITS-1))
             {
                 ret=(uint64_t)-1;
             }
