@@ -94,6 +94,8 @@ set(HCPPBOX_USE_PURE_CPLUSPLUS ON)
 
 #设定HRC文件系统目录为fs
 set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fs/)
+#启用RVVM
+set(ENV{HTOOLS_USING_RVVM} ON)
 #添加HCppBox
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../common/  common  EXCLUDE_FROM_ALL)
 #启用HCppBox、HRC

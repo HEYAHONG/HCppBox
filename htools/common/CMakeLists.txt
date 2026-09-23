@@ -11,6 +11,15 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../hcppbox hcppbox)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../hrc hrc)
 
+
+if(NOT DEFINED ENV{HTOOLS_USING_FREERTOS})
+set(HTOOLS_USING_FREERTOS OFF)
+else()
+set(HTOOLS_USING_FREERTOS $ENV{HTOOLS_USING_FREERTOS})
+endif()
+
+if(${HTOOLS_USING_FREERTOS})
+
 add_library(FreeRTOSPort STATIC)
 
 if(WIN32 OR CYGWIN)
@@ -41,6 +50,18 @@ target_include_directories(HBox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS/)
 target_compile_definitions(HBox PUBLIC -DFREERTOS_KERNEL=1 )
 target_link_libraries(HBox FreeRTOSPort)
 
+endif()
+
+if(NOT DEFINED ENV{HTOOLS_USING_RVVM})
+set(HTOOLS_USING_RVVM OFF)
+else()
+set(HTOOLS_USING_RVVM $ENV{HTOOLS_USING_RVVM})
+endif()
+
+message(STATUS ${HTOOLS_USING_RVVM})
+
+if(${HTOOLS_USING_RVVM})
+
 #rvvm设置
 if (LINUX OR BSD OR CMAKE_SYSTEM_NAME STREQUAL "SunOS")
     check_library_exists(X11 XInitThreads ""  HAVE_X11)
@@ -66,3 +87,5 @@ endif()
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/3rdparty/rvvm/ rvvm EXCLUDE_FROM_ALL)
 #默认不构建动态库
 set(BUILD_SHARED_LIBS OFF)
+
+endif()
