@@ -58,7 +58,7 @@ else()
 set(HTOOLS_USING_RVVM $ENV{HTOOLS_USING_RVVM})
 endif()
 
-message(STATUS ${HTOOLS_USING_RVVM})
+
 
 if(${HTOOLS_USING_RVVM})
 
