@@ -8,4 +8,5 @@
 
 - [hmodbushelper](hmodbushelper):开发modbus中所使用的工具。
 - [hmodbustcpgateway](hmodbustcpgateway):modbus tcp网关（独立版）。
+- [hsntp](hsntp):简易NTP客户端
 

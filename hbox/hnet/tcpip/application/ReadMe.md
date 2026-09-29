@@ -4,4 +4,4 @@
 
 # 目录说明
 
-- [sntp](sntp):简单NTP
+- [hsntp](hsntp):简易NTP
