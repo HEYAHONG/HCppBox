@@ -158,10 +158,14 @@ static int ntp_main(void)
     {
         HCPPSocketAddressIPV4 peer_addr;
         memset(&peer_addr,0,sizeof(peer_addr));
+#if defined(__socklen_t_defined)
+        socklen_t socklen=sizeof(peer_addr);
+#else
 #if defined(HDEFAULTS_OS_WINDOWS)
         int socklen=sizeof(peer_addr);
 #else
         unsigned int socklen=sizeof(peer_addr);
+#endif
 #endif
         int ret=recvfrom((SOCKET)ntp->usr,(char *)packet,packet_size,0,(HCPPSocketAddress *)&peer_addr,&socklen);
         if(ret < 0)
