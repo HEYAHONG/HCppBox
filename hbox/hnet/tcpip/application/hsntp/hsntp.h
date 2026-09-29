@@ -21,8 +21,18 @@ extern "C"
 {
 #endif // __cplusplus
 
+/** \brief 获取当前纪元
+ *
+ * \return int32_t 纪元
+ *
+ */
 int32_t hsntp_era_get(void);
 
+/** \brief 设定当前纪元
+ *
+ * \param era int32_t 纪元，默认为0,当超过2036年时应当设置为具体值，如2040年应当设定为1
+ *
+ */
 void hsntp_era_set(int32_t era);
 
 /** \brief sntp时间戳(秒)转换为时间（秒）
