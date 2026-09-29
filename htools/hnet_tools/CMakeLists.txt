@@ -23,3 +23,11 @@ if(LIBSERIALPORT_FOUND AND LIBEVENT_FOUND AND LIBEVENT_CORE_FOUND AND LIBEVENT_E
 else()
     message(STATUS "Disable hmodbustcpgateway_tool!" )
 endif()
+
+
+ #添加hsntp工具构建
+add_custom_target(hsntp_tool  ${CMAKE_COMMAND} -E make_directory hsntp && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/hsntp/ -B hsntp && ${CMAKE_COMMAND} --build hsntp -t install
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+    USES_TERMINAL)
+add_dependencies(hnet_tools hsntp_tool)
+message(STATUS "Enable hsntp_tool!" )

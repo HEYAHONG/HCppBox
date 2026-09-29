@@ -1,13 +1,14 @@
 /***************************************************************
- * Name:      hnet.c
- * Purpose:   实现hnet接口
+ * Name:      htcpip_application.c
+ * Purpose:   实现htcpip_application接口
  * Author:    HYH (hyhsystem.cn)
- * Created:   2025-05-03
+ * Created:   2026-09-28
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "hnet.h"
+#include "htcpip_application.h"
 
-#include "fieldbus/hmodbus.c"
-#include "fieldbus/hdlt645.c"
-#include "tcpip/htcpip.c"
+#include "hsntp/hsntp.c"
+
+
+
