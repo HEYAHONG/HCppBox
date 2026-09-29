@@ -100,7 +100,7 @@ static bool ntp_server_addr_check(void)
                                [=](const char* hostname, const char*addr_string, HCPPSocketAddressIPV4* sock_addr,void *usr)
         {
             server_socket_addr=(*sock_addr);
-            server_socket_addr.sin_port=htons(std::stoul(ntp_port));
+            server_socket_addr.sin_port=htons(123);
             hprintf("[dns] %s:%s\r\n",hostname,addr_string);
         },NULL);
     }
