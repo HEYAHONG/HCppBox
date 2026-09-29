@@ -158,7 +158,7 @@ static int ntp_main(void)
     {
         HCPPSocketAddressIPV4 peer_addr;
         memset(&peer_addr,0,sizeof(peer_addr));
-#if defined(__socklen_t_defined)
+#if defined(__socklen_t_defined) || defined(HDEFAULTS_OS_CYGWIN)
         socklen_t socklen=sizeof(peer_addr);
 #else
 #if defined(HDEFAULTS_OS_WINDOWS)
