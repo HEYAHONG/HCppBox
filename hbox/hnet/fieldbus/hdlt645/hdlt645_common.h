@@ -77,7 +77,7 @@ uint64_t hdlt645_bcd_addr_get(hdlt645_bcd_addr_t *addr);
 /*
  * 广播地址（从机不回复）
  */
-#define HDLT645_FRAME_BOARDCAST_BCD_ADDR    (0x999999999999)
+#define HDLT645_FRAME_BROADCAST_BCD_ADDR    (0x999999999999)
 
 /*
  * 任意播地址(从机按照正常的地址匹配,从机使用自身地址正常回复)

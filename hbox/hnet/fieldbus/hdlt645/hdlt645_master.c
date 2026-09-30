@@ -439,7 +439,7 @@ hdlt645_master_ctx_status_t hdlt645_master_ctx_process(hdlt645_master_ctx_t *ctx
                 hdlt645_bcd_addr_t *frame_addr=hdlt645_frame_get_bcd_addr(buffer,buffer_size);
                 if(frame_addr!=NULL)
                 {
-                    hdlt645_bcd_addr_set(frame_addr,HDLT645_FRAME_BOARDCAST_BCD_ADDR);
+                    hdlt645_bcd_addr_set(frame_addr,HDLT645_FRAME_BROADCAST_BCD_ADDR);
                 }
             }
 
@@ -1487,7 +1487,7 @@ bool hdlt645_master_ctx_cmd_freeze_init(hdlt645_master_ctx_cmd_freeze_t *cmd,hdl
     }
     else
     {
-        hdlt645_bcd_addr_set(&cmd->addr,HDLT645_FRAME_BOARDCAST_BCD_ADDR);
+        hdlt645_bcd_addr_set(&cmd->addr,HDLT645_FRAME_BROADCAST_BCD_ADDR);
     }
 
     cmd->mm=mm;
