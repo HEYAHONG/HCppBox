@@ -64,6 +64,57 @@ typedef enum
  */
 hethernet_hwaddr_u_l_t hethernet_hwaddr_u_l(hethernet_hwaddr_t *addr,hethernet_hwaddr_u_l_t *new_value);
 
+
+/*
+ * 广播地址（全1）
+ */
+#define HETHERNET_HWADDR_BROADCAST_ADDR0 (0xFF)
+#define HETHERNET_HWADDR_BROADCAST_ADDR1 (0xFF)
+#define HETHERNET_HWADDR_BROADCAST_ADDR2 (0xFF)
+#define HETHERNET_HWADDR_BROADCAST_ADDR3 (0xFF)
+#define HETHERNET_HWADDR_BROADCAST_ADDR4 (0xFF)
+#define HETHERNET_HWADDR_BROADCAST_ADDR5 (0xFF)
+
+/** \brief 是否为广播地址
+ *
+ * \param addr hethernet_hwaddr_t* 地址
+ * \return bool 是否广播
+ *
+ */
+bool hethernet_hwaddr_is_broadcast(hethernet_hwaddr_t *addr);
+
+
+/*
+ * IPV4组播地址
+ * 高24位为01-00-5E,25位为0,低23位映射IPV4地址的低23位
+ */
+#define HETHERNET_HWADDR_IPV4_MULTICAST_ADDR0 (0x01)
+#define HETHERNET_HWADDR_IPV4_MULTICAST_ADDR1 (0x00)
+#define HETHERNET_HWADDR_IPV4_MULTICAST_ADDR2 (0x5E)
+
+/** \brief 是否为IPV4组播地址
+ *
+ * \param addr hethernet_hwaddr_t* 地址
+ * \return bool IPV4组播地址
+ *
+ */
+bool hethernet_hwaddr_is_ipv4_multicast(hethernet_hwaddr_t *addr);
+
+/*
+ * IPV6组播地址
+ * 高16位为33-33,低32位映射IPV6地址的低32位
+ */
+#define HETHERNET_HWADDR_IPV6_MULTICAST_ADDR0 (0x33)
+#define HETHERNET_HWADDR_IPV6_MULTICAST_ADDR1 (0x33)
+
+/** \brief 是否为IPV6组播地址
+ *
+ * \param addr hethernet_hwaddr_t* 地址
+ * \return bool IPV6组播地址
+ *
+ */
+bool hethernet_hwaddr_is_ipv6_multicast(hethernet_hwaddr_t *addr);
+
 /** \brief 长度/类型解码
  *
  * \param data[2] uint8_t 数据

@@ -67,6 +67,94 @@ hethernet_hwaddr_u_l_t hethernet_hwaddr_u_l(hethernet_hwaddr_t *addr,hethernet_h
     return ret;
 }
 
+bool hethernet_hwaddr_is_broadcast(hethernet_hwaddr_t *addr)
+{
+    if(addr==NULL)
+    {
+        return false;
+    }
+    bool ret=true;
+
+    if(addr->addr[0]!=HETHERNET_HWADDR_BROADCAST_ADDR0)
+    {
+        ret=false;
+    }
+
+    if(addr->addr[1]!=HETHERNET_HWADDR_BROADCAST_ADDR1)
+    {
+        ret=false;
+    }
+
+    if(addr->addr[2]!=HETHERNET_HWADDR_BROADCAST_ADDR2)
+    {
+        ret=false;
+    }
+
+    if(addr->addr[3]!=HETHERNET_HWADDR_BROADCAST_ADDR3)
+    {
+        ret=false;
+    }
+
+    if(addr->addr[4]!=HETHERNET_HWADDR_BROADCAST_ADDR4)
+    {
+        ret=false;
+    }
+
+    if(addr->addr[5]!=HETHERNET_HWADDR_BROADCAST_ADDR5)
+    {
+        ret=false;
+    }
+
+    return ret;
+}
+
+bool hethernet_hwaddr_is_ipv4_multicast(hethernet_hwaddr_t *addr)
+{
+    if(addr==NULL)
+    {
+        return false;
+    }
+    bool ret=true;
+
+    if(addr->addr[0]!=HETHERNET_HWADDR_IPV4_MULTICAST_ADDR0)
+    {
+        ret=false;
+    }
+
+    if(addr->addr[1]!=HETHERNET_HWADDR_IPV4_MULTICAST_ADDR1)
+    {
+        ret=false;
+    }
+
+    if(addr->addr[2]!=HETHERNET_HWADDR_IPV4_MULTICAST_ADDR2)
+    {
+        ret=false;
+    }
+
+    return ret;
+}
+
+bool hethernet_hwaddr_is_ipv6_multicast(hethernet_hwaddr_t *addr)
+{
+    if(addr==NULL)
+    {
+        return false;
+    }
+    bool ret=true;
+
+    if(addr->addr[0]!=HETHERNET_HWADDR_IPV6_MULTICAST_ADDR0)
+    {
+        ret=false;
+    }
+
+    if(addr->addr[1]!=HETHERNET_HWADDR_IPV6_MULTICAST_ADDR1)
+    {
+        ret=false;
+    }
+
+    return ret;
+}
+
 uint16_t hethernet_length_type_decode(const uint8_t data[2])
 {
     if(data==NULL)
