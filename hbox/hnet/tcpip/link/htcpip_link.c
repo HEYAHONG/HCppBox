@@ -1,14 +1,14 @@
 /***************************************************************
- * Name:      htcpip.c
- * Purpose:   实现htcpip接口
+ * Name:      htcpip_link.c
+ * Purpose:   实现htcpip_link接口
  * Author:    HYH (hyhsystem.cn)
- * Created:   2026-09-28
+ * Created:   2026-09-30
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "htcpip.h"
+#include "htcpip_link.h"
 
-#include "link/htcpip_link.c"
-#include "application/htcpip_application.c"
+#include "hethernet/hethernet.c"
+
 
 
