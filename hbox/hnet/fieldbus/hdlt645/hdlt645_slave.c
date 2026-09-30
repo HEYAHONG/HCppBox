@@ -242,6 +242,12 @@ const hdlt645_slave_time_t hdlt645_slave_time_default=
 #define HDLT645_SLAVE_CLEAR NULL
 #endif
 
+#ifdef __ARMCC_VERSION
+#ifndef __clang__
+#pragma diag_suppress 1296
+#endif
+#endif // __ARMCC_VERSION
+
 HDEFAULTS_RO_ATTRIBUTE
 static const hdlt645_slave_io_ctx_cmd_t hdlt645_slave_io_ctx_cmd_default[]=
 {
