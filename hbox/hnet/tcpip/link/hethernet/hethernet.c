@@ -40,7 +40,7 @@ hethernet_hwaddr_i_g_t hethernet_hwaddr_i_g(hethernet_hwaddr_t *addr,hethernet_h
 
 hethernet_hwaddr_u_l_t hethernet_hwaddr_u_l(hethernet_hwaddr_t *addr,hethernet_hwaddr_u_l_t *new_value)
 {
-    hethernet_hwaddr_i_g_t ret=HETHERNET_HWADDR_U_L_U;
+    hethernet_hwaddr_u_l_t ret=HETHERNET_HWADDR_U_L_U;
     if(addr == NULL)
     {
         return ret;
