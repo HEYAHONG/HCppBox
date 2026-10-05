@@ -223,4 +223,89 @@ bool hsntp_ntp_client_receivepacket(hsntp_ntp_client_t *ntp,const uint8_t *packe
     return ret;
 }
 
+void hsntp_ntp_server_init(hsntp_ntp_server_t *ntp,hsntp_ntp_server_sendpacket_t sendpacket,hsntp_ntp_server_receivepacket_t receivepacket,hsntp_ntp_server_gettimeofday_t  gettimeofday,void *usr)
+{
+    if(ntp==NULL)
+    {
+        return;
+    }
+
+    ntp->sendpacket=sendpacket;
+    ntp->receivepacket=receivepacket;
+    ntp->gettimeofday=gettimeofday;
+    ntp->usr=(uintptr_t)usr;
+}
+
+bool hsntp_ntp_server_loop(hsntp_ntp_server_t *ntp,const uint8_t *packet,size_t packet_size,const void *addr,size_t addr_size)
+{
+    bool ret=false;
+
+    if(ntp==NULL)
+    {
+        return ret;
+    }
+
+    hsntp_packet_t msg;
+    uint64_t addr_buffer[64/sizeof(uint64_t)]= {0};
+
+    if(packet!=NULL)
+    {
+        if(packet_size < sizeof(msg.msg))
+        {
+            return ret;
+        }
+        else
+        {
+            memcpy(msg.msg,packet,sizeof(msg.msg));
+        }
+    }
+    else
+    {
+        if(ntp->receivepacket==NULL)
+        {
+            return ret;
+        }
+
+        addr_size=sizeof(addr_buffer);
+        if(sizeof(msg.msg) > ntp->receivepacket(ntp,msg.msg,sizeof(msg.msg),addr_buffer,&addr_size))
+        {
+            return ret;
+        }
+        addr=addr_buffer;
+    }
+
+    hsntp_packet_decode(&msg);
+
+    msg.mode=HSNTP_MODE_SERVER;
+
+    {
+        hsntp_timestamp_format_t timestamp;
+        htimeval_t tv;
+        if(ntp->gettimeofday==NULL)
+        {
+            return ret;
+        }
+        if(0!=ntp->gettimeofday(ntp,&tv))
+        {
+            return ret;
+        }
+        timestamp.seconds=hsntp_time_t_to_timestamp(tv.tv_sec);
+        timestamp.fraction=tv.tv_usec*(1ULL << 32)/1000000;
+        msg.receive_timestamp=hsntp_timestamp_format_encode(timestamp);
+        msg.transmit_timestamp=msg.receive_timestamp;
+    }
+
+    hsntp_packet_encode(&msg);
+
+    if(ntp->sendpacket==NULL)
+    {
+        return ret;
+    }
+
+    ntp->sendpacket(ntp,msg.msg,sizeof(msg.msg),addr,addr_size);
+
+    ret=true;
+
+    return ret;
+}
 

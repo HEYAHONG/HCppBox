@@ -232,7 +232,42 @@ bool hsntp_ntp_client_sendpacket(hsntp_ntp_client_t *ntp,hsntp_packet_t *packet,
  */
 bool hsntp_ntp_client_receivepacket(hsntp_ntp_client_t *ntp,const uint8_t *packet,size_t packet_size);
 
+struct hsntp_ntp_server;
+typedef struct hsntp_ntp_server hsntp_ntp_server_t;
+typedef void (*hsntp_ntp_server_sendpacket_t)(const hsntp_ntp_server_t *ntp,const uint8_t *packet,size_t packet_size,const void *addr,size_t addr_size);
+typedef size_t (*hsntp_ntp_server_receivepacket_t)(const hsntp_ntp_server_t *ntp,uint8_t *packet,size_t packet_size,void *addr,size_t *addr_size);
+typedef int (*hsntp_ntp_server_gettimeofday_t)(const hsntp_ntp_server_t *ntp,htimeval_t *tv);
+struct hsntp_ntp_server
+{
+    hsntp_ntp_server_sendpacket_t sendpacket;
+    hsntp_ntp_server_receivepacket_t receivepacket;
+    hsntp_ntp_server_gettimeofday_t  gettimeofday;
+    uintptr_t usr;
+};
 
+/** \brief 初始化ntp(服务端)
+ *
+ * \param ntp hsntp_ntp_server_t* NTP服务端
+ * \param sendpacket hsntp_ntp_server_sendpacket_t 发送数据包
+ * \param receivepacket hsntp_ntp_server_receivepacket_t 接收数据包
+ * \param gettimeofday hsntp_ntp_server_gettimeofday_t 设置时间
+ * \param usr void* 用户参数
+ *
+ */
+void hsntp_ntp_server_init(hsntp_ntp_server_t *ntp,hsntp_ntp_server_sendpacket_t sendpacket,hsntp_ntp_server_receivepacket_t receivepacket,hsntp_ntp_server_gettimeofday_t  gettimeofday,void *usr);
+
+
+/** \brief ntp(服务端)循环
+ *
+ * \param ntp hsntp_ntp_server_t* NTP服务端
+ * \param packet const uint8_t* 数据指针,为NULL时调用内部函数接收
+ * \param packet_size size_t 数据包长度
+ * \param addr const void * 客户端地址
+ * \param addr_size size_t 客户端地址大小
+ * \return bool 是否正常运行
+ *
+ */
+bool hsntp_ntp_server_loop(hsntp_ntp_server_t *ntp,const uint8_t *packet,size_t packet_size,const void *addr,size_t addr_size);
 
 #ifdef __cplusplus
 }

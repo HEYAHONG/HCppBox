@@ -25,9 +25,16 @@ else()
 endif()
 
 
- #添加hsntp工具构建
+#添加hsntp工具构建
 add_custom_target(hsntp_tool  ${CMAKE_COMMAND} -E make_directory hsntp && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/hsntp/ -B hsntp && ${CMAKE_COMMAND} --build hsntp -t install
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
     USES_TERMINAL)
 add_dependencies(hnet_tools hsntp_tool)
 message(STATUS "Enable hsntp_tool!" )
+
+#添加hsntpd工具构建
+add_custom_target(hsntpd_tool  ${CMAKE_COMMAND} -E make_directory hsntpd && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/hsntpd/ -B hsntpd && ${CMAKE_COMMAND} --build hsntpd -t install
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+    USES_TERMINAL)
+add_dependencies(hnet_tools hsntpd_tool)
+message(STATUS "Enable hsntpd_tool!" )
