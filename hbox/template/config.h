@@ -95,6 +95,18 @@
  */
 /* #define FREERTOS */
 
+/** \brief 定义变量属性(初始化为0)
+ */
+/* #define HDEFAULTS_ZI_ATTRIBUTE */
+
+/** \brief 定义变量属性(初始化不为0)
+ */
+/* #define HDEFAULTS_RW_ATTRIBUTE */
+
+/** \brief 定义常量属性
+ */
+/* #define HDEFAULTS_RO_ATTRIBUTE */
+
 /** \brief 无线程库
  */
 /* #define __STDC_NO_THREADS__ */
@@ -147,6 +159,12 @@
  */
 /* #define HFERROR */
 
+/** \brief 用户实现的feof
+ *
+ * 参数与返回值同hfeof
+ */
+/* #define HFEOF */
+
 /** \brief 用户实现的fread
  *
  * 参数与返回值同hfread
@@ -164,6 +182,12 @@
  * 参数与返回值同hfclose
  */
 /* #define HFCLOSE */
+
+/** \brief 用户实现的fflush
+ *
+ * 参数与返回值同hfflush
+ */
+/* #define HFFLUSH */
 
 /** \brief 用户实现的fopen
  *
@@ -254,6 +278,12 @@
  * 某些工具链的C库可能有问题，可启用此选项使用内置精简版memset
  */
 /* #define HDEFAULTS_LIBC_TINY_MEMSET */
+
+/** \brief 用户可自行定义的原子包装
+ *
+ * 当用户已定义时使用用户定义。
+ */
+/* #define hatomic */
 
 /** \brief 支持C++的原子
  */
@@ -567,6 +597,18 @@
  */
 /* #define HDEFAULTS_SYSCALL_NO_HFILEDESCRIPTOR */
 
+/** \brief 默认函数调用
+ *
+ * 用于扩展用户调用
+ */
+/* #define HDEFAULTS_USERCALL_FUNCTION_DEFAULT */
+
+/** \brief 默认函数查找
+ *
+ * 用于扩展未实现的调用
+ */
+/* #define HDEFAULTS_SYSCALL_FUNCTION_FIND_DEFAULT */
+
 /** \brief 不实现hsyscall
  *
  * 可用于在编译器垃圾回收不完善时减少资源占用
@@ -665,6 +707,16 @@
  */
 /* #define HDEFAULTS_SYSCALL_NO_HCLOSE */
 
+/** \brief 用户实现的fsync
+ *
+ * 参数与返回值同fsync
+ */
+/* #define HFSYNC */
+
+/** \brief 不实现fsync
+ */
+/* #define HDEFAULTS_SYSCALL_NO_HFSYNC */
+
 /** \brief 用户实现的read
  *
  * 参数与返回值同read
@@ -724,6 +776,16 @@
 /** \brief 不实现openat
  */
 /* #define HDEFAULTS_SYSCALL_NO_HOPENAT */
+
+/** \brief 用户实现的mkdir
+ *
+ * 参数与返回值同见具体实现
+ */
+/* #define HMKDIR */
+
+/** \brief 不实现mkdir
+ */
+/* #define HDEFAULTS_SYSCALL_NO_HMKDIR */
 
 /** \brief 用户实现的ioctl
  *
@@ -1013,6 +1075,102 @@
  */
 /* #define HFILEDESCRIPTOR_SOCKET */
 
+/* ========== hnet/fieldbus/hdlt645 ========== */
+
+/** \brief 不单独分配发送缓冲区
+ *
+ * 定义此宏定义后，将使用栈作为发送缓冲区
+ */
+/* #define HDLT645_SLAVE_IO_NO_TX_BUFFER */
+
+/** \brief 用户扩展的命令列表
+ *
+ * 每项以逗号(,)结尾
+ */
+/* #define HDLT645_SLAVE_IO_CTX_CMD_USR_EXTEND_LIST */
+
+/** \brief 时间同步
+ *
+ * 若不定义则采用hsettimeofday设置时间
+ */
+/* #define HDLT645_SLAVE_TIME_SYNC */
+
+/** \brief 数据标识表指针
+ *
+ * 当对读写的数据表单独设置时无效
+ */
+/* #define HDLT645_SLAVE_DI_TABLE */
+
+/** \brief 数据标识表长度
+ *
+ * 当对读写的数据表单独设置时无效
+ */
+/* #define HDLT645_SLAVE_DI_TABLE_SIZE */
+
+/** \brief (读取）数据标识表指针
+ */
+/* #define HDLT645_SLAVE_READ_DI_TABLE */
+
+/** \brief (读取）数据标识表长度
+ */
+/* #define HDLT645_SLAVE_READ_DI_TABLE_SIZE */
+
+/** \brief (写入）数据标识表指针
+ */
+/* #define HDLT645_SLAVE_WRITE_DI_TABLE */
+
+/** \brief (写入）数据标识表长度
+ */
+/* #define HDLT645_SLAVE_WRITE_DI_TABLE_SIZE */
+
+/** \brief 写入通信地址
+ */
+/* #define HDLT645_SLAVE_WRITEADDR */
+
+/** \brief 冻结
+ */
+/* #define HDLT645_SLAVE_FREEZE */
+
+/** \brief 通信速率特征字
+ */
+/* #define HDLT645_SLAVE_COM_Z */
+
+/** \brief 密码
+ */
+/* #define HDLT645_SLAVE_PASS */
+
+/** \brief 清零
+ *
+ * 用于最大需量清零、电表清零、事件清零
+ */
+/* #define HDLT645_SLAVE_CLEAR */
+
+/** \brief 额外的从机头文件
+ */
+/* #define HDLT645_SLAVE_EXTERN_HEADER_FILENAME */
+
+/** \brief 额外的从机源代码文件
+ *
+ * 此文件不应编译
+ */
+/* #define HDLT645_SLAVE_EXTERN_SOURCE_FILENAME */
+
+/** \brief 不单独分配发送缓冲区(主机)
+ *
+ * 定义此宏定义后，将使用栈作为发送缓冲区
+ */
+/* #define HDLT645_MASTER_IO_NO_TX_BUFFER */
+
+/** \brief 额外的主机头文件
+ */
+/* #define HDLT645_MASTER_EXTERN_HEADER_FILENAME */
+
+/** \brief 额外的主机源代码文件
+ *
+ * 此文件不应编译
+ */
+/* #define HDLT645_MASTER_EXTERN_SOURCE_FILENAME */
+
 /* ========== hruntime ========== */
 
 /** \brief 启用初始化段
@@ -1093,6 +1251,12 @@
  */
 /* #define HRUNTIME_NO_SOFTPLC */
 
+/** \brief 无openblt
+ *
+ * 此选项通常用于自行实现openblt的初始化及循环，未定义此选项时默认由hruntime自动运行openblt
+ */
+/* #define HRUNTIME_NO_OPENBLT */
+
 /** \brief 自定义软件定时器循环（用户自行调用hsoftwaretimer_mainloop）
  *
  * 通常用于多线程环境，为实现相对精确的定时，定时器线程优先级一般较高,此时用户需要自行调用hsoftwaretimer_mainloop。
@@ -1171,6 +1335,12 @@
  */
 /* #define HRUNTIME_LOOP_LIST4 */
 
+/** \brief 简易优先级
+ *
+ * 使用简易优先级时执行顺序由链接顺序决定（需要链接脚本支持），且只能使用HRUNTIME_PRIORITY_0～HRUNTIME_PRIORITY_9作为优先级。
+ */
+/* #define HRUNTIME_PRIORITY_TINY */
+
 /* ========== hruntime/hstacklesscoroutine ========== */
 
 /** \brief 使用裸机模式运行协程
@@ -1201,6 +1371,44 @@
  */
 /* #define HCOMPILER_DLLSPEC_IMPORT */
 
+
+/* ========== hstandalone/hflashdb ========== */
+
+/** \brief 使用系统FlashDB库
+ *
+ * 需要手动引入第三方库，只定义此宏定义可能不能通过编译
+ */
+/* #define HFLASHDB_USING_SYSTEM_FLASHDB */
+
+/** \brief 不使用FlashDB自带的RT-Thread移植
+ *
+ * 某些版本的RT-Thread与FlashDB存在兼容性问题，使用此宏定义禁用
+ */
+/* #define HFLASHDB_NO_RTT */
+
+/* ========== hstandalone/hsimplegui ========== */
+
+/** \brief 使用系统simplegui库
+ *
+ * 需要手动引入第三方库，只定义此宏定义可能不能通过编译
+ */
+/* #define HSIMPLEGUI_USING_SYSTEM_SIMPLEGUI */
+
+/** \brief simplegui默认bmp缓冲大小
+ */
+/* #define HSIMPLEGUI_BMP_DATA_BUFFER_SIZE */
+
+/** \brief 背景色
+ *
+ * 默认32位,仅当使用hgui时有效
+ */
+/* #define HSIMPLEGUI_BKGCLR */
+
+/** \brief 前景色
+ *
+ * 默认32位，仅当使用hgui时有效
+ */
+/* #define HSIMPLEGUI_FRGCLR */
 
 /* ========== hstandalone/hsoftplc/hsoftplc ========== */
 
