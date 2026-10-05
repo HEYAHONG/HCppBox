@@ -14,6 +14,7 @@
 static std::string ntp_port="123";
 static std::string ntp_addr="0.0.0.0";
 static std::string server_addr="pool.ntp.org";
+static std::string server_port="123";
 
 static void show_banner()
 {
@@ -31,13 +32,15 @@ static void check_args(int argc,char *argv[])
     struct arg_str  * addr=NULL;
     struct arg_str  * port=NULL;
     struct arg_int  * era=NULL;
-    struct arg_str  * server;
+    struct arg_str  * server=NULL;
+    struct arg_str  * serverport=NULL;
     void *argtable[]=
     {
         addr=arg_str0("B","bind","0.0.0.0","ntp bind address"),
         port=arg_str0("P","port","123","ntp bind port"),
         era=arg_int0("E","era","0","ntp era"),
         server=arg_str0("S","server","pool.ntp.org","ntp server"),
+        serverport=arg_str0("p","server port","123","ntp server port"),
         help=arg_lit0("H","help","print this help and exit"),
         arg_end(20)
     };
@@ -82,6 +85,10 @@ static void check_args(int argc,char *argv[])
         server_addr=server->sval[0];
     }
 
+    if(serverport->count > 0)
+    {
+        server_port=serverport->sval[0];
+    }
 
     arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
 }
@@ -100,7 +107,7 @@ static bool ntp_server_addr_check(void)
                                [=](const char* hostname, const char*addr_string, HCPPSocketAddressIPV4* sock_addr,void *usr)
         {
             server_socket_addr=(*sock_addr);
-            server_socket_addr.sin_port=htons(123);
+            server_socket_addr.sin_port=htons(std::stoul(server_port));
             hprintf("[dns] %s:%s\r\n",hostname,addr_string);
         },NULL);
     }
