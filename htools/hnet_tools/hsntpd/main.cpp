@@ -79,6 +79,8 @@ static void check_args(int argc,char *argv[])
 
 static int ntpd_main(void)
 {
+    HCPPSocketInit();
+
     SOCKET server_fd=socket(AF_INET,SOCK_DGRAM,0);
     if(server_fd == INVALID_SOCKET)
     {
