@@ -9,6 +9,8 @@
 #ifndef __HETHERNET_H__
 #define __HETHERNET_H__
 
+#include "hdefaults.h"
+
 /*
  * 由IEEE 802.3描述，以太网的数据包包含以下部分
  *      -PREAMBLE：7字节,不属于以太网数据帧，一般由硬件直接处理
@@ -28,11 +30,11 @@ extern "C"
 
 
 struct hethernet_hwaddr;
-typedef struct hethernet_hwaddr hethernet_hwaddr_t;
+typedef struct  hethernet_hwaddr hethernet_hwaddr_t;
 struct hethernet_hwaddr
 {
     uint8_t addr[6];                    /**< 48位地址，最高位为I/G标志，次高位为U/L标志，由于以太网传输时字节低位在前，故而第一字节的位0为I/G标志，位1为U/L标志  */
-};
+} HDEFAULTS_PACKED_ATTRIBUTE;
 
 typedef enum
 {
@@ -197,7 +199,7 @@ struct hethernet_header
     hethernet_hwaddr_t dst;
     hethernet_hwaddr_t src;
     uint8_t length_type[2];
-};
+} HDEFAULTS_PACKED_ATTRIBUTE;
 
 
 /** \brief 以太网CRC32

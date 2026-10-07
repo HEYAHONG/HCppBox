@@ -30,4 +30,11 @@
 #define HDEFAULTS_RO_ATTRIBUTE
 #endif
 
+/*
+ * 定义pack属性，通常用于网络数据包解析
+ */
+#if !defined(HDEFAULTS_PACKED_ATTRIBUTE)
+#include "hcompiler.h"
+#define HDEFAULTS_PACKED_ATTRIBUTE __PACKED
+#endif
 #endif

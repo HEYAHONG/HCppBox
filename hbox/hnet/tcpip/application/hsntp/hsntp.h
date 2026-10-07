@@ -69,7 +69,7 @@ union hsntp_packet
             uint8_t li:2;
             uint8_t vn:3;
             uint8_t mode:3;
-        };
+        } HDEFAULTS_PACKED_ATTRIBUTE;
         int8_t stratum;
         int8_t poll;
         int8_t precision;
@@ -80,8 +80,8 @@ union hsntp_packet
         uint64_t origin_timestamp;
         uint64_t receive_timestamp;
         uint64_t transmit_timestamp;
-    };
-};
+    } HDEFAULTS_PACKED_ATTRIBUTE;
+} HDEFAULTS_PACKED_ATTRIBUTE;
 
 /** \brief SNTP消息编码,编码后的msg成员可用
  *
