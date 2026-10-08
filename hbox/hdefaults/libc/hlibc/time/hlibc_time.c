@@ -178,10 +178,12 @@ static bool hmktime_time_compare_eq(const htm_t *res1,const htm_t *res2)
         {
             return false;
         }
+        /*
         if(res1->tm_yday!=res2->tm_yday)
         {
             return false;
         }
+        */
 
         /*
         if(res1->tm_wday!=res2->tm_wday)
