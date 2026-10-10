@@ -23,8 +23,8 @@ typedef struct libmono_runtime_mainloop_task_context libmono_runtime_mainloop_ta
 
 enum
 {
-    LIBMONO_RUNTIME_MAINLOOP_TASK_EVENT_INIT        =   (1UL << 15),    /**< 初始化，此标志由主循环自动设置，由用户清除*/
-    LIBMONO_RUNTIME_MAINLOOP_TASK_EVENT_SERVICE_RUN =   (1UL << 14),    /**< 服务运行，此标志用于保证入口函数一直被调用，此标志需要用户手动设置或清除 */
+    LIBMONO_RUNTIME_MAINLOOP_TASK_EVENT_INIT        =   (int)(1UL << 15),    /**< 初始化，此标志由主循环自动设置，由用户清除*/
+    LIBMONO_RUNTIME_MAINLOOP_TASK_EVENT_SERVICE_RUN =   (int)(1UL << 14),    /**< 服务运行，此标志用于保证入口函数一直被调用，此标志需要用户手动设置或清除 */
 };
 
 
