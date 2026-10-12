@@ -1,0 +1,349 @@
+/***************************************************************
+ * Name:      hhttp_common.h
+ * Purpose:   声明hhttp_common接口
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2026-10-12
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+#ifndef __HHTTP_COMMON_H__
+#define __HHTTP_COMMON_H__
+
+#include "stdlib.h"
+#include "stdbool.h"
+#include "stdint.h"
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
+/*
+ *  HTTP 字符串
+ */
+struct hhttp_string;
+typedef struct hhttp_string hhttp_string_t;
+struct hhttp_string
+{
+    const char *str;
+    size_t      str_len;
+};
+
+/** \brief C字符串转字符串
+ *
+ * \param c_str const char* C字符串
+ * \return hhttp_string_t 字符串
+ *
+ */
+hhttp_string_t hhttp_string_from_cstring(const char *c_str);
+
+/** \brief 字符串是否相等
+ *
+ * \param src hhttp_string_t 源字符串
+ * \param dst hhttp_string_t 目标字符串
+ * \return bool 是否相等
+ *
+ */
+bool hhttp_string_equal(hhttp_string_t src,hhttp_string_t dst);
+
+typedef enum
+{
+    HHTTP_METHOD_UNKNOWN=0,
+    HHTTP_METHOD_GET,
+    HHTTP_METHOD_HEAD,
+    HHTTP_METHOD_POST,
+    HHTTP_METHOD_PUT,
+    HHTTP_METHOD_DELETE,
+    HHTTP_METHOD_CONNECT,
+    HHTTP_METHOD_OPTIONS,
+    HHTTP_METHOD_TRACE
+} hhttp_method_t;
+
+#define HHTTP_METHOD_GET_STRING         "GET"
+#define HHTTP_METHOD_HEAD_STRING        "HEAD"
+#define HHTTP_METHOD_POST_STRING        "POST"
+#define HHTTP_METHOD_PUT_STRING         "PUT"
+#define HHTTP_METHOD_DELETE_STRING      "DELETE"
+#define HHTTP_METHOD_CONNECT_STRING     "CONNECT"
+#define HHTTP_METHOD_OPTIONS_STRING     "OPTIONS"
+#define HHTTP_METHOD_TRACE_STRING       "TRACE"
+
+/** \brief 获取方法字符串
+ *
+ * \param method hhttp_method_t 方法
+ * \return hhttp_string_t 字符串
+ *
+ */
+hhttp_string_t hhttp_method_std_to_string(hhttp_method_t method);
+
+/** \brief 从字符串获取方法
+ *
+ * \param str hhttp_string_t 字符串
+ * \return hhttp_method_t 方法
+ *
+ */
+hhttp_method_t hhttp_method_from_string(hhttp_string_t str);
+
+typedef enum
+{
+    HHTTP_VERSION_UNKNOWN=0,
+    HHTTP_VERSION_1_0,
+    HHTTP_VERSION_1_1,
+} hhttp_version_t;
+
+#define HHTTP_VERSION_1_0_STRING "HTTP/1.0"
+#define HHTTP_VERSION_1_1_STRING "HTTP/1.1"
+
+/** \brief 获取版本字符串
+ *
+ * \param version hhttp_version_t 版本
+ * \return hhttp_string_t 字符串
+ *
+ */
+hhttp_string_t hhttp_version_std_to_string(hhttp_version_t version);
+
+/** \brief 从字符串获取版本
+ *
+ * \param str hhttp_string_t 字符串
+ * \return hhttp_version_t 版本
+ *
+ */
+hhttp_version_t hhttp_version_from_string(hhttp_string_t str);
+
+/*
+ * HTTP行结束(\r\n)
+ */
+#define HHTTP_LINE_END_STRING "\r\n"
+
+typedef enum
+{
+    /*
+     * 信息 1XX
+     */
+    HHTTP_STATUS_CODE_100=100,  /**< 继续 */
+    HHTTP_STATUS_CODE_101=101,  /**< 切换协议 */
+
+    /*
+     * 成功
+     */
+    HHTTP_STATUS_CODE_200=200,  /**< 成功 */
+    HHTTP_STATUS_CODE_201=201,  /**< 已创建*/
+    HHTTP_STATUS_CODE_202=202,  /**< 已接受 */
+    HHTTP_STATUS_CODE_203=203,  /**< 没有认证信息 */
+    HHTTP_STATUS_CODE_204=204,  /**< 没有内容 */
+    HHTTP_STATUS_CODE_205=205,  /**< 重置链接 */
+    HHTTP_STATUS_CODE_206=206,  /**< 部分内容 */
+
+    /*
+     * 重定向
+     */
+    HHTTP_STATUS_CODE_300=300,  /**< 多个选择 */
+    HHTTP_STATUS_CODE_301=301,  /**< 永久移动 */
+    HHTTP_STATUS_CODE_302=302,  /**< 已找到 */
+    HHTTP_STATUS_CODE_303=303,  /**< 见其它 */
+    HHTTP_STATUS_CODE_304=304,  /**< 未修改 */
+    HHTTP_STATUS_CODE_305=305,  /**< 使用代理 */
+    HHTTP_STATUS_CODE_306=306,  /**< (未使用) */
+    HHTTP_STATUS_CODE_307=307,  /**< 临时重定向 */
+    HHTTP_STATUS_CODE_308=308,  /**< 永久重定向 */
+
+    /*
+     * 客户端错误
+     */
+    HHTTP_STATUS_CODE_400=400,  /**< 请求错误 */
+    HHTTP_STATUS_CODE_401=401,  /**< 未认证 */
+    HHTTP_STATUS_CODE_402=402,  /**< 需要支付 */
+    HHTTP_STATUS_CODE_403=403,  /**< 禁止访问 */
+    HHTTP_STATUS_CODE_404=404,  /**< 未找到 */
+    HHTTP_STATUS_CODE_405=405,  /**< 不允许的方法 */
+    HHTTP_STATUS_CODE_406=406,  /**< 不可接受 */
+    HHTTP_STATUS_CODE_407=407,  /**< 需要代理认证 */
+    HHTTP_STATUS_CODE_408=408,  /**< 请求超时 */
+    HHTTP_STATUS_CODE_409=409,  /**< 冲突 */
+    HHTTP_STATUS_CODE_410=410,  /**< 已消失 */
+    HHTTP_STATUS_CODE_411=411,  /**< 需要长度 */
+    HHTTP_STATUS_CODE_412=412,  /**< 条件失败 */
+    HHTTP_STATUS_CODE_413=413,  /**< 内容太长 */
+    HHTTP_STATUS_CODE_414=414,  /**< URI太长 */
+    HHTTP_STATUS_CODE_415=415,  /**< 不支持的媒体类型 */
+    HHTTP_STATUS_CODE_416=416,  /**< 范围不合适 */
+    HHTTP_STATUS_CODE_417=417,  /**< 预期结果失败 */
+    HHTTP_STATUS_CODE_418=418,  /**< (未使用) */
+    HHTTP_STATUS_CODE_421=421,  /**< 错误方向的请求 */
+    HHTTP_STATUS_CODE_422=422,  /**< 无法处理的内容 */
+    HHTTP_STATUS_CODE_426=426,  /**< 需要升级协议 */
+
+    /*
+     * 服务器错误
+     */
+    HHTTP_STATUS_CODE_500=500,  /**< 内部服务器错误 */
+    HHTTP_STATUS_CODE_501=501,  /**< 未实现 */
+    HHTTP_STATUS_CODE_502=502,  /**< 网关错误 */
+    HHTTP_STATUS_CODE_503=503,  /**< 服务不可用 */
+    HHTTP_STATUS_CODE_504=504,  /**< 网关超时 */
+    HHTTP_STATUS_CODE_505=505   /**< HTTP版本不支持 */
+
+} hhttp_status_code_t;
+
+/*
+ * 信息 1XX
+ */
+#define HHTTP_STATUS_CODE_100_STRING "100"                              /**< 继续 */
+#define HHTTP_STATUS_CODE_101_STRING "101"                              /**< 切换协议 */
+
+/*
+ * 成功
+ */
+#define HHTTP_STATUS_CODE_200_STRING "200"                              /**< 成功 */
+#define HHTTP_STATUS_CODE_201_STRING "201"                              /**< 已创建*/
+#define HHTTP_STATUS_CODE_202_STRING "202"                              /**< 已接受 */
+#define HHTTP_STATUS_CODE_203_STRING "203"                              /**< 没有认证信息 */
+#define HHTTP_STATUS_CODE_204_STRING "204"                              /**< 没有内容 */
+#define HHTTP_STATUS_CODE_205_STRING "205"                              /**< 重置链接 */
+#define HHTTP_STATUS_CODE_206_STRING "206"                              /**< 部分内容 */
+
+/*
+ * 重定向
+ */
+#define HHTTP_STATUS_CODE_300_STRING "300"                              /**< 多个选择 */
+#define HHTTP_STATUS_CODE_301_STRING "301"                              /**< 永久移动 */
+#define HHTTP_STATUS_CODE_302_STRING "302"                              /**< 已找到 */
+#define HHTTP_STATUS_CODE_303_STRING "303"                              /**< 见其它 */
+#define HHTTP_STATUS_CODE_304_STRING "304"                              /**< 未修改 */
+#define HHTTP_STATUS_CODE_305_STRING "305"                              /**< 使用代理 */
+#define HHTTP_STATUS_CODE_306_STRING "306"                              /**< (未使用) */
+#define HHTTP_STATUS_CODE_307_STRING "307"                              /**< 临时重定向 */
+#define HHTTP_STATUS_CODE_308_STRING "308"                              /**< 永久重定向 */
+
+/*
+ * 客户端错误
+ */
+#define HHTTP_STATUS_CODE_400_STRING "400"                              /**< 请求错误 */
+#define HHTTP_STATUS_CODE_401_STRING "401"                              /**< 未认证 */
+#define HHTTP_STATUS_CODE_402_STRING "402"                              /**< 需要支付 */
+#define HHTTP_STATUS_CODE_403_STRING "403"                              /**< 禁止访问 */
+#define HHTTP_STATUS_CODE_404_STRING "404"                              /**< 未找到 */
+#define HHTTP_STATUS_CODE_405_STRING "405"                              /**< 不允许的方法 */
+#define HHTTP_STATUS_CODE_406_STRING "406"                              /**< 不可接受 */
+#define HHTTP_STATUS_CODE_407_STRING "407"                              /**< 需要代理认证 */
+#define HHTTP_STATUS_CODE_408_STRING "408"                              /**< 请求超时 */
+#define HHTTP_STATUS_CODE_409_STRING "409"                              /**< 冲突 */
+#define HHTTP_STATUS_CODE_410_STRING "410"                              /**< 已消失 */
+#define HHTTP_STATUS_CODE_411_STRING "411"                              /**< 需要长度 */
+#define HHTTP_STATUS_CODE_412_STRING "412"                              /**< 条件失败 */
+#define HHTTP_STATUS_CODE_413_STRING "413"                              /**< 内容太长 */
+#define HHTTP_STATUS_CODE_414_STRING "414"                              /**< URI太长 */
+#define HHTTP_STATUS_CODE_415_STRING "415"                              /**< 不支持的媒体类型 */
+#define HHTTP_STATUS_CODE_416_STRING "416"                              /**< 范围不合适 */
+#define HHTTP_STATUS_CODE_417_STRING "417"                              /**< 预期结果失败 */
+#define HHTTP_STATUS_CODE_418_STRING "418"                              /**< (未使用) */
+#define HHTTP_STATUS_CODE_421_STRING "421"                              /**< 错误方向的请求 */
+#define HHTTP_STATUS_CODE_422_STRING "422"                              /**< 无法处理的内容 */
+#define HHTTP_STATUS_CODE_426_STRING "426"                              /**< 需要升级协议 */
+
+/*
+ * 服务器错误
+ */
+#define HHTTP_STATUS_CODE_500_STRING "500"                              /**< 内部服务器错误 */
+#define HHTTP_STATUS_CODE_501_STRING "501"                              /**< 未实现 */
+#define HHTTP_STATUS_CODE_502_STRING "502"                              /**< 网关错误 */
+#define HHTTP_STATUS_CODE_503_STRING "503"                              /**< 服务不可用 */
+#define HHTTP_STATUS_CODE_504_STRING "504"                              /**< 网关超时 */
+#define HHTTP_STATUS_CODE_505_STRING "505"                              /**< HTTP版本不支持 */
+
+/** \brief 标准状态码的字符串
+ *
+ * \param status_code hhttp_status_code_t 标准状态码（非标状态码自行处理）
+ * \return hhttp_string_t 字符串
+ *
+ */
+hhttp_string_t hhttp_status_code_std_to_string(hhttp_status_code_t status_code);
+
+/** \brief 从字符串获取状态码
+ *
+ * \param str hhttp_string_t  状态码字符串
+ * \return int 状态码
+ *
+ */
+int hhttp_status_code_from_string(hhttp_string_t str);
+
+/*
+ * 信息 1XX
+ */
+#define HHTTP_STATUS_CODE_100_REASON_STRING "Continue"                          /**< 继续 */
+#define HHTTP_STATUS_CODE_101_REASON_STRING "Switching Protocols"               /**< 切换协议 */
+
+/*
+ * 成功
+ */
+#define HHTTP_STATUS_CODE_200_REASON_STRING "OK"                                /**< 成功 */
+#define HHTTP_STATUS_CODE_201_REASON_STRING "Created"                           /**< 已创建*/
+#define HHTTP_STATUS_CODE_202_REASON_STRING "Accepted"                          /**< 已接受 */
+#define HHTTP_STATUS_CODE_203_REASON_STRING "Non-Authoritative Information"     /**< 没有认证信息 */
+#define HHTTP_STATUS_CODE_204_REASON_STRING "No Content"                        /**< 没有内容 */
+#define HHTTP_STATUS_CODE_205_REASON_STRING "Reset Content"                     /**< 重置链接 */
+#define HHTTP_STATUS_CODE_206_REASON_STRING "Partial Content"                   /**< 部分内容 */
+
+/*
+ * 重定向
+ */
+#define HHTTP_STATUS_CODE_300_REASON_STRING "Multiple Choices"                  /**< 多个选择 */
+#define HHTTP_STATUS_CODE_301_REASON_STRING "Moved Permanently"                 /**< 永久移动 */
+#define HHTTP_STATUS_CODE_302_REASON_STRING "Found"                             /**< 已找到 */
+#define HHTTP_STATUS_CODE_303_REASON_STRING "See Other"                         /**< 见其它 */
+#define HHTTP_STATUS_CODE_304_REASON_STRING "Not Modified"                      /**< 未修改 */
+#define HHTTP_STATUS_CODE_305_REASON_STRING "Use Proxy"                         /**< 使用代理 */
+#define HHTTP_STATUS_CODE_306_REASON_STRING "(UNUSED)"                          /**< (未使用) */
+#define HHTTP_STATUS_CODE_307_REASON_STRING "Temporary Redirect"                /**< 临时重定向 */
+#define HHTTP_STATUS_CODE_308_REASON_STRING "Permanent Redirect"                /**< 永久重定向 */
+
+/*
+ * 客户端错误
+ */
+#define HHTTP_STATUS_CODE_400_REASON_STRING "Bad Request"                       /**< 请求错误 */
+#define HHTTP_STATUS_CODE_401_REASON_STRING "Unauthorized"                      /**< 未认证 */
+#define HHTTP_STATUS_CODE_402_REASON_STRING "Payment Required"                  /**< 需要支付 */
+#define HHTTP_STATUS_CODE_403_REASON_STRING "Forbidden"                         /**< 禁止访问 */
+#define HHTTP_STATUS_CODE_404_REASON_STRING "Not Found"                         /**< 未找到 */
+#define HHTTP_STATUS_CODE_405_REASON_STRING "Method Not Allowed"                /**< 不允许的方法 */
+#define HHTTP_STATUS_CODE_406_REASON_STRING "Not Acceptable"                    /**< 不可接受 */
+#define HHTTP_STATUS_CODE_407_REASON_STRING "Proxy Authentication Required"     /**< 需要代理认证 */
+#define HHTTP_STATUS_CODE_408_REASON_STRING "Request Timeout"                   /**< 请求超时 */
+#define HHTTP_STATUS_CODE_409_REASON_STRING "Conflict"                          /**< 冲突 */
+#define HHTTP_STATUS_CODE_410_REASON_STRING "Gone"                              /**< 已消失 */
+#define HHTTP_STATUS_CODE_411_REASON_STRING "Length Required"                   /**< 需要长度 */
+#define HHTTP_STATUS_CODE_412_REASON_STRING "Precondition Failed"               /**< 条件失败 */
+#define HHTTP_STATUS_CODE_413_REASON_STRING "Content Too Large"                 /**< 内容太长 */
+#define HHTTP_STATUS_CODE_414_REASON_STRING "URI Too Long"                      /**< URI太长 */
+#define HHTTP_STATUS_CODE_415_REASON_STRING "Unsupported Media Type"            /**< 不支持的媒体类型 */
+#define HHTTP_STATUS_CODE_416_REASON_STRING "Range Not Satisfiable"             /**< 范围不合适 */
+#define HHTTP_STATUS_CODE_417_REASON_STRING "Expectation Failed"                /**< 预期结果失败 */
+#define HHTTP_STATUS_CODE_418_REASON_STRING "(UNUSED)"                          /**< (未使用) */
+#define HHTTP_STATUS_CODE_421_REASON_STRING "Misdirected Request"               /**< 错误方向的请求 */
+#define HHTTP_STATUS_CODE_422_REASON_STRING "Unprocessable Content"             /**< 无法处理的内容 */
+#define HHTTP_STATUS_CODE_426_REASON_STRING "Upgrade Required"                  /**< 需要升级协议 */
+
+/*
+ * 服务器错误
+ */
+#define HHTTP_STATUS_CODE_500_REASON_STRING "Internal Server Error"             /**< 内部服务器错误 */
+#define HHTTP_STATUS_CODE_501_REASON_STRING "Not Implemented"                   /**< 未实现 */
+#define HHTTP_STATUS_CODE_502_REASON_STRING "Bad Gateway"                       /**< 网关错误 */
+#define HHTTP_STATUS_CODE_503_REASON_STRING "Service Unavailable"               /**< 服务不可用 */
+#define HHTTP_STATUS_CODE_504_REASON_STRING "Gateway Timeout"                   /**< 网关超时 */
+#define HHTTP_STATUS_CODE_505_REASON_STRING "HTTP Version Not Supported"        /**< HTTP版本不支持 */
+
+/** \brief 标准状态码的原因字符串
+ *
+ * \param status_code hhttp_status_code_t 标准状态码（非标状态码自行处理）
+ * \return hhttp_string_t 字符串
+ *
+ */
+hhttp_string_t hhttp_status_code_std_to_reason_string(hhttp_status_code_t status_code);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
+
+#endif // __HHTTP_COMMON_H__

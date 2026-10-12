@@ -15,6 +15,7 @@ extern "C"
 #endif // __cplusplus
 
 #include "hsntp/hsntp.h"
+#include "hhttp/hhttp.h"
 
 #ifdef __cplusplus
 }
