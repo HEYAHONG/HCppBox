@@ -13,6 +13,10 @@
 #include "stdbool.h"
 #include "stdint.h"
 
+/*
+ * 此文件适用于HTTP/1.0、HTTP/1.1
+ */
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -111,6 +115,26 @@ uint64_t hhttp_string_hex_to_uint64(hhttp_string_t src);
  */
 hhttp_string_t hhttp_string_hex_from_uint64(uint8_t *buffer,size_t buffer_len,uint64_t number);
 
+/*
+ * HTTP行结束(\r\n)
+ */
+#define HHTTP_LINE_END_STRING "\r\n"
+
+/** \brief 检查字符串是否为行
+ *
+ * \param line hhttp_string_t 行字符串串
+ * \return bool 是否为行字符串
+ *
+ */
+bool hhttp_string_check_line(hhttp_string_t line);
+
+/** \brief 从行获取内容（包含行结束（\r\n））
+ *
+ * \param line hhttp_string_t 行字符串（可包含额外内容）
+ * \return hhttp_string_t 行字符串（以\r\n结尾的行字符串）
+ *
+ */
+hhttp_string_t hhttp_string_line_get_content(hhttp_string_t line);
 
 
 typedef enum
@@ -177,10 +201,6 @@ hhttp_string_t hhttp_version_std_to_string(hhttp_version_t version);
  */
 hhttp_version_t hhttp_version_from_string(hhttp_string_t str);
 
-/*
- * HTTP行结束(\r\n)
- */
-#define HHTTP_LINE_END_STRING "\r\n"
 
 typedef enum
 {
@@ -407,6 +427,9 @@ int hhttp_status_code_from_string(hhttp_string_t str);
  *
  */
 hhttp_string_t hhttp_status_code_std_to_reason_string(hhttp_status_code_t status_code);
+
+
+
 
 #ifdef __cplusplus
 }

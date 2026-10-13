@@ -216,6 +216,26 @@ hhttp_string_t hhttp_string_hex_from_uint64(uint8_t *buffer,size_t buffer_len,ui
     return ret;
 }
 
+bool hhttp_string_check_line(hhttp_string_t line)
+{
+    return !hhttp_string_is_empty(hhttp_string_strstr(line,hhttp_string_from_cstring(HHTTP_LINE_END_STRING)));
+}
+
+hhttp_string_t hhttp_string_line_get_content(hhttp_string_t line)
+{
+    hhttp_string_t ret=hhttp_string_from_cstring("");
+    if(!hhttp_string_check_line(line))
+    {
+        return ret;
+    }
+
+    hhttp_string_t line_end=hhttp_string_strstr(line,hhttp_string_from_cstring(HHTTP_LINE_END_STRING));
+    ret.str=line.str;
+    ret.str_len=line_end.str_len+(((uintptr_t)line_end.str)-((uintptr_t)line.str));
+
+    return ret;
+}
+
 HDEFAULTS_RO_ATTRIBUTE
 static const struct
 {
