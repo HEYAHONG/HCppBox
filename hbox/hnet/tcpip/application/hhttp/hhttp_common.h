@@ -201,6 +201,43 @@ hhttp_string_t hhttp_version_std_to_string(hhttp_version_t version);
  */
 hhttp_version_t hhttp_version_from_string(hhttp_string_t str);
 
+struct hhttp_request_line;
+typedef struct hhttp_request_line hhttp_request_line_t;
+struct hhttp_request_line
+{
+    hhttp_method_t          method;
+    hhttp_string_t          target;
+    hhttp_version_t         version;
+};
+
+/** \brief 请求行解析
+ *
+ * \param request_line hhttp_request_line_t* 请求行
+ * \param line hhttp_string_t 行
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_request_line_parse(hhttp_request_line_t *request_line,hhttp_string_t line);
+
+
+/** \brief 请求行打包回调
+ *
+ * \param usr void* 用户参数
+ * \param offset size_t 偏移
+ * \param part_string hhttp_string_t 部分字符串
+ *
+ */
+typedef void (*hhttp_request_line_pack_write_callback_t)(void *usr,size_t offset,hhttp_string_t part_string);
+
+/** \brief 请求行打包
+ *
+ * \param request_line hhttp_request_line_t* 请求行打包
+ * \param cb hhttp_request_line_pack_write_callback_t 请求行打包回调
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_request_line_pack(hhttp_request_line_t *request_line,hhttp_request_line_pack_write_callback_t cb,void *usr);
 
 typedef enum
 {

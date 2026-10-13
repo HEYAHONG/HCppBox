@@ -321,6 +321,134 @@ hhttp_version_t hhttp_version_from_string(hhttp_string_t str)
     return ret;
 }
 
+bool hhttp_request_line_parse(hhttp_request_line_t *request_line,hhttp_string_t line)
+{
+    bool ret=false;
+    if(request_line == NULL || !hhttp_string_check_line(line))
+    {
+        return ret;
+    }
+    hhttp_string_t line_content=hhttp_string_line_get_content(line);
+
+    /*
+     * 去除末尾的\r\n
+     */
+    line_content.str_len -= 2;
+
+    {
+        hhttp_string_t first_space_string=hhttp_string_strstr(line_content,hhttp_string_from_cstring(" "));
+        if(hhttp_string_is_empty(first_space_string))
+        {
+            return ret;
+        }
+        hhttp_string_t method_string;
+        method_string.str=line_content.str;
+        method_string.str_len=(((uintptr_t)first_space_string.str)-((uintptr_t)method_string.str));
+        request_line->method=hhttp_method_from_string(method_string);
+
+        line_content.str = &line_content.str[method_string.str_len+1];
+        line_content.str_len -= (method_string.str_len+1);
+    }
+
+    {
+        hhttp_string_t second_space_string=hhttp_string_strstr(line_content,hhttp_string_from_cstring(" "));
+        if(hhttp_string_is_empty(second_space_string))
+        {
+            return ret;
+        }
+        hhttp_string_t target_string;
+        target_string.str=line_content.str;
+        target_string.str_len=(((uintptr_t)second_space_string.str)-((uintptr_t)line_content.str));
+        request_line->target=target_string;
+        hhttp_string_t version_string;
+        version_string.str=&line_content.str[target_string.str_len+1];
+        version_string.str_len=(line_content.str_len-(target_string.str_len+1));
+        request_line->version=hhttp_version_from_string(version_string);
+    }
+
+    if(request_line->method != HHTTP_METHOD_UNKNOWN && hhttp_string_is_empty(request_line->target) && request_line->version != HHTTP_VERSION_UNKNOWN)
+    {
+        ret=true;
+    }
+
+    return ret;
+}
+
+bool hhttp_request_line_pack(hhttp_request_line_t *request_line,hhttp_request_line_pack_write_callback_t cb,void *usr)
+{
+    bool ret=false;
+    if(request_line == NULL )
+    {
+        return ret;
+    }
+    if(request_line->method == HHTTP_METHOD_UNKNOWN || hhttp_string_is_empty(request_line->target) || request_line->version == HHTTP_VERSION_UNKNOWN)
+    {
+        return ret;
+    }
+    if(cb == NULL)
+    {
+        return ret;
+    }
+    ret=true;
+    size_t offset=0;
+    hhttp_string_t space_string=hhttp_string_from_cstring(" ");
+    hhttp_string_t line_end_string=hhttp_string_from_cstring(HHTTP_LINE_END_STRING);
+
+
+    {
+        /*
+         * 方法
+         */
+        hhttp_string_t method_string=hhttp_method_std_to_string(request_line->method);
+        if(hhttp_string_is_empty(method_string))
+        {
+            ret=false;
+        }
+        cb(usr,offset,method_string);
+        offset += method_string.str_len;
+    }
+
+    /*
+     * 空格
+     */
+    cb(usr,offset,space_string);
+    offset += space_string.str_len;
+
+    /*
+     * 目标
+     */
+    cb(usr,offset,request_line->target);
+    offset += request_line->target.str_len;
+
+    /*
+     * 空格
+     */
+    cb(usr,offset,space_string);
+    offset += space_string.str_len;
+
+    {
+        /*
+         * 版本
+         */
+        hhttp_string_t version_string=hhttp_version_std_to_string(request_line->version);
+        if(hhttp_string_is_empty(version_string))
+        {
+            ret=false;
+        }
+        cb(usr,offset,version_string);
+        offset += version_string.str_len;
+    }
+
+    /*
+     * 行结束
+     */
+    cb(usr,offset,line_end_string);
+    offset += line_end_string.str_len;
+
+
+    return ret;
+}
+
 HDEFAULTS_RO_ATTRIBUTE
 static const  struct
 {
