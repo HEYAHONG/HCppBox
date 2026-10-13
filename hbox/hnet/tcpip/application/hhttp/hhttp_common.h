@@ -136,6 +136,14 @@ bool hhttp_string_check_line(hhttp_string_t line);
  */
 hhttp_string_t hhttp_string_line_get_content(hhttp_string_t line);
 
+/** \brief 内容是否为空白行,空白行通常作为头与内容的分割
+ *
+ * \param line_content hhttp_string_t 行内容
+ * \return bool 是否空白行
+ *
+ */
+bool hhttp_string_line_content_is_empty(hhttp_string_t line_content);
+
 
 typedef enum
 {

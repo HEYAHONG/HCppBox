@@ -236,6 +236,19 @@ hhttp_string_t hhttp_string_line_get_content(hhttp_string_t line)
     return ret;
 }
 
+bool hhttp_string_line_content_is_empty(hhttp_string_t line_content)
+{
+    bool ret=false;
+    if(hhttp_string_is_empty(line_content))
+    {
+        return ret;
+    }
+
+    ret = hhttp_string_equal(line_content,hhttp_string_from_cstring(HHTTP_LINE_END_STRING));
+
+    return ret;
+}
+
 HDEFAULTS_RO_ATTRIBUTE
 static const struct
 {
