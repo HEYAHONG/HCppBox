@@ -31,11 +31,29 @@ struct hhttp_string
 
 /** \brief C字符串转字符串
  *
- * \param c_str const char* C字符串
+ * \param c_str const char* C字符串，其生命周期一定要比返回的字符串长
  * \return hhttp_string_t 字符串
  *
  */
 hhttp_string_t hhttp_string_from_cstring(const char *c_str);
+
+/** \brief 从缓冲区创建字符串
+ *
+ * \param buffer const uint8_t* 缓冲区指针,其生命周期一定要比返回的字符串长
+ * \param buffer_len size_t 缓冲区长度
+ * \return hhttp_string_t 字符串
+ *
+ */
+hhttp_string_t hhttp_string_from_buffer(const uint8_t *buffer,size_t buffer_len);
+
+
+/** \brief 字符串是否为空
+ *
+ * \param src hhttp_string_t 字符串
+ * \return bool 是否为空
+ *
+ */
+bool hhttp_string_is_empty(hhttp_string_t src);
 
 /** \brief 字符串是否相等
  *
@@ -45,6 +63,55 @@ hhttp_string_t hhttp_string_from_cstring(const char *c_str);
  *
  */
 bool hhttp_string_equal(hhttp_string_t src,hhttp_string_t dst);
+
+/** \brief 查找小字符串在大字符串的位置
+ *
+ * \param big_str hhttp_string_t 大字符串
+ * \param small_str hhttp_string_t 小字符串
+ * \return hhttp_string_t 字符串
+ *
+ */
+hhttp_string_t hhttp_string_strstr(hhttp_string_t big_str,hhttp_string_t small_str);
+
+/** \brief 十进制字符串转数字
+ *
+ * \param src hhttp_string_t 十进制数字符串，遇到第一个非数字字符时停止
+ * \return uint64_t 数字
+ *
+ */
+uint64_t hhttp_string_dec_to_uint64(hhttp_string_t src);
+
+
+/** \brief 数字转字符串
+ *
+ * \param buffer uint8_t* 缓冲区，必须足够容纳数字，否则将返回空字符串
+ * \param buffer_len size_t 缓冲区长度
+ * \param number uint64_t 数字
+ * \return hhttp_string_t 字符串
+ *
+ */
+hhttp_string_t hhttp_string_dec_from_uint64(uint8_t *buffer,size_t buffer_len,uint64_t number);
+
+/** \brief 十六进制字符串转数字
+ *
+ * \param src hhttp_string_t 十六进制数字符串，遇到第一个非数字字符时停止
+ * \return uint64_t 数字
+ *
+ */
+uint64_t hhttp_string_hex_to_uint64(hhttp_string_t src);
+
+
+/** \brief 数字转字符串
+ *
+ * \param buffer uint8_t* 缓冲区，必须足够容纳数字，否则将返回空字符串
+ * \param buffer_len size_t 缓冲区长度
+ * \param number uint64_t 数字
+ * \return hhttp_string_t 字符串
+ *
+ */
+hhttp_string_t hhttp_string_hex_from_uint64(uint8_t *buffer,size_t buffer_len,uint64_t number);
+
+
 
 typedef enum
 {

@@ -21,6 +21,30 @@ hhttp_string_t hhttp_string_from_cstring(const char *c_str)
     return ret;
 }
 
+hhttp_string_t hhttp_string_from_buffer(const uint8_t *buffer,size_t buffer_len)
+{
+    hhttp_string_t ret;
+    ret.str=(const char *)buffer;
+    ret.str_len=buffer_len;
+    if(ret.str == NULL)
+    {
+        ret.str_len = 0;
+    }
+    return ret;
+}
+
+bool hhttp_string_is_empty(hhttp_string_t src)
+{
+    bool ret=false;
+    if(src.str == NULL || src.str_len == 0)
+    {
+        ret=true;
+    }
+    return ret;
+}
+
+
+
 bool hhttp_string_equal(hhttp_string_t src,hhttp_string_t dst)
 {
     bool ret=false;
@@ -37,6 +61,156 @@ bool hhttp_string_equal(hhttp_string_t src,hhttp_string_t dst)
                     break;
                 }
             }
+        }
+    }
+    return ret;
+}
+
+hhttp_string_t hhttp_string_strstr(hhttp_string_t big_str,hhttp_string_t small_str)
+{
+    hhttp_string_t ret=hhttp_string_from_cstring("");
+    if(hhttp_string_is_empty(big_str) || hhttp_string_is_empty(small_str))
+    {
+        return ret;
+    }
+    if(big_str.str_len < small_str.str_len)
+    {
+        return ret;
+    }
+    for(size_t i=0; i<=(big_str.str_len-small_str.str_len); i++)
+    {
+        if(big_str.str[i]==small_str.str[0])
+        {
+            hhttp_string_t temp;
+            temp.str=&big_str.str[i];
+            temp.str_len=small_str.str_len;
+            if(hhttp_string_equal(temp,small_str))
+            {
+                ret.str=&big_str.str[i];
+                ret.str_len=big_str.str_len-i;
+                break;
+            }
+        }
+    }
+    return ret;
+}
+
+uint64_t hhttp_string_dec_to_uint64(hhttp_string_t src)
+{
+    uint64_t ret=0;
+    if(!hhttp_string_is_empty(src))
+    {
+        for(size_t i=0; i<src.str_len; i++)
+        {
+            if(src.str[i] >= '0' && src.str[i] <= '9')
+            {
+                ret*=10;
+                ret+= (src.str[i]-'0');
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    return ret;
+}
+
+static inline uint64_t hhttp_pow_uint64(uint64_t base,uint64_t pow)
+{
+    uint64_t ret=1;
+    for(size_t i=0; i<pow; i++)
+    {
+        ret*=base;
+    }
+    return ret;
+}
+
+hhttp_string_t hhttp_string_dec_from_uint64(uint8_t *buffer,size_t buffer_len,uint64_t number)
+{
+    hhttp_string_t ret=hhttp_string_from_buffer(buffer,buffer_len);
+    if(buffer!=NULL && buffer_len!=0)
+    {
+        {
+            size_t max_number_bytes=1;      //至少需要一位数字
+            for(max_number_bytes=1; max_number_bytes <= ret.str_len; max_number_bytes++)
+            {
+                if((number/(hhttp_pow_uint64(10,max_number_bytes)))==0)
+                {
+                    break;
+                }
+            }
+            ret.str_len=max_number_bytes;
+        }
+        for(size_t i=0; i<ret.str_len; i++)
+        {
+            buffer[ret.str_len-1-i] = ((number%10)+'0');
+            number /= 10;
+        }
+    }
+    return ret;
+}
+
+uint64_t hhttp_string_hex_to_uint64(hhttp_string_t src)
+{
+    uint64_t ret=0;
+    if(!hhttp_string_is_empty(src))
+    {
+        for(size_t i=0; i<src.str_len; i++)
+        {
+            if((src.str[i] >= '0' && src.str[i] <= '9') || (src.str[i] >= 'A' && src.str[i] <= 'F') || (src.str[i] >= 'a' && src.str[i] <= 'f') )
+            {
+                ret*=16;
+                if(src.str[i] >= '0' && src.str[i] <= '9')
+                {
+                    ret+= (src.str[i]-'0');
+                }
+                else if(src.str[i] >= 'A' && src.str[i] <= 'F')
+                {
+                    ret+= (src.str[i]-'A'+10);
+                }
+                else if(src.str[i] >= 'a' && src.str[i] <= 'f')
+                {
+                    ret+= (src.str[i]-'a'+10);
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    return ret;
+}
+
+hhttp_string_t hhttp_string_hex_from_uint64(uint8_t *buffer,size_t buffer_len,uint64_t number)
+{
+    hhttp_string_t ret=hhttp_string_from_buffer(buffer,buffer_len);
+    if(buffer!=NULL && buffer_len!=0)
+    {
+        {
+            size_t max_number_bytes=1;      //至少需要一位数字
+            for(max_number_bytes=1; max_number_bytes <= ret.str_len; max_number_bytes++)
+            {
+                if((number/(hhttp_pow_uint64(16,max_number_bytes)))==0)
+                {
+                    break;
+                }
+            }
+            ret.str_len=max_number_bytes;
+        }
+        for(size_t i=0; i<ret.str_len; i++)
+        {
+            uint8_t byte_number=(number%16);
+            if(byte_number < 10)
+            {
+                buffer[ret.str_len-1-i]=('0'+byte_number);
+            }
+            else
+            {
+                buffer[ret.str_len-1-i]=('A'+byte_number-10);
+            }
+            number /= 16;
         }
     }
     return ret;
@@ -218,19 +392,7 @@ hhttp_string_t hhttp_status_code_std_to_string(hhttp_status_code_t status_code)
 
 int hhttp_status_code_from_string(hhttp_string_t str)
 {
-    int ret=0;
-    if(str.str!=NULL && str.str_len!=0)
-    {
-        for(size_t i=0; i<str.str_len; i++)
-        {
-            if(str.str[i] >= '0' && str.str[i] <= '9')
-            {
-                ret*=10;
-                ret+=(str.str[i]-'0');
-            }
-        }
-    }
-    return ret;
+    return hhttp_string_dec_to_uint64(str);
 }
 
 HDEFAULTS_RO_ATTRIBUTE
