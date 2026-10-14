@@ -944,7 +944,7 @@ bool hhttp_body_normal_parse_is_end(hhttp_body_normal_parse_t *body_normal)
 bool hhttp_body_normal_parse_input(hhttp_body_normal_parse_t *body_normal,const uint8_t *data,size_t *data_length)
 {
     bool ret=false;
-    if(body_normal == NULL,body_normal->data == NULL)
+    if(body_normal == NULL || body_normal->data == NULL)
     {
         return ret;
     }
@@ -982,7 +982,7 @@ bool hhttp_body_normal_parse_input(hhttp_body_normal_parse_t *body_normal,const 
 bool hhttp_body_normal_parse_input_end(hhttp_body_normal_parse_t *body_normal)
 {
     bool ret=false;
-    if(body_normal == NULL,body_normal->data == NULL)
+    if(body_normal == NULL || body_normal->data == NULL)
     {
         return ret;
     }
@@ -1033,7 +1033,7 @@ bool hhttp_body_chunked_parse_is_end(hhttp_body_chunked_parse_t *body_chunked)
 bool hhttp_body_chunked_parse_input(hhttp_body_chunked_parse_t *body_chunked,const uint8_t *data,size_t *data_length)
 {
     bool ret=false;
-    if(body_chunked == NULL,body_chunked->data == NULL)
+    if(body_chunked == NULL || body_chunked->data == NULL)
     {
         return ret;
     }
