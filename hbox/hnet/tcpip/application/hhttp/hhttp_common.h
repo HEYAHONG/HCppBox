@@ -473,7 +473,42 @@ int hhttp_status_code_from_string(hhttp_string_t str);
  */
 hhttp_string_t hhttp_status_code_std_to_reason_string(hhttp_status_code_t status_code);
 
+struct hhttp_status_line;
+typedef struct hhttp_status_line hhttp_status_line_t;
+struct hhttp_status_line
+{
+    hhttp_version_t     version;
+    hhttp_status_code_t status;
+    hhttp_string_t      reason;
+};
 
+/** \brief 状态行解析
+ *
+ * \param status_line hhttp_status_line_t* 状态行
+ * \param line hhttp_string_t 行
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_status_line_parse(hhttp_status_line_t *status_line,hhttp_string_t line);
+
+/** \brief 状态行打包回调
+ *
+ * \param usr void* 用户参数
+ * \param offset size_t 偏移
+ * \param part_string hhttp_string_t 部分字符串
+ *
+ */
+typedef void (*hhttp_status_line_pack_write_callback_t)(void *usr,size_t offset,hhttp_string_t part_string);
+
+/** \brief 状态行打包
+ *
+ * \param status_line hhttp_status_line_t* 状态行打包
+ * \param cb hhttp_status_line_pack_write_callback_t 状态行打包回调
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_status_line_pack(hhttp_status_line_t *status_line,hhttp_status_line_pack_write_callback_t cb,void *usr);
 
 
 #ifdef __cplusplus

@@ -645,4 +645,147 @@ hhttp_string_t hhttp_status_code_std_to_reason_string(hhttp_status_code_t status
     return ret;
 }
 
+bool hhttp_status_line_parse(hhttp_status_line_t *status_line,hhttp_string_t line)
+{
+    bool ret=false;
+    if(status_line == NULL || !hhttp_string_check_line(line))
+    {
+        return ret;
+    }
+    hhttp_string_t line_content=hhttp_string_line_get_content(line);
+
+    /*
+     * 去除末尾的\r\n
+     */
+    line_content.str_len -= 2;
+
+    {
+        hhttp_string_t first_space_string=hhttp_string_strstr(line_content,hhttp_string_from_cstring(" "));
+        if(hhttp_string_is_empty(first_space_string))
+        {
+            return ret;
+        }
+        hhttp_string_t version_string;
+        version_string.str=line_content.str;
+        version_string.str_len=(((uintptr_t)first_space_string.str)-((uintptr_t)version_string.str));
+        status_line->version=hhttp_version_from_string(version_string);
+
+        line_content.str = &line_content.str[version_string.str_len+1];
+        line_content.str_len -= (version_string.str_len+1);
+    }
+
+    {
+        hhttp_string_t second_space_string=hhttp_string_strstr(line_content,hhttp_string_from_cstring(" "));
+        if(hhttp_string_is_empty(second_space_string))
+        {
+            return ret;
+        }
+        hhttp_string_t status_string;
+        status_string.str=line_content.str;
+        status_string.str_len=(((uintptr_t)second_space_string.str)-((uintptr_t)line_content.str));
+        status_line->status=hhttp_status_code_from_string(status_string);
+        hhttp_string_t reason_string;
+        reason_string.str=&line_content.str[status_string.str_len+1];
+        reason_string.str_len=(line_content.str_len-(status_string.str_len+1));
+        status_line->reason=reason_string;
+    }
+
+    if(status_line->status != 0 && status_line->version != HHTTP_VERSION_UNKNOWN)
+    {
+        ret=true;
+    }
+
+    return ret;
+
+}
+
+
+bool hhttp_status_line_pack(hhttp_status_line_t *status_line,hhttp_status_line_pack_write_callback_t cb,void *usr)
+{
+    bool ret=false;
+    if(status_line == NULL )
+    {
+        return ret;
+    }
+    if(status_line->version == HHTTP_VERSION_UNKNOWN || status_line->status == 0)
+    {
+        return ret;
+    }
+    if(cb == NULL)
+    {
+        return ret;
+    }
+    ret=true;
+    size_t offset=0;
+    hhttp_string_t space_string=hhttp_string_from_cstring(" ");
+    hhttp_string_t line_end_string=hhttp_string_from_cstring(HHTTP_LINE_END_STRING);
+
+
+    {
+        /*
+         * 版本
+         */
+        hhttp_string_t version_string=hhttp_version_std_to_string(status_line->version);
+        if(hhttp_string_is_empty(version_string))
+        {
+            ret=false;
+        }
+        cb(usr,offset,version_string);
+        offset += version_string.str_len;
+    }
+
+    /*
+     * 空格
+     */
+    cb(usr,offset,space_string);
+    offset += space_string.str_len;
+
+    /*
+     * 状态
+     */
+    bool is_status_code_std=true;
+    {
+        uint8_t buffer[8]= {0};
+        hhttp_string_t status_string=hhttp_status_code_std_to_string(status_line->status);
+        if(hhttp_string_is_empty(status_string))
+        {
+            /*
+             * 非标状态码
+             */
+            status_string=hhttp_string_dec_from_uint64(buffer,sizeof(buffer)-1,(uint64_t)status_line->status);
+            is_status_code_std=false;
+        }
+        cb(usr,offset,status_string);
+        offset += status_string.str_len;
+    }
+
+    /*
+     * 空格
+     */
+    cb(usr,offset,space_string);
+    offset += space_string.str_len;
+
+    {
+        /*
+         * 原因
+         */
+        hhttp_string_t reason_string=hhttp_status_code_std_to_reason_string(status_line->status);
+        if(!is_status_code_std)
+        {
+            reason_string=status_line->reason;
+        }
+        cb(usr,offset,reason_string);
+        offset += reason_string.str_len;
+    }
+
+    /*
+     * 行结束
+     */
+    cb(usr,offset,line_end_string);
+    offset += line_end_string.str_len;
+
+
+    return ret;
+
+}
 
