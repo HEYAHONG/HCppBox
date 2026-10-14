@@ -549,6 +549,41 @@ typedef void (*hhttp_field_line_pack_write_callback_t)(void *usr,size_t offset,h
  */
 bool hhttp_field_line_pack(hhttp_field_t *field_line,hhttp_field_line_pack_write_callback_t cb,void *usr);
 
+/*
+ * 主体（body）与头部字段(field)使用空行分割，本组件主要支持以下情况:
+ *      -当Connection等于close(HTTP/1.0默认)时，内容截至当前连接结束,无需其它字段支持。
+ *      -当Connection等于keep-alive(HTTP/1.1默认)时，需要使用Transfer-Encoding或者Content-Length解析长度。
+ *
+ */
+
+
+/** \brief 主体是否为行开始
+ *
+ * \param line hhttp_string_t 行
+ * \return bool 是否为主体开始
+ *
+ */
+bool hhttp_body_is_begin(hhttp_string_t line);
+
+/** \brief 主体写入回调
+ *
+ * \param usr void* 用户参数
+ * \param offset size_t 偏移
+ * \param part_string hhttp_string_t 部分字符串
+ *
+ */
+typedef void (*hhttp_body_write_callback_t)(void *usr,size_t offset,hhttp_string_t part_string);
+
+/** \brief 主体起始
+ *
+ * \param cb hhttp_body_write_callback_t 写入回调
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_body_begin(hhttp_body_write_callback_t cb,void *usr);
+
+
 
 #ifdef __cplusplus
 }

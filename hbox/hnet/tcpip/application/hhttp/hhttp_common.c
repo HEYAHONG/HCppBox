@@ -905,3 +905,29 @@ bool hhttp_field_line_pack(hhttp_field_t *field_line,hhttp_field_line_pack_write
     return ret;
 }
 
+bool hhttp_body_is_begin(hhttp_string_t line)
+{
+    return hhttp_string_line_content_is_empty(hhttp_string_line_get_content(line));
+}
+
+bool hhttp_body_begin(hhttp_body_write_callback_t cb,void *usr)
+{
+    bool ret=false;
+    if(cb == NULL)
+    {
+        return ret;
+    }
+    ret=true;
+    size_t offset=0;
+    hhttp_string_t line_end_string=hhttp_string_from_cstring(HHTTP_LINE_END_STRING);
+
+    /*
+     * 行结束
+     */
+    cb(usr,offset,line_end_string);
+    offset += line_end_string.str_len;
+
+
+    return ret;
+}
+
