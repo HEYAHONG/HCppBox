@@ -789,3 +789,119 @@ bool hhttp_status_line_pack(hhttp_status_line_t *status_line,hhttp_status_line_p
 
 }
 
+static bool hhttp_field_strip_ows(hhttp_string_t *str)
+{
+    bool ret=false;
+    if(str==NULL || hhttp_string_is_empty(*str))
+    {
+        return ret;
+    }
+    while(str->str[str->str_len-1] == ' ' || str->str[str->str_len-1] == '\t')
+    {
+        str->str_len--;
+    }
+    while(str->str[0] == ' ' || str->str[0] == '\t')
+    {
+        str->str++;
+        str->str_len--;
+    }
+    ret=true;
+    return ret;
+}
+
+bool hhttp_field_parse(hhttp_field_t *field_line,hhttp_string_t line)
+{
+    bool ret=false;
+    if(field_line == NULL || !hhttp_string_check_line(line))
+    {
+        return ret;
+    }
+
+    /*
+     * 注意：不支持已被弃用的折叠行写法
+     */
+    hhttp_string_t line_content=hhttp_string_line_get_content(line);
+
+    /*
+     * 去除末尾的\r\n
+     */
+    line_content.str_len -= 2;
+
+    hhttp_string_t colon_string=hhttp_string_strstr(line_content,hhttp_string_from_cstring(":"));
+    if(hhttp_string_is_empty(colon_string))
+    {
+        return ret;
+    }
+
+    field_line->field_name.str=&line_content.str[0];
+    field_line->field_name.str_len= (((uintptr_t)colon_string.str)-((uintptr_t)line_content.str));
+    field_line->field_values.str=&line_content.str[field_line->field_name.str_len+1];
+    field_line->field_values.str_len=line_content.str_len-(field_line->field_name.str_len+1);
+
+    /*
+     * 去除首尾的可选空白
+     */
+    if(!hhttp_field_strip_ows(&field_line->field_values))
+    {
+        return ret;
+    }
+
+    ret=true;
+    return ret;
+}
+
+bool hhttp_field_line_pack(hhttp_field_t *field_line,hhttp_field_line_pack_write_callback_t cb,void *usr)
+{
+    bool ret=false;
+    if(field_line == NULL )
+    {
+        return ret;
+    }
+    if(hhttp_string_is_empty(field_line->field_name)|| hhttp_string_is_empty(field_line->field_values))
+    {
+        return ret;
+    }
+    if(cb == NULL)
+    {
+        return ret;
+    }
+    ret=true;
+    size_t offset=0;
+    hhttp_string_t space_string=hhttp_string_from_cstring(" ");
+    hhttp_string_t colon_string=hhttp_string_from_cstring(":");
+    hhttp_string_t line_end_string=hhttp_string_from_cstring(HHTTP_LINE_END_STRING);
+
+    /*
+     * 名称
+     */
+    cb(usr,offset,field_line->field_name);
+    offset += field_line->field_name.str_len;
+
+    /*
+     * 冒号
+     */
+    cb(usr,offset,colon_string);
+    offset += colon_string.str_len;
+
+    /*
+     * 空格（可选）
+     */
+    cb(usr,offset,space_string);
+    offset += space_string.str_len;
+
+    /*
+     * 值
+     */
+    cb(usr,offset,field_line->field_values);
+    offset += field_line->field_values.str_len;
+
+    /*
+     * 行结束
+     */
+    cb(usr,offset,line_end_string);
+    offset += line_end_string.str_len;
+
+
+    return ret;
+}
+

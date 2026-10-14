@@ -510,6 +510,45 @@ typedef void (*hhttp_status_line_pack_write_callback_t)(void *usr,size_t offset,
  */
 bool hhttp_status_line_pack(hhttp_status_line_t *status_line,hhttp_status_line_pack_write_callback_t cb,void *usr);
 
+/*
+ * 头部字段:以:分割的键名键值对
+ */
+struct hhttp_field;
+typedef struct hhttp_field hhttp_field_t;
+struct hhttp_field
+{
+    hhttp_string_t field_name;
+    hhttp_string_t field_values;
+};
+
+/** \brief 头部字段行解析
+ *
+ * \param field_line hhttp_field_t* 头部字段行
+ * \param line hhttp_string_t 行
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_field_parse(hhttp_field_t *field_line,hhttp_string_t line);
+
+/** \brief 头部字段行打包回调
+ *
+ * \param usr void* 用户参数
+ * \param offset size_t 偏移
+ * \param part_string hhttp_string_t 部分字符串
+ *
+ */
+typedef void (*hhttp_field_line_pack_write_callback_t)(void *usr,size_t offset,hhttp_string_t part_string);
+
+/** \brief 头部字段行打包
+ *
+ * \param field_line hhttp_field_t* 头部字段行打包
+ * \param cb hhttp_field_line_pack_write_callback_t 头部字段行打包回调
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_field_line_pack(hhttp_field_t *field_line,hhttp_field_line_pack_write_callback_t cb,void *usr);
+
 
 #ifdef __cplusplus
 }
