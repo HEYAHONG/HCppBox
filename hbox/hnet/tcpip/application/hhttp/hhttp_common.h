@@ -565,7 +565,104 @@ bool hhttp_field_line_pack(hhttp_field_t *field_line,hhttp_field_line_pack_write
  */
 bool hhttp_body_is_begin(hhttp_string_t line);
 
-/** \brief 主体写入回调
+struct hhttp_body_normal_parse;
+typedef struct hhttp_body_normal_parse hhttp_body_normal_parse_t;
+typedef void (*hhttp_body_normal_parse_data_t)(hhttp_body_normal_parse_t *body_normal,uint64_t offset,hhttp_string_t part_data);
+struct hhttp_body_normal_parse
+{
+    hhttp_body_normal_parse_data_t data;        /**< 数据处理函数 */
+    uint64_t offset;                            /**< 数据偏移（等于已写入的数据大小） */
+    uint64_t max_length;                        /**< 最大数据大小,当最大数据大小为((uint64_t)-1)时，表示未指定数据大小，此时数据大小由连接关闭确认 */
+    void *usr;
+};
+
+#define HHTTP_BODY_NORMAL_MAX_LENGTH_UNDEFINED      ((uint64_t)-1)
+
+/** \brief 正常主体初始化
+ *
+ * \param body_normal hhttp_body_normal_parse_t* 主体
+ * \param data hhttp_body_normal_parse_data_t 数据处理函数
+ * \param max_length size_t 最大大小
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_body_normal_parse_init(hhttp_body_normal_parse_t *body_normal,hhttp_body_normal_parse_data_t data,size_t max_length,void *usr);
+
+/** \brief 是否已完成本次主体的接收
+ *
+ * \param body_normal hhttp_body_normal_parse_t* 主体
+ * \return bool 是否结束
+ *
+ */
+bool hhttp_body_normal_parse_is_end(hhttp_body_normal_parse_t *body_normal);
+
+/** \brief 主体数据输入
+ *
+ * \param body_normal hhttp_body_normal_parse_t* 主体
+ * \param data const uint8_t* 数据，不包含用于分割头部的空行
+ * \param data_length size_t* 数据长度，传入数据长度，传出已使用的长度，当输入与输出不相等时表明主体已结束且需要处理后续字节
+ * \return bool 是否正确处理
+ *
+ */
+bool hhttp_body_normal_parse_input(hhttp_body_normal_parse_t *body_normal,const uint8_t *data,size_t *data_length);
+
+/** \brief 主体输入结束，一般在连接结束时调用
+ *
+ * \param body_normal hhttp_body_normal_parse_t* 主体
+ * \return bool 是否正确处理
+ *
+ */
+bool hhttp_body_normal_parse_input_end(hhttp_body_normal_parse_t *body_normal);
+
+struct hhttp_body_chunked_parse;
+typedef struct hhttp_body_chunked_parse hhttp_body_chunked_parse_t;
+typedef void (*hhttp_body_chunked_parse_data_t)(hhttp_body_chunked_parse_t *body_chunked,uint64_t offset,hhttp_string_t part_data);
+struct hhttp_body_chunked_parse
+{
+    hhttp_body_chunked_parse_data_t data;           /**< 数据处理函数 */
+    uint64_t offset;                                /**< 数据偏移（等于已写入的数据大小） */
+    uint64_t single_offset;                         /**< 单次偏移 */
+    uint64_t single_length;                         /**< 单次长度  */
+    void *usr;
+    struct
+    {
+        uint32_t l_d:1;                             /**< 长度(0)或者数据(1) */
+        uint32_t data_end:1;                        /**< 数据结束 */
+        uint32_t data_end_call:1;                   /**< 已调用数据结束回调 */
+    } flags;
+    uint8_t  length_string_buffer[20];              /**< 用于存储长度字符换 */
+};
+
+/** \brief chunked主体初始化
+ *
+ * \param body_chunked hhttp_body_chunked_parse_t* 主体
+ * \param data hhttp_body_chunked_parse_data_t 数据处理函数
+ * \param usr void* 用户参数
+ * \return bool 是否正确处理
+ *
+ */
+bool hhttp_body_chunked_parse_init(hhttp_body_chunked_parse_t *body_chunked,hhttp_body_chunked_parse_data_t data,void *usr);
+
+/** \brief 是否已完成本次主体的接收
+ *
+ * \param body_chunked hhttp_body_chunked_parse_t* 主体
+ * \return bool 是否结束
+ *
+ */
+bool hhttp_body_chunked_parse_is_end(hhttp_body_chunked_parse_t *body_chunked);
+
+/** \brief chunked主体数据输入
+ *
+ * \param body_chunked hhttp_body_chunked_parse_t* 主体
+ * \param data const uint8_t* 数据，不包含用于分割头部的空行
+ * \param data_length size_t* 数据长度，传入数据长度，传出已使用的长度，当输入与输出不相等时需要处理后续字节
+ * \return bool 是否正确处理
+ *
+ */
+bool hhttp_body_chunked_parse_input(hhttp_body_chunked_parse_t *body_chunked,const uint8_t *data,size_t *data_length);
+
+/** \brief chunked主体写入回调
  *
  * \param usr void* 用户参数
  * \param offset size_t 偏移
@@ -582,6 +679,26 @@ typedef void (*hhttp_body_write_callback_t)(void *usr,size_t offset,hhttp_string
  *
  */
 bool hhttp_body_begin(hhttp_body_write_callback_t cb,void *usr);
+
+/** \brief 主体打包chunked数据
+ *
+ * \param cb hhttp_body_write_callback_t 写入回调
+ * \param usr void* 用户参数
+ * \param data hhttp_string_t 数据,当数据为空时表示写入结束，不可继续写入数据
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_body_chunked_pack(hhttp_body_write_callback_t cb,void *usr,hhttp_string_t data);
+
+
+/** \brief 主体chunked数据结束
+ *
+ * \param cb hhttp_body_write_callback_t 写入回调
+ * \param usr void* 用户数据
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_body_chunked_end(hhttp_body_write_callback_t cb,void *usr);
 
 
 
