@@ -15,6 +15,7 @@ extern "C"
 #endif // __cplusplus
 
 #include "hhttp_common.h"
+#include "hhttp_tinyserver.h"
 
 #ifdef __cplusplus
 }

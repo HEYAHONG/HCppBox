@@ -9,3 +9,4 @@
 #include "hhttp.h"
 
 #include "hhttp_common.c"
+#include "hhttp_tinyserver.c"
