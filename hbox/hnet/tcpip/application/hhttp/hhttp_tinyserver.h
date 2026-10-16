@@ -43,7 +43,7 @@ struct hhttp_tinyserver_session
 {
     int  (*session_target_match)(hhttp_tinyserver_session_t *session,hhttp_request_line_t request_line);                                                            /**< 匹配target，返回HTTP状态码 */
     void (*session_process_process_field)(hhttp_tinyserver_session_t *session,hhttp_field_t field);                                                                 /**< 处理请求头 */
-    void (*session_process_body)(hhttp_tinyserver_session_t *session,uint64_t offset,hhttp_string_t part_data);                                                     /**< 会话写入数据 */
+    void (*session_process_body)(hhttp_tinyserver_session_t *session,uint64_t offset,hhttp_string_t part_data);                                                     /**< 会话写入数据,注意:offset无效，仅用于兼容 */
     void (*session_process_body_end)(hhttp_tinyserver_session_t *session);                                                                                          /**< 会话写入结束 */
     hhttp_tinyserver_file_t  *(*session_target_file_open)(hhttp_tinyserver_session_t *session,int http_status_code,hhttp_request_line_t request_line);              /**< 打开文件,用于响应请求 */
     void (*session_target_file_close)(hhttp_tinyserver_session_t *session,hhttp_tinyserver_file_t *file);                                                           /**< 关闭文件 */
