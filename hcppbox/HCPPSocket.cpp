@@ -69,7 +69,7 @@ void *HCPPSocketInit()
     return &g_socket_manager;
 }
 
-#ifndef WIN32
+#if !defined(WIN32) && !defined(__CYGWIN__)
 int closesocket(SOCKET s)
 {
     return close(s);
