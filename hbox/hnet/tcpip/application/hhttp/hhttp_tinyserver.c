@@ -721,6 +721,37 @@ static bool hhttp_tinyserver_connection_send_server_response(hhttp_tinyserver_co
             }
         }
     }
+    else if(hhttp_tinyserver_connection_is_client_request_error(connection))
+    {
+        if(connection->request_line.method==HHTTP_METHOD_UNKNOWN || connection->request_line.method==HHTTP_METHOD_GET || connection->request_line.method==HHTTP_METHOD_POST)
+        {
+            const char *html_block_1=
+                "<!doctype html>\r\n"
+                "<html>\r\n"
+                "<head>\r\n"
+                "<meta charset=\"utf-8\">\r\n"
+                "<title>hhttpd error</title>\r\n"
+                "<style>\r\n"
+                "body{margin:0;height:100vh;display:grid;place-items:center;color:red}\r\n"
+                "h1{margin:0}\r\n"
+                "</style>\r\n"
+                "</head>\r\n"
+                "<body>\r\n"
+                "<h1>\r\n";
+            hhttp_tinyserver_connection_send_server_response_write(connection,0,hhttp_string_from_cstring(html_block_1));
+            {
+                uint8_t buffer[32];
+                hhttp_tinyserver_connection_send_server_response_write(connection,0,hhttp_string_dec_from_uint64(buffer,sizeof(buffer),connection->status_line.status));
+            }
+            hhttp_tinyserver_connection_send_server_response_write(connection,0,hhttp_string_from_cstring(" "));
+            hhttp_tinyserver_connection_send_server_response_write(connection,0,hhttp_status_code_std_to_reason_string(connection->status_line.status));
+            const char *html_block_2=
+                "</h1>\r\n"
+                "</body>\r\n"
+                "</html>\r\n";
+            hhttp_tinyserver_connection_send_server_response_write(connection,0,hhttp_string_from_cstring(html_block_2));
+        }
+    }
 
 
     /*
