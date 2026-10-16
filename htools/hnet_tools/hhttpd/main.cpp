@@ -122,7 +122,10 @@ static int httpd_main(void)
 #endif
         while((connection_fd=accept(server_fd,(HCPPSocketAddress *)&addr,&socklen))!=INVALID_SOCKET)
         {
-            hfprintf(stderr,"[httpd] connection %d opened!\r\n",connection_fd);
+            {
+                char addr_buffer[64]={0};
+                hfprintf(stderr,"[httpd] connection %d (%s:%d) opened!\r\n",connection_fd,inet_ntop(AF_INET,&addr.sin_addr,addr_buffer,sizeof(addr_buffer)),(int)hbe16toh(addr.sin_port));
+            }
             tcp_socket_set_nonblock(connection_fd);
             hhttp_tinyserver_connection_t httpd_con;
             hhttp_tinyserver_connection_init(&httpd_con,
