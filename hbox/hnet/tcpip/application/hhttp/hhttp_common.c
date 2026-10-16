@@ -379,7 +379,7 @@ bool hhttp_request_line_parse(hhttp_request_line_t *request_line,hhttp_string_t 
         request_line->version=hhttp_version_from_string(version_string);
     }
 
-    if(request_line->method != HHTTP_METHOD_UNKNOWN && hhttp_string_is_empty(request_line->target) && request_line->version != HHTTP_VERSION_UNKNOWN)
+    if(request_line->method != HHTTP_METHOD_UNKNOWN && !hhttp_string_is_empty(request_line->target) && request_line->version != HHTTP_VERSION_UNKNOWN)
     {
         ret=true;
     }

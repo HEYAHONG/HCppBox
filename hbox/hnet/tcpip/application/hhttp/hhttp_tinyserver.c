@@ -516,7 +516,7 @@ static bool hhttp_tinyserver_connection_send_server_response(hhttp_tinyserver_co
     }
     bool ret=true;
 
-    if(!hhttp_tinyserver_connection_send_server_response(connection))
+    if(!hhttp_tinyserver_connection_is_client_request_error(connection))
     {
         if(connection->connection_session!=NULL &&connection->connection_session->session_target_file_open!=NULL)
         {
@@ -779,7 +779,20 @@ bool hhttp_tinyserver_connection_input(hhttp_tinyserver_connection_t *connection
     return ret;
 }
 
+void hhttp_tinyserver_connection_init(hhttp_tinyserver_connection_t *connection,const hhttp_tinyserver_service_t * service,hhttp_tinyserver_connection_write_t con_write,hhttp_tinyserver_connection_close_t con_close,void *usr)
+{
+    if(connection==NULL)
+    {
+        return;
+    }
 
+    memset(connection,0,sizeof(*connection));
+
+    connection->service=service;
+    connection->connection_write=con_write;
+    connection->connection_close=con_close;
+    connection->usr=usr;
+}
 
 
 

@@ -150,6 +150,19 @@ void hhttp_tinyserver_connection_cleanup(hhttp_tinyserver_connection_t *connecti
  */
 bool hhttp_tinyserver_connection_input(hhttp_tinyserver_connection_t *connection,uint8_t *data,size_t datalen);
 
+typedef void (*hhttp_tinyserver_connection_write_t)(hhttp_tinyserver_connection_t *connection,uint64_t offset,hhttp_string_t part_data);
+typedef void (*hhttp_tinyserver_connection_close_t)(hhttp_tinyserver_connection_t *connection);
+
+/** \brief 连接初始化
+ *
+ * \param connection hhttp_tinyserver_connection_t* 连接
+ * \param service const hhttp_tinyserver_service_t* 服务
+ * \param con_write hhttp_tinyserver_connection_write_t 连接写入
+ * \param con_close hhttp_tinyserver_connection_close_t 连接关闭
+ * \param usr void* 用户参数
+ *
+ */
+void hhttp_tinyserver_connection_init(hhttp_tinyserver_connection_t *connection,const hhttp_tinyserver_service_t * service,hhttp_tinyserver_connection_write_t con_write,hhttp_tinyserver_connection_close_t con_close,void *usr);
 
 #ifdef __cplusplus
 }

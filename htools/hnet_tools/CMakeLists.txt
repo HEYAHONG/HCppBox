@@ -38,3 +38,10 @@ add_custom_target(hsntpd_tool  ${CMAKE_COMMAND} -E make_directory hsntpd && ${CM
     USES_TERMINAL)
 add_dependencies(hnet_tools hsntpd_tool)
 message(STATUS "Enable hsntpd_tool!" )
+
+#添加hhttpd工具构建
+add_custom_target(hhttpd_tool  ${CMAKE_COMMAND} -E make_directory hhttpd && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/hhttpd/ -B hhttpd && ${CMAKE_COMMAND} --build hhttpd -t install
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+    USES_TERMINAL)
+add_dependencies(hnet_tools hhttpd_tool)
+message(STATUS "Enable hhttpd_tool!" )
