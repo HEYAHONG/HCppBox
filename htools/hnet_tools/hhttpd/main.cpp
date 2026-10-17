@@ -94,6 +94,22 @@ static int httpd_main(void)
         return -1;
     }
 
+    class server_fd_guard
+    {
+        int &server_fd;
+    public:
+        server_fd_guard(int &m_server_fd):server_fd(m_server_fd)
+        {
+
+        }
+        ~server_fd_guard()
+        {
+            closesocket(server_fd);
+            server_fd=INVALID_SOCKET;
+        }
+
+    } m_server_fd{server_fd};
+
     {
         HCPPSocketAddressIPV4 addr= {0};
         {
@@ -213,8 +229,6 @@ static int httpd_main(void)
         }
     }
 
-
-    closesocket(server_fd);
 
     return 0;
 }
