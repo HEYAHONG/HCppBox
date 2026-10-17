@@ -34,25 +34,10 @@ static int g_preprocessorCppExternCBrace;
  */
 ASBeautifier::ASBeautifier()
 {
-	waitingBeautifierStack = nullptr;
-	activeBeautifierStack = nullptr;
-	waitingBeautifierStackLengthStack = nullptr;
-	activeBeautifierStackLengthStack = nullptr;
-
-	headerStack = nullptr;
-	tempStacks = nullptr;
-	parenDepthStack = nullptr;
-	blockStatementStack = nullptr;
-	parenStatementStack = nullptr;
-	braceBlockStateStack = nullptr;
-	continuationIndentStack = nullptr;
-	continuationIndentStackSizeStack = nullptr;
-	parenIndentStack = nullptr;
-	preprocIndentStack = nullptr;
-	lambdaDepthStack = nullptr;
 	sourceIterator = nullptr;
 	isModeManuallySet = false;
 	shouldForceTabIndentation = false;
+	shouldPreserveIndent = false;
 	setSpaceIndentation(4);
 	setContinuationIndentation(1);
 	setMinConditionalIndentOption(MINCOND_TWO);
@@ -82,14 +67,14 @@ ASBeautifier::ASBeautifier()
 
 	// initialize ASBeautifier member vectors
 	beautifierFileType = INVALID_TYPE;		// reset to an invalid type
-	headers = new std::vector<const std::string*>;
-	nonParenHeaders = new std::vector<const std::string*>;
-	assignmentOperators = new std::vector<const std::string*>;
-	nonAssignmentOperators = new std::vector<const std::string*>;
-	preBlockStatements = new std::vector<const std::string*>;
-	preCommandHeaders = new std::vector<const std::string*>;
-	indentableHeaders = new std::vector<const std::string*>;
-	lambdaEndIndent = lambdaStartIndent = 0;
+	headers = std::make_shared<std::vector<const std::string*>>();
+	nonParenHeaders = std::make_shared<std::vector<const std::string*>>();
+	assignmentOperators = std::make_shared<std::vector<const std::string*>>();
+	nonAssignmentOperators = std::make_shared<std::vector<const std::string*>>();
+	preBlockStatements = std::make_shared<std::vector<const std::string*>>();
+	preCommandHeaders = std::make_shared<std::vector<const std::string*>>();
+	indentableHeaders = std::make_shared<std::vector<const std::string*>>();
+	lambdaStartIndent = 0;
 }
 
 /**
@@ -104,44 +89,37 @@ ASBeautifier::ASBeautifier()
 ASBeautifier::ASBeautifier(const ASBeautifier& other) : ASBase(other)
 {
 	// these don't need to copy the stack
-	waitingBeautifierStack = nullptr;
-	activeBeautifierStack = nullptr;
-	waitingBeautifierStackLengthStack = nullptr;
-	activeBeautifierStackLengthStack = nullptr;
+	// (default-constructed to nullptr, as before)
 
-	// vector '=' operator performs a DEEP copy of all elements in the vector
+	// vector copy construction performs a DEEP copy of all elements in the vector
 
-	headerStack = new std::vector<const std::string*>;
-	*headerStack = *other.headerStack;
+	headerStack = std::make_unique<std::vector<const std::string*>>(*other.headerStack);
 
 	tempStacks = copyTempStacks(other);
 
-	parenDepthStack = new std::vector<int>;
-	*parenDepthStack = *other.parenDepthStack;
+	parenDepthStack = std::make_unique<std::vector<int>>(*other.parenDepthStack);
+	parenBlockStateStack = std::make_unique<std::vector<ParenBlockState>>(*other.parenBlockStateStack);
 
-	blockStatementStack = new std::vector<bool>;
-	*blockStatementStack = *other.blockStatementStack;
+	blockStatementStack = std::make_unique<std::vector<bool>>(*other.blockStatementStack);
+	blockConditionalStack = std::make_unique<std::vector<bool>>(*other.blockConditionalStack);
+	blockQuestionStack = std::make_unique<std::vector<bool>>(*other.blockQuestionStack);
 
-	parenStatementStack = new std::vector<bool>;
-	*parenStatementStack = *other.parenStatementStack;
+	parenStatementStack = std::make_unique<std::vector<bool>>(*other.parenStatementStack);
 
-	braceBlockStateStack = new std::vector<bool>;
-	*braceBlockStateStack = *other.braceBlockStateStack;
+	braceBlockStateStack = std::make_unique<std::vector<bool>>(*other.braceBlockStateStack);
+	lambdaBodyStateStack = std::make_unique<std::vector<bool>>(*other.lambdaBodyStateStack);
 
-	continuationIndentStack = new std::vector<int>;
-	*continuationIndentStack = *other.continuationIndentStack;
+	continuationIndentStack = std::make_unique<std::vector<int>>(*other.continuationIndentStack);
 
-	continuationIndentStackSizeStack = new std::vector<size_t>;
-	*continuationIndentStackSizeStack = *other.continuationIndentStackSizeStack;
+	continuationIndentStackSizeStack = std::make_unique<std::vector<size_t>>(*other.continuationIndentStackSizeStack);
 
-	parenIndentStack = new std::vector<int>;
-	*parenIndentStack = *other.parenIndentStack;
+	parenIndentStack = std::make_unique<std::vector<int>>(*other.parenIndentStack);
 
-	preprocIndentStack = new std::vector<std::pair<int, int> >;
-	*preprocIndentStack = *other.preprocIndentStack;
+	preprocIndentStack = std::make_unique<std::vector<std::pair<int, int> >>(*other.preprocIndentStack);
 
-	lambdaDepthStack = new std::vector<int>;
-	*lambdaDepthStack = *other.lambdaDepthStack;
+	lambdaDepthStack = std::make_unique<std::vector<int>>(*other.lambdaDepthStack);
+	lambdaParenDepthStack = std::make_unique<std::vector<int>>(*other.lambdaParenDepthStack);
+	lambdaBraceDepthStack = std::make_unique<std::vector<size_t>>(*other.lambdaBraceDepthStack);
 
 	// Copy the pointers to std::vectors.
 	// This is ok because the original ASBeautifier object
@@ -199,6 +177,7 @@ ASBeautifier::ASBeautifier(const ASBeautifier& other) : ASBase(other)
 	isInDefineDefinition = other.isInDefineDefinition;
 	classIndent = other.classIndent;
 	isIndentModeOff = other.isIndentModeOff;
+	shouldPreserveIndent = other.shouldPreserveIndent;
 	isInClassHeader = other.isInClassHeader;
 	isInClassHeaderTab = other.isInClassHeaderTab;
 	isInClassInitializer = other.isInClassInitializer;
@@ -215,6 +194,10 @@ ASBeautifier::ASBeautifier(const ASBeautifier& other) : ASBase(other)
 	isInStruct = other.isInStruct;
 	isInLet = other.isInLet;
 	isInTrailingReturnType = other.isInTrailingReturnType;
+	isInConstevalCondition = other.isInConstevalCondition;
+	isInLambdaIntroducer = other.isInLambdaIntroducer;
+	switchCaseStack = other.switchCaseStack;
+	isLastSquareBracketLambda = other.isLastSquareBracketLambda;
 	modifierIndent = other.modifierIndent;
 	switchIndent = other.switchIndent;
 	noIndentIfAfterElse = other.noIndentIfAfterElse;
@@ -260,6 +243,8 @@ ASBeautifier::ASBeautifier(const ASBeautifier& other) : ASBase(other)
 	shouldIndentPreprocConditional = other.shouldIndentPreprocConditional;
 	lambdaIndicator = other.lambdaIndicator;
 	lambdaDepth = other.lambdaDepth;
+	lambdaCaptureParenDepth = other.lambdaCaptureParenDepth;
+	lambdaIntroducerParenDepth = other.lambdaIntroducerParenDepth;
 	lastLambdaDepth = other.lastLambdaDepth;
 
 
@@ -293,31 +278,14 @@ ASBeautifier::ASBeautifier(const ASBeautifier& other) : ASBase(other)
 	prevNonLegalCh = other.prevNonLegalCh;
 	bracesNestingLevel = other.bracesNestingLevel;
 	bracesNestingLevelOfStruct = other.bracesNestingLevelOfStruct;
-	lambdaEndIndent = other.lambdaEndIndent;
 	lambdaStartIndent = other.lambdaStartIndent;
 }
 
 /**
  * ASBeautifier's destructor
+ * All member vectors are smart pointers, so cleanup is automatic.
  */
-ASBeautifier::~ASBeautifier()
-{
-	deleteBeautifierContainer(waitingBeautifierStack);
-	deleteBeautifierContainer(activeBeautifierStack);
-	deleteContainer(waitingBeautifierStackLengthStack);
-	deleteContainer(activeBeautifierStackLengthStack);
-	deleteContainer(headerStack);
-	deleteTempStacksContainer(tempStacks);
-	deleteContainer(parenDepthStack);
-	deleteContainer(blockStatementStack);
-	deleteContainer(parenStatementStack);
-	deleteContainer(braceBlockStateStack);
-	deleteContainer(continuationIndentStack);
-	deleteContainer(continuationIndentStackSizeStack);
-	deleteContainer(parenIndentStack);
-	deleteContainer(preprocIndentStack);
-	deleteContainer(lambdaDepthStack);
-}
+ASBeautifier::~ASBeautifier() = default;
 
 /**
  * initialize the ASBeautifier.
@@ -337,29 +305,38 @@ void ASBeautifier::init(ASSourceIterator* iter)
 	ASBase::init(getFileType());
 	g_preprocessorCppExternCBrace = 0;
 
-	initContainer(waitingBeautifierStack, new std::vector<ASBeautifier*>);
-	initContainer(activeBeautifierStack, new std::vector<ASBeautifier*>);
+	// the ASFormatter object is never deleted, so any existing vectors
+	// must be replaced (not merely populated) before starting a new file
+	waitingBeautifierStack = std::make_unique<std::vector<std::unique_ptr<ASBeautifier>>>();
+	activeBeautifierStack = std::make_unique<std::vector<std::unique_ptr<ASBeautifier>>>();
 
-	initContainer(waitingBeautifierStackLengthStack, new std::vector<size_t>);
-	initContainer(activeBeautifierStackLengthStack, new std::vector<size_t>);
+	waitingBeautifierStackLengthStack = std::make_unique<std::vector<size_t>>();
+	activeBeautifierStackLengthStack = std::make_unique<std::vector<size_t>>();
 
-	initContainer(headerStack, new std::vector<const std::string*>);
+	headerStack = std::make_unique<std::vector<const std::string*>>();
 
-	initTempStacksContainer(tempStacks, new std::vector<std::vector<const std::string*>*>);
-	tempStacks->emplace_back(new std::vector<const std::string*>);
+	tempStacks = std::make_unique<std::vector<std::unique_ptr<std::vector<const std::string*>>>>();
+	tempStacks->emplace_back(std::make_unique<std::vector<const std::string*>>());
 
-	initContainer(parenDepthStack, new std::vector<int>);
-	initContainer(blockStatementStack, new std::vector<bool>);
-	initContainer(parenStatementStack, new std::vector<bool>);
-	initContainer(braceBlockStateStack, new std::vector<bool>);
+	parenDepthStack = std::make_unique<std::vector<int>>();
+	parenBlockStateStack = std::make_unique<std::vector<ParenBlockState>>();
+	blockStatementStack = std::make_unique<std::vector<bool>>();
+	blockConditionalStack = std::make_unique<std::vector<bool>>();
+	blockQuestionStack = std::make_unique<std::vector<bool>>();
+	parenStatementStack = std::make_unique<std::vector<bool>>();
+	braceBlockStateStack = std::make_unique<std::vector<bool>>();
 	// do not use emplace_back on std::vector<bool> until supported by macOS
 	braceBlockStateStack->push_back(true);
-	initContainer(continuationIndentStack, new std::vector<int>);
-	initContainer(continuationIndentStackSizeStack, new std::vector<size_t>);
+	lambdaBodyStateStack = std::make_unique<std::vector<bool>>();
+	lambdaBodyStateStack->push_back(false);
+	continuationIndentStack = std::make_unique<std::vector<int>>();
+	continuationIndentStackSizeStack = std::make_unique<std::vector<size_t>>();
 	continuationIndentStackSizeStack->emplace_back(0);
-	initContainer(parenIndentStack, new std::vector<int>);
-	initContainer(preprocIndentStack, new std::vector<std::pair<int, int> >);
-	initContainer(lambdaDepthStack, new std::vector<int>);
+	parenIndentStack = std::make_unique<std::vector<int>>();
+	preprocIndentStack = std::make_unique<std::vector<std::pair<int, int> >>();
+	lambdaDepthStack = std::make_unique<std::vector<int>>();
+	lambdaParenDepthStack = std::make_unique<std::vector<int>>();
+	lambdaBraceDepthStack = std::make_unique<std::vector<size_t>>();
 
 	previousLastLineHeader = nullptr;
 	currentHeader = nullptr;
@@ -396,8 +373,14 @@ void ASBeautifier::init(ASSourceIterator* iter)
 	isInTemplate = false;
 	isInConditional = false;
 	isInTrailingReturnType = false;
+	isInConstevalCondition = false;
+	isInLambdaIntroducer = false;
+	switchCaseStack.clear();
+	isLastSquareBracketLambda = false;
 	lambdaIndicator = false;
 	lambdaDepth = 0;
+	lambdaCaptureParenDepth = -1;
+	lambdaIntroducerParenDepth = 0;
 	lastLambdaDepth = 0;
 
 	indentCount = 0;
@@ -459,7 +442,7 @@ void ASBeautifier::init(ASSourceIterator* iter)
 	objCColonAlignSubsequent = 0;
 	bracesNestingLevel = 0;
 	bracesNestingLevelOfStruct = 0;
-	lambdaEndIndent = lambdaStartIndent = 0;
+	lambdaStartIndent = 0;
 }
 
 /*
@@ -480,13 +463,13 @@ void ASBeautifier::initVectors()
 	preCommandHeaders->clear();
 	indentableHeaders->clear();
 
-	ASResource::buildHeaders(headers, fileType, true);
-	ASResource::buildNonParenHeaders(nonParenHeaders, fileType, true);
-	ASResource::buildAssignmentOperators(assignmentOperators);
-	ASResource::buildNonAssignmentOperators(nonAssignmentOperators, fileType);
-	ASResource::buildPreBlockStatements(preBlockStatements, fileType);
-	ASResource::buildPreCommandHeaders(preCommandHeaders, fileType);
-	ASResource::buildIndentableHeaders(indentableHeaders);
+	ASResource::buildHeaders(headers.get(), fileType, true);
+	ASResource::buildNonParenHeaders(nonParenHeaders.get(), fileType, true);
+	ASResource::buildAssignmentOperators(assignmentOperators.get());
+	ASResource::buildNonAssignmentOperators(nonAssignmentOperators.get(), fileType);
+	ASResource::buildPreBlockStatements(preBlockStatements.get(), fileType);
+	ASResource::buildPreCommandHeaders(preCommandHeaders.get(), fileType);
+	ASResource::buildIndentableHeaders(indentableHeaders.get());
 }
 
 /**
@@ -505,6 +488,18 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 	currentHeader = nullptr;
 	lastLineHeader = nullptr;
 	blockCommentNoBeautify = blockCommentNoIndent;
+	// the lambda offset of a line is the one in effect where the line starts,
+	// so lambdas opened or closed within the line do not affect its own indent
+	lambdaStartIndent = 0;
+	if (!lambdaDepthStack->empty())
+	{
+		size_t lambdaLevel = lambdaDepthStack->size();
+		// a line within the parameter list of a lambda belongs to the enclosing context
+		if (lambdaBraceDepthStack->back() == 0 && parenDepth > lambdaParenDepthStack->back())
+			lambdaLevel--;
+		if (lambdaLevel > 0)
+			lambdaStartIndent = (*lambdaDepthStack)[lambdaLevel - 1];
+	}
 	isInClass = false;
 	isInSwitch = false;
 	lineBeginsWithOpenBrace = false;
@@ -551,8 +546,7 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 		if (trimEnd < line.length())
 			line.erase(trimEnd);
 		// does a brace open the line
-		size_t firstChar = line.find_first_not_of(" \t");
-		if (firstChar != std::string::npos)
+		if (size_t firstChar = line.find_first_not_of(" \t"); firstChar != std::string::npos)
 		{
 			if (line[firstChar] == '{')
 				lineBeginsWithOpenBrace = true;
@@ -615,6 +609,10 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 
 	if (line.empty())
 	{
+		if (shouldPreserveIndent)
+			return "";
+
+
 		if (backslashEndsPrevLine)
 		{
 			backslashEndsPrevLine = false;
@@ -625,11 +623,7 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 			{
 				isInDefineDefinition = false;
 				if (!activeBeautifierStack->empty())
-				{
-					ASBeautifier* defineBeautifier = activeBeautifierStack->back();
 					activeBeautifierStack->pop_back();
-					delete defineBeautifier;
-				}
 			}
 		}
 		if (emptyLineFill && !isInQuoteContinuation)
@@ -662,7 +656,7 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 	        && !line.empty()
 	        && line[0] != '#')
 	{
-		if (isIndentModeOff)
+		if (isIndentModeOff || shouldPreserveIndent)
 			return originalLine;
 
 		if (isInClassHeaderTab || isInClassInitializer)
@@ -707,7 +701,7 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 				else
 					indentedLine = preLineWS(preprocBlockIndent, 0) + line;
 
-				if (isIndentModeOff)
+				if (isIndentModeOff || shouldPreserveIndent)
 					return originalLine;
 				else
 					return indentedLine;
@@ -715,17 +709,16 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 			if (shouldIndentPreprocConditional && !preproc.empty())
 			{
 
-				if (isIndentModeOff)
+				if (isIndentModeOff || shouldPreserveIndent)
 					return originalLine;
 
 				std::string indentedLine;
 				if (preproc.length() >= 2 && preproc.substr(0, 2) == "if") // #if, #ifdef, #ifndef
 				{
-					std::pair<int, int> entry;	// indentCount, spaceIndentCount
-					if (!isInDefine && activeBeautifierStack != nullptr && !activeBeautifierStack->empty())
-						entry = activeBeautifierStack->back()->computePreprocessorIndent();
-					else
-						entry = computePreprocessorIndent();
+					// indentCount, spaceIndentCount
+					std::pair<int, int> entry = (!isInDefine && activeBeautifierStack != nullptr && !activeBeautifierStack->empty())
+					                            ? activeBeautifierStack->back()->computePreprocessorIndent()
+					                            : computePreprocessorIndent();
 					preprocIndentStack->emplace_back(entry);
 					indentedLine = preLineWS(preprocIndentStack->back().first,
 					                         preprocIndentStack->back().second) + line;
@@ -768,13 +761,12 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 		{
 			isInDefineDefinition = false;
 			// this could happen with invalid input
-			if (activeBeautifierStack->empty() || isIndentModeOff)
+			if (activeBeautifierStack->empty() || isIndentModeOff || shouldPreserveIndent)
 				return originalLine;
-			ASBeautifier* defineBeautifier = activeBeautifierStack->back();
+			std::unique_ptr<ASBeautifier> defineBeautifier = std::move(activeBeautifierStack->back());
 			activeBeautifierStack->pop_back();
 
 			std::string indentedLine = defineBeautifier->beautify(line);
-			delete defineBeautifier;
 			return indentedLine;
 		}
 
@@ -817,6 +809,10 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 
 	size_t iPrelim = headerStack->size();
 
+	// must be checked before the line is parsed
+	bool isDeclarationContinuation = isDeclarationContinuationLine(line);
+	bool isSwitchUsing = isUsingBeforeFirstCase(line);
+
 	// calculate preliminary indentation based on headerStack and data from past lines
 	computePreliminaryIndentation();
 
@@ -831,6 +827,13 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 
 	// handle special cases of indentation
 	adjustParsedLineIndentation(iPrelim, isInExtraHeaderIndent);
+
+	if (isDeclarationContinuation)
+		++indentCount;
+
+	// 'using enum X;' before the first case is unindented like a case label
+	if (isSwitchUsing && indentCount > 0)
+		--indentCount;
 
 	if (isInObjCMethodDefinition)
 		adjustObjCMethodDefinitionIndentation(line);
@@ -864,10 +867,7 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 		// logIndent(2);
 	}
 
-	if (indentCount < 0){
-		indentCount = 0;
-		// logIndent(3);
-	}
+	indentCount = std::max(0, indentCount);
 
 	if (lineCommentNoBeautify || blockCommentNoBeautify || isInQuoteContinuation){
 		indentCount = spaceIndentCount = 0;
@@ -876,7 +876,7 @@ std::string ASBeautifier::beautify(const std::string& originalLine)
 
 	// finally, insert indentations into beginning of line
 
-	std::string indentedLine = isIndentModeOff ? originalLine : preLineWS(indentCount, spaceIndentCount) + line;
+	std::string indentedLine = (isIndentModeOff || shouldPreserveIndent) ? originalLine : preLineWS(indentCount, spaceIndentCount) + line;
 	prevFinalLineSpaceIndentCount = spaceIndentCount;
 	prevFinalLineIndentCount = indentCount;
 
@@ -989,6 +989,11 @@ void ASBeautifier::setSpaceIndentation(int length)
 {
 	indentString = std::string(length, ' ');
 	indentLength = length;
+}
+
+void ASBeautifier::setPreserveIndent(bool state)
+{
+	shouldPreserveIndent = state;
 }
 
 /**
@@ -1432,8 +1437,31 @@ int ASBeautifier::getPrevFinalLineSpaceIndentCount() const
 	return prevFinalLineSpaceIndentCount;
 }
 
+/**
+ * remove the innermost entry of the lambda capture stacks.
+ */
+void ASBeautifier::popLambda()
+{
+	lambdaDepthStack->pop_back();
+	lambdaParenDepthStack->pop_back();
+	lambdaBraceDepthStack->pop_back();
+}
+
+/**
+ * check if the current line is within a non in-statement array.
+ * isNonInStatementArray remains set within a lambda body like 'f([&]\n{'
+ * whose brace was treated as an array brace, but the body contains statements.
+ */
+bool ASBeautifier::isInNonInStatementArray() const
+{
+	return isNonInStatementArray && !lambdaBodyStateStack->back();
+}
+
 std::string ASBeautifier::preLineWS(int lineIndentCount, int lineSpaceIndentCount)
 {
+	// within a lambda body indented by --indent-lambda the continuation indent
+	// of the line is relative to the lambda column
+	lineSpaceIndentCount += lambdaStartIndent;
 
 	if (shouldForceTabIndentation)
 	{
@@ -1454,17 +1482,6 @@ std::string ASBeautifier::preLineWS(int lineIndentCount, int lineSpaceIndentCoun
 
 
 	std::string ws;
-
-	if (lambdaDepthStack->size()) {
-		if (!lambdaStartIndent)
-			lineSpaceIndentCount = lambdaDepthStack->back();
-		lambdaStartIndent = 0;
-	}
-	else if (lambdaEndIndent>0 ) {
-		lineSpaceIndentCount = lambdaEndIndent;
-		if (!lambdaIndicator)
-			lambdaEndIndent = 0;
-	}
 
 	for (int i = 0; i < lineIndentCount; i++)
 		ws += indentString;
@@ -1580,11 +1597,9 @@ void ASBeautifier::registerContinuationIndentColon(std::string_view line, int i,
 	assert(isInClassInitializer || isInClassHeaderTab);
 
 	// register indent at first word after the colon
-	size_t firstChar = line.find_first_not_of(" \t");
-	if (firstChar == (size_t) i)		// firstChar is ':'
+	if (size_t firstChar = line.find_first_not_of(" \t"); firstChar == (size_t) i)		// firstChar is ':'
 	{
-		size_t firstWord = line.find_first_not_of(" \t", firstChar + 1);
-		if (firstWord != std::string::npos)
+		if (size_t firstWord = line.find_first_not_of(" \t", firstChar + 1); firstWord != std::string::npos)
 		{
 			int continuationIndentCount = firstWord + spaceIndentCount + tabIncrementIn;
 			continuationIndentStack->emplace_back(continuationIndentCount);
@@ -1659,17 +1674,17 @@ int ASBeautifier::getNextProgramCharDistance(std::string_view line, int i) const
 /**
  * find the index number of a std::string element in a container of std::strings
  *
- * @return              the index number of element in the container. -1 if element not found.
+ * @return              the index number of element in the container. std::nullopt if element not found.
  * @param container     a vector of std::strings.
  * @param element       the element to find .
  */
-int ASBeautifier::indexOf(const std::vector<const std::string*>& container, const std::string* element) const
+std::optional<int> ASBeautifier::indexOf(const std::vector<const std::string*>& container, const std::string* element) const
 {
 	std::vector<const std::string*>::const_iterator where;
 
 	where = find(container.begin(), container.end(), element);
 	if (where == container.end())
-		return -1;
+		return std::nullopt;
 	return (int) (where - container.begin());
 }
 
@@ -1730,120 +1745,12 @@ std::string ASBeautifier::rtrim(std::string_view str) const
  * Copy tempStacks for the copy constructor.
  * The value of the vectors must also be copied.
  */
-std::vector<std::vector<const std::string*>*>* ASBeautifier::copyTempStacks(const ASBeautifier& other) const
+std::unique_ptr<std::vector<std::unique_ptr<std::vector<const std::string*>>>> ASBeautifier::copyTempStacks(const ASBeautifier& other) const
 {
-	auto* tempStacksNew = new std::vector<std::vector<const std::string*>*>;
-	std::vector<std::vector<const std::string*>*>::iterator iter;
-	for (iter = other.tempStacks->begin();
-	        iter != other.tempStacks->end();
-	        ++iter)
-	{
-		auto* newVec = new std::vector<const std::string*>;
-		*newVec = **iter;
-		tempStacksNew->emplace_back(newVec);
-	}
+	auto tempStacksNew = std::make_unique<std::vector<std::unique_ptr<std::vector<const std::string*>>>>();
+	for (const auto& stack : *other.tempStacks)
+		tempStacksNew->emplace_back(std::make_unique<std::vector<const std::string*>>(*stack));
 	return tempStacksNew;
-}
-
-/**
- * delete a member vectors to eliminate memory leak reporting
- */
-void ASBeautifier::deleteBeautifierVectors()
-{
-	beautifierFileType = INVALID_TYPE;		// reset to an invalid type
-	delete headers;
-	delete nonParenHeaders;
-	delete preBlockStatements;
-	delete preCommandHeaders;
-	delete assignmentOperators;
-	delete nonAssignmentOperators;
-	delete indentableHeaders;
-}
-
-/**
- * delete a vector object
- * T is the type of vector
- * used for all vectors except tempStacks
- */
-template<typename T>
-void ASBeautifier::deleteContainer(T& container)
-{
-	if (container != nullptr)
-	{
-		container->clear();
-		delete (container);
-		container = nullptr;
-	}
-}
-
-/**
- * Delete the ASBeautifier vector object.
- * This is a vector of pointers to ASBeautifier objects allocated with the 'new' operator.
- * Therefore the ASBeautifier objects have to be deleted in addition to the
- * ASBeautifier pointer entries.
- */
-void ASBeautifier::deleteBeautifierContainer(std::vector<ASBeautifier*>*& container)
-{
-	if (container != nullptr)
-	{
-		auto iter = container->begin();
-		while (iter < container->end())
-		{
-			delete *iter;
-			++iter;
-		}
-		container->clear();
-		delete (container);
-		container = nullptr;
-	}
-}
-
-/**
- * Delete the tempStacks vector object.
- * The tempStacks is a vector of pointers to std::strings allocated with the 'new' operator.
- * Therefore the std::strings have to be deleted in addition to the tempStacks entries.
- */
-void ASBeautifier::deleteTempStacksContainer(std::vector<std::vector<const std::string*>*>*& container)
-{
-	if (container != nullptr)
-	{
-		auto iter = container->begin();
-		while (iter < container->end())
-		{
-			delete *iter;
-			++iter;
-		}
-		container->clear();
-		delete (container);
-		container = nullptr;
-	}
-}
-
-/**
- * initialize a vector object
- * T is the type of vector used for all vectors
- */
-template<typename T>
-void ASBeautifier::initContainer(T& container, T value)
-{
-	// since the ASFormatter object is never deleted,
-	// the existing vectors must be deleted before creating new ones
-	if (container != nullptr)
-		deleteContainer(container);
-	container = value;
-}
-
-/**
- * Initialize the tempStacks vector object.
- * The tempStacks is a vector of pointers to std::strings allocated with the 'new' operator.
- * Any residual entries are deleted before the vector is initialized.
- */
-void ASBeautifier::initTempStacksContainer(std::vector<std::vector<const std::string*>*>*& container,
-                                           std::vector<std::vector<const std::string*>*>* value)
-{
-	if (container != nullptr)
-		deleteTempStacksContainer(container);
-	container = value;
 }
 
 /**
@@ -2184,8 +2091,7 @@ void ASBeautifier::processPreprocessor(std::string_view preproc, std::string_vie
 
 			// push a new beautifier into the active stack
 			// this beautifier will be used for the indentation of this define
-			auto* defineBeautifier = new ASBeautifier(*this);
-			activeBeautifierStack->emplace_back(defineBeautifier);
+			activeBeautifierStack->emplace_back(std::make_unique<ASBeautifier>(*this));
 		}
 		else
 		{
@@ -2201,16 +2107,16 @@ void ASBeautifier::processPreprocessor(std::string_view preproc, std::string_vie
 		waitingBeautifierStackLengthStack->emplace_back(waitingBeautifierStack->size());
 		activeBeautifierStackLengthStack->emplace_back(activeBeautifierStack->size());
 		if (activeBeautifierStackLengthStack->back() == 0)
-			waitingBeautifierStack->emplace_back(new ASBeautifier(*this));
+			waitingBeautifierStack->emplace_back(std::make_unique<ASBeautifier>(*this));
 		else
-			waitingBeautifierStack->emplace_back(new ASBeautifier(*activeBeautifierStack->back()));
+			waitingBeautifierStack->emplace_back(std::make_unique<ASBeautifier>(*activeBeautifierStack->back()));
 	}
 	else if (preproc == "else")
 	{
 		if ((waitingBeautifierStack != nullptr) && !waitingBeautifierStack->empty())
 		{
 			// MOVE current waiting beautifier to active stack.
-			activeBeautifierStack->emplace_back(waitingBeautifierStack->back());
+			activeBeautifierStack->emplace_back(std::move(waitingBeautifierStack->back()));
 			waitingBeautifierStack->pop_back();
 		}
 	}
@@ -2219,24 +2125,19 @@ void ASBeautifier::processPreprocessor(std::string_view preproc, std::string_vie
 		if ((waitingBeautifierStack != nullptr) && !waitingBeautifierStack->empty())
 		{
 			// append a COPY current waiting beautifier to active stack, WITHOUT deleting the original.
-			activeBeautifierStack->emplace_back(new ASBeautifier(*(waitingBeautifierStack->back())));
+			activeBeautifierStack->emplace_back(std::make_unique<ASBeautifier>(*waitingBeautifierStack->back()));
 		}
 	}
 	else if (preproc == "endif")
 	{
 		int stackLength = 0;
-		ASBeautifier* beautifier = nullptr;
 
 		if (waitingBeautifierStackLengthStack != nullptr && !waitingBeautifierStackLengthStack->empty())
 		{
 			stackLength = waitingBeautifierStackLengthStack->back();
 			waitingBeautifierStackLengthStack->pop_back();
 			while ((int) waitingBeautifierStack->size() > stackLength)
-			{
-				beautifier = waitingBeautifierStack->back();
 				waitingBeautifierStack->pop_back();
-				delete beautifier;
-			}
 		}
 
 		if (!activeBeautifierStackLengthStack->empty())
@@ -2244,11 +2145,7 @@ void ASBeautifier::processPreprocessor(std::string_view preproc, std::string_vie
 			stackLength = activeBeautifierStackLengthStack->back();
 			activeBeautifierStackLengthStack->pop_back();
 			while ((int) activeBeautifierStack->size() > stackLength)
-			{
-				beautifier = activeBeautifierStack->back();
 				activeBeautifierStack->pop_back();
-				delete beautifier;
-			}
 		}
 	}
 }
@@ -2269,9 +2166,26 @@ void ASBeautifier::computePreliminaryIndentation()
 	if (!continuationIndentStack->empty())
 		spaceIndentCount = continuationIndentStack->back();
 
+	size_t braceIndex = 0;	// index of a brace in parenDepthStack and blockConditionalStack
 	for (size_t i = 0; i < headerStack->size(); i++)
 	{
 		isInClass = false;
+
+		// a brace opened within parens of a header's statement (e.g. 'else call([&] {')
+		// is not the header's block; a brace within the header's condition
+		// (e.g. 'if (pred([&] {') is indented relative to the header line
+		bool isBraceInStatementParen = false;
+		bool isBraceInConditionParen = false;
+		if ((*headerStack)[i] == &ASResource::AS_OPEN_BRACE)
+		{
+			bool isInParen = braceIndex < parenDepthStack->size()
+			                 && (*parenDepthStack)[braceIndex] > 0;
+			bool isInCondition = braceIndex < blockConditionalStack->size()
+			                     && (*blockConditionalStack)[braceIndex];
+			isBraceInStatementParen = isInParen && !isInCondition;
+			isBraceInConditionParen = isInParen && isInCondition;
+			++braceIndex;
+		}
 
 		if (blockIndent)
 		{
@@ -2283,7 +2197,8 @@ void ASBeautifier::computePreliminaryIndentation()
 			        || (*headerStack)[i] == &ASResource::AS_UNION
 			        || (*headerStack)[i] == &ASResource::AS_INTERFACE
 			        || (*headerStack)[i] == &ASResource::AS_THROWS
-			        || (*headerStack)[i] == &ASResource::AS_STATIC)){
+			        || (*headerStack)[i] == &ASResource::AS_STATIC
+			        || isBraceInConditionParen)){
 				++indentCount;
 			// logIndent(6);
 					}
@@ -2293,7 +2208,8 @@ void ASBeautifier::computePreliminaryIndentation()
 		{
 			//GL37
 			if (!(i > 0 && (*headerStack)[i - 1] != &ASResource::AS_OPEN_BRACE
-			        && (*headerStack)[i] == &ASResource::AS_OPEN_BRACE)){
+			        && (*headerStack)[i] == &ASResource::AS_OPEN_BRACE
+			        && !isBraceInStatementParen)){
 				++indentCount;
 
 					// logIndent(7);
@@ -2474,6 +2390,7 @@ void ASBeautifier::adjustParsedLineIndentation(size_t iPrelim, bool isInExtraHea
 	         && lineBeginsWithOpenBrace
 	         && !(lineOpeningBlocksNum > 0 && lineOpeningBlocksNum <= lineClosingBlocksNum)
 	         && (headerStack->size() > 1 && (*headerStack)[headerStack->size() - 2] != &ASResource::AS_OPEN_BRACE)
+	         && !(!parenDepthStack->empty() && parenDepthStack->back() > 0)	// a brace within parens is not the header's block
 	         && shouldIndentBracedLine)
 	{
 		--indentCount;
@@ -2514,12 +2431,7 @@ void ASBeautifier::adjustParsedLineIndentation(size_t iPrelim, bool isInExtraHea
 			// logIndent(24);
 	}
 
-	if (indentCount < 0)
-	{
-
-		indentCount = 0;
-		// logIndent(25);
-	}
+	indentCount = std::max(0, indentCount);
 	// take care of extra brace indentation option...
 	if (!lineStartsInComment
 	        && braceIndent
@@ -2571,7 +2483,7 @@ int ASBeautifier::adjustIndentCountForBreakElseIfComments() const
 {
 	assert(isElseHeaderIndent && !tempStacks->empty());
 	int indentCountIncrement = 0;
-	std::vector<const std::string*>* lastTempStack = tempStacks->back();
+	std::vector<const std::string*>* lastTempStack = tempStacks->back().get();
 	if (lastTempStack != nullptr)
 	{
 		for (const std::string* const lastTemp : *lastTempStack)
@@ -2611,7 +2523,7 @@ void ASBeautifier::adjustObjCMethodDefinitionIndentation(std::string_view line_)
 		if (shouldAlignMethodColon && objCColonAlignSubsequent != -1)
 		{
 			std::string convertedLine = getIndentedSpaceEquivalent(line_);
-			colonIndentObjCMethodAlignment = findObjCColonAlignment(convertedLine);
+			colonIndentObjCMethodAlignment = findObjCColonAlignment(convertedLine).value_or(-1);
 			int objCColonAlignSubsequentIndent = objCColonAlignSubsequent + indentLength;
 			if (objCColonAlignSubsequentIndent > colonIndentObjCMethodAlignment)
 				colonIndentObjCMethodAlignment = objCColonAlignSubsequentIndent;
@@ -2645,7 +2557,7 @@ void ASBeautifier::adjustObjCMethodCallIndentation(std::string_view line_)
 			bracePosObjCMethodAlignment = convertedLine.find('[');
 			keywordIndentObjCMethodAlignment =
 			    getObjCFollowingKeyword(convertedLine, bracePosObjCMethodAlignment);
-			colonIndentObjCMethodAlignment = findObjCColonAlignment(convertedLine);
+			colonIndentObjCMethodAlignment = findObjCColonAlignment(convertedLine).value_or(-1);
 			if (colonIndentObjCMethodAlignment >= 0)
 			{
 				int objCColonAlignSubsequentIndent = objCColonAlignSubsequent + indentLength;
@@ -2657,7 +2569,7 @@ void ASBeautifier::adjustObjCMethodCallIndentation(std::string_view line_)
 		}
 		else
 		{
-			if (findObjCColonAlignment(line_) != -1)
+			if (findObjCColonAlignment(line_).has_value())
 			{
 				if (colonIndentObjCMethodAlignment < 0)
 					spaceIndentCount += computeObjCColonAlignment(line_, objCColonAlignSubsequent);
@@ -2710,7 +2622,7 @@ void ASBeautifier::clearObjCMethodDefinitionAlignment()
  * Find the first alignment colon on a line.
  * Ternary operators (?) are bypassed.
  */
-int ASBeautifier::findObjCColonAlignment(std::string_view line) const
+std::optional<int> ASBeautifier::findObjCColonAlignment(std::string_view line) const
 {
 	bool haveTernary = false;
 	for (size_t i = 0; i < line.length(); i++)
@@ -2729,9 +2641,9 @@ int ASBeautifier::findObjCColonAlignment(std::string_view line) const
 			haveTernary = false;
 			continue;
 		}
-		return i;
+		return static_cast<int>(i);
 	}
-	return -1;
+	return std::nullopt;
 }
 
 /* chatgpt
@@ -2770,10 +2682,10 @@ int ASBeautifier::findObjCColonAlignment(const std::string& line) const
  */
 int ASBeautifier::computeObjCColonAlignment(std::string_view line, int colonAlignPosition) const
 {
-	int colonPosition = findObjCColonAlignment(line);
-	if (colonPosition < 0 || colonPosition > colonAlignPosition)
+	std::optional<int> colonPosition = findObjCColonAlignment(line);
+	if (!colonPosition.has_value() || *colonPosition > colonAlignPosition)
 		return indentLength;
-	return (colonAlignPosition - colonPosition);
+	return (colonAlignPosition - *colonPosition);
 }
 
 /*
@@ -2841,6 +2753,83 @@ std::string ASBeautifier::getIndentedSpaceEquivalent(std::string_view line_) con
 }
 
 /**
+ * Determine if the text following an 'if' at index is a C++23 consteval condition,
+ * like 'if consteval', 'if !consteval' or 'if not consteval'.
+ * @return the index after 'consteval', or npos if it is not a consteval condition.
+ */
+size_t ASBeautifier::findConstevalConditionEnd(std::string_view line, size_t index) const
+{
+	if (!isCStyle())
+		return std::string_view::npos;
+	size_t next = line.find_first_not_of(" \t", index);
+	if (next == std::string_view::npos)
+		return std::string_view::npos;
+	if (line[next] == '!')
+		next = line.find_first_not_of(" \t", next + 1);
+	else if (getCurrentWord(line, next) == "not")
+		next = line.find_first_not_of(" \t", next + 3);
+	if (next == std::string_view::npos || getCurrentWord(line, next) != "consteval")
+		return std::string_view::npos;
+	return next + 9;
+}
+
+/**
+ * Determine if a line continues a function declarator or a template header
+ * with a C++20 requires-clause or C++26 contract specifiers, like
+ *     template<class T>               int f(int a)
+ *         requires C<T>                   pre(a > 0)
+ * Such a line is indented by one level.
+ * Must be called before the line is parsed.
+ */
+bool ASBeautifier::isDeclarationContinuationLine(std::string_view line) const
+{
+	if (!isCStyle() || isInDefine || isInComment || parenDepth > 0
+	        || !continuationIndentStack->empty() || !isTopLevel())
+		return false;
+
+	// the previous code line must not be terminated
+	if (currentNonSpaceCh == ';' || currentNonSpaceCh == '{' || currentNonSpaceCh == '}'
+	        || currentNonSpaceCh == ':' || currentNonSpaceCh == ',')
+		return false;
+
+	size_t start = line.find_first_not_of(" \t");
+	if (start == std::string_view::npos)
+		return false;
+	std::string_view word = getCurrentWord(line, start);
+	if (word == ASResource::AS_REQUIRES)
+		return true;
+	if (word == "pre" || word == "post")
+	{
+		size_t next = line.find_first_not_of(" \t", start + word.length());
+		return next != std::string_view::npos && line[next] == '(';
+	}
+	return false;
+}
+
+/**
+ * Determine if a line is a C++20 'using enum X;' (or other using-declaration)
+ * directly in a switch block before the first case label, like
+ *     switch (c)
+ *     {
+ *     using enum Color;
+ *     case red:
+ * Such a line is unindented like a case label.
+ * Must be called before the line is parsed.
+ */
+bool ASBeautifier::isUsingBeforeFirstCase(std::string_view line) const
+{
+	if (!isCStyle() || isInDefine || isInComment || parenDepth > 0 || isContinuation
+	        || !continuationIndentStack->empty()
+	        || switchCaseStack.empty() || switchCaseStack.back().second
+	        || switchCaseStack.back().first != headerStack->size())
+		return false;
+
+	size_t start = line.find_first_not_of(" \t");
+	return start != std::string_view::npos
+	       && getCurrentWord(line, start) == ASResource::AS_USING;
+}
+
+/**
  * Determine if an item is at a top level.
  */
 bool ASBeautifier::isTopLevel() const
@@ -2871,7 +2860,7 @@ bool ASBeautifier::isTopLevel() const
 
 bool ASBeautifier::handleHeaderSection(std::string_view line, size_t* i, bool closingBraceReached, bool *haveCaseIndent)
 {
-	const std::string* newHeader = findHeader(line, *i, headers);
+	const std::string* newHeader = findHeader(line, *i, headers.get());
 
 	// java can have a 'default' not in a switch
 	if (newHeader == &ASResource::AS_DEFAULT
@@ -2903,7 +2892,7 @@ bool ASBeautifier::handleHeaderSection(std::string_view line, size_t* i, bool cl
 
 		std::vector<const std::string*>* lastTempStack = nullptr;
 		if (!tempStacks->empty())
-			lastTempStack = tempStacks->back();
+			lastTempStack = tempStacks->back().get();
 
 		// if a new block is opened, push a new stack into tempStacks to hold the
 		// future list of headers in the new block.
@@ -2933,12 +2922,12 @@ bool ASBeautifier::handleHeaderSection(std::string_view line, size_t* i, bool cl
 		{
 			if (lastTempStack != nullptr)
 			{
-				int indexOfIf = indexOf(*lastTempStack, &ASResource::AS_IF);
-				if (indexOfIf != -1)
+				std::optional<int> indexOfIf = indexOf(*lastTempStack, &ASResource::AS_IF);
+				if (indexOfIf.has_value())
 				{
 					// recreate the header list in headerStack up to the previous 'if'
 					// from the temporary snapshot stored in lastTempStack.
-					int restackSize = lastTempStack->size() - indexOfIf - 1;
+					int restackSize = lastTempStack->size() - *indexOfIf - 1;
 					for (int r = 0; r < restackSize; r++)
 					{
 						headerStack->emplace_back(lastTempStack->back());
@@ -2963,12 +2952,12 @@ bool ASBeautifier::handleHeaderSection(std::string_view line, size_t* i, bool cl
 		{
 			if (lastTempStack != nullptr)
 			{
-				int indexOfDo = indexOf(*lastTempStack, &ASResource::AS_DO);
-				if (indexOfDo != -1)
+				std::optional<int> indexOfDo = indexOf(*lastTempStack, &ASResource::AS_DO);
+				if (indexOfDo.has_value())
 				{
 					// recreate the header list in headerStack up to the previous 'do'
 					// from the temporary snapshot stored in lastTempStack.
-					int restackSize = lastTempStack->size() - indexOfDo - 1;
+					int restackSize = lastTempStack->size() - *indexOfDo - 1;
 					for (int r = 0; r < restackSize; r++)
 					{
 						headerStack->emplace_back(lastTempStack->back());
@@ -2984,14 +2973,14 @@ bool ASBeautifier::handleHeaderSection(std::string_view line, size_t* i, bool cl
 		{
 			if (lastTempStack != nullptr)
 			{
-				int indexOfTry = indexOf(*lastTempStack, &ASResource::AS_TRY);
-				if (indexOfTry == -1)
+				std::optional<int> indexOfTry = indexOf(*lastTempStack, &ASResource::AS_TRY);
+				if (!indexOfTry.has_value())
 					indexOfTry = indexOf(*lastTempStack, &ASResource::AS_CATCH);
-				if (indexOfTry != -1)
+				if (indexOfTry.has_value())
 				{
 					// recreate the header list in headerStack up to the previous 'try'
 					// from the temporary snapshot stored in lastTempStack.
-					int restackSize = lastTempStack->size() - indexOfTry - 1;
+					int restackSize = lastTempStack->size() - *indexOfTry - 1;
 					for (int r = 0; r < restackSize; r++)
 					{
 						headerStack->emplace_back(lastTempStack->back());
@@ -3009,6 +2998,8 @@ bool ASBeautifier::handleHeaderSection(std::string_view line, size_t* i, bool cl
 		else if (newHeader == &ASResource::AS_CASE)
 		{
 			isInCase = true;
+			if (!switchCaseStack.empty() && switchCaseStack.back().first <= headerStack->size())
+				switchCaseStack.back().second = true;
 			if (!*haveCaseIndent)
 			{
 				*haveCaseIndent = true;
@@ -3021,6 +3012,8 @@ bool ASBeautifier::handleHeaderSection(std::string_view line, size_t* i, bool cl
 		else if (newHeader == &ASResource::AS_DEFAULT)
 		{
 			isInCase = true;
+			if (!switchCaseStack.empty() && switchCaseStack.back().first <= headerStack->size())
+				switchCaseStack.back().second = true;
 			--indentCount;
 			// logIndent(33);
 		}
@@ -3049,7 +3042,14 @@ bool ASBeautifier::handleHeaderSection(std::string_view line, size_t* i, bool cl
 		{
 			headerStack->emplace_back(newHeader);
 			isContinuation = false;
-			if (indexOf(*nonParenHeaders, newHeader) == -1)
+			// 'if consteval' has no paren that would end the conditional,
+			// the following brace always opens a block
+			if (newHeader == &ASResource::AS_IF
+			        && findConstevalConditionEnd(line, *i + newHeader->length()) != std::string_view::npos)
+			{
+				isInConstevalCondition = true;
+			}
+			else if (!indexOf(*nonParenHeaders, newHeader).has_value())
 			{
 				isInConditional = true;
 			}
@@ -3063,7 +3063,7 @@ bool ASBeautifier::handleHeaderSection(std::string_view line, size_t* i, bool cl
 		return false;
 	}  // newHeader != nullptr
 
-	if (findHeader(line, *i, preCommandHeaders) != nullptr)
+	if (findHeader(line, *i, preCommandHeaders.get()) != nullptr)
 		// must be after function arguments
 		if (prevNonSpaceCh == ')')
 			foundPreCommandHeader = true;
@@ -3286,23 +3286,22 @@ bool ASBeautifier::handleColonSection(std::string_view line, size_t* i, bool tab
 
 void ASBeautifier::handleEndOfStatement(size_t i, bool *closingBraceReached, char* ch)
 {
+	bool isInQuestionAfterBlock = false;	// a block like a lambda body does not end a ?: sequence
 	isInAssignment = isInInitializerList = false;
 	quoteContinuationIndent = 0;
 	if (*ch == '}')
 	{
 		// Improved lambda end handling with depth tracking
-		if ( !lambdaDepthStack->empty())
+		if (!lambdaDepthStack->empty()
+		        && lambdaBraceDepthStack->back() == braceBlockStateStack->size())
 		{
-			// Check if this brace ends a lambda body
-			if (lambdaDepth && braceBlockStateStack->size() > 1 && braceBlockStateStack->back())
+			// this brace closes a lambda body
+			popLambda();
+			lambdaDepth--;
+			if (lambdaDepthStack->empty())
 			{
-				// This was a lambda body, pop the lambda depth
-				lambdaDepthStack->pop_back();
-				lambdaDepth--;
-				if (lambdaDepth == 0)
-				{
-					lambdaIndicator = false;
-				}
+				lambdaDepth = 0;
+				lambdaIndicator = false;
 			}
 		}
 
@@ -3311,6 +3310,7 @@ void ASBeautifier::handleEndOfStatement(size_t i, bool *closingBraceReached, cha
 		{
 			bool braceBlockState = braceBlockStateStack->back();
 			braceBlockStateStack->pop_back();
+			lambdaBodyStateStack->pop_back();
 			if (!braceBlockState)
 			{
 				if (!continuationIndentStackSizeStack->empty())
@@ -3337,15 +3337,38 @@ void ASBeautifier::handleEndOfStatement(size_t i, bool *closingBraceReached, cha
 
 		++lineClosingBlocksNum;
 
-		if (!continuationIndentStackSizeStack->empty())
+		bool isParenBlockSaved = !parenDepthStack->empty()
+		                         && !parenBlockStateStack->empty()
+		                         && parenBlockStateStack->back().isSaved;
+		if (isParenBlockSaved)
+		{
+			ParenBlockState& saved = parenBlockStateStack->back();
+			*continuationIndentStack = std::move(saved.continuationIndents);
+			*continuationIndentStackSizeStack = std::move(saved.continuationIndentSizes);
+			isInClassInitializer = saved.isInClassInitializer;
+			isInClassHeaderTab = saved.isInClassHeaderTab;
+		}
+		else if (!continuationIndentStackSizeStack->empty())
 			popLastContinuationIndent();
 
 		if (!parenDepthStack->empty())
 		{
 			parenDepth = parenDepthStack->back();
 			parenDepthStack->pop_back();
+			if (!parenBlockStateStack->empty())
+				parenBlockStateStack->pop_back();
 			isContinuation = blockStatementStack->back();
 			blockStatementStack->pop_back();
+			if (!blockConditionalStack->empty())
+			{
+				isInConditional = blockConditionalStack->back();
+				blockConditionalStack->pop_back();
+			}
+			if (!blockQuestionStack->empty())
+			{
+				isInQuestionAfterBlock = blockQuestionStack->back();
+				blockQuestionStack->pop_back();
+			}
 
 			if (isContinuation)
 				blockTabCount--;
@@ -3362,8 +3385,8 @@ void ASBeautifier::handleEndOfStatement(size_t i, bool *closingBraceReached, cha
 			isInStruct = false;
 		}
 
-		int headerPlace = indexOf(*headerStack, &ASResource::AS_OPEN_BRACE);
-		if (headerPlace != -1)
+		std::optional<int> headerPlace = indexOf(*headerStack, &ASResource::AS_OPEN_BRACE);
+		if (headerPlace.has_value())
 		{
 			const std::string* popped = headerStack->back();
 
@@ -3373,6 +3396,8 @@ void ASBeautifier::handleEndOfStatement(size_t i, bool *closingBraceReached, cha
 				popped = headerStack->back();
 			}
 			headerStack->pop_back();
+			while (!switchCaseStack.empty() && switchCaseStack.back().first > headerStack->size())
+				switchCaseStack.pop_back();
 
 			if (headerStack->empty())
 				g_preprocessorCppExternCBrace = 0;
@@ -3385,11 +3410,7 @@ void ASBeautifier::handleEndOfStatement(size_t i, bool *closingBraceReached, cha
 				shouldIndentBracedLine = false;
 
 			if (!tempStacks->empty())
-			{
-				std::vector<const std::string*>* temp = tempStacks->back();
 				tempStacks->pop_back();
-				delete temp;
-			}
 		}
 
 		*ch = ' '; // needed due to cases such as '}else{', so that headers ('else' in this case) will be identified...
@@ -3404,19 +3425,26 @@ void ASBeautifier::handleEndOfStatement(size_t i, bool *closingBraceReached, cha
 		* (such as a previous 'if' for an 'else' header) within the tempStacks,
 		* and recreates the temporary snapshot by manipulating the tempStacks.
 		*/
-	if (!tempStacks->back()->empty())
-		while (!tempStacks->back()->empty())
-			tempStacks->back()->pop_back();
-	while (!headerStack->empty() && headerStack->back() != &ASResource::AS_OPEN_BRACE)
+	// a block closed within parens (e.g. a lambda in 'if (...)') does not end the header's statement
+	if (!(*closingBraceReached && parenDepth > 0))
 	{
-		tempStacks->back()->emplace_back(headerStack->back());
-		headerStack->pop_back();
+		if (!tempStacks->back()->empty())
+			while (!tempStacks->back()->empty())
+				tempStacks->back()->pop_back();
+		while (!headerStack->empty() && headerStack->back() != &ASResource::AS_OPEN_BRACE)
+		{
+			tempStacks->back()->emplace_back(headerStack->back());
+			headerStack->pop_back();
+		}
 	}
 
 	if (parenDepth == 0 && *ch == ';')
 	{
 		isContinuation = false;
 		isInClassInitializer = false;
+
+		while (!lambdaBraceDepthStack->empty() && lambdaBraceDepthStack->back() == 0)
+			popLambda();
 
 		if (lambdaDepth <= 1 || (lastLambdaDepth == lambdaDepth && lambdaDepthStack->size() == 0)){
 			lambdaIndicator = false;
@@ -3437,7 +3465,7 @@ void ASBeautifier::handleEndOfStatement(size_t i, bool *closingBraceReached, cha
 	isInEnum = false;
 	isInEnumTypeID = false;
 
-	isInQuestion = false;
+	isInQuestion = isInQuestionAfterBlock;
 	isInTemplate = false;
 	isInObjCInterface = false;
 	foundPreCommandHeader = false;
@@ -3462,12 +3490,8 @@ void ASBeautifier::handleParens(std::string_view line, size_t i, bool tabIncreme
 
 			if (line.find("struct ", 0) > i)        // if not on this line #526, GH #12
 				indentCount -= classInitializerIndents;
-			if (indentCount < 0){
-				indentCount = 0;
-				// logIndent(40);
-
-			}
-						}
+			indentCount = std::max(0, indentCount);
+		}
 
 		if (parenDepth == 0)
 		{
@@ -3479,6 +3503,20 @@ void ASBeautifier::handleParens(std::string_view line, size_t i, bool tabIncreme
 		if (ch == '[')
 		{
 			++squareBracketCount;
+			// #606 a '[' not following a name, ']' or ')' starts a lambda capture, not a subscript
+			isLastSquareBracketLambda = isCStyle()
+			                            && !isLegalNameChar(prevNonSpaceCh)
+			                            && prevNonSpaceCh != ']'
+			                            && prevNonSpaceCh != ')';
+			// the matching ']' ends the capture, a following '{' opens the lambda body;
+			// '[[' starts an attribute, not a capture
+			size_t prevCodePos = i > 0 ? line.find_last_not_of(" \t", i - 1) : std::string_view::npos;
+			bool isAfterReturn = prevCodePos != std::string_view::npos && prevCodePos >= 5
+			                     && line.compare(prevCodePos - 5, 6, "return") == 0
+			                     && (prevCodePos == 5 || !isLegalNameChar(line[prevCodePos - 6]));
+			if ((isLastSquareBracketLambda || (isCStyle() && isAfterReturn)) && !isObjCStyle()
+			        && prevNonSpaceCh != '[' && peekNextChar(line, i) != '[')
+				lambdaCaptureParenDepth = parenDepth;
 			// #525 Maybe check for opening brace in the line
 			if (squareBracketCount == 1 && isObjCStyle() && line.find('{', i + 1 ) == std::string::npos)
 			{
@@ -3509,13 +3547,20 @@ void ASBeautifier::handleParens(std::string_view line, size_t i, bool tabIncreme
 					isLambdaCapture = true;
 				}
 
+				// '[[' starts an attribute, not a capture list
+				if (prevNonSpaceCh == '[' || peekNextChar(line, i) == '[')
+					isLambdaCapture = false;
+
 				if (isLambdaCapture)
 				{
 					lambdaIndicator = true;
 					lambdaDepth++;
 
-					lambdaDepthStack->push_back(i);
-					lambdaEndIndent = lambdaStartIndent = i;
+					// the column is relative to the line, so add the offset of enclosing lambdas
+					// and the continuation indent of the line (e.g. '| transform([](...)' in a pipeline)
+					lambdaDepthStack->push_back(static_cast<int>(i) + lambdaStartIndent + spaceIndentCount);
+					lambdaParenDepthStack->push_back(parenDepth - 1);	// depth outside the '['
+					lambdaBraceDepthStack->push_back(0);	// body brace not yet seen
 				}
 			}
 		}
@@ -3540,7 +3585,19 @@ void ASBeautifier::handleParens(std::string_view line, size_t i, bool tabIncreme
 				isImmediatelyPostObjCMethodCall = true;
 		}
 		foundPreCommandHeader = false;
+		if (ch == ']' && parenDepth == lambdaCaptureParenDepth)
+		{
+			isInLambdaIntroducer = true;
+			lambdaIntroducerParenDepth = parenDepth - 1;
+			lambdaCaptureParenDepth = -1;
+		}
 		parenDepth--;
+		if (isInLambdaIntroducer && parenDepth < lambdaIntroducerParenDepth)
+			isInLambdaIntroducer = false;
+
+		while (!lambdaBraceDepthStack->empty() && lambdaBraceDepthStack->back() == 0
+		        && lambdaParenDepthStack->back() > parenDepth)
+			popLambda();
 
 		if (parenDepth == 0)
 		{
@@ -3573,17 +3630,36 @@ void ASBeautifier::handleClosingParen(std::string_view line, size_t i, bool tabI
 {
 	// first, check if '{' is a block-opener or a static-array opener
 
+	// #606 isNonInStatementArray may still be set by an enclosing brace (e.g. a lambda body
+	// like 'f([&]\n{'), so it must not turn an inline brace-init like 'Type{1, 2}' into a block
+	size_t nextCodePos = line.find_first_not_of(" \t", i + 1);
+	bool isInlineBraceInit = isCStyle()
+	                         && (isLegalNameChar(prevNonSpaceCh) || prevNonSpaceCh == '>')
+	                         && i > line.find_first_not_of(" \t")
+	                         && nextCodePos != std::string::npos
+	                         && line.compare(nextCodePos, 2, "//") != 0
+	                         && line.compare(nextCodePos, 2, "/*") != 0;
+
+	// the body of a lambda like '[](int n) -> int {', '[]() mutable {' or 'return [x] {';
+	// a '[] {' within parens is left to the existing checks
+	bool isLambdaBodyBrace = isInLambdaIntroducer
+	                         && parenDepth == lambdaIntroducerParenDepth
+	                         && (prevNonSpaceCh != ']' || parenDepth == 0);
+	isInLambdaIntroducer = false;
+
 	bool isBlockOpener = ((prevNonSpaceCh == '{' && braceBlockStateStack->back())
 	                      || prevNonSpaceCh == '}'
 	                      || prevNonSpaceCh == ')'
 	                      || prevNonSpaceCh == ';'
 	                      || peekNextChar(line, i) == '{'
 	                      || isInTrailingReturnType
+	                      || isInConstevalCondition
+	                      || isLambdaBodyBrace
 	                      || foundPreCommandHeader
 	                      || foundPreCommandMacro
 	                      || isInClassHeader
 	                      || (isInClassInitializer && !isLegalNameChar(prevNonSpaceCh))
-	                      || (isNonInStatementArray && !isInClassInitializer)
+	                      || (isNonInStatementArray && !isInClassInitializer && !isInlineBraceInit)
 	                      || isInObjCMethodDefinition
 	                      || isInObjCInterface
 	                      || isSharpAccessor
@@ -3615,20 +3691,27 @@ void ASBeautifier::handleClosingParen(std::string_view line, size_t i, bool tabI
 	// direct-list-init like 'A var_a { ... }': prev char ends an identifier
 	// or template/array close, and we are not inside a class/enum header, a
 	// control-flow header (do/try/else/...), or a class initializer.
-	// Also exclude block-scope openers like 'namespace xxx {' where the
-    // brace opens a scope rather than initializing a variable.
-    bool isPrevHeaderBlockScope = !headerStack->empty()
-                                  && (headerStack->back() == &ASResource::AS_NAMESPACE
-                                      || headerStack->back() == &ASResource::AS_MODULE);
+	// Also exclude block-scope openers like 'namespace xxx {' or 'extern "C" {'
+	// where the brace opens a scope rather than initializing a variable.
+	// For extern "C", prevNonSpaceCh is not reliable here: it is not updated
+	// while scanning the quoted "C" token, so it still holds a stale legal
+	// identifier character left over from 'extern', which would otherwise
+	// make isDirectBraceInit true below.
+	bool isPrevHeaderBlockScope = (!headerStack->empty()
+	                               && (headerStack->back() == &ASResource::AS_NAMESPACE
+	                                   || headerStack->back() == &ASResource::AS_MODULE))
+	                              || isInExternC;
 
 	bool isDirectBraceInit = isCStyle() && isBlockOpener
 	                         && (isLegalNameChar(prevNonSpaceCh)
 	                             || prevNonSpaceCh == '>'
-	                             || prevNonSpaceCh == ']')
+	                             || (prevNonSpaceCh == ']' && !isLastSquareBracketLambda))
 	                         && !isInClassHeader
 	                         && !isInClassInitializer
 	                         && !isInEnum
-							 && !isPrevHeaderBlockScope
+	                         && !isPrevHeaderBlockScope
+	                         && !foundPreCommandHeader   // added #112
+	                         && !isLambdaBodyBrace
 	                         && currentHeader == nullptr;
 
 	isInInitializerList = isCStyle() && isBlockOpener && (prevNonSpaceCh == '(' || prevNonSpaceCh == '=' || isDirectBraceInit);
@@ -3645,6 +3728,15 @@ void ASBeautifier::handleClosingParen(std::string_view line, size_t i, bool tabI
 
 	// do not use emplace_back on vector<bool> until supported by macOS
 	braceBlockStateStack->push_back(isBlockOpener);
+	// a lambda body like '[&] {' or '[](int n) mutable -> int {' contains statements,
+	// even if the formatter treats its brace as an array brace
+	lambdaBodyStateStack->push_back(isCStyle() && isBlockOpener
+	                               && (isLambdaBodyBrace || (prevNonSpaceCh == ']' && isLastSquareBracketLambda)));
+
+	// the first brace after a lambda capture opens the lambda body
+	if (!lambdaBraceDepthStack->empty() && lambdaBraceDepthStack->back() == 0
+	        && lambdaParenDepthStack->back() == parenDepth)
+		lambdaBraceDepthStack->back() = braceBlockStateStack->size();
 
 	if (!isBlockOpener)
 	{
@@ -3714,8 +3806,23 @@ void ASBeautifier::handleClosingParen(std::string_view line, size_t i, bool tabI
 
 	// is a brace inside a paren?
 	parenDepthStack->emplace_back(parenDepth);
+	// a block within parens (e.g. a lambda argument) must not lose the state
+	// of the enclosing statement, it is restored at the closing brace
+	ParenBlockState parenBlockState;
+	if (parenDepth > 0)
+	{
+		parenBlockState.isSaved = true;
+		parenBlockState.continuationIndents = *continuationIndentStack;
+		parenBlockState.continuationIndentSizes = *continuationIndentStackSizeStack;
+		parenBlockState.isInClassInitializer = isInClassInitializer;
+		parenBlockState.isInClassHeaderTab = isInClassHeaderTab;
+	}
+	parenBlockStateStack->emplace_back(std::move(parenBlockState));
 	// do not use emplace_back on vector<bool> until supported by macOS
 	blockStatementStack->push_back(isContinuation);
+	blockConditionalStack->push_back(isInConditional);
+	blockQuestionStack->push_back(isInQuestion);
+	isInConditional = false;
 
 	if (!continuationIndentStack->empty())
 	{
@@ -3727,7 +3834,7 @@ void ASBeautifier::handleClosingParen(std::string_view line, size_t i, bool tabI
 			if (lineBeginsWithOpenBrace || lineBeginsWithComma)
 				spaceIndentCount = 0;
 		}
-		else
+		else if (lineBeginsWithOpenBrace)
 			spaceIndentCount = 0;
 	}
 
@@ -3736,6 +3843,7 @@ void ASBeautifier::handleClosingParen(std::string_view line, size_t i, bool tabI
 		++g_preprocessorCppExternCBrace;
 	parenDepth = 0;
 	isInTrailingReturnType = false;
+	isInConstevalCondition = false;
 	isInClassHeader = false;
 	isInClassHeaderTab = false;
 	isInClassInitializer = false;
@@ -3747,8 +3855,11 @@ void ASBeautifier::handleClosingParen(std::string_view line, size_t i, bool tabI
 	foundPreCommandMacro = false;
 	isInExternC = false;
 
-	tempStacks->emplace_back(new std::vector<const std::string*>);
+	tempStacks->emplace_back(std::make_unique<std::vector<const std::string*>>());
+	bool isSwitchBlock = !headerStack->empty() && headerStack->back() == &ASResource::AS_SWITCH;
 	headerStack->emplace_back(&ASResource::AS_OPEN_BRACE);
+	if (isSwitchBlock)
+		switchCaseStack.emplace_back(headerStack->size(), false);
 	lastLineHeader = &ASResource::AS_OPEN_BRACE;
 }
 
@@ -3758,7 +3869,7 @@ void ASBeautifier::handlePotentialHeaderSection(std::string_view line, size_t* i
 	// (otherwise 'struct XXX' statements would be wrongly interpreted...)
 	if (!isInTemplate && !(isCStyle() && parenDepth > 0))
 	{
-		const std::string* newHeader = findHeader(line, *i, preBlockStatements);
+		const std::string* newHeader = findHeader(line, *i, preBlockStatements.get());
 		// CORBA IDL module
 		if (newHeader == &ASResource::AS_MODULE)
 		{
@@ -3806,13 +3917,13 @@ void ASBeautifier::handlePotentialHeaderSection(std::string_view line, size_t* i
 			return;
 		}
 	}
-	const std::string* foundIndentableHeader = findHeader(line, *i, indentableHeaders);
+	const std::string* foundIndentableHeader = findHeader(line, *i, indentableHeaders.get());
 
 	if (foundIndentableHeader != nullptr)
 	{
 		// must bypass the header before registering the in statement
 		*i += foundIndentableHeader->length() - 1;
-		if (!*isInOperator && !isInTemplate && !isNonInStatementArray)
+		if (!*isInOperator && !isInTemplate && !isInNonInStatementArray())
 		{
 			registerContinuationIndent(line, *i, spaceIndentCount, tabIncrementIn, 0, false);
 			isContinuation = true;
@@ -3872,8 +3983,8 @@ void ASBeautifier::handlePotentialHeaderSection(std::string_view line, size_t* i
 void ASBeautifier::handlePotentialOperatorSection(std::string_view line, size_t* i, bool tabIncrementIn, bool* haveAssignmentThisLine, bool isInOperator)
 {
 	// Check if an operator has been reached.
-	const std::string* foundAssignmentOp = findOperator(line, *i, assignmentOperators);
-	const std::string* foundNonAssignmentOp = findOperator(line, *i, nonAssignmentOperators);
+	const std::string* foundAssignmentOp = findOperator(line, *i, assignmentOperators.get());
+	const std::string* foundNonAssignmentOp = findOperator(line, *i, nonAssignmentOperators.get());
 
 	if (foundNonAssignmentOp != nullptr)
 	{
@@ -3954,7 +4065,7 @@ void ASBeautifier::handlePotentialOperatorSection(std::string_view line, size_t*
 		if (foundAssignmentOp->length() > 1)
 			*i += foundAssignmentOp->length() - 1;
 
-		if (!isInOperator && !isInTemplate && (!isNonInStatementArray || isInEnum || isInStruct))
+		if (!isInOperator && !isInTemplate && (!isInNonInStatementArray() || isInEnum || isInStruct))
 		{
 			// if multiple assignments, align on the previous word
 			if (foundAssignmentOp == &ASResource::AS_ASSIGN
@@ -4067,11 +4178,7 @@ void ASBeautifier::parseCurrentLine(std::string_view line)
 				                      || line.compare(wsSpanEnd, ASResource::AS_GSC_OPEN_COMMENT.length(), ASResource::AS_GSC_OPEN_COMMENT) == 0);
 			}
 			if (squeezeWhitespace && !isInComment && !isInQuote && !nextTokenIsComment && std::isblank(line[i + 1]) && !std::isblank(line[i - 1]))
-			{
-
-				std::pair<size_t, size_t> wsSpan(i, wsSpanEnd - i - 1);
-				squeezeWSStack.emplace_back(wsSpan);
-			}
+				squeezeWSStack.emplace_back(i, wsSpanEnd - i - 1);
 
 			if (ch == '\t')
 				tabIncrementIn += convertTabToSpaces(i, tabIncrementIn);
@@ -4435,6 +4542,9 @@ void ASBeautifier::parseCurrentLine(std::string_view line)
 		if (ch == ',' && parenDepth == 0 && lineBeginsWithComma
 		        && (isInClassInitializer || isInClassHeaderTab))
 			spaceIndentCount = 0;
+
+		if ((ch == ';' || ch == ',') && parenDepth <= lambdaIntroducerParenDepth)
+			isInLambdaIntroducer = false;
 
 		// handle ends of statements
 		if ((ch == ';' && parenDepth == 0) || ch == '}')

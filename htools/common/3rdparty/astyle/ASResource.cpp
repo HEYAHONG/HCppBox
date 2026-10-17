@@ -21,6 +21,7 @@ const std::string ASResource::_AS_FINALLY = std::string("__finally");
 const std::string ASResource::_AS_TRY = std::string("__try");
 const std::string ASResource::AS_ADD = std::string("add");
 const std::string ASResource::AS_AUTO = std::string("auto");
+const std::string ASResource::AS_REQUIRES = std::string("requires");
 const std::string ASResource::AS_AUTORELEASEPOOL = std::string("autoreleasepool");
 const std::string ASResource::AS_CASE = std::string("case");
 const std::string ASResource::AS_CATCH = std::string("catch");

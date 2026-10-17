@@ -252,6 +252,7 @@ private:    // variables
 	std::vector<std::string> excludeVector;       // exclude from wildcard hits
 	std::vector<bool>   excludeHitsVector;   // exclude flags for error reporting
 	std::vector<std::string> fileNameVector;      // file paths and names from the command line
+	std::vector<std::string> includeVector;       // --include patterns from options files
 	std::vector<std::string> optionsVector;       // options from the command line
 	std::vector<std::string> projectOptionsVector;// project options from the project options file
 	std::vector<std::string> fileOptionsVector;   // options from the options file
@@ -315,10 +316,12 @@ public:     // functions
 	void standardizePath(std::string& path, bool removeBeginningSeparator = false) const;
 	bool stringEndsWith(std::string_view str, std::string_view suffix) const;
 	void updateExcludeVector(const std::string& suffixParam);
+	void addIncludePattern(const std::string& pattern);
 
 	std::vector<std::string> getExcludeVector() const;
 	std::vector<bool>   getExcludeHitsVector() const;
 	std::vector<std::string> getFileNameVector() const;
+	std::vector<std::string> getIncludeVector() const;
 	std::vector<std::string> getOptionsVector() const;
 	std::vector<std::string> getProjectOptionsVector() const;
 	std::vector<std::string> getFileOptionsVector() const;
@@ -335,8 +338,10 @@ private:	// functions
 	std::string getFullPathName(const std::string& relativePath) const;
 	std::string getHtmlInstallPrefix() const;
 	std::string getParam(const std::string& arg, const char* op);
+	bool isBomlessUtf16(const char* data, size_t dataSize) const;
 	bool isHomeOrInvalidAbsPath(const std::string& absPath) const;
 	bool isWriteable(const std::filesystem::path& path) const;
+	std::string getPathString(const std::filesystem::path& path, bool* lossy = nullptr) const;
 	void initializeOutputEOL(LineEndFormat lineEndFormat);
 	bool isOption(const std::string& arg, const char* op);
 	bool isOption(const std::string& arg, const char* a, const char* b);
