@@ -160,6 +160,13 @@ class httpd_session
          * 默认情况下存储在内存中
          * TODO:处理主体过大问题
          */
+        if( m_httpd_session->body.length() >= 64*1024)
+        {
+            /*
+             * 限制请求大小
+             */
+            return;
+        }
         m_httpd_session->body+=std::string(part_data.str,part_data.str_len);
     }
     static void session_process_body_end(hhttp_tinyserver_session_t *session)
@@ -227,6 +234,24 @@ public:
     {
 
     }
+    hhttp_request_line_t &session_request()
+    {
+        return request;
+    }
+    std::map<std::string,std::string> & session_query()
+    {
+        return query;
+    }
+    std::map<std::string,std::string> & session_field()
+    {
+        return field;
+    }
+    std::string &session_body()
+    {
+        return body;
+    }
+
+
 };
 
 uint64_t httpd_file::file_content_read(hhttp_tinyserver_file_t *file,uint64_t offset,uint8_t *buffer,uint64_t buffer_size)
