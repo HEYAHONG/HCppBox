@@ -10,10 +10,12 @@
 #endif // HAVE_SYSLOG_H
 #include "socket_tcp_helper.h"
 #include "httpd.h"
+#include <chrono>
 
 
 static std::string server_addr="0.0.0.0";
 static std::string server_port="80";
+static int io_idle_timeout=5;
 
 static void show_banner()
 {
@@ -31,10 +33,12 @@ static void check_args(int argc,char *argv[])
     struct arg_int  * era=NULL;
     struct arg_str  * server=NULL;
     struct arg_str  * serverport=NULL;
+    struct arg_int  * ioidletimeout=NULL;
     void *argtable[]=
     {
         server=arg_str0("S","server","pool.http.org","http bind server"),
         serverport=arg_str0("p","server port","123","http bind server port"),
+        ioidletimeout=arg_int0("I","io-idle-timeout","5","io idle timeout"),
         help=arg_lit0("H","help","print this help and exit"),
         arg_end(20)
     };
@@ -70,10 +74,15 @@ static void check_args(int argc,char *argv[])
         server_port=serverport->sval[0];
     }
 
+    if(ioidletimeout->count)
+    {
+        io_idle_timeout=ioidletimeout->ival[0];
+    }
+
     arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
 }
 
-
+static std::chrono::time_point<std::chrono::steady_clock> io_active_timepoint;
 static int httpd_main(void)
 {
     HCPPSocketInit();
@@ -123,6 +132,7 @@ static int httpd_main(void)
 #endif
         while((connection_fd=accept(server_fd,(HCPPSocketAddress *)&addr,&socklen))!=INVALID_SOCKET)
         {
+            io_active_timepoint=std::chrono::steady_clock::now();
             {
                 char addr_buffer[64]= {0};
                 hfprintf(stderr,"[httpd] connection %d (%s:%d) opened!\r\n",connection_fd,inet_ntop(AF_INET,&addr.sin_addr,addr_buffer,sizeof(addr_buffer)),(int)hbe16toh(addr.sin_port));
@@ -133,6 +143,7 @@ static int httpd_main(void)
                                              httpd_service(),
                                              [](hhttp_tinyserver_connection_t *connection,uint64_t offset,hhttp_string_t part_data)
             {
+                io_active_timepoint=std::chrono::steady_clock::now();
                 if(connection->usr==NULL)
                 {
                     return;
@@ -181,10 +192,18 @@ static int httpd_main(void)
                 int readlen=recv(connection_fd,(char *)buffer,sizeof(buffer),0);
                 if(readlen > 0)
                 {
+                    io_active_timepoint=std::chrono::steady_clock::now();
                     hhttp_tinyserver_connection_input(&httpd_con,buffer,readlen);
                 }
                 if(readlen == 0 || (readlen < 0 && !tcp_socket_is_egain()))
                 {
+                    hhttp_tinyserver_connection_cleanup(&httpd_con);
+                    closesocket(connection_fd);
+                    connection_fd=INVALID_SOCKET;
+                }
+                if(std::chrono::steady_clock::now()-io_active_timepoint > std::chrono::seconds(io_idle_timeout))
+                {
+                    hfprintf(stderr,"[httpd] io idle timeout!\r\n");
                     hhttp_tinyserver_connection_cleanup(&httpd_con);
                     closesocket(connection_fd);
                     connection_fd=INVALID_SOCKET;
