@@ -373,7 +373,7 @@ static bool hhttp_tinyserver_connection_header_input(hhttp_tinyserver_connection
                                     hhttp_string_t request_line=hhttp_string_line_get_content(hhttp_string_from_buffer(&connection->header_buffer[header_offset],header_length-header_offset));
                                     header_offset += request_line.str_len;
                                 }
-                                if(connection->connection_session->session_process_process_field!=NULL)
+                                if(connection->connection_session->session_process_field!=NULL)
                                 {
                                     /*
                                      * 会话需要重新处理处理头部字段
@@ -389,7 +389,7 @@ static bool hhttp_tinyserver_connection_header_input(hhttp_tinyserver_connection
                                         hhttp_field_t field;
                                         if(hhttp_field_parse(&field,line))
                                         {
-                                            connection->connection_session->session_process_process_field(connection->connection_session,field);
+                                            connection->connection_session->session_process_field(connection->connection_session,field);
                                         }
                                     }
                                 }

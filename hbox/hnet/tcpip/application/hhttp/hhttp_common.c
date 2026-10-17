@@ -230,6 +230,10 @@ hhttp_string_t hhttp_string_line_get_content(hhttp_string_t line)
     }
 
     hhttp_string_t line_end=hhttp_string_strstr(line,hhttp_string_from_cstring(HHTTP_LINE_END_STRING));
+    /*
+     * 修正行结束长度
+     */
+    line_end.str_len=hhttp_string_from_cstring(HHTTP_LINE_END_STRING).str_len;
     ret.str=line.str;
     ret.str_len=line_end.str_len+(((uintptr_t)line_end.str)-((uintptr_t)line.str));
 

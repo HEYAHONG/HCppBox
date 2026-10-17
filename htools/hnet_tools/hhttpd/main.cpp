@@ -9,6 +9,7 @@
 #include "syslog.h"
 #endif // HAVE_SYSLOG_H
 #include "socket_tcp_helper.h"
+#include "httpd.h"
 
 
 static std::string server_addr="0.0.0.0";
@@ -129,7 +130,7 @@ static int httpd_main(void)
             tcp_socket_set_nonblock(connection_fd);
             hhttp_tinyserver_connection_t httpd_con;
             hhttp_tinyserver_connection_init(&httpd_con,
-                                             NULL,       //TODO:设置服务指针
+                                             httpd_service(),
                                              [](hhttp_tinyserver_connection_t *connection,uint64_t offset,hhttp_string_t part_data)
             {
                 if(connection->usr==NULL)
