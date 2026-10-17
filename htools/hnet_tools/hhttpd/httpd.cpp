@@ -80,32 +80,6 @@ class httpd_session
             }
             else
             {
-                std::string path;
-                if(uri.absolutePath)
-                {
-                    path+="/";
-                }
-                {
-                    /*
-                     * 路径
-                     */
-                    UriPathSegmentA *seg = uri.pathHead;
-                    while(seg != NULL)
-                    {
-
-                        size_t len = seg->text.afterLast - seg->text.first;
-
-                        path+=std::string((const char *)seg->text.first,len);
-
-                        if(seg->next != NULL)
-                        {
-                            path+=std::string("/");
-                        }
-                        seg = seg->next;
-                    }
-
-                }
-                hfprintf(stderr,"[httpd] Path: %s!\r\n",path.c_str());
                 {
                     /*
                      * 查询字符串
@@ -122,6 +96,19 @@ class httpd_session
                         }
                         uriFreeQueryListA(queryList);
                     }
+                }
+                uriSetFragmentA(&uri,NULL,NULL);
+                uriSetQueryA(&uri,NULL,NULL);
+                uriSetSchemeA(&uri,NULL,NULL);
+                uriSetPortTextA(&uri,NULL,NULL);
+                uriSetHostAutoA(&uri,NULL,NULL);
+                uriSetUserInfoA(&uri,NULL,NULL);
+                {
+                    std::string path(target_string);
+                    int length=0;
+                    uriToStringA((char *)path.c_str(),&uri,path.length(),&length);
+                    path.resize(length);
+                    hfprintf(stderr,"[httpd] Path: %s!\r\n",path.c_str());
                 }
                 uriFreeUriMembersA(&uri);
             }
@@ -141,6 +128,12 @@ class httpd_session
         {
             return;
         }
+        if(hhttp_string_is_empty(field.field_name) || hhttp_string_is_empty(field.field_values) )
+        {
+            return;
+        }
+
+
         /*
          * 头部字段存储在map中
          */
@@ -154,6 +147,11 @@ class httpd_session
             m_httpd_session=(httpd_session *)session->usr;
         }
         if(m_httpd_session==nullptr)
+        {
+            return;
+        }
+
+        if(hhttp_string_is_empty(part_data))
         {
             return;
         }
