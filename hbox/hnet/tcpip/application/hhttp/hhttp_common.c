@@ -926,6 +926,7 @@ bool hhttp_body_normal_parse_init(hhttp_body_normal_parse_t *body_normal,hhttp_b
     body_normal->offset=0;
     body_normal->max_length=max_length;
     body_normal->usr=usr;
+    memset(&body_normal->flags,0,sizeof(body_normal->flags));
     return ret;
 }
 
@@ -970,14 +971,15 @@ bool hhttp_body_normal_parse_input(hhttp_body_normal_parse_t *body_normal,const 
 
     ret=true;
 
-    if(hhttp_body_normal_parse_is_end(body_normal))
+    if(hhttp_body_normal_parse_is_end(body_normal) && body_normal->flags.data_end_call==0)
     {
         /*
          * 触发一个空的调用
          */
         uint8_t buffer[4]= {0};
         size_t  buffer_length=0;
-        ret=hhttp_body_normal_parse_input(body_normal,buffer,&buffer_length);
+        body_normal->data(body_normal,body_normal->offset,hhttp_string_from_buffer(buffer,buffer_length));
+        body_normal->flags.data_end_call=1;
     }
 
     return ret;

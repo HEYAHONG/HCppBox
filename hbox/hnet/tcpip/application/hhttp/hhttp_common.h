@@ -573,7 +573,12 @@ struct hhttp_body_normal_parse
     hhttp_body_normal_parse_data_t data;        /**< 数据处理函数 */
     uint64_t offset;                            /**< 数据偏移（等于已写入的数据大小） */
     uint64_t max_length;                        /**< 最大数据大小,当最大数据大小为((uint64_t)-1)时，表示未指定数据大小，此时数据大小由连接关闭确认 */
-    void *usr;
+    void *usr;                                  /**< 用户参数 */
+    struct
+    {
+        uint32_t data_end_call:1;               /**< 已调用数据结束回调 */
+    } flags;
+
 };
 
 #define HHTTP_BODY_NORMAL_MAX_LENGTH_UNDEFINED      ((uint64_t)-1)

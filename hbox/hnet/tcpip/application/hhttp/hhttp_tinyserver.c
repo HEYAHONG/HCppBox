@@ -160,7 +160,7 @@ static bool hhttp_tinyserver_connection_input_is_body_chunked(hhttp_tinyserver_c
     else
     {
         connection->body.body_normal.data=hhttp_tinyserver_body_normal_parse_data;
-        connection->body.body_chunked.usr=connection;
+        connection->body.body_normal.usr=connection;
     }
 
     return ret;
@@ -185,10 +185,28 @@ static bool hhttp_tinyserver_connection_body_input(hhttp_tinyserver_connection_t
         size_t single_data_length=datalen;
         if(hhttp_tinyserver_connection_input_is_body_chunked(connection))
         {
+            if(hhttp_body_chunked_parse_is_end(&connection->body.body_chunked))
+            {
+                ret=false;
+                /*
+                 * 请求结束后仍然有数据
+                 */
+                connection->flags.bad_request=1;
+                break;
+            }
             ret=hhttp_body_chunked_parse_input(&connection->body.body_chunked,data,&single_data_length);
         }
         else
         {
+            if(hhttp_body_normal_parse_is_end(&connection->body.body_normal))
+            {
+                ret=false;
+                /*
+                 * 请求结束后仍然有数据
+                 */
+                connection->flags.bad_request=1;
+                break;
+            }
             ret=hhttp_body_normal_parse_input(&connection->body.body_normal,data,&single_data_length);
         }
         datalen-=single_data_length;
