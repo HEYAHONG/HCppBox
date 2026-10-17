@@ -239,6 +239,7 @@ uint64_t httpd_file::file_content_read(hhttp_tinyserver_file_t *file,uint64_t of
         return ret;
     }
     httpd_file *m_httpd_file=(httpd_file *)file->usr;
+    ret=m_httpd_file->content_read(file,offset,buffer,buffer_size);
     return ret;
 }
 bool httpd_file::file_field_process_alloc(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal)
@@ -249,7 +250,7 @@ bool httpd_file::file_field_process_alloc(hhttp_tinyserver_file_t *file,hhttp_fi
         return ret;
     }
     httpd_file *m_httpd_file=(httpd_file *)file->usr;
-
+    ret=m_httpd_file->field_process_alloc(file,field,is_internal);
     return ret;
 }
 bool httpd_file::file_field_process_free(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal)
@@ -260,7 +261,7 @@ bool httpd_file::file_field_process_free(hhttp_tinyserver_file_t *file,hhttp_fie
         return ret;
     }
     httpd_file *m_httpd_file=(httpd_file *)file->usr;
-
+    ret=m_httpd_file->field_process_free(file,field,is_internal);
     return ret;
 }
 
