@@ -124,7 +124,7 @@ static int httpd_main(void)
         while((connection_fd=accept(server_fd,(HCPPSocketAddress *)&addr,&socklen))!=INVALID_SOCKET)
         {
             {
-                char addr_buffer[64]={0};
+                char addr_buffer[64]= {0};
                 hfprintf(stderr,"[httpd] connection %d (%s:%d) opened!\r\n",connection_fd,inet_ntop(AF_INET,&addr.sin_addr,addr_buffer,sizeof(addr_buffer)),(int)hbe16toh(addr.sin_port));
             }
             tcp_socket_set_nonblock(connection_fd);

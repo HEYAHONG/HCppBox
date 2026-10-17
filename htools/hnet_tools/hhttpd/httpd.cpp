@@ -1,11 +1,48 @@
 #include "httpd.h"
+#include H3RDPARTY_URIPARSER_URI_HEADER
 #include "string"
 #include "map"
 
+class httpd_session;
+class httpd_file
+{
+    hhttp_tinyserver_file_t file;
+    static uint64_t file_content_read(hhttp_tinyserver_file_t *file,uint64_t offset,uint8_t *buffer,uint64_t buffer_size);
+    static bool file_field_process_alloc(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal);
+    static bool file_field_process_free(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal);
+protected:
+    httpd_session &session;
+    virtual uint64_t content_read(hhttp_tinyserver_file_t *file,uint64_t offset,uint8_t *buffer,uint64_t buffer_size)
+    {
+        return (uint64_t)-1;
+    }
+    virtual bool field_process_alloc(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal)
+    {
+        return false;
+    }
+    virtual bool field_process_free(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal)
+    {
+        return false;
+    }
+public:
+    httpd_file(httpd_session &m_session):session(m_session)
+    {
+        file.file_content_read=file_content_read;
+        file.file_field_process_alloc=file_field_process_alloc;
+        file.file_field_process_free=file_field_process_free;
+        file.usr=this;
+    }
+    virtual ~httpd_file()
+    {
+
+    }
+};
 
 class httpd_session
 {
+    friend class httpd_file;
     hhttp_request_line_t request;                   /**< 请求行 */
+    std::map<std::string,std::string> query;        /**< 处理查询字符串 */
     std::map<std::string,std::string> field;        /**< 头部字段 */
     std::string body;                               /**< 主体内容 */
     hhttp_tinyserver_session_t session;
@@ -26,6 +63,70 @@ class httpd_session
             return status;
         }
         m_httpd_session->request=request_line;
+        {
+            /*
+             * 处理uri
+             */
+            UriUriA uri;
+            const char *errorPos=NULL;
+            std::string target_string(request_line.target.str,request_line.target.str_len);
+            if(uriParseSingleUriA(&uri, target_string.c_str(), &errorPos) != URI_SUCCESS)
+            {
+                /*
+                 * 返回400
+                 */
+                status=HHTTP_STATUS_CODE_400;
+                return status;
+            }
+            else
+            {
+                std::string path;
+                if(uri.absolutePath)
+                {
+                    path+="/";
+                }
+                {
+                    /*
+                     * 路径
+                     */
+                    UriPathSegmentA *seg = uri.pathHead;
+                    while(seg != NULL)
+                    {
+
+                        size_t len = seg->text.afterLast - seg->text.first;
+
+                        path+=std::string((const char *)seg->text.first,len);
+
+                        if(seg->next != NULL)
+                        {
+                            path+=std::string("/");
+                        }
+                        seg = seg->next;
+                    }
+
+                }
+                hfprintf(stderr,"[httpd] Path: %s!\r\n",path.c_str());
+                {
+                    /*
+                     * 查询字符串
+                     */
+                    UriQueryListA * queryList=NULL;
+                    int itemCount=0;
+                    if(uriDissectQueryMallocA(&queryList, &itemCount, uri.query.first,uri.query.afterLast) == URI_SUCCESS)
+                    {
+                        UriQueryListA * query_item=queryList;
+                        while(query_item!=NULL)
+                        {
+                            m_httpd_session->query[query_item->key]=query_item->value;
+                            query_item=query_item->next;
+                        }
+                        uriFreeQueryListA(queryList);
+                    }
+                }
+                uriFreeUriMembersA(&uri);
+            }
+
+        }
 
         return status;
     }
@@ -36,7 +137,6 @@ class httpd_session
         {
             m_httpd_session=(httpd_session *)session->usr;
         }
-        int status=HHTTP_STATUS_CODE_404;
         if(m_httpd_session==nullptr)
         {
             return;
@@ -53,7 +153,6 @@ class httpd_session
         {
             m_httpd_session=(httpd_session *)session->usr;
         }
-        int status=HHTTP_STATUS_CODE_404;
         if(m_httpd_session==nullptr)
         {
             return;
@@ -72,7 +171,6 @@ class httpd_session
         {
             m_httpd_session=(httpd_session *)session->usr;
         }
-        int status=HHTTP_STATUS_CODE_404;
         if(m_httpd_session==nullptr)
         {
             return;
@@ -86,7 +184,6 @@ class httpd_session
         {
             m_httpd_session=(httpd_session *)session->usr;
         }
-        int status=HHTTP_STATUS_CODE_404;
         if(m_httpd_session==nullptr)
         {
             return file;
@@ -101,14 +198,14 @@ class httpd_session
         {
             m_httpd_session=(httpd_session *)session->usr;
         }
-        int status=HHTTP_STATUS_CODE_404;
         if(m_httpd_session==nullptr)
         {
             return;
         }
         if(file!=NULL &&file->usr !=NULL)
         {
-
+            httpd_file *m_httpd_file=(httpd_file *)file->usr;
+            delete m_httpd_file;
         }
     }
 public:
@@ -133,6 +230,39 @@ public:
 
     }
 };
+
+uint64_t httpd_file::file_content_read(hhttp_tinyserver_file_t *file,uint64_t offset,uint8_t *buffer,uint64_t buffer_size)
+{
+    uint64_t ret=(uint64_t)-1;
+    if(file==NULL || file->usr==NULL)
+    {
+        return ret;
+    }
+    httpd_file *m_httpd_file=(httpd_file *)file->usr;
+    return ret;
+}
+bool httpd_file::file_field_process_alloc(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal)
+{
+    bool ret=false;
+    if(file==NULL || file->usr==NULL)
+    {
+        return ret;
+    }
+    httpd_file *m_httpd_file=(httpd_file *)file->usr;
+
+    return ret;
+}
+bool httpd_file::file_field_process_free(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal)
+{
+    bool ret=false;
+    if(file==NULL || file->usr==NULL)
+    {
+        return ret;
+    }
+    httpd_file *m_httpd_file=(httpd_file *)file->usr;
+
+    return ret;
+}
 
 static bool default_vhost_match(const hhttp_tinyserver_vhost_t *vhost,hhttp_string_t host)
 {
