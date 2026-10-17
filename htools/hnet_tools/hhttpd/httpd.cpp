@@ -105,6 +105,7 @@ class httpd_session
                 uriSetUserInfoA(&uri,NULL,NULL);
                 {
                     std::string path(target_string);
+                    path+=std::string("dummy");
                     int length=0;
                     uriToStringA((char *)path.c_str(),&uri,path.length(),&length);
                     path.resize(length);
