@@ -709,17 +709,6 @@ static bool hhttp_tinyserver_connection_send_server_response(hhttp_tinyserver_co
             }
             offset+=single_read;
         }
-
-        if(connection->flags.keep_alive != 0)
-        {
-            /*
-             * chunked编码结束
-             */
-            if(!hhttp_body_chunked_end(hhttp_tinyserver_connection_send_server_response_write,connection))
-            {
-                ret=false;
-            }
-        }
     }
     else if(hhttp_tinyserver_connection_is_client_request_error(connection))
     {
@@ -753,11 +742,17 @@ static bool hhttp_tinyserver_connection_send_server_response(hhttp_tinyserver_co
         }
     }
 
+    if(connection->flags.keep_alive != 0)
+    {
+        /*
+         * chunked编码结束
+         */
+        if(!hhttp_body_chunked_end(hhttp_tinyserver_connection_send_server_response_write,connection))
+        {
+            ret=false;
+        }
+    }
 
-    /*
-     * 清理本次请求
-     */
-    hhttp_tinyserver_connection_cleanup(connection);
 
     if(connection->flags.keep_alive==0)
     {
@@ -766,6 +761,11 @@ static bool hhttp_tinyserver_connection_send_server_response(hhttp_tinyserver_co
             connection->connection_close(connection);
         }
     }
+
+    /*
+     * 清理本次请求
+     */
+    hhttp_tinyserver_connection_cleanup(connection);
 
     return ret;
 }
