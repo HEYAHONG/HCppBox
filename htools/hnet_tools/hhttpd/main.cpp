@@ -35,12 +35,14 @@ static void check_args(int argc,char *argv[])
     struct arg_str  * serverport=NULL;
     struct arg_int  * ioidletimeout=NULL;
     struct arg_str  * indexfilename=NULL;
+    struct arg_str  * rootpath=NULL;
     void *argtable[]=
     {
         server=arg_str0("S","server","pool.http.org","http bind server"),
         serverport=arg_str0("p","server port","123","http bind server port"),
         ioidletimeout=arg_int0("I","io-idle-timeout","5","io idle timeout"),
         indexfilename=arg_str0("i","index-filename","index.html","index filename"),
+        rootpath=arg_str0("r","root-path",".","root path"),
         help=arg_lit0("H","help","print this help and exit"),
         arg_end(20)
     };
@@ -84,6 +86,11 @@ static void check_args(int argc,char *argv[])
     if(indexfilename->count > 0)
     {
         httpd_set_index_file_name(indexfilename->sval[0]);
+    }
+
+    if(rootpath->count > 0)
+    {
+        httpd_set_root_path(rootpath->sval[0]);
     }
 
     arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));

@@ -2,6 +2,10 @@
 #include H3RDPARTY_URIPARSER_URI_HEADER
 #include "string"
 #include "map"
+#include "fstream"
+#if defined(HDEFAULTS_OS_WINDOWS)
+#include "io.h"
+#endif
 
 static std::string index_file_name="index.html";
 
@@ -11,9 +15,20 @@ void httpd_set_index_file_name(const char *file_name)
     {
         index_file_name="index.html";
     }
-    index_file_name=file_name;
+    else
+    {
+        index_file_name=file_name;
+    }
 }
 
+static std::string root_path=".";
+void httpd_set_root_path(const char * path)
+{
+    if(path!=NULL)
+    {
+        root_path=path;
+    }
+}
 
 class httpd_session;
 class httpd_file
@@ -106,7 +121,6 @@ public:
 
 class httpd_file_directory:public httpd_file
 {
-    std::string path;
 public:
     httpd_file_directory(httpd_session &m_session,std::string path):httpd_file(m_session)
     {
@@ -130,7 +144,6 @@ public:
 
 class httpd_file_error:public httpd_file
 {
-    std::string path;
 
 public:
     httpd_file_error(httpd_session &m_session,std::string path):httpd_file(m_session)
@@ -155,6 +168,136 @@ public:
     }
 };
 
+
+class httpd_file_regular:public httpd_file
+{
+    std::fstream file_regular;
+protected:
+    virtual uint64_t content_read(hhttp_tinyserver_file_t *file,uint64_t offset,uint8_t *buffer,uint64_t buffer_size)
+    {
+        if(file_regular.is_open())
+        {
+            if(file_regular.eof())
+            {
+                return (uint64_t)-1;
+            }
+            int readlen=file_regular.readsome((char *)buffer,buffer_size);
+            if(readlen > 0)
+            {
+                return readlen;
+            }
+            else
+            {
+                return (uint64_t)-1;
+            }
+        }
+        return httpd_file::content_read(file,offset,buffer,buffer_size);
+    }
+public:
+    /*
+     * 注意:必须path传入完整路径
+     */
+    httpd_file_regular(httpd_session &m_session,std::string path):httpd_file(m_session)
+    {
+        /*
+         * 默认二进制输出,需要设置正确的类型才能正常显示
+         */
+        resp_field["Content-Type"]="application/octet-stream";
+        if(path.length() > (4+1))
+        {
+            std::string path_ext_4=path.substr(path.length()-(4+1));
+            for(size_t i=0; i<path_ext_4.length(); i++)
+            {
+                if(path_ext_4.c_str()[i] >= 'A' && path_ext_4.c_str()[i] <='Z')
+                {
+                    (*(char *)&path_ext_4.c_str()[i])=path_ext_4.c_str()[i]-'A'+'a';
+                }
+            }
+
+            if(path_ext_4 == ".html")
+            {
+                resp_field["Content-Type"]="text/html";
+            }
+
+            if(path_ext_4 == ".json")
+            {
+                resp_field["Content-Type"]="application/json";
+            }
+        }
+        if(path.length() > (3+1))
+        {
+            std::string path_ext_3=path.substr(path.length()-(3+1));
+            for(size_t i=0; i<path_ext_3.length(); i++)
+            {
+                if(path_ext_3.c_str()[i] >= 'A' && path_ext_3.c_str()[i] <='Z')
+                {
+                    (*(char *)&path_ext_3.c_str()[i])=path_ext_3.c_str()[i]-'A'+'a';
+                }
+            }
+
+            if(path_ext_3 == ".htm")
+            {
+                resp_field["Content-Type"]="text/html";
+            }
+
+            if(path_ext_3 == ".css")
+            {
+                resp_field["Content-Type"]="text/css";
+            }
+
+            if(path_ext_3 == ".xml")
+            {
+                resp_field["Content-Type"]="text/xml";
+            }
+
+
+
+        }
+
+        if(path.length() > (2+1))
+        {
+            std::string path_ext_2=path.substr(path.length()-(2+1));
+            for(size_t i=0; i<path_ext_2.length(); i++)
+            {
+                if(path_ext_2.c_str()[i] >= 'A' && path_ext_2.c_str()[i] <='Z')
+                {
+                    (*(char *)&path_ext_2.c_str()[i])=path_ext_2.c_str()[i]-'A'+'a';
+                }
+            }
+
+            if(path_ext_2 == ".js")
+            {
+                resp_field["Content-Type"]="application/javascript";
+            }
+
+        }
+    }
+    virtual ~httpd_file_regular()
+    {
+        if(file_regular.is_open())
+        {
+            file_regular.close();
+        }
+    }
+
+    /*
+     * 注意:必须path传入完整路径
+     */
+    static httpd_file *open(httpd_session &m_session,std::string path,int &status_code)
+    {
+        httpd_file_regular * m_file=new httpd_file_regular(m_session,path);
+        m_file->file_regular.open((path).c_str(),std::ios_base::in |std::ios_base::binary);
+        if(!m_file->file_regular.is_open())
+        {
+            status_code=HHTTP_STATUS_CODE_404;
+        }
+        else
+        {
+            status_code=HHTTP_STATUS_CODE_200;
+        }
+        return m_file;
+    }
+};
 
 class httpd_session
 {
@@ -235,6 +378,41 @@ class httpd_session
                          * 目录
                          */
                         m_httpd_session->resp_file=httpd_file_directory::open(*m_httpd_session,path,status);
+                    }
+                    else
+                    {
+                        /*
+                         * 文件
+                         */
+                        std::string full_path=root_path+path;
+#if !defined(HDEFAULTS_OS_WINDOWS)
+                        if(0==access(full_path.c_str(),0))
+#else
+                        if(0==_access(full_path.c_str(),0))
+#endif
+                        {
+
+#if !defined(HDEFAULTS_OS_WINDOWS)
+                            if(0==access(full_path.c_str(),R_OK))
+#else
+                            if(0==_access(full_path.c_str(),4))
+#endif
+                            {
+                                /*
+                                 * 文件
+                                 */
+                                m_httpd_session->resp_file=httpd_file_regular::open(*m_httpd_session,full_path,status);
+                            }
+                            else
+                            {
+                                status=HHTTP_STATUS_CODE_403;
+                            }
+
+                        }
+                        else
+                        {
+                            status=HHTTP_STATUS_CODE_404;
+                        }
                     }
                 }
                 uriFreeUriMembersA(&uri);

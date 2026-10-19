@@ -10,6 +10,8 @@ extern "C"
 
 void httpd_set_index_file_name(const char *file_name);
 
+void httpd_set_root_path(const char * path);
+
 const hhttp_tinyserver_service_t * httpd_service(void);
 
 
