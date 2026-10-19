@@ -224,6 +224,21 @@ public:
             {
                 resp_field["Content-Type"]="application/json";
             }
+
+            if(path_ext_4 == ".jpeg")
+            {
+                resp_field["Content-Type"]="image/jpeg";
+            }
+
+            if(path_ext_4 == ".webp")
+            {
+                resp_field["Content-Type"]="image/webp";
+            }
+
+            if(path_ext_4 == ".avif")
+            {
+                resp_field["Content-Type"]="image/avif";
+            }
         }
         if(path.length() > (3+1))
         {
@@ -251,7 +266,35 @@ public:
                 resp_field["Content-Type"]="text/xml";
             }
 
+            if(path_ext_3 == ".jpg")
+            {
+                resp_field["Content-Type"]="image/jpeg";
+            }
 
+            if(path_ext_3 == ".png")
+            {
+                resp_field["Content-Type"]="image/png";
+            }
+
+            if(path_ext_3 == ".gif")
+            {
+                resp_field["Content-Type"]="image/gif";
+            }
+
+            if(path_ext_3 == ".svg")
+            {
+                resp_field["Content-Type"]="image/svg+xml";
+            }
+
+            if(path_ext_3 == ".bmp")
+            {
+                resp_field["Content-Type"]="image/bmp";
+            }
+
+            if(path_ext_3 == ".ico")
+            {
+                resp_field["Content-Type"]="image/x-icon";
+            }
 
         }
 
