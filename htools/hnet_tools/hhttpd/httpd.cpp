@@ -181,7 +181,8 @@ protected:
             {
                 return (uint64_t)-1;
             }
-            int readlen=file_regular.readsome((char *)buffer,buffer_size);
+            file_regular.read((char *)buffer,buffer_size);
+            int readlen=file_regular.gcount();
             if(readlen > 0)
             {
                 return readlen;
