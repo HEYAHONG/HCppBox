@@ -370,6 +370,7 @@ class httpd_session
         }
         m_httpd_session->request=request_line;
         std::string path;
+        if(request_line.method==HHTTP_METHOD_GET || request_line.method== HHTTP_METHOD_POST)
         {
             /*
              * 处理uri
@@ -462,6 +463,10 @@ class httpd_session
                 uriFreeUriMembersA(&uri);
             }
 
+        }
+        else
+        {
+            status=HHTTP_STATUS_CODE_501;
         }
 
         if(m_httpd_session->resp_file==NULL && status >= HHTTP_STATUS_CODE_400)
