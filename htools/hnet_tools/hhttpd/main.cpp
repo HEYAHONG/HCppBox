@@ -11,11 +11,15 @@
 #include "socket_tcp_helper.h"
 #include "httpd.h"
 #include <chrono>
+#include <atomic>
+#include <chrono>
+#include <thread>
 
 
 static std::string server_addr="0.0.0.0";
 static std::string server_port="80";
 static int io_idle_timeout=5;
+static int max_thread_count=100;
 
 static void show_banner()
 {
@@ -149,6 +153,7 @@ static void check_env(int argc,char *argv[])
 }
 
 static thread_local std::chrono::time_point<std::chrono::steady_clock> io_active_timepoint;
+static std::atomic_int current_thread_count=0;
 static int httpd_main(void)
 {
     HCPPSocketInit();
@@ -214,6 +219,11 @@ static int httpd_main(void)
 #endif
         while((connection_fd=accept(server_fd,(HCPPSocketAddress *)&addr,&socklen))!=INVALID_SOCKET)
         {
+            while(current_thread_count > max_thread_count)
+            {
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+            current_thread_count++;
             std::thread connection_thread([=]()
             {
                 int m_connection_fd=connection_fd;
@@ -295,6 +305,7 @@ static int httpd_main(void)
                     }
                 }
                 hfprintf(stderr,"[httpd] connection %d closed!\r\n",connection_fd);
+                current_thread_count--;
             });
             connection_thread.detach();
         }
