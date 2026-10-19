@@ -8,7 +8,10 @@ extern "C"
 {
 #endif
 
+void httpd_set_index_file_name(const char *file_name);
+
 const hhttp_tinyserver_service_t * httpd_service(void);
+
 
 #ifdef __cplusplus
 }

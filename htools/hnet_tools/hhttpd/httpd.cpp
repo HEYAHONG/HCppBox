@@ -3,26 +3,92 @@
 #include "string"
 #include "map"
 
+static std::string index_file_name="index.html";
+
+void httpd_set_index_file_name(const char *file_name)
+{
+    if(file_name==NULL)
+    {
+        index_file_name="index.html";
+    }
+    index_file_name=file_name;
+}
+
+
 class httpd_session;
 class httpd_file
 {
+    friend class httpd_session;
     hhttp_tinyserver_file_t file;
     static uint64_t file_content_read(hhttp_tinyserver_file_t *file,uint64_t offset,uint8_t *buffer,uint64_t buffer_size);
     static bool file_field_process_alloc(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal);
     static bool file_field_process_free(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal);
 protected:
     httpd_session &session;
+    std::string resp_body;                              /**< 从内存中返回使用此成员 */
+    std::map<std::string,std::string> resp_field;       /**< 返回文件需要的头 */
     virtual uint64_t content_read(hhttp_tinyserver_file_t *file,uint64_t offset,uint8_t *buffer,uint64_t buffer_size)
     {
+        if(offset < resp_body.length() && (file!=NULL && buffer!=NULL && buffer_size!=0))
+        {
+            if(buffer_size+offset > resp_body.length())
+            {
+                buffer_size=resp_body.length()-offset;
+            }
+            memcpy(buffer,&resp_body.c_str()[offset],buffer_size);
+            return buffer_size;
+        }
         return (uint64_t)-1;
     }
     virtual bool field_process_alloc(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal)
     {
-        return false;
+        if(file==NULL || field == NULL )
+        {
+            return false;
+        }
+
+        if(resp_field.size() == 0)
+        {
+            return false;
+        }
+
+        auto it=resp_field.begin();
+        if(is_internal)
+        {
+            std::string name=std::string(field->field_name.str,field->field_name.str_len);
+            it=resp_field.find(name);
+        }
+
+        if(it==resp_field.end())
+        {
+            return false;
+        }
+
+        field->field_name=hhttp_string_from_cstring(it->first.c_str());
+        field->field_values=hhttp_string_from_cstring(it->second.c_str());
+
+        return true;
     }
     virtual bool field_process_free(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal)
     {
-        return false;
+        if(file==NULL || field == NULL )
+        {
+            return false;
+        }
+
+        if(hhttp_string_is_empty(field->field_name))
+        {
+            return false;
+        }
+
+        std::string name=std::string(field->field_name.str,field->field_name.str_len);
+        auto it=resp_field.find(name);
+        if(it!=resp_field.end())
+        {
+            resp_field.erase(it);
+        }
+
+        return true;
     }
 public:
     httpd_file(httpd_session &m_session):session(m_session)
@@ -38,6 +104,58 @@ public:
     }
 };
 
+class httpd_file_directory:public httpd_file
+{
+    std::string path;
+public:
+    httpd_file_directory(httpd_session &m_session,std::string path):httpd_file(m_session)
+    {
+        /*
+         * 重定向至引索文件
+         */
+        resp_field["Location"]=path+index_file_name;
+    }
+    virtual ~httpd_file_directory()
+    {
+
+    }
+
+    static httpd_file *open(httpd_session &m_session,std::string path,int &status_code)
+    {
+        httpd_file_directory * m_file=new httpd_file_directory(m_session,path);
+        status_code=HHTTP_STATUS_CODE_302;
+        return m_file;
+    }
+};
+
+class httpd_file_error:public httpd_file
+{
+    std::string path;
+
+public:
+    httpd_file_error(httpd_session &m_session,std::string path):httpd_file(m_session)
+    {
+        /*
+         * 纯文本输出
+         */
+        resp_field["Content-Type"]="text/plain";
+    }
+    virtual ~httpd_file_error()
+    {
+
+    }
+
+    static httpd_file *open(httpd_session &m_session,std::string path,int &status_code)
+    {
+        httpd_file_error * m_file=new httpd_file_error(m_session,path);
+        m_file->resp_body += "httpd error!  ";
+        m_file->resp_body += path+" ";
+        m_file->resp_body += std::string(hhttp_status_code_std_to_string((hhttp_status_code_t)status_code).str)+" "+std::string(hhttp_status_code_std_to_reason_string((hhttp_status_code_t)status_code).str);
+        return m_file;
+    }
+};
+
+
 class httpd_session
 {
     friend class httpd_file;
@@ -45,6 +163,7 @@ class httpd_session
     std::map<std::string,std::string> query;        /**< 处理查询字符串 */
     std::map<std::string,std::string> field;        /**< 头部字段 */
     std::string body;                               /**< 主体内容 */
+    httpd_file *resp_file;
     hhttp_tinyserver_session_t session;
     static int  session_target_match(hhttp_tinyserver_session_t *session,hhttp_request_line_t request_line)
     {
@@ -63,6 +182,7 @@ class httpd_session
             return status;
         }
         m_httpd_session->request=request_line;
+        std::string path;
         {
             /*
              * 处理uri
@@ -104,16 +224,27 @@ class httpd_session
                 uriSetHostAutoA(&uri,NULL,NULL);
                 uriSetUserInfoA(&uri,NULL,NULL);
                 {
-                    std::string path(target_string);
-                    path+=std::string("dummy");
+                    path+=target_string+std::string("dummy");
                     int length=0;
                     uriToStringA((char *)path.c_str(),&uri,path.length(),&length);
-                    path.resize(length);
+                    path.resize(strlen(path.c_str()));
                     hfprintf(stderr,"[httpd] Path: %s!\r\n",path.c_str());
+                    if(path.c_str()[path.length()-1]=='/')
+                    {
+                        /*
+                         * 目录
+                         */
+                        m_httpd_session->resp_file=httpd_file_directory::open(*m_httpd_session,path,status);
+                    }
                 }
                 uriFreeUriMembersA(&uri);
             }
 
+        }
+
+        if(m_httpd_session->resp_file==NULL && status >= HHTTP_STATUS_CODE_400)
+        {
+            m_httpd_session->resp_file=httpd_file_error::open(*m_httpd_session,path,status);
         }
 
         return status;
@@ -195,6 +326,11 @@ class httpd_session
             return file;
         }
 
+        if(m_httpd_session->resp_file!=nullptr)
+        {
+            file=&m_httpd_session->resp_file->file;
+        }
+
         return file;
     }
     static void session_target_file_close(hhttp_tinyserver_session_t *session,hhttp_tinyserver_file_t *file)
@@ -212,6 +348,7 @@ class httpd_session
         {
             httpd_file *m_httpd_file=(httpd_file *)file->usr;
             delete m_httpd_file;
+            m_httpd_session->resp_file=nullptr;
         }
     }
 public:
@@ -219,7 +356,7 @@ public:
     {
         return &session;
     }
-    httpd_session(hhttp_request_line_t request_line)
+    httpd_session(hhttp_request_line_t request_line):resp_file(nullptr)
     {
         request=request_line;
         session.session_target_match=session_target_match;
