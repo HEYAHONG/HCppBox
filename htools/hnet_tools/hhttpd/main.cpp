@@ -96,6 +96,58 @@ static void check_args(int argc,char *argv[])
     arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
 }
 
+static void check_env(int argc,char *argv[])
+{
+    {
+        const char *hhttpd_port=hgetenv("HTTPD_PORT");
+        if(hhttpd_port!=NULL)
+        {
+            if(strlen(hhttpd_port) > 0)
+            {
+                server_port=std::string(hhttpd_port);
+            }
+        }
+    }
+
+    {
+        const char *hhttpd_idle_timeout=hgetenv("HTTPD_IDLE_TIMEOUT");
+        if(hhttpd_idle_timeout!=NULL)
+        {
+            if(strlen(hhttpd_idle_timeout) > 0)
+            {
+                io_idle_timeout=atoi(hhttpd_idle_timeout);
+                if(io_idle_timeout < 1)
+                {
+                    io_idle_timeout=1;
+                }
+            }
+        }
+    }
+
+
+    {
+        const char *hhttpd_index_filename=hgetenv("HTTPD_INDEX_FILENAME");
+        if(hhttpd_index_filename!=NULL)
+        {
+            if(strlen(hhttpd_index_filename) > 0)
+            {
+                httpd_set_index_file_name(hhttpd_index_filename);
+            }
+        }
+    }
+
+    {
+        const char *hhttpd_root_path=hgetenv("HTTPD_ROOT_PATH");
+        if(hhttpd_root_path!=NULL)
+        {
+            if(strlen(hhttpd_root_path) > 0)
+            {
+                httpd_set_root_path(hhttpd_root_path);
+            }
+        }
+    }
+}
+
 static std::chrono::time_point<std::chrono::steady_clock> io_active_timepoint;
 static int httpd_main(void)
 {
@@ -249,6 +301,8 @@ static int httpd_main(void)
 
 int main(int argc,char *argv[])
 {
+
+    check_env(argc,argv);
 
     check_args(argc,argv);
 
