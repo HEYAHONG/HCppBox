@@ -148,7 +148,7 @@ static void check_env(int argc,char *argv[])
     }
 }
 
-static std::chrono::time_point<std::chrono::steady_clock> io_active_timepoint;
+static thread_local std::chrono::time_point<std::chrono::steady_clock> io_active_timepoint;
 static int httpd_main(void)
 {
     HCPPSocketInit();
@@ -214,84 +214,89 @@ static int httpd_main(void)
 #endif
         while((connection_fd=accept(server_fd,(HCPPSocketAddress *)&addr,&socklen))!=INVALID_SOCKET)
         {
-            io_active_timepoint=std::chrono::steady_clock::now();
+            std::thread connection_thread([=]()
             {
-                char addr_buffer[64]= {0};
-                hfprintf(stderr,"[httpd] connection %d (%s:%d) opened!\r\n",connection_fd,inet_ntop(AF_INET,&addr.sin_addr,addr_buffer,sizeof(addr_buffer)),(int)hbe16toh(addr.sin_port));
-            }
-            tcp_socket_set_nonblock(connection_fd);
-            hhttp_tinyserver_connection_t httpd_con;
-            hhttp_tinyserver_connection_init(&httpd_con,
-                                             httpd_service(),
-                                             [](hhttp_tinyserver_connection_t *connection,uint64_t offset,hhttp_string_t part_data)
-            {
+                int m_connection_fd=connection_fd;
                 io_active_timepoint=std::chrono::steady_clock::now();
-                if(connection->usr==NULL)
                 {
-                    return;
+                    char addr_buffer[64]= {0};
+                    hfprintf(stderr,"[httpd] connection %d (%s:%d) opened!\r\n",connection_fd,inet_ntop(AF_INET,&addr.sin_addr,addr_buffer,sizeof(addr_buffer)),(int)hbe16toh(addr.sin_port));
                 }
-                int &connection_fd=*(int *)connection->usr;
-                const char *data=part_data.str;
-                size_t len=part_data.str_len;
-                if(data==NULL || len == 0)
-                {
-                    return;
-                }
-                if(connection_fd!=INVALID_SOCKET)
-                {
-                    size_t offset=0;
-                    do
-                    {
-                        int sendlen=send(connection_fd,(const char *)(&((uint8_t *)data)[offset]),len-offset,0);
-                        if(sendlen>0)
-                        {
-                            offset+=sendlen;
-                        }
-                        if(sendlen==0)
-                        {
-                            //连接已断开
-                            offset=len;
-                        }
-                    }
-                    while(offset < len);
-                }
-
-            },
-            [](hhttp_tinyserver_connection_t *connection)
-            {
-                if(connection->usr==NULL)
-                {
-                    return;
-                }
-                int &connection_fd=*(int *)connection->usr;
-                closesocket(connection_fd);
-                connection_fd=INVALID_SOCKET;
-            },
-            &connection_fd);
-            while(connection_fd!=INVALID_SOCKET)
-            {
-                uint8_t buffer[4096];
-                int readlen=recv(connection_fd,(char *)buffer,sizeof(buffer),0);
-                if(readlen > 0)
+                tcp_socket_set_nonblock(connection_fd);
+                hhttp_tinyserver_connection_t httpd_con;
+                hhttp_tinyserver_connection_init(&httpd_con,
+                                                 httpd_service(),
+                                                 [](hhttp_tinyserver_connection_t *connection,uint64_t offset,hhttp_string_t part_data)
                 {
                     io_active_timepoint=std::chrono::steady_clock::now();
-                    hhttp_tinyserver_connection_input(&httpd_con,buffer,readlen);
-                }
-                if(readlen == 0 || (readlen < 0 && !tcp_socket_is_egain()))
+                    if(connection->usr==NULL)
+                    {
+                        return;
+                    }
+                    int &connection_fd=*(int *)connection->usr;
+                    const char *data=part_data.str;
+                    size_t len=part_data.str_len;
+                    if(data==NULL || len == 0)
+                    {
+                        return;
+                    }
+                    if(connection_fd!=INVALID_SOCKET)
+                    {
+                        size_t offset=0;
+                        do
+                        {
+                            int sendlen=send(connection_fd,(const char *)(&((uint8_t *)data)[offset]),len-offset,0);
+                            if(sendlen>0)
+                            {
+                                offset+=sendlen;
+                            }
+                            if(sendlen==0)
+                            {
+                                //连接已断开
+                                offset=len;
+                            }
+                        }
+                        while(offset < len);
+                    }
+
+                },
+                [](hhttp_tinyserver_connection_t *connection)
                 {
-                    hhttp_tinyserver_connection_cleanup(&httpd_con);
+                    if(connection->usr==NULL)
+                    {
+                        return;
+                    }
+                    int &connection_fd=*(int *)connection->usr;
                     closesocket(connection_fd);
                     connection_fd=INVALID_SOCKET;
-                }
-                if(std::chrono::steady_clock::now()-io_active_timepoint > std::chrono::seconds(io_idle_timeout))
+                },
+                &m_connection_fd);
+                while(m_connection_fd!=INVALID_SOCKET)
                 {
-                    hfprintf(stderr,"[httpd] io idle timeout!\r\n");
-                    hhttp_tinyserver_connection_cleanup(&httpd_con);
-                    closesocket(connection_fd);
-                    connection_fd=INVALID_SOCKET;
+                    uint8_t buffer[4096];
+                    int readlen=recv(m_connection_fd,(char *)buffer,sizeof(buffer),0);
+                    if(readlen > 0)
+                    {
+                        io_active_timepoint=std::chrono::steady_clock::now();
+                        hhttp_tinyserver_connection_input(&httpd_con,buffer,readlen);
+                    }
+                    if(readlen == 0 || (readlen < 0 && !tcp_socket_is_egain()))
+                    {
+                        hhttp_tinyserver_connection_cleanup(&httpd_con);
+                        closesocket(m_connection_fd);
+                        m_connection_fd=INVALID_SOCKET;
+                    }
+                    if(std::chrono::steady_clock::now()-io_active_timepoint > std::chrono::seconds(io_idle_timeout))
+                    {
+                        hfprintf(stderr,"[httpd] connection %d io idle timeout!\r\n",m_connection_fd);
+                        hhttp_tinyserver_connection_cleanup(&httpd_con);
+                        closesocket(m_connection_fd);
+                        m_connection_fd=INVALID_SOCKET;
+                    }
                 }
-            }
-            hfprintf(stderr,"[httpd] connection closed!\r\n");
+                hfprintf(stderr,"[httpd] connection %d closed!\r\n",connection_fd);
+            });
+            connection_thread.detach();
         }
     }
 
