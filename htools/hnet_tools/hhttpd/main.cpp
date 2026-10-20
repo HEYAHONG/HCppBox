@@ -9,6 +9,7 @@
 #include "syslog.h"
 #endif // HAVE_SYSLOG_H
 #include "socket_tcp_helper.h"
+#include "signal_helper.h"
 #include "httpd.h"
 #include <chrono>
 #include <atomic>
@@ -154,11 +155,24 @@ static void check_env(int argc,char *argv[])
 
 static thread_local std::chrono::time_point<std::chrono::steady_clock> io_active_timepoint;
 static std::atomic_int current_thread_count=0;
+static bool httpd_running=true;
+SOCKET server_fd=INVALID_SOCKET;
+static void httpd_stop(void)
+{
+    httpd_running=false;
+    if(server_fd!=INVALID_SOCKET)
+    {
+        closesocket(server_fd);
+        server_fd=INVALID_SOCKET;
+    }
+}
 static int httpd_main(void)
 {
     HCPPSocketInit();
+    sigint_init();
+    sigint_reg(httpd_stop);
 
-    SOCKET server_fd=socket(AF_INET,SOCK_STREAM,0);
+    server_fd=socket(AF_INET,SOCK_STREAM,0);
     if(server_fd == INVALID_SOCKET)
     {
         hfprintf(stderr,"[httpd] new socket error!\r\n");
@@ -175,8 +189,11 @@ static int httpd_main(void)
         }
         ~server_fd_guard()
         {
-            closesocket(server_fd);
-            server_fd=INVALID_SOCKET;
+            if(server_fd!=INVALID_SOCKET)
+            {
+                closesocket(server_fd);
+                server_fd=INVALID_SOCKET;
+            }
         }
 
     } m_server_fd{server_fd};
@@ -299,6 +316,13 @@ static int httpd_main(void)
                     if(std::chrono::steady_clock::now()-io_active_timepoint > std::chrono::seconds(io_idle_timeout))
                     {
                         hfprintf(stderr,"[httpd] connection %d io idle timeout!\r\n",m_connection_fd);
+                        hhttp_tinyserver_connection_cleanup(&httpd_con);
+                        closesocket(m_connection_fd);
+                        m_connection_fd=INVALID_SOCKET;
+                    }
+                    if(!httpd_running)
+                    {
+                        hfprintf(stderr,"[httpd] connection %d stop!\r\n",m_connection_fd);
                         hhttp_tinyserver_connection_cleanup(&httpd_con);
                         closesocket(m_connection_fd);
                         m_connection_fd=INVALID_SOCKET;
