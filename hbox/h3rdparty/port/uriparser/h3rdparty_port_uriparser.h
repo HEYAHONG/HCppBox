@@ -26,6 +26,6 @@
 #endif
 #endif
 
-
+#include "huriparser.h"
 
 #endif // __H3RDPARTY_PORT_URIPARSER_H_INCLUDE__
