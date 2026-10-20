@@ -162,7 +162,6 @@ public:
     static httpd_file *open(httpd_session &m_session,std::string path,int &status_code)
     {
         httpd_file_error * m_file=new httpd_file_error(m_session,path);
-        m_file->resp_body += "httpd error!  ";
         m_file->resp_body += path+" ";
         m_file->resp_body += std::string(hhttp_status_code_std_to_string((hhttp_status_code_t)status_code).str)+" "+std::string(hhttp_status_code_std_to_reason_string((hhttp_status_code_t)status_code).str);
         return m_file;
@@ -471,20 +470,20 @@ class httpd_session
                             }
                             else
 #if !defined(HDEFAULTS_OS_WINDOWS)
-                            if(0==access(full_path.c_str(),R_OK))
+                                if(0==access(full_path.c_str(),R_OK))
 #else
-                            if(0==_access(full_path.c_str(),4))
+                                if(0==_access(full_path.c_str(),4))
 #endif
-                            {
-                                /*
-                                 * 文件
-                                 */
-                                m_httpd_session->resp_file=httpd_file_regular::open(*m_httpd_session,full_path,status);
-                            }
-                            else
-                            {
-                                status=HHTTP_STATUS_CODE_403;
-                            }
+                                {
+                                    /*
+                                     * 文件
+                                     */
+                                    m_httpd_session->resp_file=httpd_file_regular::open(*m_httpd_session,full_path,status);
+                                }
+                                else
+                                {
+                                    status=HHTTP_STATUS_CODE_403;
+                                }
 
                         }
                         else
