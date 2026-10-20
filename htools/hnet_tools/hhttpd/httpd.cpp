@@ -3,6 +3,7 @@
 #include "string"
 #include "map"
 #include "fstream"
+#include "filesystem"
 #if defined(HDEFAULTS_OS_WINDOWS)
 #include "io.h"
 #endif
@@ -411,6 +412,31 @@ class httpd_session
                 uriSetPortTextA(&uri,NULL,NULL);
                 uriSetHostAutoA(&uri,NULL,NULL);
                 uriSetUserInfoA(&uri,NULL,NULL);
+                int dir_depth=0;
+                {
+                    /*
+                     * 检查目录深度，防止通过..逃逸
+                     */
+                    UriPathSegmentA *seg=uri.pathHead;
+                    while(seg!=NULL)
+                    {
+                        dir_depth++;
+                        if(seg->text.first!=NULL && seg->text.afterLast != seg->text.first)
+                        {
+                            std::string name(seg->text.first,seg->text.afterLast-seg->text.first);
+                            if(name==".")
+                            {
+                                dir_depth-=1;
+                            }
+                            if(name=="..")
+                            {
+                                dir_depth-=2;
+                            }
+                        }
+                        seg=seg->next;
+                    }
+                }
+                if(dir_depth >= 0)
                 {
                     path+=target_string+std::string("dummy");
                     int length=0;
@@ -436,7 +462,14 @@ class httpd_session
                         if(0==_access(full_path.c_str(),0))
 #endif
                         {
-
+                            if(std::filesystem::is_directory(std::filesystem::path(full_path)))
+                            {
+                                /*
+                                 * 目录
+                                 */
+                                m_httpd_session->resp_file=httpd_file_directory::open(*m_httpd_session,path+"/",status);
+                            }
+                            else
 #if !defined(HDEFAULTS_OS_WINDOWS)
                             if(0==access(full_path.c_str(),R_OK))
 #else
@@ -459,6 +492,10 @@ class httpd_session
                             status=HHTTP_STATUS_CODE_404;
                         }
                     }
+                }
+                else
+                {
+                    status=HHTTP_STATUS_CODE_403;
                 }
                 uriFreeUriMembersA(&uri);
             }
