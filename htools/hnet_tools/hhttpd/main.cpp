@@ -336,6 +336,11 @@ static int httpd_main(void)
     }
 
 
+    while(current_thread_count!=0)
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
     return 0;
 }
 
