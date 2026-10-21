@@ -187,5 +187,15 @@ huriparser_string_t huriparser_parse_http_target(const char *uri_cstring)
     return ret;
 }
 
+const char *huriparser_unescape_in_place(char *uri_string)
+{
+    return uriUnescapeInPlaceA(uri_string);
+}
+
+const char *huriparser_escape(const char *uri_in_string,char *uri_out_string)
+{
+    return uriEscapeA(uri_in_string,uri_out_string,URI_FALSE,URI_FALSE);
+}
+
 
 

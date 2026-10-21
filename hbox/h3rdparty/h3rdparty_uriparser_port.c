@@ -24,17 +24,9 @@
 
 
 
-#ifndef  H3RDPARTY_USING_SYSTEM_URIPARSER
-
-/*
- * 默认情况下不导出第三方库符号
- */
-#ifndef URI_STATIC_BUILD
-#define URI_STATIC_BUILD  1
-#endif
 
 #include "port/uriparser/huriparser.c"
 
-#endif // H3RDPARTY_USING_SYSTEM_URIPARSER
+
 
 
