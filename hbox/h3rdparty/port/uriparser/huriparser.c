@@ -187,6 +187,40 @@ huriparser_string_t huriparser_parse_http_target(const char *uri_cstring)
     return ret;
 }
 
+huriparser_string_t huriparser_parse_http_host(const char *uri_cstring)
+{
+    huriparser_string_t ret=huriparser_string_empty();
+    if(uri_cstring==NULL)
+    {
+        return ret;
+    }
+    const char * afterLast=NULL;
+    const char *first=NULL;
+    {
+        huriparser_string_t host=huriparser_parse_host(uri_cstring);
+        if(!huriparser_string_is_empty(host))
+        {
+            first=&host.str[0];
+            afterLast=&host.str[host.str_len];
+        }
+    }
+    {
+        huriparser_string_t port=huriparser_parse_port(uri_cstring);
+        if(!huriparser_string_is_empty(port))
+        {
+            afterLast=&port.str[port.str_len];
+        }
+    }
+    if(first!=NULL || afterLast !=NULL)
+    {
+        UriTextRangeA text_range;
+        text_range.first=first;
+        text_range.afterLast=afterLast;
+        ret=huriparser_string_from_uritextrange(text_range);
+    }
+    return ret;
+}
+
 const char *huriparser_unescape_in_place(char *uri_string)
 {
     return uriUnescapeInPlaceA(uri_string);

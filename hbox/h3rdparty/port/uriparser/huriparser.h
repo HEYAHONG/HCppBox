@@ -90,6 +90,14 @@ huriparser_string_t huriparser_parse_fragment(const char *uri_cstring);
  */
 huriparser_string_t huriparser_parse_http_target(const char *uri_cstring);
 
+/** \brief 获取HTTP主机
+ *
+ * \param uri_cstring const char* 字符串,特殊字符与中文字符需要先使用%组编码
+ * \return huriparser_string_t 字符串
+ *
+ */
+huriparser_string_t huriparser_parse_http_host(const char *uri_cstring);
+
 
 /** \brief 去除%组，还原字符串
  *
