@@ -441,6 +441,13 @@ class httpd_session
                     int length=0;
                     uriToStringA((char *)path.c_str(),&uri,path.length(),&length);
                     path.resize(strlen(path.c_str()));
+                    {
+                        /*
+                         * 去除%组,用于支持中文
+                         */
+                        uriUnescapeInPlaceA((char *)path.c_str());
+                        path.resize(hstrlen(path.c_str()));
+                    }
                     hfprintf(stderr,"[httpd] Path: %s!\r\n",path.c_str());
                     if(path.c_str()[path.length()-1]=='/')
                     {
