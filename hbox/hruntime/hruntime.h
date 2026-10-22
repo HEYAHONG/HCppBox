@@ -550,9 +550,9 @@ extern const  hruntime_symbol_t __hruntime_symbol_end[];
 /*
  *  某些操作系统下，默认启用符号表
  */
-#ifndef HRUNTIME_USING_SYMBOL_TABLE
-#define HRUNTIME_USING_SYMBOL_TABLE     1
-#endif
+//#ifndef HRUNTIME_USING_SYMBOL_TABLE
+//#define HRUNTIME_USING_SYMBOL_TABLE     1
+//#endif
 
 /*
  *  某些操作系统下，默认启用动态符号表
