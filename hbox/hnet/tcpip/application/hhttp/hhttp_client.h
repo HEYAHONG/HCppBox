@@ -156,6 +156,24 @@ bool hhttp_client_is_end(hhttp_client_t *client);
 bool hhttp_client_send_request(hhttp_client_t *client,hhttp_method_t method,const char *uri_string,hhttp_string_t body);
 
 
+/** \brief 客户端输入数据
+ *
+ * \param client hhttp_client_t* 客户端
+ * \param data const uint8_t* 数据
+ * \param datalen size_t 数据长度
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_client_input(hhttp_client_t *client,const uint8_t *data,size_t datalen);
+
+/** \brief 客户端输入数据结束，仅当连接被服务端断开时调用
+ *
+ * \param client hhttp_client_t* 客户端
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_client_input_end(hhttp_client_t *client);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

@@ -289,3 +289,364 @@ bool hhttp_client_send_request(hhttp_client_t *client,hhttp_method_t method,cons
     return ret;
 }
 
+static void hhttp_client_body_parse_data(hhttp_client_t *client,uint64_t offset,hhttp_string_t part_data)
+{
+    if(client==NULL)
+    {
+        return;
+    }
+
+    if(client->response.process_body!=NULL)
+    {
+        client->response.process_body(client,offset,part_data);
+    }
+}
+
+static void hhttp_client_body_parse_data_end(hhttp_client_t *client)
+{
+    if(client==NULL)
+    {
+        return;
+    }
+
+    if(client->response.process_body_end!=NULL && client->flags.status.body_end==0)
+    {
+        client->response.process_body_end(client);
+    }
+
+    client->flags.status.body_end=1;
+}
+
+static void hhttp_client_body_chunked_parse_data(hhttp_body_chunked_parse_t *body_chunked,uint64_t offset,hhttp_string_t part_data)
+{
+    if(body_chunked == NULL)
+    {
+        return;
+    }
+    hhttp_client_body_parse_data((hhttp_client_t *)body_chunked->usr,offset,part_data);
+    if(hhttp_body_chunked_parse_is_end(body_chunked))
+    {
+        hhttp_client_body_parse_data_end((hhttp_client_t *)body_chunked->usr);
+    }
+}
+
+static void hhttp_client_body_normal_parse_data(hhttp_body_normal_parse_t *body_normal,uint64_t offset,hhttp_string_t part_data)
+{
+    if(body_normal == NULL)
+    {
+        return;
+    }
+    hhttp_client_body_parse_data((hhttp_client_t *)body_normal->usr,offset,part_data);
+    if(hhttp_body_normal_parse_is_end(body_normal))
+    {
+        hhttp_client_body_parse_data_end((hhttp_client_t *)body_normal->usr);
+    }
+}
+
+static bool hhttp_client_input_is_body_chunked(hhttp_client_t *client)
+{
+    bool ret=false;
+    if(client == NULL)
+    {
+        return ret;
+    }
+
+    ret=(client->flags.status.body_chunked!=0);
+
+    if(ret)
+    {
+        client->body.body_chunked.data=hhttp_client_body_chunked_parse_data;
+        client->body.body_chunked.usr=client;
+    }
+    else
+    {
+        client->body.body_normal.data=hhttp_client_body_normal_parse_data;
+        client->body.body_normal.usr=client;
+    }
+
+    return ret;
+}
+
+static bool hhttp_client_body_input(hhttp_client_t *client,const uint8_t *data,size_t datalen)
+{
+    bool ret=false;
+
+    if(client == NULL)
+    {
+        return false;
+    }
+
+    if(data==NULL || datalen == 0)
+    {
+        return true;
+    }
+
+    ret=true;
+
+    /*
+     * 处理请求主体
+     */
+    while(datalen > 0)
+    {
+        size_t single_data_length=datalen;
+        if(hhttp_client_input_is_body_chunked(client))
+        {
+            if(hhttp_body_chunked_parse_is_end(&client->body.body_chunked))
+            {
+                break;
+            }
+            ret=hhttp_body_chunked_parse_input(&client->body.body_chunked,data,&single_data_length);
+        }
+        else
+        {
+            if(hhttp_body_normal_parse_is_end(&client->body.body_normal))
+            {
+                break;
+            }
+            ret=hhttp_body_normal_parse_input(&client->body.body_normal,data,&single_data_length);
+        }
+        datalen-=single_data_length;
+        data+=single_data_length;
+    }
+
+    return ret;
+}
+
+static bool hhttp_client_header_input(hhttp_client_t *client,const uint8_t *data,size_t datalen)
+{
+    bool ret=false;
+
+    if(client == NULL)
+    {
+        return false;
+    }
+
+    if(data==NULL || datalen == 0)
+    {
+        return true;
+    }
+
+    ret=true;
+
+    for(size_t i=0; i<datalen; i++)
+    {
+        client->header_buffer[client->header_buffer_index]=data[i];
+        client->header_buffer_index++;
+        if(client->header_buffer_index >= client->header_buffer_external_size+sizeof(client->header_buffer))
+        {
+            /*
+             * 存储头部的缓冲溢出
+             */
+            client->flags.error.bits.internal_error=1;
+            ret=false;
+            break;
+        }
+        if(data[i]=='\n')
+        {
+            hhttp_string_t line=hhttp_string_from_buffer(client->header_buffer,client->header_buffer_index);
+            hhttp_string_t line_content=hhttp_string_line_get_content(line);
+            if(!hhttp_string_is_empty(line_content))
+            {
+                if(client->flags.status.status==0)
+                {
+                    hhttp_status_line_t status_line;
+                    ret=hhttp_status_line_parse(&status_line,line_content);
+                    if(!ret)
+                    {
+                        client->flags.error.bits.internal_error=1;
+                        ret=false;
+                        break;
+                    }
+                    else
+                    {
+                        if(client->response.process_status!=NULL)
+                        {
+                            client->response.process_status(client,status_line);
+                        }
+                    }
+                    client->flags.status.status=1;
+
+                }
+                else
+                {
+                    if(!hhttp_body_is_begin(line_content))
+                    {
+                        if(client->flags.status.field==0)
+                        {
+                            hhttp_body_normal_parse_init(&client->body.body_normal,hhttp_client_body_normal_parse_data,0,client);
+                        }
+                        client->flags.status.field=1;
+                        /*
+                         * 处理头部字段
+                         */
+                        hhttp_field_t field;
+                        if(!hhttp_field_parse(&field,line_content))
+                        {
+                            /*
+                             * 请求行处理失败
+                             */
+                            client->flags.error.bits.internal_error=1;
+                            ret=false;
+                            break;
+                        }
+
+                        /*
+                         * 根据不同的头部字段做一些处理
+                         */
+                        if(hhttp_string_equal(field.field_name,hhttp_string_from_cstring("Content-Length")))
+                        {
+                            uint64_t content_length=hhttp_string_dec_to_uint64(field.field_values);
+                            hhttp_body_normal_parse_init(&client->body.body_normal,hhttp_client_body_normal_parse_data,content_length,client);
+                        }
+                        else if(hhttp_string_equal(field.field_name,hhttp_string_from_cstring("Transfer-Encoding")))
+                        {
+                            if(!hhttp_string_is_empty(hhttp_string_strstr(field.field_values,hhttp_string_from_cstring("chunked"))))
+                            {
+                                client->flags.status.body_chunked=1;
+                                hhttp_body_chunked_parse_init(&client->body.body_chunked,hhttp_client_body_chunked_parse_data,client);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        /*
+                         * 头部结束
+                         */
+                        client->flags.status.body=1;
+
+                        if((i+1) < datalen)
+                        {
+                            /*
+                             * 主体处理剩余数据
+                             */
+                            data += (i+1);
+                            datalen-= (i+1);
+                            hhttp_client_body_input(client,data,datalen);
+                            break;
+                        }
+
+                    }
+
+
+                }
+                /*
+                 * 重新开始计算行
+                 */
+                client->header_buffer_index=0;
+            }
+        }
+    }
+
+
+    return ret;
+}
+
+bool hhttp_client_input(hhttp_client_t *client,const uint8_t *data,size_t datalen)
+{
+    bool ret=false;
+    if(client==NULL)
+    {
+        return ret;
+    }
+    if(hhttp_client_is_error(client) != 0)
+    {
+        /*
+         * 内部错误返回false
+         */
+        return ret;
+    }
+    if(hhttp_client_is_end(client))
+    {
+        /*
+         * 已完成数据输入,返回真
+         */
+        ret=true;
+        return ret;
+    }
+    if(client->flags.status.request==0)
+    {
+        /*
+         * 未发出请求
+         */
+        client->flags.error.bits.request_error=1;
+        return ret;
+    }
+
+
+    ret=true;
+
+    if(client->flags.status.body!=0)
+    {
+        ret=hhttp_client_body_input(client,data,datalen);
+    }
+    else
+    {
+        ret=hhttp_client_header_input(client,data,datalen);
+    }
+
+    if(hhttp_client_is_error(client) != 0)
+    {
+        /*
+         * 出错时主动关闭
+         */
+        if(client->io.close!=NULL)
+        {
+            client->io.close(&client->io);
+        }
+    }
+
+    return ret;
+}
+
+bool hhttp_client_input_end(hhttp_client_t *client)
+{
+    bool ret=false;
+    if(client==NULL)
+    {
+        return ret;
+    }
+    if(hhttp_client_is_error(client) != 0)
+    {
+        /*
+         * 内部错误返回false
+         */
+        return ret;
+    }
+    if(hhttp_client_is_end(client))
+    {
+        /*
+         * 已完成数据输入,返回真
+         */
+        ret=true;
+        return ret;
+    }
+    if(client->flags.status.request==0)
+    {
+        /*
+         * 未发出请求
+         */
+        client->flags.error.bits.request_error=1;
+        return ret;
+    }
+
+    if(client->flags.status.body==0)
+    {
+        /*
+         * 不应当结束
+         */
+        client->flags.error.bits.internal_error=1;
+        return ret;
+    }
+
+    /*
+     * 输入结束
+     */
+    if(!hhttp_client_input_is_body_chunked(client))
+    {
+        ret=true;
+        hhttp_body_normal_parse_input_end(&client->body.body_normal);
+    }
+
+    return ret;
+}
+
