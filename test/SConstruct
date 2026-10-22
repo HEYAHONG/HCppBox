@@ -47,6 +47,9 @@ if "gcc" in env["TOOLS"]:
             env.AppendUnique(LIBS=['stdthreads','pthread'])
             
 
+env.MergeFlags(['-DHRUNTIME_USING_SYMBOL_TABLE=1'])
+
+
 cwd = str(Dir('#'))
 objs = []
 

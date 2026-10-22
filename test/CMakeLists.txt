@@ -15,6 +15,8 @@ endif()
 
 project(test C CXX ASM)
 
+add_compile_definitions(-DHRUNTIME_USING_SYMBOL_TABLE=1 )
+
 #设定HRC文件系统目录为fs
 set(HRC_FS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fs/)
 
