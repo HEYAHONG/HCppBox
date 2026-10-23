@@ -247,6 +247,23 @@ bool hhttp_client_send_request(hhttp_client_t *client,hhttp_method_t method,cons
             }
         }
 
+        {
+            /*
+             * 用户信息
+             */
+            huriparser_string_t userinfo=huriparser_parse_userinfo(uri_string);
+            if(!huriparser_string_is_empty(userinfo))
+            {
+                hhttp_field_basic_authorization_t basic_authorization;
+                basic_authorization.userinfo=hhttp_string_from_buffer(userinfo.str,userinfo.str_len);
+                if(!hhttp_field_basic_authorization_pack(&basic_authorization,hhttp_client_write_callback,client))
+                {
+                    ret=false;
+                }
+            }
+
+        }
+
         if(client->request.field_process_alloc!=NULL)
         {
             /*

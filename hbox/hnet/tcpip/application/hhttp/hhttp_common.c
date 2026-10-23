@@ -8,6 +8,7 @@
  **************************************************************/
 #include "hdefaults.h"
 #include "hhttp_common.h"
+#include "hcrypto.h"
 
 hhttp_string_t hhttp_string_from_cstring(const char *c_str)
 {
@@ -898,6 +899,93 @@ bool hhttp_field_line_pack(hhttp_field_t *field_line,hhttp_field_line_pack_write
      */
     cb(usr,offset,field_line->field_values);
     offset += field_line->field_values.str_len;
+
+    /*
+     * 行结束
+     */
+    cb(usr,offset,line_end_string);
+    offset += line_end_string.str_len;
+
+
+    return ret;
+}
+
+bool hhttp_field_basic_authorization_pack(hhttp_field_basic_authorization_t *basic_authorization,hhttp_field_line_pack_write_callback_t cb,void *usr)
+{
+    bool ret=false;
+    if(basic_authorization == NULL )
+    {
+        return ret;
+    }
+    if(hhttp_string_is_empty(basic_authorization->userinfo))
+    {
+        return ret;
+    }
+    if(cb == NULL)
+    {
+        return ret;
+    }
+    ret=true;
+    size_t offset=0;
+    hhttp_string_t space_string=hhttp_string_from_cstring(" ");
+    hhttp_string_t colon_string=hhttp_string_from_cstring(":");
+    hhttp_string_t line_end_string=hhttp_string_from_cstring(HHTTP_LINE_END_STRING);
+
+    /*
+     * 名称
+     */
+    {
+        hhttp_string_t name_string=hhttp_string_from_cstring("Authorization");
+        cb(usr,offset,name_string);
+        offset += name_string.str_len;
+    }
+
+    /*
+     * 冒号
+     */
+    cb(usr,offset,colon_string);
+    offset += colon_string.str_len;
+
+    /*
+     * 空格（可选）
+     */
+    cb(usr,offset,space_string);
+    offset += space_string.str_len;
+
+    /*
+     * Basic
+     */
+    {
+        hhttp_string_t name_string=hhttp_string_from_cstring("Basic");
+        cb(usr,offset,name_string);
+        offset += name_string.str_len;
+    }
+
+    /*
+     * 空格
+     */
+    cb(usr,offset,space_string);
+    offset += space_string.str_len;
+
+    /*
+     * 值
+     */
+    {
+
+        for(size_t i=0; i<basic_authorization->userinfo.str_len; i+=3)
+        {
+            size_t len=3;
+            if(len+i > basic_authorization->userinfo.str_len)
+            {
+                len=basic_authorization->userinfo.str_len-i;
+            }
+            char buffer[8]= {0};
+            hbase64_encode_with_null_terminator(buffer,sizeof(buffer)-1,(uint8_t *)&basic_authorization->userinfo.str[i],len);
+            hhttp_string_t part_base64_string=hhttp_string_from_cstring(buffer);
+            cb(usr,offset,part_base64_string);
+            offset += part_base64_string.str_len;
+        }
+    }
 
     /*
      * 行结束

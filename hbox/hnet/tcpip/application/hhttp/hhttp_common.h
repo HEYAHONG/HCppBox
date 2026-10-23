@@ -550,6 +550,29 @@ typedef void (*hhttp_field_line_pack_write_callback_t)(void *usr,size_t offset,h
 bool hhttp_field_line_pack(hhttp_field_t *field_line,hhttp_field_line_pack_write_callback_t cb,void *usr);
 
 /*
+ * 头部字段(Authorization,Basic认证)
+ */
+struct hhttp_field_basic_authorization;
+typedef struct hhttp_field_basic_authorization hhttp_field_basic_authorization_t;
+struct hhttp_field_basic_authorization
+{
+    hhttp_string_t userinfo;                        /**< 用户信息，通常是以:分割的用户名与密码,但有时直接将token写在用于用户信息的位置  */
+};
+
+/** \brief 头部字段（Authorization,Basic认证）行打包
+ *
+ * \param fbasic_authorization hhttp_field_basic_authorization_t* 头部字段（Authorization,Basic认证）行打包
+ * \param cb hhttp_field_line_pack_write_callback_t 头部字段行打包回调
+ * \param usr void* 用户参数
+ * \return bool 是否成功
+ *
+ */
+bool hhttp_field_basic_authorization_pack(hhttp_field_basic_authorization_t *basic_authorization,hhttp_field_line_pack_write_callback_t cb,void *usr);
+
+
+
+
+/*
  * 主体（body）与头部字段(field)使用空行分割，本组件主要支持以下情况:
  *      -当Connection等于close(HTTP/1.0默认)时，内容截至当前连接结束,无需其它字段支持。
  *      -当Connection等于keep-alive(HTTP/1.1默认)时，需要使用Transfer-Encoding或者Content-Length解析长度。
