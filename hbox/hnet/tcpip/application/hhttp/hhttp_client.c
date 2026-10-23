@@ -670,7 +670,11 @@ bool hhttp_client_input_end(hhttp_client_t *client)
     }
     else
     {
-
+        /*
+         * chunked输入不可以在中间中断
+         */
+        ret=false;
+        client->flags.error.bits.internal_error=1;
     }
 
     return ret;
