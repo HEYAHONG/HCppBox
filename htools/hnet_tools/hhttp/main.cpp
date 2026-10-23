@@ -9,6 +9,39 @@
 #include "syslog.h"
 #endif // HAVE_SYSLOG_H
 #include "socket_tcp_helper.h"
+#include "memory"
+#if defined(HAVE_OPENSSL)
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+class openssl_guaurd
+{
+public:
+    SSL_CTX *ctx;
+    openssl_guaurd()
+    {
+        SSL_library_init();
+        SSL_load_error_strings();
+        OpenSSL_add_all_algorithms();
+        ctx=SSL_CTX_new(TLS_client_method());
+        if(ctx!=NULL)
+        {
+            SSL_CTX_set_default_verify_paths(ctx);
+            /*
+             * 默认不检验证书
+             */
+            SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
+        }
+    }
+    ~openssl_guaurd()
+    {
+        if(ctx!=NULL)
+        {
+            SSL_CTX_free(ctx);
+            ctx=NULL;
+        }
+    }
+} g_ssl;
+#endif
 
 
 static std::string uri_string="http://syscall.online/";
@@ -63,6 +96,25 @@ static void check_args(int argc,char *argv[])
     arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
 }
 
+#if defined(HAVE_OPENSSL)
+class client_socket_ssl
+{
+public:
+    SSL *ssl_socket;
+    client_socket_ssl():ssl_socket(NULL)
+    {
+
+    }
+    ~client_socket_ssl()
+    {
+        if(ssl_socket!=NULL)
+        {
+            SSL_free(ssl_socket);
+            ssl_socket=NULL;
+        }
+    }
+} g_ssl_socket;
+#endif
 HCPPSocketAddressIPV4 server_socket_addr;
 static bool http_server_addr_check(void)
 {
@@ -84,7 +136,15 @@ static bool http_server_addr_check(void)
                 return false;
             }
             std::string scheme(scheme_string.str,scheme_string.str_len);
+#if defined(HAVE_OPENSSL)
+            if((scheme == "https" || scheme == "HTTPS") &&g_ssl.ctx!=NULL)
+            {
+                g_ssl_socket.ssl_socket=SSL_new(g_ssl.ctx);
+            }
+            if((scheme != "http" &&scheme != "HTTP") && (g_ssl.ctx==NULL || (scheme != "https" &&scheme != "HTTPS")))
+#else
             if(scheme != "http" &&scheme != "HTTP")
+#endif
             {
                 hfprintf(stderr,"[http] scheme %s not support!\r\n",scheme.c_str());
                 return false;
@@ -106,6 +166,12 @@ static bool http_server_addr_check(void)
             }
         }
         std::string server_port="80";
+#if defined(HAVE_OPENSSL)
+        if(g_ssl_socket.ssl_socket!=NULL)
+        {
+            server_port="443";
+        }
+#endif
         {
             huriparser_string_t port_string=huriparser_parse_port(uri_string.c_str());
             if(!huriparser_string_is_empty(port_string))
@@ -153,7 +219,27 @@ static int http_main(void)
         return -1;
     }
 
-    tcp_socket_set_nonblock(client_fd);
+
+#if defined(HAVE_OPENSSL)
+    if(g_ssl_socket.ssl_socket!=NULL)
+    {
+        SSL_set_fd(g_ssl_socket.ssl_socket, client_fd);
+        if(SSL_connect(g_ssl_socket.ssl_socket) <= 0)
+        {
+            hfprintf(stderr,"[http] ssl connect error!");
+            ERR_print_errors_fp(stderr);
+            hfprintf(stderr,"\r\n");
+            SSL_shutdown(g_ssl_socket.ssl_socket);
+            closesocket(client_fd);
+            client_fd=INVALID_SOCKET;
+            return -1;
+        }
+    }
+#endif
+
+    {
+        tcp_socket_set_nonblock(client_fd);
+    }
 
     hhttp_client_io_t socket_io;
     {
@@ -168,21 +254,34 @@ static int http_main(void)
             {
                 uint8_t *data=(uint8_t *)part_data.str;
                 size_t len=part_data.str_len;
-                size_t offset=0;
-                do
+
+#if defined(HAVE_OPENSSL)
+                if(g_ssl_socket.ssl_socket!=NULL)
                 {
-                    int sendlen=send(client_fd,(const char *)(&((uint8_t *)data)[offset]),len-offset,0);
-                    if(sendlen>0)
+                    if(len > 0)
                     {
-                        offset+=sendlen;
-                    }
-                    if(sendlen==0)
-                    {
-                        //连接已断开
-                        offset=len;
+                        SSL_write(g_ssl_socket.ssl_socket,data,len);
                     }
                 }
-                while(offset < len);
+                else
+#endif
+                {
+                    size_t offset=0;
+                    do
+                    {
+                        int sendlen=send(client_fd,(const char *)(&((uint8_t *)data)[offset]),len-offset,0);
+                        if(sendlen>0)
+                        {
+                            offset+=sendlen;
+                        }
+                        if(sendlen==0)
+                        {
+                            //连接已断开
+                            offset=len;
+                        }
+                    }
+                    while(offset < len);
+                }
             }
 
         };
@@ -192,6 +291,12 @@ static int http_main(void)
             {
                 return;
             }
+#if defined(HAVE_OPENSSL)
+            if(g_ssl_socket.ssl_socket!=NULL)
+            {
+                SSL_shutdown(g_ssl_socket.ssl_socket);
+            }
+#endif
             SOCKET &client_fd=(*(SOCKET*)io->usr);
             if(client_fd==INVALID_SOCKET)
             {
@@ -293,7 +398,17 @@ static int http_main(void)
     while(!hhttp_client_is_end(&http_client))
     {
         uint8_t buffer[4096];
-        int readlen=recv(client_fd,(char *)buffer,sizeof(buffer),0);
+        int readlen=0;
+#if defined(HAVE_OPENSSL)
+        if(g_ssl_socket.ssl_socket!=NULL)
+        {
+            readlen=SSL_read(g_ssl_socket.ssl_socket,buffer,sizeof(buffer));
+        }
+        else
+#endif
+        {
+            readlen=recv(client_fd,(char *)buffer,sizeof(buffer),0);
+        }
         if(readlen > 0)
         {
             if(!hhttp_client_input(&http_client,buffer,readlen))
