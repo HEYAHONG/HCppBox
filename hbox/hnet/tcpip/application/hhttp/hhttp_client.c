@@ -523,6 +523,11 @@ static bool hhttp_client_header_input(hhttp_client_t *client,const uint8_t *data
                                 hhttp_body_chunked_parse_init(&client->body.body_chunked,hhttp_client_body_chunked_parse_data,client);
                             }
                         }
+
+                        if(client->response.process_field!=NULL)
+                        {
+                            client->response.process_field(client,field);
+                        }
                     }
                     else
                     {
@@ -662,6 +667,10 @@ bool hhttp_client_input_end(hhttp_client_t *client)
     {
         ret=true;
         hhttp_body_normal_parse_input_end(&client->body.body_normal);
+    }
+    else
+    {
+
     }
 
     return ret;

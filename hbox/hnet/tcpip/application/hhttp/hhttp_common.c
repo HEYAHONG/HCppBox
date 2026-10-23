@@ -1169,6 +1169,7 @@ bool hhttp_body_chunked_parse_input(hhttp_body_chunked_parse_t *body_chunked,con
                     body_chunked->flags.l_d = 1;
                     body_chunked->single_length=hhttp_string_hex_to_uint64(line);
                     body_chunked->single_offset=0;
+                    i++;
                     break;
                 }
             }
@@ -1219,6 +1220,10 @@ bool hhttp_body_chunked_parse_input(hhttp_body_chunked_parse_t *body_chunked,con
                     if(data[body_chunked->single_offset - body_chunked->single_length]!='\r')
                     {
                         (*data_length)=(*data_length)-single_data_length;
+                        /*
+                         * 已结束
+                         */
+                        body_chunked->flags.data_end=1;
                         return ret;
                     }
 
@@ -1237,6 +1242,10 @@ bool hhttp_body_chunked_parse_input(hhttp_body_chunked_parse_t *body_chunked,con
                     if(data[body_chunked->single_offset - body_chunked->single_length]!='\n')
                     {
                         (*data_length)=(*data_length)-single_data_length;
+                        /*
+                         * 已结束
+                         */
+                        body_chunked->flags.data_end=1;
                         return ret;
                     }
 
@@ -1278,9 +1287,7 @@ bool hhttp_body_chunked_parse_input(hhttp_body_chunked_parse_t *body_chunked,con
          * 触发一个空的调用
          */
         body_chunked->flags.data_end_call=1;
-        uint8_t buffer[4]= {0};
-        size_t  buffer_length=0;
-        ret=hhttp_body_chunked_parse_input(body_chunked,buffer,&buffer_length);
+        body_chunked->data(body_chunked,body_chunked->offset,hhttp_string_from_cstring(""));
     }
 
     return ret;

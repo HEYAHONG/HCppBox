@@ -10,5 +10,6 @@
 - [hmodbustcpgateway](hmodbustcpgateway):modbus tcp网关（独立版）。
 - [hsntp](hsntp):简易NTP客户端
 - [hsntpd](hsntpd):简易NTP服务端
+- [hhttp](hhttp):简易HTTP/1.0(或HTTP/1.0)客户端
 - [hhttpd](hhttpd):简易HTTP/1.0(或HTTP/1.0)服务端
 
