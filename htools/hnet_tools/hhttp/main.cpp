@@ -26,6 +26,45 @@ public:
         if(ctx!=NULL)
         {
             SSL_CTX_set_default_verify_paths(ctx);
+#if defined(WIN32) || defined(_WIN32)
+            {
+                /*
+                 * 从Windows证书存储导入证书
+                 */
+                X509_STORE *store=SSL_CTX_get_cert_store(ctx);
+                if(store!=NULL)
+                {
+                    HCERTSTORE hStore=CertOpenSystemStoreA(0,"ROOT");
+                    if(hStore!=NULL)
+                    {
+                        PCCERT_CONTEXT pContext = NULL;
+                        while((pContext = CertEnumCertificatesInStore(hStore, pContext)) != NULL)
+                        {
+                            if (!(pContext->dwCertEncodingType & X509_ASN_ENCODING))
+                            {
+                                continue;
+                            }
+                            const unsigned char *encoded_cert = pContext->pbCertEncoded;
+                            X509 *x509 = d2i_X509(NULL, &encoded_cert, pContext->cbCertEncoded);
+                            if (x509 != NULL)
+                            {
+                                if (X509_STORE_add_cert(store, x509) == 1)
+                                {
+
+                                }
+                                else
+                                {
+
+                                    ERR_clear_error();
+                                }
+                                X509_free(x509);
+                            }
+                        }
+                        CertCloseStore(hStore, 0);
+                    }
+                }
+            }
+#endif
             /*
              * 默认不检验证书
              */

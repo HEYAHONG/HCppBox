@@ -45,6 +45,10 @@ if(OpenSSL_FOUND)
     target_compile_definitions(${PROJECT_NAME} PRIVATE  -DHAVE_OPENSSL=1)
 endif()
 
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} crypt32)
+endif()
+
 include(GNUInstallDirs)
 if(NOT DEFINED HTOOLS_INSTALL_DIR)
     set(HTOOLS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
