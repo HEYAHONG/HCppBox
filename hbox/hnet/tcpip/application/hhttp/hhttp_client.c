@@ -170,7 +170,7 @@ bool hhttp_client_send_request(hhttp_client_t *client,hhttp_method_t method,cons
          */
         hhttp_request_line_t request_line;
         request_line.method=method;
-        request_line.target=hhttp_string_from_buffer(http_target.str,http_target.str_len);
+        request_line.target=hhttp_string_from_buffer((const uint8_t *)http_target.str,http_target.str_len);
         request_line.version=HHTTP_VERSION_1_1;
         hhttp_request_line_pack(&request_line,hhttp_client_write_callback,client);
     }
@@ -209,7 +209,7 @@ bool hhttp_client_send_request(hhttp_client_t *client,hhttp_method_t method,cons
              */
             hhttp_field_t field;
             field.field_name=hhttp_string_from_cstring("Host");
-            field.field_values=hhttp_string_from_buffer(http_host.str,http_host.str_len);
+            field.field_values=hhttp_string_from_buffer((const uint8_t *)http_host.str,http_host.str_len);
             bool file_field_alloc=false;
             if(client!=NULL && client->request.field_process_alloc!=NULL)
             {
@@ -255,7 +255,7 @@ bool hhttp_client_send_request(hhttp_client_t *client,hhttp_method_t method,cons
             if(!huriparser_string_is_empty(userinfo))
             {
                 hhttp_field_basic_authorization_t basic_authorization;
-                basic_authorization.userinfo=hhttp_string_from_buffer(userinfo.str,userinfo.str_len);
+                basic_authorization.userinfo=hhttp_string_from_buffer((const uint8_t *)userinfo.str,userinfo.str_len);
                 if(!hhttp_field_basic_authorization_pack(&basic_authorization,hhttp_client_write_callback,client))
                 {
                     ret=false;
