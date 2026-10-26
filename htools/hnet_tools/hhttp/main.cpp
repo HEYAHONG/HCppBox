@@ -189,6 +189,18 @@ static bool http_server_addr_check(void)
                 return false;
             }
 
+            if(!huriparser_string_is_empty(huriparser_parse_http_host(uri_string.c_str())))
+            {
+                huriparser_string_t host_string=huriparser_parse_http_host(uri_string.c_str());
+                if(host_string.str[host_string.str_len]=='\0')
+                {
+                    /*
+                     * 若未指定路径，默认请求根
+                     */
+                    uri_string+="/";
+                }
+            }
+
         }
 
         std::string server_addr;
