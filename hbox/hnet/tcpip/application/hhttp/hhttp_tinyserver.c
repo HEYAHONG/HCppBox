@@ -8,6 +8,112 @@
  **************************************************************/
 #include "hruntime.h"
 #include "hhttp_tinyserver.h"
+#include "hdefaults.h"
+
+static inline uint64_t hhttp_tinyserver_file_content_read(hhttp_tinyserver_file_t *file,uint64_t offset,uint8_t *buffer,uint64_t buffer_size)
+{
+    return HHTTP_TINYSERVER_FILE_CONTENT_READ_END;
+}
+static inline bool hhttp_tinyserver_file_field_process_alloc(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal)
+{
+    return false;
+}
+static inline bool hhttp_tinyserver_file_field_process_free(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal)
+{
+    return false;
+}
+
+void hhttp_tinyserver_file_init(hhttp_tinyserver_file_t *file,hhttp_tinyserver_file_content_read_t file_read,hhttp_tinyserver_file_field_process_t field_alloc,hhttp_tinyserver_file_field_process_t field_free,void *usr)
+{
+    if(file==NULL)
+    {
+        return;
+    }
+    file->file_content_read=file_read;
+    if(file->file_content_read==NULL)
+    {
+        file->file_content_read=hhttp_tinyserver_file_content_read;
+    }
+    file->file_field_process_alloc=field_alloc;
+    if(file->file_field_process_alloc==NULL)
+    {
+        file->file_field_process_alloc=hhttp_tinyserver_file_field_process_alloc;
+    }
+    file->file_field_process_free=field_free;
+    if(file->file_field_process_free==NULL)
+    {
+        file->file_field_process_free=hhttp_tinyserver_file_field_process_free;
+    }
+    file->usr=usr;
+}
+
+static inline uint64_t hhttp_tinyserver_file_buffer_content_read(hhttp_tinyserver_file_t *file,uint64_t offset,uint8_t *buffer,uint64_t buffer_size)
+{
+    if(file==NULL || buffer==NULL || buffer_size==0)
+    {
+        return HHTTP_TINYSERVER_FILE_CONTENT_READ_END;
+    }
+    hhttp_tinyserver_file_buffer_t *m_file=(hhttp_tinyserver_file_buffer_t *)file;
+    if(hhttp_string_is_empty(m_file->buffer))
+    {
+        return HHTTP_TINYSERVER_FILE_CONTENT_READ_END;
+    }
+
+    if(offset < m_file->buffer.str_len)
+    {
+        if(offset+buffer_size > m_file->buffer.str_len)
+        {
+            buffer_size=m_file->buffer.str_len-offset;
+        }
+
+        memcpy(buffer,&m_file->buffer.str[offset],buffer_size);
+
+        return buffer_size;
+    }
+
+    return HHTTP_TINYSERVER_FILE_CONTENT_READ_END;
+}
+
+void hhttp_tinyserver_file_buffer_init(hhttp_tinyserver_file_buffer_t *file,hhttp_string_t buffer,hhttp_tinyserver_file_field_process_t field_alloc,hhttp_tinyserver_file_field_process_t field_free,void *usr)
+{
+    if(file==NULL)
+    {
+        return;
+    }
+    hhttp_tinyserver_file_init(&file->base,hhttp_tinyserver_file_buffer_content_read,field_alloc,field_free,usr);
+    file->buffer=buffer;
+}
+
+static inline uint64_t hhttp_tinyserver_file_cfile_content_read(hhttp_tinyserver_file_t *file,uint64_t offset,uint8_t *buffer,uint64_t buffer_size)
+{
+    if(file==NULL || buffer==NULL || buffer_size==0)
+    {
+        return HHTTP_TINYSERVER_FILE_CONTENT_READ_END;
+    }
+    hhttp_tinyserver_file_cfile_t *m_file=(hhttp_tinyserver_file_cfile_t *)file;
+    if(m_file->stream==NULL || hfeof(m_file->stream)!=0)
+    {
+        return HHTTP_TINYSERVER_FILE_CONTENT_READ_END;
+    }
+
+    if(hfseek(m_file->stream,offset,SEEK_SET) ==0)
+    {
+        buffer_size=hfread(buffer,1,buffer_size,m_file->stream);
+        return buffer_size;
+    }
+
+    return HHTTP_TINYSERVER_FILE_CONTENT_READ_END;
+}
+
+void hhttp_tinyserver_file_cfile_init(hhttp_tinyserver_file_cfile_t *file,FILE * stream,hhttp_tinyserver_file_field_process_t field_alloc,hhttp_tinyserver_file_field_process_t field_free,void *usr)
+{
+    if(file==NULL)
+    {
+        return;
+    }
+    hhttp_tinyserver_file_init(&file->base,hhttp_tinyserver_file_cfile_content_read,field_alloc,field_free,usr);
+    file->stream=stream;
+}
 
 const hhttp_tinyserver_vhost_t * hhttp_tinyserver_service_find_vhost(const hhttp_tinyserver_service_t *service,hhttp_string_t host)
 {

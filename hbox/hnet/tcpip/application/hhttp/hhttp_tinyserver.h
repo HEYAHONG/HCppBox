@@ -34,6 +34,59 @@ struct hhttp_tinyserver_file
 #define HHTTP_TINYSERVER_FILE_CONTENT_READ_END                      ((uint64_t)-1)
 
 
+typedef uint64_t (*hhttp_tinyserver_file_content_read_t)(hhttp_tinyserver_file_t *file,uint64_t offset,uint8_t *buffer,uint64_t buffer_size);
+typedef bool (*hhttp_tinyserver_file_field_process_t)(hhttp_tinyserver_file_t *file,hhttp_field_t *field,bool is_internal);
+/** \brief 文件初始化
+ *
+ * \param file hhttp_tinyserver_file_t* 文件
+ * \param file_read hhttp_tinyserver_file_content_read_t 内容读取
+ * \param field_alloc hhttp_tinyserver_file_field_process_t 头部字段分配
+ * \param field_free hhttp_tinyserver_file_field_process_t 头部字段释放
+ * \param usr void* 用户参数
+ *
+ */
+void hhttp_tinyserver_file_init(hhttp_tinyserver_file_t *file,hhttp_tinyserver_file_content_read_t file_read,hhttp_tinyserver_file_field_process_t field_alloc,hhttp_tinyserver_file_field_process_t field_free,void *usr);
+
+struct hhttp_tinyserver_file_buffer;
+typedef struct hhttp_tinyserver_file_buffer hhttp_tinyserver_file_buffer_t;
+struct hhttp_tinyserver_file_buffer
+{
+    hhttp_tinyserver_file_t base;
+    hhttp_string_t buffer;
+};
+
+/** \brief (缓冲)文件初始化
+ *
+ * \param file hhttp_tinyserver_file_buffer_t* (缓冲)文件
+ * \param buffer hhttp_string_t 缓冲,需要注意生命周期
+ * \param field_alloc hhttp_tinyserver_file_field_process_t 头部字段分配
+ * \param field_free hhttp_tinyserver_file_field_process_t 头部字段分配
+ * \param usr void* 用户参数
+ *
+ */
+void hhttp_tinyserver_file_buffer_init(hhttp_tinyserver_file_buffer_t *file,hhttp_string_t buffer,hhttp_tinyserver_file_field_process_t field_alloc,hhttp_tinyserver_file_field_process_t field_free,void *usr);
+
+
+struct hhttp_tinyserver_file_cfile;
+typedef struct hhttp_tinyserver_file_cfile hhttp_tinyserver_file_cfile_t;
+struct hhttp_tinyserver_file_cfile
+{
+    hhttp_tinyserver_file_t base;
+    FILE *stream;
+};
+
+/** \brief (C)文件初始化
+ *
+ * \param file hhttp_tinyserver_file_cfile_t* (C)文件
+ * \param stream FILE* C文件指针
+ * \param field_alloc hhttp_tinyserver_file_field_process_t 头部字段分配
+ * \param field_free hhttp_tinyserver_file_field_process_t 头部字段分配
+ * \param usr void* 用户参数
+ *
+ */
+void hhttp_tinyserver_file_cfile_init(hhttp_tinyserver_file_cfile_t *file,FILE * stream,hhttp_tinyserver_file_field_process_t field_alloc,hhttp_tinyserver_file_field_process_t field_free,void *usr);
+
+
 /*
  * 会话
  */
