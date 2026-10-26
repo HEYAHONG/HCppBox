@@ -31,6 +31,21 @@ struct hhttp_client_io
     intptr_t usr;                                                           /**< 用户参数 */
 };
 
+typedef void (*hhttp_client_io_send_t)(hhttp_client_io_t *io,hhttp_string_t part_data);
+typedef void (*hhttp_client_io_close_t)(hhttp_client_io_t *io);
+typedef bool (*hhttp_client_io_is_ok_t)(hhttp_client_io_t *io);
+
+/** \brief IO初始化
+ *
+ * \param io hhttp_client_io_t* IO
+ * \param io_send hhttp_client_io_send_t 发送
+ * \param io_close hhttp_client_io_close_t 关闭
+ * \param io_is_ok hhttp_client_io_is_ok_t 是否正常
+ * \param usr void* 用户参数
+ *
+ */
+void hhttp_client_io_init(hhttp_client_io_t *io,hhttp_client_io_send_t io_send,hhttp_client_io_close_t io_close,hhttp_client_io_is_ok_t io_is_ok,void *usr);
+
 /** \brief IO数据发送
  *
  * \param io hhttp_client_io_t* IO
@@ -72,6 +87,7 @@ struct hhttp_client
     {
         bool (*field_process_alloc)(hhttp_client_t *client,hhttp_field_t *field,bool is_internal);                      /**< 头处理，is_internal为true表示传入的是内置头，否则为空，一般用于处理内置的头,返回false时且is_internal为false时表示结束头处理 */
         bool (*field_process_free)(hhttp_client_t *client,hhttp_field_t *field,bool is_internal);                       /**< 头释放，返回true表示处理完成 */
+        void *request_usr;
     } request;                                                                                                          /**< 请求参数，用于修改请求 */
     struct
     {
@@ -79,6 +95,7 @@ struct hhttp_client
         void (*process_field)(hhttp_client_t *client,hhttp_field_t field);                                              /**< 请求头 */
         void (*process_body)(hhttp_client_t *client,uint64_t offset,hhttp_string_t part_data);                          /**< 主体数据数据, */
         void (*process_body_end)(hhttp_client_t *client);                                                               /**< 主体数据结束 */
+        void *response_usr;
     } response;
     struct
     {
@@ -120,6 +137,44 @@ struct hhttp_client
  */
 void hhttp_client_init(hhttp_client_t *client);
 
+
+/** \brief 设置客户端IO
+ *
+ * \param client hhttp_client_t* 客户端
+ * \param io hhttp_client_io_t* IO
+ * \param usr void* 用户参数
+ *
+ */
+void hhttp_client_io_set(hhttp_client_t *client,hhttp_client_io_t *io,void *usr);
+
+
+typedef bool (*hhttp_client_field_process_t)(hhttp_client_t *client,hhttp_field_t *field,bool is_internal);
+/** \brief 客户端设置请求
+ *
+ * \param client hhttp_client_t* 客户端
+ * \param field_alloc hhttp_client_field_process_t 头部字段分配
+ * \param field_free hhttp_client_field_process_t 头部字段释放
+ * \param request_usr void* 请求参数用户参数
+ *
+ */
+void hhttp_client_request_set(hhttp_client_t *client,hhttp_client_field_process_t field_alloc,hhttp_client_field_process_t field_free,void *request_usr);
+
+
+typedef void (*hhttp_client_process_status_t)(hhttp_client_t *client,hhttp_status_line_t line);
+typedef void (*hhttp_client_process_field_t)(hhttp_client_t *client,hhttp_field_t field);
+typedef void (*hhttp_client_process_body_t)(hhttp_client_t *client,uint64_t offset,hhttp_string_t part_data);
+typedef void (*hhttp_client_process_body_end_t)(hhttp_client_t *client);
+/** \brief 客户端设置响应
+ *
+ * \param client hhttp_client_t* 客户端
+ * \param resp_status hhttp_client_process_status_t 状态
+ * \param resp_field hhttp_client_process_field_t 头部字段
+ * \param resp_body hhttp_client_process_body_t 主体
+ * \param resp_body_end hhttp_client_process_body_end_t 主体结束
+ * \param usr void * 用户参数
+ *
+ */
+void hhttp_client_response_set(hhttp_client_t *client,hhttp_client_process_status_t resp_status,hhttp_client_process_field_t resp_field,hhttp_client_process_body_t resp_body,hhttp_client_process_body_end_t resp_body_end,void *usr);
 
 /** \brief 清理客户端，当连接异常终止时请调用此函数清理客户端，清理之前需要完成错误处理,清理后可发起新的请求
  *，

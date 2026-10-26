@@ -9,6 +9,18 @@
 #include "hhttp_client.h"
 #include "h3rdparty.h"
 
+void hhttp_client_io_init(hhttp_client_io_t *io,hhttp_client_io_send_t io_send,hhttp_client_io_close_t io_close,hhttp_client_io_is_ok_t io_is_ok,void *usr)
+{
+    if(io==NULL)
+    {
+        return;
+    }
+    io->send=io_send;
+    io->close=io_close;
+    io->is_ok=io_is_ok;
+    io->usr=(intptr_t)usr;
+}
+
 void hhttp_client_io_send(hhttp_client_io_t *io,hhttp_string_t part_data)
 {
     if(io==NULL)
@@ -60,6 +72,46 @@ void hhttp_client_init(hhttp_client_t *client)
     }
 
     memset(client,0,sizeof(*client));
+}
+
+void hhttp_client_io_set(hhttp_client_t *client,hhttp_client_io_t *io,void *usr)
+{
+    if(client==NULL)
+    {
+        return;
+    }
+
+    if(io!=NULL)
+    {
+        client->io=(*io);
+    }
+
+    client->usr=usr;
+}
+
+void hhttp_client_request_set(hhttp_client_t *client,hhttp_client_field_process_t field_alloc,hhttp_client_field_process_t field_free,void *request_usr)
+{
+    if(client==NULL)
+    {
+        return;
+    }
+
+    client->request.field_process_alloc=field_alloc;
+    client->request.field_process_free=field_free;
+    client->request.request_usr=request_usr;
+}
+
+void hhttp_client_response_set(hhttp_client_t *client,hhttp_client_process_status_t resp_status,hhttp_client_process_field_t resp_field,hhttp_client_process_body_t resp_body,hhttp_client_process_body_end_t resp_body_end,void *usr)
+{
+    if(client==NULL)
+    {
+        return;
+    }
+    client->response.process_status=resp_status;
+    client->response.process_field=resp_field;
+    client->response.process_body=resp_body;
+    client->response.process_body_end=resp_body_end;
+    client->response.response_usr=usr;
 }
 
 void hhttp_client_cleanup(hhttp_client_t *client)

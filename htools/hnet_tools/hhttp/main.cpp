@@ -282,7 +282,8 @@ static int http_main(void)
 
     hhttp_client_io_t socket_io;
     {
-        socket_io.send=[](hhttp_client_io_t *io,hhttp_string_t part_data)
+        hhttp_client_io_init(&socket_io,
+                             [](hhttp_client_io_t *io,hhttp_string_t part_data)
         {
             if(io==NULL || ((void *)io->usr)==NULL)
             {
@@ -323,8 +324,8 @@ static int http_main(void)
                 }
             }
 
-        };
-        socket_io.close=[](hhttp_client_io_t *io)
+        },
+        [](hhttp_client_io_t *io)
         {
             if(io==NULL || ((void *)io->usr)==NULL)
             {
@@ -343,8 +344,8 @@ static int http_main(void)
             }
             closesocket(client_fd);
             client_fd=INVALID_SOCKET;
-        };
-        socket_io.is_ok=[](hhttp_client_io_t *io) -> bool
+        },
+        [](hhttp_client_io_t *io) -> bool
         {
             if(io==NULL || ((void *)io->usr)==NULL)
             {
@@ -357,8 +358,8 @@ static int http_main(void)
                 return false;
             }
             return true;
-        };
-        socket_io.usr=(intptr_t)&client_fd;
+        },
+        &client_fd);
     }
 
     hhttp_client_t http_client;
@@ -367,18 +368,21 @@ static int http_main(void)
         /*
          * 填写成员
          */
-        http_client.io=socket_io;
+        hhttp_client_io_set(&http_client,&socket_io,&client_fd);
 
-        http_client.request.field_process_alloc=[](hhttp_client_t *client,hhttp_field_t *field,bool is_internal)->bool
+        hhttp_client_request_set(&http_client,
+                                 [](hhttp_client_t *client,hhttp_field_t *field,bool is_internal)->bool
         {
             return false;
-        };
-        http_client.request.field_process_free=[](hhttp_client_t *client,hhttp_field_t *field,bool is_internal)->bool
+        },
+        [](hhttp_client_t *client,hhttp_field_t *field,bool is_internal)->bool
         {
             return false;
-        };
+        },
+        &http_client);
 
-        http_client.response.process_status=[](hhttp_client_t *client,hhttp_status_line_t line)
+        hhttp_client_response_set(&http_client,
+                                  [](hhttp_client_t *client,hhttp_status_line_t line)
         {
             std::string version(hhttp_version_std_to_string(line.version).str);
             std::string reason;
@@ -387,8 +391,8 @@ static int http_main(void)
                 reason=std::string(line.reason.str,line.reason.str_len);
             }
             hfprintf(stderr,"[http] > %s %d %s\r\n",version.c_str(),(int)line.status,reason.c_str());
-        };
-        http_client.response.process_field=[](hhttp_client_t *client,hhttp_field_t field)
+        },
+        [](hhttp_client_t *client,hhttp_field_t field)
         {
             std::string name;
             if(!hhttp_string_is_empty(field.field_name))
@@ -401,8 +405,8 @@ static int http_main(void)
                 values=std::string(field.field_values.str,field.field_values.str_len);
             }
             hfprintf(stderr,"[http] > %s: %s\r\n",name.c_str(),values.c_str());
-        };
-        http_client.response.process_body=[](hhttp_client_t *client,uint64_t offset,hhttp_string_t part_data)
+        },
+        [](hhttp_client_t *client,uint64_t offset,hhttp_string_t part_data)
         {
             if(hhttp_string_is_empty(part_data))
             {
@@ -410,13 +414,13 @@ static int http_main(void)
             }
             std::string data_string(part_data.str,part_data.str_len);
             hfwrite(data_string.c_str(),1,data_string.length(),stdout);
-        };
+        },
         http_client.response.process_body_end=[](hhttp_client_t *client)
         {
 
-        };
+        },
+        &http_client);
 
-        http_client.usr=&client_fd;
     }
 
     {
