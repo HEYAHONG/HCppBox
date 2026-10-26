@@ -239,7 +239,7 @@ bool hhttp_client_send_request(hhttp_client_t *client,hhttp_method_t method,cons
             hhttp_field_t field;
             field.field_name=hhttp_string_from_cstring("Content-Length");
             uint8_t buffer[16]= {0};
-            field.field_values=hhttp_string_dec_from_uint64(buffer,sizeof(buffer),body.str_len);
+            field.field_values=hhttp_string_dec_from_uint64(buffer,sizeof(buffer)-1,body.str_len);
             bool file_field_alloc=false;
             if(client!=NULL && client->request.field_process_alloc!=NULL)
             {
