@@ -82,8 +82,8 @@ static void check_args(int argc,char *argv[])
 #endif
     void *argtable[]=
     {
-        server=arg_str0("S","server","pool.http.org","http bind server"),
-        serverport=arg_str0("p","server port","123","http bind server port"),
+        server=arg_str0("S","server","0.0.0.0","http bind server"),
+        serverport=arg_str0("p","server port","80","http bind server port"),
         ioidletimeout=arg_int0("I","io-idle-timeout","5","io idle timeout"),
         indexfilename=arg_str0("i","index-filename","index.html","index filename"),
         rootpath=arg_str0("r","root-path",".","root path"),
