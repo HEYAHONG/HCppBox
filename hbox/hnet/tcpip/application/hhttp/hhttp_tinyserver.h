@@ -95,7 +95,7 @@ typedef struct hhttp_tinyserver_session hhttp_tinyserver_session_t;
 struct hhttp_tinyserver_session
 {
     int  (*session_target_match)(hhttp_tinyserver_session_t *session,hhttp_request_line_t request_line);                                                            /**< 匹配target，返回HTTP状态码 */
-    void (*session_process_field)(hhttp_tinyserver_session_t *session,hhttp_field_t field);                                                                 /**< 处理请求头 */
+    void (*session_process_field)(hhttp_tinyserver_session_t *session,hhttp_field_t field);                                                                         /**< 处理请求头 */
     void (*session_process_body)(hhttp_tinyserver_session_t *session,uint64_t offset,hhttp_string_t part_data);                                                     /**< 会话写入数据,注意:offset无效，仅用于兼容 */
     void (*session_process_body_end)(hhttp_tinyserver_session_t *session);                                                                                          /**< 会话写入结束 */
     hhttp_tinyserver_file_t  *(*session_target_file_open)(hhttp_tinyserver_session_t *session,int http_status_code,hhttp_request_line_t request_line);              /**< 打开文件,用于响应请求 */
@@ -103,6 +103,27 @@ struct hhttp_tinyserver_session
     void *usr;
 };
 
+
+typedef int  (*hhttp_tinyserver_session_target_match_t)(hhttp_tinyserver_session_t *session,hhttp_request_line_t request_line);
+typedef void (*hhttp_tinyserver_session_process_field_t)(hhttp_tinyserver_session_t *session,hhttp_field_t field);
+typedef void (*hhttp_tinyserver_session_process_body_t)(hhttp_tinyserver_session_t *session,uint64_t offset,hhttp_string_t part_data);
+typedef void (*hhttp_tinyserver_session_process_body_end_t)(hhttp_tinyserver_session_t *session);
+typedef hhttp_tinyserver_file_t  *(*hhttp_tinyserver_session_target_file_open_t)(hhttp_tinyserver_session_t *session,int http_status_code,hhttp_request_line_t request_line);
+typedef void (*hhttp_tinyserver_session_target_file_close_t)(hhttp_tinyserver_session_t *session,hhttp_tinyserver_file_t *file);
+
+/** \brief 会话初始化
+ *
+ * \param session hhttp_tinyserver_session_t* 会话
+ * \param session_match hhttp_tinyserver_session_target_match_t 匹配
+ * \param session_field hhttp_tinyserver_session_process_field_t 头部字段
+ * \param session_body hhttp_tinyserver_session_process_body_t 主体
+ * \param session_body_end hhttp_tinyserver_session_process_body_end_t 主体结束
+ * \param session_file_open hhttp_tinyserver_session_target_file_open_t 文件打开
+ * \param session_file_close hhttp_tinyserver_session_target_file_close_t 文件关闭
+ * \param usr void* 用户参数
+ *
+ */
+void hhttp_tinyserver_session_init(hhttp_tinyserver_session_t *session,hhttp_tinyserver_session_target_match_t session_match,hhttp_tinyserver_session_process_field_t session_field,hhttp_tinyserver_session_process_body_t session_body,hhttp_tinyserver_session_process_body_end_t session_body_end,hhttp_tinyserver_session_target_file_open_t session_file_open,hhttp_tinyserver_session_target_file_close_t session_file_close,void *usr);
 
 /*
  * 虚拟主机，用于匹配不同的Host（通过头部的Host字段确定）
@@ -117,6 +138,21 @@ struct hhttp_tinyserver_vhost
     void *usr;
 };
 
+typedef bool (*hhttp_tinyserver_vhost_match_t)(const hhttp_tinyserver_vhost_t *vhost,hhttp_string_t host);
+typedef hhttp_tinyserver_session_t *(*hhttp_tinyserver_vhost_session_open_t)(const hhttp_tinyserver_vhost_t *vhost,hhttp_request_line_t request_line);
+typedef void (*hhttp_tinyserver_vhost_session_close_t)(const hhttp_tinyserver_vhost_t *vhost,hhttp_tinyserver_session_t *session);
+
+/** \brief 虚拟主机初始化
+ *
+ * \param vhost hhttp_tinyserver_vhost_t* 虚拟主机
+ * \param vhost_match hhttp_tinyserver_vhost_match_t 虚拟主机匹配
+ * \param vhost_session_open hhttp_tinyserver_vhost_session_open_t 打开会话
+ * \param vhost_session_close hhttp_tinyserver_vhost_session_close_t 关闭会话
+ * \param usr void* 用户参数
+ *
+ */
+void hhttp_tinyserver_vhost_init(hhttp_tinyserver_vhost_t *vhost,hhttp_tinyserver_vhost_match_t vhost_match,hhttp_tinyserver_vhost_session_open_t vhost_session_open,hhttp_tinyserver_vhost_session_close_t vhost_session_close,void *usr);
+
 /*
  * 服务
  */
@@ -129,6 +165,17 @@ struct hhttp_tinyserver_service
     size_t vhost_count;                                             /**< 虚拟主机个数 */
     void *usr;
 };
+
+/** \brief 服务初始化
+ *
+ * \param service hhttp_tinyserver_service_t* 服务
+ * \param default_vhost const hhttp_tinyserver_vhost_t* 默认虚拟主机
+ * \param vhost const hhttp_tinyserver_vhost_t* 虚拟主机
+ * \param vhost_count size_t 虚拟主机数量
+ * \param usr void* 用户参数
+ *
+ */
+void hhttp_tinyserver_service_init(hhttp_tinyserver_service_t *service,const hhttp_tinyserver_vhost_t *default_vhost,const hhttp_tinyserver_vhost_t *vhost,size_t vhost_count,void *usr);
 
 /** \brief 服务查找虚拟主机
  *

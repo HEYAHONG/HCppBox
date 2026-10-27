@@ -115,6 +115,126 @@ void hhttp_tinyserver_file_cfile_init(hhttp_tinyserver_file_cfile_t *file,FILE *
     file->stream=stream;
 }
 
+static inline int  hhttp_tinyserver_session_target_match(hhttp_tinyserver_session_t *session,hhttp_request_line_t request_line)
+{
+    return HHTTP_STATUS_CODE_404;
+}
+static inline void hhttp_tinyserver_session_process_field(hhttp_tinyserver_session_t *session,hhttp_field_t field)
+{
+
+}
+static inline void hhttp_tinyserver_session_process_body(hhttp_tinyserver_session_t *session,uint64_t offset,hhttp_string_t part_data)
+{
+
+}
+static inline void hhttp_tinyserver_session_process_body_end(hhttp_tinyserver_session_t *session)
+{
+
+}
+static inline hhttp_tinyserver_file_t  *hhttp_tinyserver_session_target_file_open(hhttp_tinyserver_session_t *session,int http_status_code,hhttp_request_line_t request_line)
+{
+    return NULL;
+}
+static inline void hhttp_tinyserver_session_target_file_close(hhttp_tinyserver_session_t *session,hhttp_tinyserver_file_t *file)
+{
+
+}
+void hhttp_tinyserver_session_init(hhttp_tinyserver_session_t *session,hhttp_tinyserver_session_target_match_t session_match,hhttp_tinyserver_session_process_field_t session_field,hhttp_tinyserver_session_process_body_t session_body,hhttp_tinyserver_session_process_body_end_t session_body_end,hhttp_tinyserver_session_target_file_open_t session_file_open,hhttp_tinyserver_session_target_file_close_t session_file_close,void *usr)
+{
+    if(session==NULL)
+    {
+        return;
+    }
+    session->session_target_match=session_match;
+    if(session->session_target_match==NULL)
+    {
+        session->session_target_match=hhttp_tinyserver_session_target_match;
+    }
+    session->session_process_field=session_field;
+    if(session->session_process_field==NULL)
+    {
+        session->session_process_field=hhttp_tinyserver_session_process_field;
+    }
+    session->session_process_body=session_body;
+    if(session->session_process_body==NULL)
+    {
+        session->session_process_body=hhttp_tinyserver_session_process_body;
+    }
+    session->session_process_body_end=session_body_end;
+    if(session->session_process_body_end==NULL)
+    {
+        session->session_process_body_end=hhttp_tinyserver_session_process_body_end;
+    }
+    session->session_target_file_open=session_file_open;
+    if(session->session_target_file_open==NULL)
+    {
+        session->session_target_file_open=hhttp_tinyserver_session_target_file_open;
+    }
+    session->session_target_file_close=session_file_close;
+    if(session->session_target_file_close==NULL)
+    {
+        session->session_target_file_close=hhttp_tinyserver_session_target_file_close;
+    }
+    session->usr=usr;
+}
+
+static inline bool hhttp_tinyserver_vhost_match(const hhttp_tinyserver_vhost_t *vhost,hhttp_string_t host)
+{
+    return false;
+}
+static inline hhttp_tinyserver_session_t *hhttp_tinyserver_vhost_session_open(const hhttp_tinyserver_vhost_t *vhost,hhttp_request_line_t request_line)
+{
+    return NULL;
+}
+static inline void hhttp_tinyserver_vhost_session_close(const hhttp_tinyserver_vhost_t *vhost,hhttp_tinyserver_session_t *session)
+{
+
+}
+
+void hhttp_tinyserver_vhost_init(hhttp_tinyserver_vhost_t *vhost,hhttp_tinyserver_vhost_match_t vhost_match,hhttp_tinyserver_vhost_session_open_t vhost_session_open,hhttp_tinyserver_vhost_session_close_t vhost_session_close,void *usr)
+{
+    if(vhost==NULL)
+    {
+        return;
+    }
+    vhost->vhost_match=vhost_match;
+    if(vhost->vhost_match==NULL)
+    {
+        vhost->vhost_match=hhttp_tinyserver_vhost_match;
+    }
+    vhost->vhost_session_open=vhost_session_open;
+    if(vhost->vhost_session_open==NULL)
+    {
+        vhost->vhost_session_open=hhttp_tinyserver_vhost_session_open;
+    }
+    vhost->vhost_session_close=vhost_session_close;
+    if(vhost->vhost_session_close==NULL)
+    {
+        vhost->vhost_session_close=hhttp_tinyserver_vhost_session_close;
+    }
+    vhost->usr=usr;
+}
+
+void hhttp_tinyserver_service_init(hhttp_tinyserver_service_t *service,const hhttp_tinyserver_vhost_t *default_vhost,const hhttp_tinyserver_vhost_t *vhost,size_t vhost_count,void *usr)
+{
+    if(service==NULL)
+    {
+        return;
+    }
+    service->default_vhost=default_vhost;
+    service->vhost=vhost;
+    service->vhost_count=vhost_count;
+    service->usr=usr;
+    if(service->default_vhost==NULL)
+    {
+        if(service->vhost==NULL || service->vhost_count==0)
+        {
+            service->vhost=service->default_vhost;
+            service->vhost_count=1;
+        }
+    }
+}
+
 const hhttp_tinyserver_vhost_t * hhttp_tinyserver_service_find_vhost(const hhttp_tinyserver_service_t *service,hhttp_string_t host)
 {
     if(service==NULL)
