@@ -38,6 +38,13 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../common/  common EXCLUDE_FROM_
 hcppbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})
 
+find_package(OpenSSL)
+
+if(OpenSSL_FOUND)
+    target_link_libraries(${PROJECT_NAME}  OpenSSL::SSL OpenSSL::Crypto)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE  -DHAVE_OPENSSL=1)
+endif()
+
 
 include(GNUInstallDirs)
 if(NOT DEFINED HTOOLS_INSTALL_DIR)

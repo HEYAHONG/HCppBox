@@ -15,12 +15,47 @@
 #include <atomic>
 #include <chrono>
 #include <thread>
+#if defined(HAVE_OPENSSL)
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+class openssl_guaurd
+{
+public:
+    SSL_CTX *ctx;
+    openssl_guaurd()
+    {
+        SSL_library_init();
+        SSL_load_error_strings();
+        OpenSSL_add_all_algorithms();
+        ctx=SSL_CTX_new(TLS_server_method());
+        if(ctx!=NULL)
+        {
+            SSL_CTX_set_min_proto_version(ctx, TLS1_2_VERSION);
+        }
+    }
+    ~openssl_guaurd()
+    {
+        if(ctx!=NULL)
+        {
+            SSL_CTX_free(ctx);
+            ctx=NULL;
+        }
+    }
+} g_ssl;
+#endif
+
+
 
 
 static std::string server_addr="0.0.0.0";
 static std::string server_port="80";
 static int io_idle_timeout=5;
 static int max_thread_count=100;
+
+#if defined(HAVE_OPENSSL)
+static std::string server_cert;
+static std::string server_key;
+#endif
 
 static void show_banner()
 {
@@ -41,6 +76,10 @@ static void check_args(int argc,char *argv[])
     struct arg_int  * ioidletimeout=NULL;
     struct arg_str  * indexfilename=NULL;
     struct arg_str  * rootpath=NULL;
+#if defined(HAVE_OPENSSL)
+    struct arg_str  * ssl_cert=NULL;
+    struct arg_str  * ssl_key=NULL;
+#endif
     void *argtable[]=
     {
         server=arg_str0("S","server","pool.http.org","http bind server"),
@@ -48,12 +87,17 @@ static void check_args(int argc,char *argv[])
         ioidletimeout=arg_int0("I","io-idle-timeout","5","io idle timeout"),
         indexfilename=arg_str0("i","index-filename","index.html","index filename"),
         rootpath=arg_str0("r","root-path",".","root path"),
+#if defined(HAVE_OPENSSL)
+        ssl_cert=arg_str0("C","cert",NULL,"ssl cert!"),
+        ssl_key=arg_str0("K","key",NULL,"ssl key!"),
+#endif
         help=arg_lit0("H","help","print this help and exit"),
         arg_end(20)
     };
     if(arg_nullcheck(argtable)!=0)
     {
         hfprintf(stderr,"arg_nullcheck error!\r\n");
+        arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
         hexit(-1);
     }
 
@@ -62,6 +106,7 @@ static void check_args(int argc,char *argv[])
         hfputs("arg_parse error!\r\n",stderr);
         hfputs("Usage:\r\n",stderr);
         arg_print_glossary(stderr,argtable,"  %-30s %s\n");
+        arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
         hexit(-1);
     }
 
@@ -69,6 +114,7 @@ static void check_args(int argc,char *argv[])
     {
         hfputs("Usage:\r\n",stdout);
         arg_print_glossary(stdout,argtable,"  %-30s %s\n");
+        arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
         hexit(-1);
     }
 
@@ -97,6 +143,46 @@ static void check_args(int argc,char *argv[])
     {
         httpd_set_root_path(rootpath->sval[0]);
     }
+#if defined(HAVE_OPENSSL)
+    if(ssl_cert->count> 0)
+    {
+        server_cert=ssl_cert->sval[0];
+    }
+    if(ssl_key->count> 0)
+    {
+        server_key=ssl_key->sval[0];
+    }
+    if((server_cert.length()!=0 &&server_key.length()==0) ||(server_cert.length()==0 &&server_key.length()!=0))
+    {
+        hfputs("SSL requires both the key and the certificate to be present.!\r\n",stderr);
+        arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
+        hexit(-1);
+    }
+
+    if(server_cert.length()!=0 && server_key.length()!=0)
+    {
+        if(serverport->count == 0)
+        {
+            server_port="443";
+        }
+
+        if(SSL_CTX_use_certificate_chain_file(g_ssl.ctx, server_cert.c_str()) <=0 || SSL_CTX_use_PrivateKey_file(g_ssl.ctx, server_key.c_str(), SSL_FILETYPE_PEM) <= 0)
+        {
+            hfputs("SSL load error!\r\n",stderr);
+            arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
+            hexit(-1);
+        }
+
+    }
+    else
+    {
+        if(g_ssl.ctx!=NULL)
+        {
+            SSL_CTX_free(g_ssl.ctx);
+            g_ssl.ctx=NULL;
+        }
+    }
+#endif
 
     arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
 }
@@ -151,9 +237,52 @@ static void check_env(int argc,char *argv[])
             }
         }
     }
+
+#if defined(HAVE_OPENSSL)
+    {
+        const char *httpd_ssl_cert_path=hgetenv("HTTPD_SSL_CERT_PATH");
+        if(httpd_ssl_cert_path!=NULL)
+        {
+            if(strlen(httpd_ssl_cert_path) > 0)
+            {
+                server_cert=httpd_ssl_cert_path;
+            }
+        }
+    }
+
+    {
+        const char *httpd_ssl_key_path=hgetenv("HTTPD_SSL_KEY_PATH");
+        if(httpd_ssl_key_path!=NULL)
+        {
+            if(strlen(httpd_ssl_key_path) > 0)
+            {
+                server_key=httpd_ssl_key_path;
+            }
+        }
+    }
+#endif
 }
 
 static thread_local std::chrono::time_point<std::chrono::steady_clock> io_active_timepoint;
+#if defined(HAVE_OPENSSL)
+static thread_local class client_socket_ssl
+{
+public:
+    SSL *ssl_socket;
+    client_socket_ssl():ssl_socket(NULL)
+    {
+
+    }
+    ~client_socket_ssl()
+    {
+        if(ssl_socket!=NULL)
+        {
+            SSL_free(ssl_socket);
+            ssl_socket=NULL;
+        }
+    }
+} g_ssl_socket;
+#endif
 static std::atomic_int current_thread_count=0;
 static bool httpd_running=true;
 SOCKET server_fd=INVALID_SOCKET;
@@ -249,7 +378,30 @@ static int httpd_main(void)
                     char addr_buffer[64]= {0};
                     hfprintf(stderr,"[httpd] connection %d (%s:%d) opened!\r\n",connection_fd,inet_ntop(AF_INET,&addr.sin_addr,addr_buffer,sizeof(addr_buffer)),(int)hbe16toh(addr.sin_port));
                 }
-                tcp_socket_set_nonblock(connection_fd);
+#if defined(HAVE_OPENSSL)
+                if(g_ssl.ctx!=NULL)
+                {
+                    g_ssl_socket.ssl_socket=SSL_new(g_ssl.ctx);
+                }
+                if(g_ssl_socket.ssl_socket!=NULL)
+                {
+                    SSL_set_fd(g_ssl_socket.ssl_socket, m_connection_fd);
+                    SSL_set_accept_state(g_ssl_socket.ssl_socket);
+                    int ret= SSL_do_handshake(g_ssl_socket.ssl_socket);
+                    if(ret <= 0)
+                    {
+                        hfprintf(stderr,"[httpd] SSL do handshake error %d!",ret);
+                        SSL_get_error(g_ssl_socket.ssl_socket, ret);
+                        ERR_print_errors_fp(stderr);
+                        hfprintf(stderr,"\r\n");
+                        closesocket(m_connection_fd);
+                        m_connection_fd=INVALID_SOCKET;
+                    }
+                }
+#endif
+                {
+                    tcp_socket_set_nonblock(connection_fd);
+                }
                 hhttp_tinyserver_connection_t httpd_con;
                 hhttp_tinyserver_connection_init(&httpd_con,
                                                  httpd_service(),
@@ -269,21 +421,33 @@ static int httpd_main(void)
                     }
                     if(connection_fd!=INVALID_SOCKET)
                     {
-                        size_t offset=0;
-                        do
+#if defined(HAVE_OPENSSL)
+                        if(g_ssl_socket.ssl_socket!=NULL)
                         {
-                            int sendlen=send(connection_fd,(const char *)(&((uint8_t *)data)[offset]),len-offset,0);
-                            if(sendlen>0)
+                            if(len > 0)
                             {
-                                offset+=sendlen;
-                            }
-                            if(sendlen==0)
-                            {
-                                //连接已断开
-                                offset=len;
+                                SSL_write(g_ssl_socket.ssl_socket,data,len);
                             }
                         }
-                        while(offset < len);
+                        else
+#endif
+                        {
+                            size_t offset=0;
+                            do
+                            {
+                                int sendlen=send(connection_fd,(const char *)(&((uint8_t *)data)[offset]),len-offset,0);
+                                if(sendlen>0)
+                                {
+                                    offset+=sendlen;
+                                }
+                                if(sendlen==0)
+                                {
+                                    //连接已断开
+                                    offset=len;
+                                }
+                            }
+                            while(offset < len);
+                        }
                     }
 
                 },
@@ -294,6 +458,12 @@ static int httpd_main(void)
                         return;
                     }
                     int &connection_fd=*(int *)connection->usr;
+#if defined(HAVE_OPENSSL)
+                    if(g_ssl_socket.ssl_socket!=NULL)
+                    {
+                        SSL_shutdown(g_ssl_socket.ssl_socket);
+                    }
+#endif
                     closesocket(connection_fd);
                     connection_fd=INVALID_SOCKET;
                 },
@@ -301,7 +471,18 @@ static int httpd_main(void)
                 while(m_connection_fd!=INVALID_SOCKET)
                 {
                     uint8_t buffer[4096];
-                    int readlen=recv(m_connection_fd,(char *)buffer,sizeof(buffer),0);
+                    int readlen=0;
+#if defined(HAVE_OPENSSL)
+                    if(g_ssl_socket.ssl_socket!=NULL)
+                    {
+                        readlen=SSL_read(g_ssl_socket.ssl_socket,buffer,sizeof(buffer));
+                    }
+                    else
+#endif
+                    {
+                        readlen=recv(m_connection_fd,(char *)buffer,sizeof(buffer),0);
+                    }
+
                     if(readlen > 0)
                     {
                         io_active_timepoint=std::chrono::steady_clock::now();
@@ -310,6 +491,12 @@ static int httpd_main(void)
                     if(readlen == 0 || (readlen < 0 && !tcp_socket_is_egain()))
                     {
                         hhttp_tinyserver_connection_cleanup(&httpd_con);
+#if defined(HAVE_OPENSSL)
+                        if(g_ssl_socket.ssl_socket!=NULL)
+                        {
+                            SSL_shutdown(g_ssl_socket.ssl_socket);
+                        }
+#endif
                         closesocket(m_connection_fd);
                         m_connection_fd=INVALID_SOCKET;
                     }
@@ -317,6 +504,12 @@ static int httpd_main(void)
                     {
                         hfprintf(stderr,"[httpd] connection %d io idle timeout!\r\n",m_connection_fd);
                         hhttp_tinyserver_connection_cleanup(&httpd_con);
+#if defined(HAVE_OPENSSL)
+                        if(g_ssl_socket.ssl_socket!=NULL)
+                        {
+                            SSL_shutdown(g_ssl_socket.ssl_socket);
+                        }
+#endif
                         closesocket(m_connection_fd);
                         m_connection_fd=INVALID_SOCKET;
                     }
@@ -324,6 +517,12 @@ static int httpd_main(void)
                     {
                         hfprintf(stderr,"[httpd] connection %d stop!\r\n",m_connection_fd);
                         hhttp_tinyserver_connection_cleanup(&httpd_con);
+#if defined(HAVE_OPENSSL)
+                        if(g_ssl_socket.ssl_socket!=NULL)
+                        {
+                            SSL_shutdown(g_ssl_socket.ssl_socket);
+                        }
+#endif
                         closesocket(m_connection_fd);
                         m_connection_fd=INVALID_SOCKET;
                     }

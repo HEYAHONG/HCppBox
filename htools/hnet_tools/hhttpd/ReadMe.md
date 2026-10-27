@@ -6,12 +6,14 @@
 
 # 环境变量
 
-- | 名称                   | 说明         | 备注               |
-  | ---------------------- | ------------ | ------------------ |
-  | `HTTPD_PORT`           | 端口         | 默认为80           |
-  | `HTTPD_IDLE_TIMEOUT`   | 空闲超时     | 默认为5            |
-  | `HTTPD_INDEX_FILENAME` | 引索文件名称 | 默认为`index.html` |
-  | `HTTPD_ROOT_PATH`      | 服务器根目录 | 默认为当前工作目录 |
+- | 名称                   | 说明         | 备注                                |
+  | ---------------------- | ------------ | ----------------------------------- |
+  | `HTTPD_PORT`           | 端口         | 默认为80                            |
+  | `HTTPD_IDLE_TIMEOUT`   | 空闲超时     | 默认为5                             |
+  | `HTTPD_INDEX_FILENAME` | 引索文件名称 | 默认为`index.html`                  |
+  | `HTTPD_ROOT_PATH`      | 服务器根目录 | 默认为当前工作目录                  |
+  | `HTTPD_SSL_CERT_PATH`  | SSL证书路径  | 若需要SSL，证书与密钥必须同时具备。 |
+  | `HTTPD_SSL_KEY_PATH`   | SSL密钥路径  | 若需要SSL，证书与密钥必须同时具备。 |
   
   
 
