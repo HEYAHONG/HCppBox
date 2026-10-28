@@ -128,14 +128,14 @@ char* MQTTFormat_toClientString(char* strbuf, int strbuflen, unsigned char* buf,
 	switch (header.bits.type)
 	{
 
-	case CONNACK:
+	case MQTT_MSG_TYPES_CONNACK:
 	{
 		unsigned char sessionPresent, connack_rc;
 		if (MQTTDeserialize_connack(&sessionPresent, &connack_rc, buf, buflen) == 1)
 			strindex = MQTTStringFormat_connack(strbuf, strbuflen, connack_rc, sessionPresent);
 	}
 	break;
-	case PUBLISH:
+	case MQTT_MSG_TYPES_PUBLISH:
 	{
 		unsigned char dup, retained, *payload;
 		unsigned short packetid;
@@ -147,10 +147,10 @@ char* MQTTFormat_toClientString(char* strbuf, int strbuflen, unsigned char* buf,
 					topicName, payload, payloadlen);
 	}
 	break;
-	case PUBACK:
-	case PUBREC:
-	case PUBREL:
-	case PUBCOMP:
+	case MQTT_MSG_TYPES_PUBACK:
+	case MQTT_MSG_TYPES_PUBREC:
+	case MQTT_MSG_TYPES_PUBREL:
+	case MQTT_MSG_TYPES_PUBCOMP:
 	{
 		unsigned char packettype, dup;
 		unsigned short packetid;
@@ -158,7 +158,7 @@ char* MQTTFormat_toClientString(char* strbuf, int strbuflen, unsigned char* buf,
 			strindex = MQTTStringFormat_ack(strbuf, strbuflen, packettype, dup, packetid);
 	}
 	break;
-	case SUBACK:
+	case MQTT_MSG_TYPES_SUBACK:
 	{
 		unsigned short packetid;
 		int maxcount = 1, count = 0;
@@ -167,16 +167,16 @@ char* MQTTFormat_toClientString(char* strbuf, int strbuflen, unsigned char* buf,
 			strindex = MQTTStringFormat_suback(strbuf, strbuflen, packetid, count, grantedQoSs);
 	}
 	break;
-	case UNSUBACK:
+	case MQTT_MSG_TYPES_UNSUBACK:
 	{
 		unsigned short packetid;
 		if (MQTTDeserialize_unsuback(&packetid, buf, buflen) == 1)
-			strindex = MQTTStringFormat_ack(strbuf, strbuflen, UNSUBACK, 0, packetid);
+			strindex = MQTTStringFormat_ack(strbuf, strbuflen, MQTT_MSG_TYPES_UNSUBACK, 0, packetid);
 	}
 	break;
-	case PINGREQ:
-	case PINGRESP:
-	case DISCONNECT:
+	case MQTT_MSG_TYPES_PINGREQ:
+	case MQTT_MSG_TYPES_PINGRESP:
+	case MQTT_MSG_TYPES_DISCONNECT:
 		strindex = snprintf(strbuf, strbuflen, "%s", MQTTPacket_names[header.bits.type]);
 		break;
 	}
@@ -197,7 +197,7 @@ char* MQTTFormat_toServerString(char* strbuf, int strbuflen, unsigned char* buf,
 
 	switch (header.bits.type)
 	{
-	case CONNECT:
+	case MQTT_MSG_TYPES_CONNECT:
 	{
 		MQTTPacket_connectData data;
 		int rc;
@@ -205,7 +205,7 @@ char* MQTTFormat_toServerString(char* strbuf, int strbuflen, unsigned char* buf,
 			strindex = MQTTStringFormat_connect(strbuf, strbuflen, &data);
 	}
 	break;
-	case PUBLISH:
+	case MQTT_MSG_TYPES_PUBLISH:
 	{
 		unsigned char dup, retained, *payload;
 		unsigned short packetid;
@@ -217,10 +217,10 @@ char* MQTTFormat_toServerString(char* strbuf, int strbuflen, unsigned char* buf,
 					topicName, payload, payloadlen);
 	}
 	break;
-	case PUBACK:
-	case PUBREC:
-	case PUBREL:
-	case PUBCOMP:
+	case MQTT_MSG_TYPES_PUBACK:
+	case MQTT_MSG_TYPES_PUBREC:
+	case MQTT_MSG_TYPES_PUBREL:
+	case MQTT_MSG_TYPES_PUBCOMP:
 	{
 		unsigned char packettype, dup;
 		unsigned short packetid;
@@ -228,7 +228,7 @@ char* MQTTFormat_toServerString(char* strbuf, int strbuflen, unsigned char* buf,
 			strindex = MQTTStringFormat_ack(strbuf, strbuflen, packettype, dup, packetid);
 	}
 	break;
-	case SUBSCRIBE:
+	case MQTT_MSG_TYPES_SUBSCRIBE:
 	{
 		unsigned char dup;
 		unsigned short packetid;
@@ -240,7 +240,7 @@ char* MQTTFormat_toServerString(char* strbuf, int strbuflen, unsigned char* buf,
 			strindex = MQTTStringFormat_subscribe(strbuf, strbuflen, dup, packetid, count, topicFilters, requestedQoSs);;
 	}
 	break;
-	case UNSUBSCRIBE:
+	case MQTT_MSG_TYPES_UNSUBSCRIBE:
 	{
 		unsigned char dup;
 		unsigned short packetid;
@@ -250,9 +250,9 @@ char* MQTTFormat_toServerString(char* strbuf, int strbuflen, unsigned char* buf,
 			strindex =  MQTTStringFormat_unsubscribe(strbuf, strbuflen, dup, packetid, count, topicFilters);
 	}
 	break;
-	case PINGREQ:
-	case PINGRESP:
-	case DISCONNECT:
+	case MQTT_MSG_TYPES_PINGREQ:
+	case MQTT_MSG_TYPES_PINGRESP:
+	case MQTT_MSG_TYPES_DISCONNECT:
 		strindex = snprintf(strbuf, strbuflen, "%s", MQTTPacket_names[header.bits.type]);
 		break;
 	}

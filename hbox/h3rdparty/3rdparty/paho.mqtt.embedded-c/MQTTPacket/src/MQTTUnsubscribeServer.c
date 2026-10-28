@@ -42,7 +42,7 @@ int MQTTDeserialize_unsubscribe(unsigned char* dup, unsigned short* packetid, in
 
 	FUNC_ENTRY;
 	header.byte = readChar(&curdata);
-	if (header.bits.type != UNSUBSCRIBE)
+	if (header.bits.type != MQTT_MSG_TYPES_UNSUBSCRIBE)
 		goto exit;
 	*dup = header.bits.dup;
 
@@ -86,7 +86,7 @@ int MQTTSerialize_unsuback(unsigned char* buf, int buflen, unsigned short packet
 		goto exit;
 	}
 	header.byte = 0;
-	header.bits.type = UNSUBACK;
+	header.bits.type = MQTT_MSG_TYPES_UNSUBACK;
 	writeChar(&ptr, header.byte); /* write header */
 
 	ptr += MQTTPacket_encode(ptr, 2); /* write remaining length */

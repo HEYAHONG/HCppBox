@@ -71,7 +71,7 @@ int MQTTSerialize_connect(unsigned char* buf, int buflen, MQTTPacket_connectData
 	}
 
 	header.byte = 0;
-	header.bits.type = CONNECT;
+	header.bits.type = MQTT_MSG_TYPES_CONNECT;
 	writeChar(&ptr, header.byte); /* write header */
 
 	ptr += MQTTPacket_encode(ptr, len); /* write remaining length */
@@ -140,7 +140,7 @@ int MQTTDeserialize_connack(unsigned char* sessionPresent, unsigned char* connac
 
 	FUNC_ENTRY;
 	header.byte = readChar(&curdata);
-	if (header.bits.type != CONNACK)
+	if (header.bits.type != MQTT_MSG_TYPES_CONNACK)
 		goto exit;
 
 	curdata += (rc = MQTTPacket_decodeBuf(curdata, &mylen)); /* read remaining length */
@@ -198,7 +198,7 @@ exit:
   */
 int MQTTSerialize_disconnect(unsigned char* buf, int buflen)
 {
-	return MQTTSerialize_zero(buf, buflen, DISCONNECT);
+	return MQTTSerialize_zero(buf, buflen, MQTT_MSG_TYPES_DISCONNECT);
 }
 
 
@@ -210,5 +210,5 @@ int MQTTSerialize_disconnect(unsigned char* buf, int buflen)
   */
 int MQTTSerialize_pingreq(unsigned char* buf, int buflen)
 {
-	return MQTTSerialize_zero(buf, buflen, PINGREQ);
+	return MQTTSerialize_zero(buf, buflen, MQTT_MSG_TYPES_PINGREQ);
 }

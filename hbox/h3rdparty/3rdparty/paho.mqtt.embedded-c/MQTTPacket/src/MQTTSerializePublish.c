@@ -67,7 +67,7 @@ int MQTTSerialize_publish(unsigned char* buf, int buflen, unsigned char dup, int
 		goto exit;
 	}
 
-	header.bits.type = PUBLISH;
+	header.bits.type = MQTT_MSG_TYPES_PUBLISH;
 	header.bits.dup = dup;
 	header.bits.qos = qos;
 	header.bits.retain = retained;
@@ -115,7 +115,7 @@ int MQTTSerialize_ack(unsigned char* buf, int buflen, unsigned char packettype, 
 	}
 	header.bits.type = packettype;
 	header.bits.dup = dup;
-	header.bits.qos = (packettype == PUBREL) ? 1 : 0;
+	header.bits.qos = (packettype == MQTT_MSG_TYPES_PUBREL) ? 1 : 0;
 	writeChar(&ptr, header.byte); /* write header */
 
 	ptr += MQTTPacket_encode(ptr, 2); /* write remaining length */
@@ -136,7 +136,7 @@ exit:
   */
 int MQTTSerialize_puback(unsigned char* buf, int buflen, unsigned short packetid)
 {
-	return MQTTSerialize_ack(buf, buflen, PUBACK, 0, packetid);
+	return MQTTSerialize_ack(buf, buflen, MQTT_MSG_TYPES_PUBACK, 0, packetid);
 }
 
 
@@ -150,7 +150,7 @@ int MQTTSerialize_puback(unsigned char* buf, int buflen, unsigned short packetid
   */
 int MQTTSerialize_pubrel(unsigned char* buf, int buflen, unsigned char dup, unsigned short packetid)
 {
-	return MQTTSerialize_ack(buf, buflen, PUBREL, dup, packetid);
+	return MQTTSerialize_ack(buf, buflen, MQTT_MSG_TYPES_PUBREL, dup, packetid);
 }
 
 
@@ -163,7 +163,7 @@ int MQTTSerialize_pubrel(unsigned char* buf, int buflen, unsigned char dup, unsi
   */
 int MQTTSerialize_pubcomp(unsigned char* buf, int buflen, unsigned short packetid)
 {
-	return MQTTSerialize_ack(buf, buflen, PUBCOMP, 0, packetid);
+	return MQTTSerialize_ack(buf, buflen, MQTT_MSG_TYPES_PUBCOMP, 0, packetid);
 }
 
 

@@ -64,7 +64,7 @@ int MQTTSerialize_subscribe(unsigned char* buf, int buflen, unsigned char dup, u
 	}
 
 	header.byte = 0;
-	header.bits.type = SUBSCRIBE;
+	header.bits.type = MQTT_MSG_TYPES_SUBSCRIBE;
 	header.bits.dup = dup;
 	header.bits.qos = 1;
 	writeChar(&ptr, header.byte); /* write header */
@@ -107,7 +107,7 @@ int MQTTDeserialize_suback(unsigned short* packetid, int maxcount, int* count, i
 
 	FUNC_ENTRY;
 	header.byte = readChar(&curdata);
-	if (header.bits.type != SUBACK)
+	if (header.bits.type != MQTT_MSG_TYPES_SUBACK)
 		goto exit;
 
 	curdata += (rc = MQTTPacket_decodeBuf(curdata, &mylen)); /* read remaining length */

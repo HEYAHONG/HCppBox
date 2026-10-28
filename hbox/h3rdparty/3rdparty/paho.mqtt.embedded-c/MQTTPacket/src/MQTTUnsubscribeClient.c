@@ -63,7 +63,7 @@ int MQTTSerialize_unsubscribe(unsigned char* buf, int buflen, unsigned char dup,
 	}
 
 	header.byte = 0;
-	header.bits.type = UNSUBSCRIBE;
+	header.bits.type = MQTT_MSG_TYPES_UNSUBSCRIBE;
 	header.bits.dup = dup;
 	header.bits.qos = 1;
 	writeChar(&ptr, header.byte); /* write header */
@@ -97,7 +97,7 @@ int MQTTDeserialize_unsuback(unsigned short* packetid, unsigned char* buf, int b
 
 	FUNC_ENTRY;
 	rc = MQTTDeserialize_ack(&type, &dup, packetid, buf, buflen);
-	if (type == UNSUBACK)
+	if (type == MQTT_MSG_TYPES_UNSUBACK)
 		rc = 1;
 	FUNC_EXIT_RC(rc);
 	return rc;
