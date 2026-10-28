@@ -15,5 +15,12 @@
   | `HTTPD_SSL_CERT_PATH`  | SSL证书路径  | 若需要SSL，证书与密钥必须同时具备。 |
   | `HTTPD_SSL_KEY_PATH`   | SSL密钥路径  | 若需要SSL，证书与密钥必须同时具备。 |
   
-  
+
+# 证书
+
+对于启用TLS/SSL的服务而言，需要PEM格式的证书及私钥，其中私钥不可密码加密。
+
+对于具有域名的用户，可使用`certbot`（对于最新ubuntu系统，可直接安装`certbot`软件包）签发免费证书（[https://letsencrypt.org/](https://letsencrypt.org/)），不过需要提前配置http服务（非TLS/SSL）并且使公网可访问`/.well-known/acme-challenge/` 路径。
+
+对于测试用户，可自行使用各种工具签发测试证书，本人推荐使用[https://github.com/OpenVPN/easy-rsa.git](https://github.com/OpenVPN/easy-rsa.git)（对于最新ubuntu系统，可直接安装`easy-rsa`软件包），注意需要签发没有密码加密的私钥且测试时应该忽略浏览器的安全警告。
 
