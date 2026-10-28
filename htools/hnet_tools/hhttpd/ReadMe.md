@@ -24,3 +24,9 @@
 
 对于测试用户，可自行使用各种工具签发测试证书，本人推荐使用[https://github.com/OpenVPN/easy-rsa.git](https://github.com/OpenVPN/easy-rsa.git)（对于最新ubuntu系统，可直接安装`easy-rsa`软件包），注意需要签发没有密码加密的私钥且测试时应该忽略浏览器的安全警告。
 
+## 测试证书
+
+测试证书由easy-rsa管理，其目录在[../../common/pki](../../common/pki)，若需要浏览器不警告，可在浏览器的设置中添加[测试ca证书](../../common/pki/ca.crt)（测试完需要删除，否则有一定风险）。
+
+- localhost:[cert](../../common/pki/issued/localhost.crt)、[key](../../common/pki/private/localhost.key)。
+
