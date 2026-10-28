@@ -107,6 +107,12 @@
  */
 /* #define HDEFAULTS_RO_ATTRIBUTE */
 
+/** \brief 定义packed属性
+ *
+ * 通常用于网络数据包解析
+ */
+/* #define HDEFAULTS_PACKED_ATTRIBUTE */
+
 /** \brief 无线程库
  */
 /* #define __STDC_NO_THREADS__ */
@@ -1170,6 +1176,20 @@
  * 此文件不应编译
  */
 /* #define HDLT645_MASTER_EXTERN_SOURCE_FILENAME */
+
+/* ========== hnet/tcpip/application/hhttp ========== */
+
+/** \brief 最小的头部缓冲长度，用于缓存请求行与头部字段
+ *
+ * 用户可使用`header_buffer_external_size`在连接结构体后扩展缓存。
+ */
+/* #define HHTTP_TINYSERVER_CONNECTION_MIN_HEADER_BUFFER_SIZE */
+
+/** \brief 最小的头部缓冲长度，用于缓存请求行与头部字段，仅存储单行。
+ *
+ * 用户可使用`header_buffer_external_size`在客户端结构体后扩展缓存。
+ */
+/* #define HHTTP_CLIENT_MIN_HEADER_BUFFER_SIZE */
 
 /* ========== hruntime ========== */
 
