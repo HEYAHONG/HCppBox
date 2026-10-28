@@ -30,3 +30,11 @@
 
 - localhost:[cert](../../common/pki/issued/localhost.crt)、[key](../../common/pki/private/localhost.key)。
 
+# MIME
+
+对于服务器而言，若需要浏览器正确处理相应文件，而不是触发下载文件，HTTP服务器应该在头部字段`Content-Type`中放入正确的MIME类型。
+
+本工程内置了静态服务器常见的格式及后缀，具体见[httpd.cpp](httpd.cpp),对于不支持的文件格式，默认返回`application/octet-stream`，一般会触发下载行为。
+
+更多MIME类型定义可见常用的MIME数据库[mime-db](https://github.com/jshttp/mime-db)。
+
