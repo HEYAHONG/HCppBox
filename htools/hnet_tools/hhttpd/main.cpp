@@ -88,8 +88,8 @@ static void check_args(int argc,char *argv[])
         indexfilename=arg_str0("i","index-filename","index.html","index filename"),
         rootpath=arg_str0("r","root-path",".","root path"),
 #if defined(HAVE_OPENSSL)
-        ssl_cert=arg_str0("C","cert",NULL,"ssl cert!"),
-        ssl_key=arg_str0("K","key",NULL,"ssl key!"),
+        ssl_cert=arg_str0("C","cert",NULL,"ssl cert pem file path"),
+        ssl_key=arg_str0("K","key",NULL,"ssl key pem file path"),
 #endif
         help=arg_lit0("H","help","print this help and exit"),
         arg_end(20)
