@@ -746,6 +746,12 @@ public:
             screen=SDL_SetVideoMode(320,240,32,SDL_HWSURFACE);
             SDL_WM_SetCaption("","sdl");
         }
+
+        if(screen==NULL)
+        {
+            return false;
+        }
+
         return true;
     }
     static bool g_reset(hgui_driver_t *driver)
@@ -773,7 +779,7 @@ public:
     {
         (void)driver;
         std::lock_guard<std::recursive_mutex> lock(m_lock);
-        if(w==NULL || h == NULL)
+        if(w==NULL || h == NULL || screen == NULL)
         {
             return false;
         }
