@@ -27,8 +27,8 @@ zephyr_linker_sources(SECTIONS "${CMAKE_CURRENT_LIST_DIR}/../hbox.ld")
 if(DEFINED HPLATFORMBOX_RISC_V_INSTALL_DIR)
     file(GLOB INSTALL_FILES "${CMAKE_CURRENT_LIST_DIR}/files/*")
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/zephyr/zephyr.elf
-                  ${CMAKE_CURRENT_BINARY_DIR}/zephyr/zephyr.dts
-                  ${CMAKE_CURRENT_BINARY_DIR}/zephyr/zephyr.map
-                  ${INSTALL_FILES}
-            DESTINATION ${HPLATFORMBOX_RISC_V_INSTALL_DIR}/)
+        ${CMAKE_CURRENT_BINARY_DIR}/zephyr/zephyr.dts
+        ${CMAKE_CURRENT_BINARY_DIR}/zephyr/zephyr.map
+        ${INSTALL_FILES}
+        DESTINATION ${HPLATFORMBOX_RISC_V_INSTALL_DIR}/)
 endif()

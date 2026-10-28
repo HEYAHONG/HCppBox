@@ -18,15 +18,15 @@ if(RISCV64_UNKNOWN_ELF_GCC)
             if(EXISTS "${RISC_V_ROM_SIM}/rv32i/CMakeLists.txt")
                 message(STATUS "Add RISC-V 32 SIM ROM ${RISC_V_ROM_SIM_NAME}")
                 add_custom_target(risc-v_rom_sim_${RISC_V_ROM_SIM_NAME}_rv32i  ${CMAKE_COMMAND} -E make_directory risc-v_rom_sim_${RISC_V_ROM_SIM_NAME}_rv32i && ${CMAKE_COMMAND} -DHPLATFORMBOX_RISC_V_INSTALL_DIR="${HPLATFORMBOX_INSTALL_DIR}/risc-v/sim/"  -S ${RISC_V_ROM_SIM}/rv32i -B risc-v_rom_sim_${RISC_V_ROM_SIM_NAME}_rv32i && ${CMAKE_COMMAND} --build risc-v_rom_sim_${RISC_V_ROM_SIM_NAME}_rv32i -t install
-                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-                USES_TERMINAL)
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+                    USES_TERMINAL)
                 add_dependencies(risc-v_rom risc-v_rom_sim_${RISC_V_ROM_SIM_NAME}_rv32i)
             endif()
             if(EXISTS "${RISC_V_ROM_SIM}/rv64i/CMakeLists.txt")
                 message(STATUS "Add RISC-V 64 SIM ROM ${RISC_V_ROM_SIM_NAME}")
                 add_custom_target(risc-v_rom_sim_${RISC_V_ROM_SIM_NAME}_rv64i  ${CMAKE_COMMAND} -E make_directory risc-v_rom_sim_${RISC_V_ROM_SIM_NAME}_rv64i && ${CMAKE_COMMAND} -DHPLATFORMBOX_RISC_V_INSTALL_DIR="${HPLATFORMBOX_INSTALL_DIR}/risc-v/sim/"  -S ${RISC_V_ROM_SIM}/rv64i -B risc-v_rom_sim_${RISC_V_ROM_SIM_NAME}_rv64i && ${CMAKE_COMMAND} --build risc-v_rom_sim_${RISC_V_ROM_SIM_NAME}_rv64i -t install
-                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-                USES_TERMINAL)
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+                    USES_TERMINAL)
                 add_dependencies(risc-v_rom risc-v_rom_sim_${RISC_V_ROM_SIM_NAME}_rv64i)
             endif()
         endif()
@@ -37,7 +37,7 @@ endif()
 #注意：需要使用west配置好zephyr,并使用west zephyr-export导出cmake软件包
 option(BUILD_HPLATFORMBOX_RISCV_SIM_ZEPHYR "build hplatformbox risc-v sim(zephyr)" OFF)
 if(BUILD_HPLATFORMBOX_RISCV_SIM_ZEPHYR)
-file(GLOB RISC_V_ROM_SIMS sim/zephyr/*)
+    file(GLOB RISC_V_ROM_SIMS sim/zephyr/*)
     foreach(RISC_V_ROM_SIM ${RISC_V_ROM_SIMS})
         if(IS_DIRECTORY ${RISC_V_ROM_SIM} AND EXISTS "${RISC_V_ROM_SIM}/CMakeLists.txt")
             file(RELATIVE_PATH RISC_V_ROM_SIM_NAME ${CMAKE_CURRENT_SOURCE_DIR}/sim/zephyr/ ${RISC_V_ROM_SIM})
