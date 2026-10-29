@@ -930,7 +930,7 @@ static bool hhttp_tinyserver_connection_send_server_response(hhttp_tinyserver_co
         }
         uint64_t offset=0;
         uint64_t single_read=0;
-        while((single_read=connection->connection_file->file_content_read(connection->connection_file,offset,buffer,buffer_size)) != ((uint64_t)-1))
+        while((single_read=connection->connection_file->file_content_read(connection->connection_file,offset,buffer,buffer_size)) !=  HHTTP_TINYSERVER_FILE_CONTENT_READ_END)
         {
             hhttp_string_t part_data=hhttp_string_from_buffer(buffer,single_read);
             if(connection->flags.keep_alive == 0)
