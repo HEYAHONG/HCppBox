@@ -34,6 +34,10 @@ const char*  hcjson_version(void);
 
 void  hcjson_init_hooks(hcjson_hooks_t* hooks);
 
+/*
+ * 获取旧hooks，在h3rdparty_cjson.c中实现
+ */
+hcjson_hooks_t hcjson_hooks_get(void);
 
 hcjson_t *  hcjson_parse(const char *value);
 hcjson_t *  hcjson_parse_with_length(const char *value, size_t buffer_length);

@@ -28,6 +28,25 @@
 #endif
 
 #include "3rdparty/cJSON/cJSON.c"
+
+hcjson_hooks_t hcjson_hooks_get(void)
+{
+    hcjson_hooks_t ret;
+    ret.malloc_fn=global_hooks.allocate;
+    ret.free_fn=global_hooks.deallocate;
+    return ret;
+}
+
+#else
+
+hcjson_hooks_t hcjson_hooks_get(void)
+{
+    hcjson_hooks_t ret;
+    ret.malloc_fn=malloc;
+    ret.free_fn=free;
+    return ret;
+}
+
 #endif // H3RDPARTY_USING_SYSTEM_CJSON
 
 
