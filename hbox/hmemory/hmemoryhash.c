@@ -84,169 +84,86 @@ uint64_t hmemoryhash_oat(const uint8_t *data,size_t length)
     return hashv;
 }
 
+#define HMEMORYHASH_JEN_ROT(x,k) (((x)<<(k)) | ((x)>>(32-(k))))
+
 #define HMEMORYHASH_JEN_MIX(a,b,c)                                               \
 do {                                                                             \
-  a -= b; a -= c; a ^= ( c >> 13 );                                              \
-  b -= c; b -= a; b ^= ( a << 8 );                                               \
-  c -= a; c -= b; c ^= ( b >> 13 );                                              \
-  a -= b; a -= c; a ^= ( c >> 12 );                                              \
-  b -= c; b -= a; b ^= ( a << 16 );                                              \
-  c -= a; c -= b; c ^= ( b >> 5 );                                               \
-  a -= b; a -= c; a ^= ( c >> 3 );                                               \
-  b -= c; b -= a; b ^= ( a << 10 );                                              \
-  c -= a; c -= b; c ^= ( b >> 15 );                                              \
+    a -= c; a ^= HMEMORYHASH_JEN_ROT(c,4); c += b;                               \
+    b -= a; b ^= HMEMORYHASH_JEN_ROT(a,6); a += c;                               \
+    c -= b; c ^= HMEMORYHASH_JEN_ROT(b,8); b += a;                               \
+    a -= c; a ^= HMEMORYHASH_JEN_ROT(c,16); c += b;                              \
+    b -= a; b ^= HMEMORYHASH_JEN_ROT(a,19); a += c;                              \
+    c -= b; c ^= HMEMORYHASH_JEN_ROT(b,4); b += a;                               \
 } while (0)
 
+#define HMEMORYHASH_JEN_FINAL(a,b,c)                                             \
+do {                                                                             \
+    c ^= b; c -= HMEMORYHASH_JEN_ROT(b,14);                                      \
+    a ^= c; a -= HMEMORYHASH_JEN_ROT(c,11);                                      \
+    b ^= a; b -= HMEMORYHASH_JEN_ROT(a,25);                                      \
+    c ^= b; c -= HMEMORYHASH_JEN_ROT(b,16);                                      \
+    a ^= c; a -= HMEMORYHASH_JEN_ROT(c,4);                                       \
+    b ^= a; b -= HMEMORYHASH_JEN_ROT(a,14);                                      \
+    c ^= b; c -= HMEMORYHASH_JEN_ROT(b,24);                                      \
+} while (0)
 
 uint64_t hmemoryhash_jenkins(const uint8_t *data,size_t length)
 {
-    uint64_t hashv=0;
-    if(data!=NULL && length > 0)
+    //标准lookup3算法,低32位为标准jenkins(initval=0),高32位为第二个32位结果
+    if(data==NULL)
     {
-        unsigned i=0,j=0,k=0;
-        hashv = 0xfeedbeefu;
-        i = j = 0x9e3779b9u;
-        k = (unsigned)(length);
-        const uint8_t *dataptr=data;
-        while (k >= 12U)
-        {
-            i +=    (dataptr[0] + ( (unsigned)dataptr[1] << 8 ) + ( (unsigned)dataptr[2] << 16 ) + ( (unsigned)dataptr[3] << 24 ) );
-            j +=    (dataptr[4] + ( (unsigned)dataptr[5] << 8 ) + ( (unsigned)dataptr[6] << 16 ) + ( (unsigned)dataptr[7] << 24 ) );
-            hashv += (dataptr[8] + ( (unsigned)dataptr[9] << 8 )+ ( (unsigned)dataptr[10] << 16 )+ ( (unsigned)dataptr[11] << 24 ) );
-            HMEMORYHASH_JEN_MIX(i, j, hashv);
-            dataptr += 12;
-            k -= 12U;
-        }
-        hashv += (unsigned)(length);
-        switch ( k )
-        {
-        case 11:
-        {
-            hashv += ( (unsigned)dataptr[10] << 24 );
-            hashv += ( (unsigned)dataptr[9] << 16 );
-            hashv += ( (unsigned)dataptr[8] << 8 );
-            j += ( (unsigned)dataptr[7] << 24 );
-            j += ( (unsigned)dataptr[6] << 16 );
-            j += ( (unsigned)dataptr[5] << 8 );
-            j += dataptr[4];
-            i += ( (unsigned)dataptr[3] << 24 );
-            i += ( (unsigned)dataptr[2] << 16 );
-            i += ( (unsigned)dataptr[1] << 8 );
-            i += dataptr[0];
-        }
-        break;
-        case 10:
-        {
-            hashv += ( (unsigned)dataptr[9] << 16 );
-            hashv += ( (unsigned)dataptr[8] << 8 );
-            j += ( (unsigned)dataptr[7] << 24 );
-            j += ( (unsigned)dataptr[6] << 16 );
-            j += ( (unsigned)dataptr[5] << 8 );
-            j += dataptr[4];
-            i += ( (unsigned)dataptr[3] << 24 );
-            i += ( (unsigned)dataptr[2] << 16 );
-            i += ( (unsigned)dataptr[1] << 8 );
-            i += dataptr[0];
-        }
-        break;
-        case 9:
-        {
-            hashv += ( (unsigned)dataptr[8] << 8 );
-            j += ( (unsigned)dataptr[7] << 24 );
-            j += ( (unsigned)dataptr[6] << 16 );
-            j += ( (unsigned)dataptr[5] << 8 );
-            j += dataptr[4];
-            i += ( (unsigned)dataptr[3] << 24 );
-            i += ( (unsigned)dataptr[2] << 16 );
-            i += ( (unsigned)dataptr[1] << 8 );
-            i += dataptr[0];
-        }
-        break;
-        case 8:
-        {
-            j += ( (unsigned)dataptr[7] << 24 );
-            j += ( (unsigned)dataptr[6] << 16 );
-            j += ( (unsigned)dataptr[5] << 8 );
-            j += dataptr[4];
-            i += ( (unsigned)dataptr[3] << 24 );
-            i += ( (unsigned)dataptr[2] << 16 );
-            i += ( (unsigned)dataptr[1] << 8 );
-            i += dataptr[0];
-        }
-        break;
-        case 7:
-        {
-            j += ( (unsigned)dataptr[6] << 16 );
-            j += ( (unsigned)dataptr[5] << 8 );
-            j += dataptr[4];
-            i += ( (unsigned)dataptr[3] << 24 );
-            i += ( (unsigned)dataptr[2] << 16 );
-            i += ( (unsigned)dataptr[1] << 8 );
-            i += dataptr[0];
-        }
-        break;
-        case 6:
-        {
-            j += ( (unsigned)dataptr[5] << 8 );
-            j += dataptr[4];
-            i += ( (unsigned)dataptr[3] << 24 );
-            i += ( (unsigned)dataptr[2] << 16 );
-            i += ( (unsigned)dataptr[1] << 8 );
-            i += dataptr[0];
-        }
-        break;
-        case 5:
-        {
-            j += dataptr[4];
-            i += ( (unsigned)dataptr[3] << 24 );
-            i += ( (unsigned)dataptr[2] << 16 );
-            i += ( (unsigned)dataptr[1] << 8 );
-            i += dataptr[0];
-        }
-        break;
-        case 4:
-        {
-            i += ( (unsigned)dataptr[3] << 24 );
-            i += ( (unsigned)dataptr[2] << 16 );
-            i += ( (unsigned)dataptr[1] << 8 );
-            i += dataptr[0];
-        }
-        break;
-        case 3:
-        {
-            i += ( (unsigned)dataptr[2] << 16 );
-            i += ( (unsigned)dataptr[1] << 8 );
-            i += dataptr[0];
-        }
-        break;
-        case 2:
-        {
-            i += ( (unsigned)dataptr[1] << 8 );
-            i += dataptr[0];
-        }
-        break;
-        case 1:
-        {
-            i += dataptr[0];
-        }
-        break;
-        default:
-        {
-
-        }
-        break;
-        }
-        HMEMORYHASH_JEN_MIX(i, j, hashv);
+        length=0;
     }
-    return hashv;
+    uint32_t a=0xdeadbeefU+(uint32_t)length;
+    uint32_t b=a;
+    uint32_t c=a;
+    if(length==0)
+    {
+        return ((uint64_t)b<<32)|c;
+    }
+
+    const uint8_t *data_ptr=data;
+    size_t remaining=length;
+    while(remaining>12)
+    {
+        a+=(uint32_t)data_ptr[0]+((uint32_t)data_ptr[1]<<8)+((uint32_t)data_ptr[2]<<16)+((uint32_t)data_ptr[3]<<24);
+        b+=(uint32_t)data_ptr[4]+((uint32_t)data_ptr[5]<<8)+((uint32_t)data_ptr[6]<<16)+((uint32_t)data_ptr[7]<<24);
+        c+=(uint32_t)data_ptr[8]+((uint32_t)data_ptr[9]<<8)+((uint32_t)data_ptr[10]<<16)+((uint32_t)data_ptr[11]<<24);
+        HMEMORYHASH_JEN_MIX(a,b,c);
+        data_ptr+=12;
+        remaining-=12;
+    }
+
+    for(size_t index=0;index<remaining;index++)
+    {
+        if(index<4)
+        {
+            a+=(uint32_t)data_ptr[index]<<(8*index);
+        }
+        else if(index<8)
+        {
+            b+=(uint32_t)data_ptr[index]<<(8*(index-4));
+        }
+        else
+        {
+            c+=(uint32_t)data_ptr[index]<<(8*(index-8));
+        }
+    }
+
+    HMEMORYHASH_JEN_FINAL(a,b,c);
+    return ((uint64_t)b<<32)|c;
 }
 
 uint64_t hmemoryhash_murmurhash2(const uint8_t *data,size_t length)
 {
+    if(data==NULL)
+    {
+        return 0;
+    }
     uint32_t hashv=length;
     if(data!=NULL && length > 0)
     {
-        while(length > 4)
+        while(length >= 4)
         {
             uint32_t k=data[0]+((uint32_t)data[1] << 8)+((uint32_t)data[2] << 16)+((uint32_t)data[3] << 24);
             k *= 0x5bd1e995;
