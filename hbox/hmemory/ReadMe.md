@@ -63,6 +63,10 @@
 
 本组件主要提供双向(循环)链表。
 
+## hrbtree
+
+本组件主要提供红黑树。
+
 ## hsoftwarevirtualmemory
 
 本组件主要提供软件虚拟内存。

@@ -37,6 +37,11 @@
  */
 #include "hmemory/hdoublylinkedlist.c"
 
+/*
+ * 红黑树
+ */
+#include "hmemory/hrbtree.c"
+
 
 /*
  * 软件虚拟内存

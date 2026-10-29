@@ -3,6 +3,8 @@
 #include <thread>
 #include <functional>
 #include <string>
+#include <random>
+#include <vector>
 #include "hbox.h"
 #include "hrc.h"
 #include "time.h"
@@ -30,6 +32,7 @@ static int hwatchdog_test(int argc,const char *argv[]);
 static int hmemoryheap_test(int argc,const char *argv[]);
 static int hobject_test(int argc,const char *argv[]);
 static int hringbuf_test(int argc,const char *argv[]);
+static int hrbtree_test(int argc,const char *argv[]);
 static int hmemory_test(int argc,const char *argv[]);
 static int hlocale_test(int argc,const char *argv[]);
 static int hruntime_test(int argc,const char *argv[]);
@@ -49,6 +52,7 @@ static int (*test_cb[])(int,const char *[])=
     hmemoryheap_test,
     hobject_test,
     hringbuf_test,
+    hrbtree_test,
     hmemory_test,
     hlocale_test,
     hruntime_test,
@@ -1381,6 +1385,188 @@ static int hringbuf_test(int argc,const char *argv[])
 
 
     }
+    return 0;
+}
+
+static void hrbtree_test_on_find(hrbtree_node_t *node,void *usr)
+{
+    size_t *count=(size_t *)usr;
+    printf("hrbtree_test:find[%d]=%d\r\n",(int)(*count),(int)node->value);
+    (*count)++;
+}
+
+static int hrbtree_test(int argc,const char *argv[])
+{
+    hrbtree_t tree;
+    hrbtree_node_t nodes[10];
+    const uintptr_t values[10]= {5,3,8,3,9,1,3,7,6,3};
+    const size_t node_count=sizeof(nodes)/sizeof(nodes[0]);
+
+    hrbtree_init(&tree);
+    for(size_t i=0; i<node_count; i++)
+    {
+        hrbtree_node_init(&nodes[i],values[i]);
+        hrbtree_attach(&tree,&nodes[i]);
+    }
+
+    {
+        size_t count=0;
+        printf("hrbtree_test:sort=");
+        HRBTREE_FOREACH(&tree,item)
+        {
+            if(count!=0)
+            {
+                printf(",");
+            }
+            printf("%d",(int)item->value);
+            count++;
+        }
+        printf("\r\n");
+        printf("hrbtree_test:count=%d\r\n",(int)count);
+        printf("hrbtree_test:node_count=%d\r\n",(int)hrbtree_node_count(&tree));
+    }
+
+    printf("hrbtree_test:first=%d,last=%d\r\n",(int)hrbtree_first(&tree)->value,(int)hrbtree_last(&tree)->value);
+
+    {
+        size_t count=0;
+        size_t find_count=hrbtree_find(&tree,3,hrbtree_test_on_find,&count);
+        printf("hrbtree_test:find value=3,count=%d,callback_count=%d\r\n",(int)find_count,(int)count);
+    }
+    printf("hrbtree_test:find value=4,count=%d\r\n",(int)hrbtree_find(&tree,4,NULL,NULL));
+
+    {
+        //C++随机数测试,值域与固定数字隔离,便于同时验证固定结果
+        std::random_device random_device;
+        std::mt19937 random_engine(random_device());
+        std::uniform_int_distribution<int> count_distribution(8,32);
+        std::uniform_int_distribution<int> value_distribution(10,19);
+        size_t random_count=(size_t)count_distribution(random_engine);
+        std::vector<hrbtree_node_t> random_nodes(random_count);
+        std::vector<uintptr_t> random_values(random_count);
+        for(size_t i=0; i<random_count; i++)
+        {
+            uintptr_t value=(uintptr_t)value_distribution(random_engine);
+            random_values[i]=value;
+            hrbtree_node_init(&random_nodes[i],value);
+            hrbtree_attach(&tree,&random_nodes[i]);
+        }
+        printf("hrbtree_test:random_count=%d\r\n",(int)random_count);
+
+        {
+            size_t count=0;
+            HRBTREE_FOREACH(&tree,item)
+            {
+                count++;
+            }
+            printf("hrbtree_test:random_total_count=%d,node_count=%d\r\n",(int)count,(int)hrbtree_node_count(&tree));
+        }
+
+        {
+            uintptr_t target=random_values[random_count/2];
+            size_t expected_count=0;
+            for(size_t i=0; i<random_count; i++)
+            {
+                if(random_values[i]==target)
+                {
+                    expected_count++;
+                }
+            }
+            size_t callback_count=0;
+            size_t find_count=hrbtree_find(&tree,target,hrbtree_test_on_find,&callback_count);
+            printf("hrbtree_test:random find value=%d,count=%d,expected=%d,callback_count=%d\r\n",(int)target,(int)find_count,(int)expected_count,(int)callback_count);
+        }
+
+        {
+            bool find_ok=true;
+            for(size_t i=0; i<random_count; i++)
+            {
+                bool value_checked=false;
+                for(size_t j=0; j<i; j++)
+                {
+                    if(random_values[j]==random_values[i])
+                    {
+                        value_checked=true;
+                        break;
+                    }
+                }
+                if(value_checked)
+                {
+                    continue;
+                }
+                size_t expected_count=0;
+                for(size_t j=0; j<random_count; j++)
+                {
+                    if(random_values[j]==random_values[i])
+                    {
+                        expected_count++;
+                    }
+                }
+                size_t find_count=hrbtree_find(&tree,random_values[i],NULL,NULL);
+                if(find_count!=expected_count)
+                {
+                    find_ok=false;
+                    printf("hrbtree_test:random find value=%d expected=%d count=%d\r\n",(int)random_values[i],(int)expected_count,(int)find_count);
+                }
+            }
+            size_t fixed_count=hrbtree_find(&tree,3,NULL,NULL);
+            if(fixed_count!=4)
+            {
+                find_ok=false;
+                printf("hrbtree_test:random find value=3 expected=4 count=%d\r\n",(int)fixed_count);
+            }
+            printf("hrbtree_test:random_find_check=%d\r\n",(int)find_ok);
+        }
+
+        for(size_t i=0; i<random_count; i++)
+        {
+            hrbtree_detach(&tree,&random_nodes[i]);
+        }
+
+        {
+            size_t count=0;
+            HRBTREE_FOREACH(&tree,item)
+            {
+                count++;
+            }
+            printf("hrbtree_test:random_detach_count=%d,node_count=%d\r\n",(int)count,(int)hrbtree_node_count(&tree));
+        }
+    }
+
+    for(size_t i=0; i<node_count; i++)
+    {
+        if(values[i]==3)
+        {
+            hrbtree_detach(&tree,&nodes[i]);
+        }
+    }
+
+    {
+        size_t count=0;
+        printf("hrbtree_test:sort_after_detach=");
+        HRBTREE_FOREACH(&tree,item)
+        {
+            if(count!=0)
+            {
+                printf(",");
+            }
+            printf("%d",(int)item->value);
+            count++;
+        }
+        printf("\r\n");
+        printf("hrbtree_test:count_after_detach=%d\r\n",(int)count);
+    }
+    printf("hrbtree_test:find value=3 after detach,count=%d\r\n",(int)hrbtree_find(&tree,3,NULL,NULL));
+
+    for(size_t i=0; i<node_count; i++)
+    {
+        if(values[i]!=3)
+        {
+            hrbtree_detach(&tree,&nodes[i]);
+        }
+    }
+    printf("hrbtree_test:empty=%d\r\n",(int)hrbtree_is_empty(&tree));
+    printf("hrbtree_test:end\r\n");
     return 0;
 }
 
