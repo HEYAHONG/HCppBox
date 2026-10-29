@@ -39,6 +39,10 @@ MCS-51 公共代码库。
 
 ```
 
+libmono.c的配置宏定义见[libmono_template_config.h](libmono_template_config.h),用户可复制一份配置文件到工程目录以方便进行工程设定。
+
+**注意:由于目前sdcc的垃圾回收不完美，没有gcc垃圾回收相关选项（支持`-ffunction-sections` 与`-fdata-sections`），对于不使用的功能需要单独关闭其实现**
+
 # 组件
 
 ## 基础
