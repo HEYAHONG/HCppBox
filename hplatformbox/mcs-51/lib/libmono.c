@@ -42,21 +42,36 @@
 /*
  * 基础组件(实现文件)
  */
+#ifndef LIBMONO_BASE_CORE_NO_IMPLEMENT
 #include "base/core.c"
+#endif // LIBMONO_BASE_CORE_NO_IMPLEMENT
 
 
 /*
  * 运行时（实现文件）
  */
+#ifndef LIBMONO_RUNTIME_CRITICALSECTION_NO_IMPLEMENT
 #include "runtime/criticalsection.c"
+#endif // LIBMONO_RUNTIME_CRITICALSECTION_NO_IMPLEMENT
+
+#ifndef LIBMONO_RUNTIME_TICK_NO_IMPLEMENT
 #include "runtime/tick.c"
+#endif // LIBMONO_RUNTIME_TICK_NO_IMPLEMENT
+
+#ifndef LIBMONO_RUNTIME_MAINLOOP_NO_IMPLEMENT
 #include "runtime/mainloop.c"
+#endif // LIBMONO_RUNTIME_MAINLOOP_NO_IMPLEMENT
+
+#ifndef LIBMONO_RUNTIME_LIBC_NO_IMPLEMENT
 #include "runtime/libc.c"
+#endif // LIBMONO_RUNTIME_LIBC_NO_IMPLEMENT
 
 /*
  * shell(实现文件)
  */
+#ifndef LIBMONO_SHELL_SHELL_NO_IMPLEMENT
 #include "shell/shell.c"
+#endif // LIBMONO_SHELL_SHELL_NO_IMPLEMENT
 
 /*
  * 恢复之前的选项

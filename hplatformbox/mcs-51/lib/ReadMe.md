@@ -55,6 +55,7 @@ MCS-51 公共代码库。
 | `LIBMONO_REENTRANT_FUNCTION_ATTRIBUTE` | 可重入函数属性 |                                                              |
 | `LIBMONO_BASE_CORE_DISABLE_INTERRUPT`  | 关中断         | 通常用于实现临界区，用户可重新定义此宏定义用于控制libmono库行为 |
 | `LIBMONO_BASE_CORE_ENABLE_INTERRUPT`   | 开中断         | 通常用于实现临界区，用户可重新定义此宏定义用于控制libmono库行为 |
+| `LIBMONO_BASE_CORE_NO_IMPLEMENT`       | 不实现`core`   |                                                              |
 
 ## 运行时
 
@@ -62,17 +63,21 @@ MCS-51 公共代码库。
 
 ### 可外部配置的宏定义
 
-| 宏定义                                     | 说明                     | 备注                                                         |
-| ------------------------------------------ | ------------------------ | ------------------------------------------------------------ |
-| `LIBMONO_RUNTIME_LIBC_NO_GETCHAR`          | 不移植`getchar`          | 若用户不实现`getchar`可能会在某些情况下遇到链接错误          |
-| `GETCHAR`                                  | 用户实现的`getchar`      |                                                              |
-| `LIBMONO_RUNTIME_LIBC_NO_PUTCHAR`          | 不移植`putchar`          | 若用户不实现`putchar`可能会在某些情况下遇到链接错误          |
-| `PUTCHAR`                                  | 用户实现的`putchar`      |                                                              |
-| `LIBMONO_RUNTIME_LIBC_STDIO_SERIAL`        | 使用串口作为标准输入输出 |                                                              |
-| `LIBMONO_RUNTIME_LIBC_NO_TIME`             | 不移植`time`             | 若用户不实现`time`将使用C库的版本                            |
-| `TIME`                                     | 用户实现的`time`         |                                                              |
-| `LIBMONO_RUNTIME_TIMEZONE_OFFSET`          | 时区偏移                 | `UTC时间-当前时区时间`，如北京时间的时区偏移为`-8*3600`      |
-| `LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME` | 任务数组名称             | 定义任务数组时类型采用`libmono_runtime_mainloop_task_context_t * const`且需要以NULL结尾。 |
+| 宏定义                                         | 说明                     | 备注                                                         |
+| ---------------------------------------------- | ------------------------ | ------------------------------------------------------------ |
+| `LIBMONO_RUNTIME_LIBC_NO_GETCHAR`              | 不移植`getchar`          | 若用户不实现`getchar`可能会在某些情况下遇到链接错误          |
+| `GETCHAR`                                      | 用户实现的`getchar`      |                                                              |
+| `LIBMONO_RUNTIME_LIBC_NO_PUTCHAR`              | 不移植`putchar`          | 若用户不实现`putchar`可能会在某些情况下遇到链接错误          |
+| `PUTCHAR`                                      | 用户实现的`putchar`      |                                                              |
+| `LIBMONO_RUNTIME_LIBC_STDIO_SERIAL`            | 使用串口作为标准输入输出 |                                                              |
+| `LIBMONO_RUNTIME_LIBC_NO_TIME`                 | 不移植`time`             | 若用户不实现`time`将使用C库的版本                            |
+| `TIME`                                         | 用户实现的`time`         |                                                              |
+| `LIBMONO_RUNTIME_TIMEZONE_OFFSET`              | 时区偏移                 | `UTC时间-当前时区时间`，如北京时间的时区偏移为`-8*3600`      |
+| `LIBMONO_RUNTIME_MAINLOOP_TASK_ARRAY_NAME`     | 任务数组名称             | 定义任务数组时类型采用`libmono_runtime_mainloop_task_context_t * const`且需要以NULL结尾。 |
+| `LIBMONO_RUNTIME_CRITICALSECTION_NO_IMPLEMENT` | 不实现`criticalsection`  |                                                              |
+| `LIBMONO_RUNTIME_TICK_NO_IMPLEMENT`            | 不实现`tick`             |                                                              |
+| `LIBMONO_RUNTIME_MAINLOOP_NO_IMPLEMENT`        | 不实现`mainloop`         |                                                              |
+| `LIBMONO_RUNTIME_LIBC_NO_IMPLEMENT`            | 不实现`libc`             |                                                              |
 
 ### 主循环
 
@@ -116,10 +121,11 @@ shell可通过`putchar`的移植实现用户交互。
 
 ### 可外部配置的宏定义
 
-| 宏定义                        | 说明          | 备注                                |
-| ----------------------------- | ------------- | ----------------------------------- |
-| `LIBMONO_SHELL_BUFFER_LENGTH` | shell缓冲大小 | 一般不宜过大                        |
-| `LIBMONO_SHELL_COMMAND_LIST`  | shell命令列表 | 具体格式见`libmono_shell_command_t` |
+| 宏定义                             | 说明          | 备注                                |
+| ---------------------------------- | ------------- | ----------------------------------- |
+| `LIBMONO_SHELL_BUFFER_LENGTH`      | shell缓冲大小 | 一般不宜过大                        |
+| `LIBMONO_SHELL_COMMAND_LIST`       | shell命令列表 | 具体格式见`libmono_shell_command_t` |
+| `LIBMONO_SHELL_SHELL_NO_IMPLEMENT` | 不实现`shell` |                                     |
 
 ### 内置命令
 
