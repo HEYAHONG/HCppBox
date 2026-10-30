@@ -22,10 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Install sdcc riscv64-unknown-elf-gcc
+      - name: Install sdcc riscv64-unknown-elf-gcc and gh
         run: >-
           sudo apt-get update &&
-          sudo apt-get install -y -f sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
+          sudo apt-get install -y -f sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf gh
 
       - name: Prepare Zephyr
         run: |
