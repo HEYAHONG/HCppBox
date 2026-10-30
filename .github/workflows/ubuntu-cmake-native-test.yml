@@ -3,9 +3,7 @@ name: ubuntu cmake native test
 
 on:
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+    tags: [testing]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)

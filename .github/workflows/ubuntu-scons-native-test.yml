@@ -3,9 +3,7 @@ name: ubuntu scons native test
 
 on:
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+    tags: [testing]
 
 jobs:
   build:
