@@ -1,0 +1,30 @@
+# This workflow builds and tests the project with SCons natively on Ubuntu.
+name: ubuntu scons native test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install lib
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install -f libopencv-dev libfreetype-dev libwx*dev
+          libx11-dev libxext-dev libxkbcommon-dev libwayland-dev
+          libserialport-dev
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Test scons
+        working-directory: test
+        run: pip install scons && scons

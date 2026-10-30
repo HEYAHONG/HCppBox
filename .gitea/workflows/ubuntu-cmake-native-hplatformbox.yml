@@ -1,0 +1,68 @@
+# This workflow builds the hplatformbox firmware natively on Ubuntu.
+name: ubuntu cmake native hplatformbox test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install sdcc riscv64-unknown-elf-gcc
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install -f sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
+
+      - name: Configure CMake
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only
+        # required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
+        run: >-
+          cmake -B ${{ gitea.workspace }}/build
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} test
+
+      - name: Build
+        # Build your program with the given configuration
+        run: >-
+          cmake --build ${{ gitea.workspace }}/build
+          --config ${{ env.BUILD_TYPE }} -t hplatformbox
+
+      - name: Package hplatformbox
+        # Only publish from pushes to master; pull requests from forks have a
+        # read-only GITEA_TOKEN and cannot upload release assets.
+        if: gitea.event_name == 'push'
+        run: >-
+          tar -C ${{ gitea.workspace }}/build
+          -czf hplatformbox-snapshot.tar.gz hplatformbox
+
+      - name: Upload snapshot to testing release
+        if: gitea.event_name == 'push'
+        env:
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+        run: |
+          set -eu
+          api="${{ gitea.server_url }}/api/v1/repos/${{ gitea.repository }}"
+          asset="hplatformbox-snapshot.tar.gz"
+          auth="Authorization: token $GITEA_TOKEN"
+          release_id=$(curl -fsS -H "$auth" "$api/releases/tags/testing" | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')
+          asset_id=$(curl -fsS -H "$auth" "$api/releases/$release_id/assets" \
+            | python3 -c 'import json,sys
+          name = sys.argv[1]
+          print(next((a["id"] for a in json.load(sys.stdin) if a["name"] == name), ""))' \
+              "$asset")
+          if [ -n "$asset_id" ]; then
+            curl -fsS -X DELETE -H "$auth" "$api/releases/$release_id/assets/$asset_id"
+          fi
+          curl -fsS -X POST -H "$auth" -F "attachment=@$asset" "$api/releases/$release_id/assets?name=$asset"

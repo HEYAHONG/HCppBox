@@ -1,0 +1,181 @@
+# GitLab CI mirror of the GitHub Actions workflows in .github/workflows.
+# Jobs run in the official Ubuntu image (root), so sudo is not needed.
+# The "testing" release assets are stored in the GitLab generic package
+# registry, so a rerun replaces the previous snapshot instead of failing.
+
+stages:
+  - build
+  - release
+
+variables:
+  BUILD_TYPE: Release
+  DEBIAN_FRONTEND: noninteractive
+  GIT_DEPTH: "0"
+  PKG_NAME: hcppbox
+
+default:
+  image: ubuntu:24.04
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "master"'
+
+.base:
+  before_script:
+    - apt-get update
+    - >-
+      apt-get install -y --no-install-recommends
+      ca-certificates curl git python3 build-essential cmake
+
+.libs:
+  before_script:
+    - >-
+      apt-get install -y --no-install-recommends
+      libopencv-dev libfreetype-dev libwx*dev libx11-dev libxext-dev
+      libxkbcommon-dev libwayland-dev libserialport-dev
+
+# ---------------------------------------------------------------------------
+# CMake native (mirror of ubuntu-cmake-native-test.yml)
+# ---------------------------------------------------------------------------
+cmake-native:
+  stage: build
+  before_script:
+    - !reference [.base, before_script]
+    - !reference [.libs, before_script]
+  script:
+    - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE test
+    - cmake --build build --config $BUILD_TYPE
+    - cmake --build build --config $BUILD_TYPE -t htools
+    - ./build/HBoxTest/HBoxTest
+    - ./build/HRCTest/HRCTest
+    - ./build/HCPPObjectTest/HCPPObjectTest
+    - . /etc/os-release
+    - mkdir -p dist
+    - tar -C build -czf "dist/htools-${ID}-${VERSION_ID}-snapshot.tar.gz" htools
+  artifacts:
+    paths:
+      - dist/
+    expire_in: never
+
+# ---------------------------------------------------------------------------
+# CMake i686 (mirror of ubuntu-cmake-i686-test.yml)
+# ---------------------------------------------------------------------------
+cmake-i686:
+  stage: build
+  before_script:
+    - !reference [.base, before_script]
+    - !reference [.libs, before_script]
+    - >-
+      apt-get install -y --no-install-recommends
+      gcc-i686-linux-gnu g++-i686-linux-gnu make ninja-build
+  script:
+    - >-
+      cmake -B build-x86
+      -DCMAKE_TOOLCHAIN_FILE="$CI_PROJECT_DIR/test/cmake/toolchain-i686.cmake"
+      -DCMAKE_BUILD_TYPE=$BUILD_TYPE test
+    - cmake --build build-x86 --config $BUILD_TYPE
+    - ./build-x86/HBoxTest/HBoxTest
+    - ./build-x86/HRCTest/HRCTest
+    - ./build-x86/HCPPObjectTest/HCPPObjectTest
+
+# ---------------------------------------------------------------------------
+# CMake aarch64 (mirror of ubuntu-cmake-aarch64-test.yml)
+# ---------------------------------------------------------------------------
+cmake-aarch64:
+  stage: build
+  variables:
+    LDFLAGS: -static -static-libgcc -static-libstdc++
+  before_script:
+    - !reference [.base, before_script]
+    - !reference [.libs, before_script]
+    - >-
+      apt-get install -y --no-install-recommends
+      gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user
+  script:
+    - >-
+      cmake -B build-aarch64
+      -DCMAKE_TOOLCHAIN_FILE="$CI_PROJECT_DIR/test/cmake/toolchain-aarch64.cmake"
+      -DCMAKE_BUILD_TYPE=$BUILD_TYPE test
+    - cmake --build build-aarch64 --config $BUILD_TYPE
+    - qemu-aarch64 ./build-aarch64/HBoxTest/HBoxTest
+    - qemu-aarch64 ./build-aarch64/HRCTest/HRCTest
+    - qemu-aarch64 ./build-aarch64/HCPPObjectTest/HCPPObjectTest
+
+# ---------------------------------------------------------------------------
+# SCons native (mirror of ubuntu-scons-native-test.yml)
+# ---------------------------------------------------------------------------
+scons-native:
+  stage: build
+  before_script:
+    - !reference [.base, before_script]
+    - !reference [.libs, before_script]
+    - apt-get install -y --no-install-recommends python3-pip
+  script:
+    - pip3 install --break-system-packages scons
+    - cd test && scons
+
+# ---------------------------------------------------------------------------
+# hplatformbox firmware (mirror of ubuntu-cmake-native-hplatformbox.yml)
+# ---------------------------------------------------------------------------
+cmake-native-hplatformbox:
+  stage: build
+  before_script:
+    - !reference [.base, before_script]
+    - >-
+      apt-get install -y --no-install-recommends
+      sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
+  script:
+    - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE test
+    - cmake --build build --config $BUILD_TYPE -t hplatformbox
+    - mkdir -p dist
+    - tar -C build -czf dist/hplatformbox-snapshot.tar.gz hplatformbox
+  artifacts:
+    paths:
+      - dist/
+    expire_in: never
+
+# ---------------------------------------------------------------------------
+# Releases
+# ---------------------------------------------------------------------------
+.release:
+  stage: release
+  before_script:
+    - !reference [.base, before_script]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"'
+  script:
+    - ASSET=$(ls dist/*.tar.gz | head -n 1)
+    - PKG_VERSION=testing
+    - >-
+      PKG_URL="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PKG_NAME/$PKG_VERSION/$ASSET"
+    # 删除同名制品包，实现“覆盖上次的发布文件”
+    - >-
+      pkg_id=$(curl -fsS --header "JOB-TOKEN: $CI_JOB_TOKEN"
+      "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages?package_name=$PKG_NAME&package_version=$PKG_VERSION"
+      | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data[0]["id"] if data else "")')
+    - >-
+      if [ -n "$pkg_id" ]; then
+      curl -fsS --request DELETE --header "JOB-TOKEN: $CI_JOB_TOKEN"
+      "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/$pkg_id"; fi
+    - curl -fsS --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "$ASSET" "$PKG_URL"
+    # 首次创建 testing Release 并挂上制品链接，后续仅覆盖制品内容
+    - >-
+      if ! curl -fsS -o /dev/null --header "JOB-TOKEN: $CI_JOB_TOKEN"
+      "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases/testing"; then
+      curl -fsS --request POST --header "JOB-TOKEN: $CI_JOB_TOKEN"
+      --header "Content-Type: application/json"
+      --data "{\"name\":\"testing\",\"tag_name\":\"testing\",\"ref\":\"$CI_COMMIT_SHA\",\"description\":\"Latest snapshot builds\",\"assets\":{\"links\":[{\"name\":\"$ASSET\",\"url\":\"$PKG_URL\"}]}}"
+      "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases"; fi
+
+release-htools:
+  extends: .release
+  needs:
+    - job: cmake-native
+      artifacts: true
+
+release-hplatformbox:
+  extends: .release
+  variables:
+    PKG_NAME: hplatformbox
+  needs:
+    - job: cmake-native-hplatformbox
+      artifacts: true

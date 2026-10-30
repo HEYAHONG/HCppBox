@@ -1,0 +1,54 @@
+# This workflow cross-compiles and tests the CMake project for i686 on Ubuntu.
+name: ubuntu cmake i686 test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install lib
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install -f libopencv-dev libfreetype-dev libwx*dev
+          libx11-dev libxext-dev libxkbcommon-dev libwayland-dev
+          libserialport-dev
+
+      - name: Install i686 toolchain
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install gcc-i686-linux-gnu g++-i686-linux-gnu
+          build-essential make ninja-build
+
+      - name: Configure CMake(x86)
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only
+        # required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
+        run: >-
+          cmake -B ${{ gitea.workspace }}/build-x86
+          -DCMAKE_TOOLCHAIN_FILE=${{ gitea.workspace }}/test/cmake/toolchain-i686.cmake
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} test
+
+      - name: Build(x86)
+        # Build your program with the given configuration
+        run: >-
+          cmake --build ${{ gitea.workspace }}/build-x86
+          --config ${{ env.BUILD_TYPE }}
+
+      - name: Test
+        working-directory: ${{ gitea.workspace }}/build-x86
+        run: >-
+          ${{ gitea.workspace }}/build-x86/HBoxTest/HBoxTest &&
+          ${{ gitea.workspace }}/build-x86/HRCTest/HRCTest &&
+          ${{ gitea.workspace }}/build-x86/HCPPObjectTest/HCPPObjectTest
