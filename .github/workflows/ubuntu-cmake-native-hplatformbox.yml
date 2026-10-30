@@ -22,6 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Mark workspace as safe for git
+        # The container runs as root while the mounted workspace is owned by the
+        # runner user; git (used by gh and by CMake) refuses such repositories.
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Install sdcc riscv64-unknown-elf-gcc and gh
         run: >-
           sudo apt-get update &&
