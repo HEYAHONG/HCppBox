@@ -23,13 +23,13 @@ default:
   before_script:
     - apt-get update
     - >-
-      apt-get install -y --no-install-recommends
+      apt-get install -y -f --no-install-recommends
       ca-certificates curl git python3 build-essential cmake
 
 .libs:
   before_script:
     - >-
-      apt-get install -y --no-install-recommends
+      apt-get install -y -f --no-install-recommends
       libopencv-dev libfreetype-dev libwx*dev libx11-dev libxext-dev
       libxkbcommon-dev libwayland-dev libserialport-dev
 
@@ -65,7 +65,7 @@ cmake-i686:
     - !reference [.base, before_script]
     - !reference [.libs, before_script]
     - >-
-      apt-get install -y --no-install-recommends
+      apt-get install -y -f --no-install-recommends
       gcc-i686-linux-gnu g++-i686-linux-gnu make ninja-build
   script:
     - >-
@@ -88,7 +88,7 @@ cmake-aarch64:
     - !reference [.base, before_script]
     - !reference [.libs, before_script]
     - >-
-      apt-get install -y --no-install-recommends
+      apt-get install -y -f --no-install-recommends
       gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user
   script:
     - >-
@@ -108,7 +108,7 @@ scons-native:
   before_script:
     - !reference [.base, before_script]
     - !reference [.libs, before_script]
-    - apt-get install -y --no-install-recommends python3-pip
+    - apt-get install -y -f --no-install-recommends python3-pip
   script:
     - pip3 install --break-system-packages scons
     - cd test && scons
@@ -121,7 +121,7 @@ cmake-native-hplatformbox:
   before_script:
     - !reference [.base, before_script]
     - >-
-      apt-get install -y --no-install-recommends
+      apt-get install -y -f --no-install-recommends
       sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
   script:
     - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE test

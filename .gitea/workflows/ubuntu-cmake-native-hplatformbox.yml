@@ -23,7 +23,7 @@ jobs:
       - name: Install sdcc riscv64-unknown-elf-gcc
         run: >-
           sudo apt-get update &&
-          sudo apt-get install -f sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
+          sudo apt-get install -y -f sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only
