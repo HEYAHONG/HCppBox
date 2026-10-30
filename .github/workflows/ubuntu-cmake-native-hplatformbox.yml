@@ -14,6 +14,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v5
@@ -36,3 +38,19 @@ jobs:
         run: >-
           cmake --build ${{ github.workspace }}/build
           --config ${{ env.BUILD_TYPE }} -t hplatformbox
+
+      - name: Package hplatformbox
+        # Only publish from pushes to master; pull requests from forks have a
+        # read-only GITHUB_TOKEN and cannot upload release assets.
+        if: github.event_name == 'push'
+        run: >-
+          tar -C ${{ github.workspace }}/build
+          -czf hplatformbox-snapshot.tar.gz hplatformbox
+
+      - name: Upload snapshot to testing release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          gh release upload testing hplatformbox-snapshot.tar.gz
+          --clobber
