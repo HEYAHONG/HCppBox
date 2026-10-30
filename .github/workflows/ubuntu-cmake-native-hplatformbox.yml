@@ -3,9 +3,7 @@ name: ubuntu cmake native hplatformbox test
 
 on:
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+    tags: [testing]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -14,6 +12,10 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/zephyrproject-rtos/ci:main
+      # The image's default user does not own the runner workspace.
+      options: --user root
     permissions:
       contents: write
 
@@ -25,12 +27,24 @@ jobs:
           sudo apt-get update &&
           sudo apt-get install -f sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
 
+      - name: Prepare Zephyr
+        run: |
+          # Only the RISC-V toolchain from the image is used, so fetch just the
+          # Zephyr sources (no west modules) to keep the workspace small.
+          git clone --depth 1 --branch main \
+            https://github.com/zephyrproject-rtos/zephyr /opt/zephyrproject/zephyr
+          cd /opt/zephyrproject/zephyr
+          west init -l .
+          west zephyr-export
+          echo "ZEPHYR_BASE=/opt/zephyrproject/zephyr" >> "$GITHUB_ENV"
+
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only
         # required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
         run: >-
           cmake -B ${{ github.workspace }}/build
+          -DBUILD_HPLATFORMBOX_RISCV_SIM_ZEPHYR=ON
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} test
 
       - name: Build
