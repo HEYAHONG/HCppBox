@@ -36,6 +36,9 @@ jobs:
           cd /opt/zephyrproject/zephyr
           west init -l .
           west zephyr-export
+          # The image registers its Zephyr SDK CMake package for the default
+          # user only, so point CMake at the SDK explicitly when running as root.
+          echo "ZEPHYR_SDK_INSTALL_DIR=$(ls -d /opt/toolchains/zephyr-sdk-* | head -n 1)" >> "$GITHUB_ENV"
           echo "ZEPHYR_BASE=/opt/zephyrproject/zephyr" >> "$GITHUB_ENV"
 
       - name: Configure CMake
