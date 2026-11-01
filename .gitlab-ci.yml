@@ -158,7 +158,9 @@ cmake-native-hplatformbox:
       if [ -n "$pkg_id" ]; then
       curl -fsS --request DELETE --header "JOB-TOKEN: $CI_JOB_TOKEN"
       "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/$pkg_id"; fi
-    - curl -fsS --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "$ASSET" "$PKG_URL"
+    - >-
+      curl -fsS --header "JOB-TOKEN: $CI_JOB_TOKEN"
+      --upload-file "$ASSET" "$PKG_URL"
     # 首次创建 testing Release 并挂上制品链接，后续仅覆盖制品内容
     - >-
       if ! curl -fsS -o /dev/null --header "JOB-TOKEN: $CI_JOB_TOKEN"
