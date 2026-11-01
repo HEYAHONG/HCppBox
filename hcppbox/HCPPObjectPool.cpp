@@ -113,8 +113,13 @@ void HCPPObjectPool_Enum(std::function<void(std::string,HCPPObject *)> on_enum)
     {
         return;
     }
-    std::lock_guard<std::mutex> lock( HCPPObjectPoolGlobal::HCPPObjectPoolLock);
-    for(std::map<std::string,HCPPObject *>::iterator it= HCPPObjectPoolGlobal::HCPPObjectPool.begin(); it!= HCPPObjectPoolGlobal::HCPPObjectPool.end(); it++)
+    //在锁内复制，锁外调用回调，避免回调中删除对象或操作对象池导致自死锁
+    std::map<std::string,HCPPObject *> snapshot;
+    {
+        std::lock_guard<std::mutex> lock( HCPPObjectPoolGlobal::HCPPObjectPoolLock);
+        snapshot= HCPPObjectPoolGlobal::HCPPObjectPool;
+    }
+    for(std::map<std::string,HCPPObject *>::iterator it=snapshot.begin(); it!=snapshot.end(); it++)
     {
         on_enum(it->first,it->second);
     }

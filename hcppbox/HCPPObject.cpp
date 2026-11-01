@@ -11,6 +11,7 @@
 
 #include "HCPPObject.h"
 #include <map>
+#include <set>
 #include <mutex>
 #include <algorithm>
 
@@ -118,8 +119,9 @@ HCPPObject::HCPPObject(HCPPObject &&other):m_parent(other.m_parent),m_lock(new s
     }
 
     {
-        std::lock_guard<std::recursive_mutex> lock(*m_lock);
-        std::lock_guard<std::recursive_mutex> lock_other(*other.m_lock);
+        std::lock(*m_lock,*other.m_lock);
+        std::lock_guard<std::recursive_mutex> lock(*m_lock,std::adopt_lock);
+        std::lock_guard<std::recursive_mutex> lock_other(*other.m_lock,std::adopt_lock);
         auto m_child_list_copy=other.m_child_list;//由于过程中会修改m_child_list，故使用副本进行遍历
         for(std::list<HCPPObject*>::iterator it=m_child_list_copy.begin(); it!=m_child_list_copy.end(); it++)
         {
@@ -162,8 +164,9 @@ HCPPObject & HCPPObject::operator =(HCPPObject &&other)
     SetParent(other.m_parent,true);
 
     {
-        std::lock_guard<std::recursive_mutex> lock(*m_lock);
-        std::lock_guard<std::recursive_mutex> lock_other(*other.m_lock);
+        std::lock(*m_lock,*other.m_lock);
+        std::lock_guard<std::recursive_mutex> lock(*m_lock,std::adopt_lock);
+        std::lock_guard<std::recursive_mutex> lock_other(*other.m_lock,std::adopt_lock);
         auto m_child_list_copy=other.m_child_list;//由于过程中会修改m_child_list，故使用副本进行遍历
         for(std::list<HCPPObject*>::iterator it=m_child_list_copy.begin(); it!=m_child_list_copy.end(); it++)
         {
@@ -235,19 +238,18 @@ HCPPObject *HCPPObject::GetParent()
 
 HCPPObject *HCPPObject::GetTopHCPPObject()
 {
-    HCPPObject *ret=m_parent;
-    if(ret!=NULL)
+    std::set<HCPPObject *> visited;
+    HCPPObject *ret=this;
+    HCPPObject *p=m_parent;
+    while(p!=NULL)
     {
-        HCPPObject *next_parent=ret->m_parent;
-        while(next_parent!=NULL)
+        if(!visited.insert(p).second)
         {
-            ret=next_parent;
-            next_parent=ret->m_parent;
+            //父子关系成环，返回当前对象，避免无限循环
+            return this;
         }
-    }
-    if(ret==NULL)
-    {
-        ret=this;
+        ret=p;
+        p=p->m_parent;
     }
     return ret;
 }
@@ -258,17 +260,42 @@ bool HCPPObject::SetParent(HCPPObject * parent,bool force_update)
     {
         return false;
     }
-    std::lock_guard<std::recursive_mutex> lock(*m_lock);
-    if(m_parent!=NULL)
+
+    //检查父子关系是否成环，避免GetTopHCPPObject/Run/GC无限循环
+    {
+        std::set<HCPPObject *> ancestors;
+        for(HCPPObject *p=parent; p!=NULL; p=p->m_parent)
+        {
+            if(p==this || !ancestors.insert(p).second)
+            {
+                return false;
+            }
+        }
+    }
+
+    //先在锁外操作父对象，避免同时持有“子对象锁”与“父对象锁”造成锁顺序反转
+    HCPPObject *old_parent=NULL;
+    {
+        std::lock_guard<std::recursive_mutex> lock(*m_lock);
+        if(!force_update && m_parent!=NULL)
+        {
+            return false;
+        }
+        old_parent=m_parent;
+    }
+    if(old_parent!=NULL)
     {
         //从原有父对象删除
-        m_parent->RemoveFromChildList(this);
+        old_parent->RemoveFromChildList(this);
     }
-    m_parent=parent;
-    if(m_parent!=NULL)
+    {
+        std::lock_guard<std::recursive_mutex> lock(*m_lock);
+        m_parent=parent;
+    }
+    if(parent!=NULL)
     {
         //添加到新父对象
-        m_parent->AddToChildList(this);
+        parent->AddToChildList(this);
     }
     return true;
 }
@@ -284,7 +311,8 @@ void HCPPObject::EnumChild(std::function<void(const HCPPObject * const)> OnEnum)
     }
     {
         std::lock_guard<std::recursive_mutex> lock(*m_lock);
-        for(std::list<HCPPObject*>::iterator it=m_child_list.begin(); it!=m_child_list.end(); it++)
+        std::list<HCPPObject*> children=m_child_list;//使用副本，避免回调中删除子对象导致迭代器失效
+        for(std::list<HCPPObject*>::iterator it=children.begin(); it!=children.end(); it++)
         {
             HCPPObject *child=(*it);
             if(child!=NULL)
@@ -431,6 +459,12 @@ void HCPPObject::Run()
     }
 
     std::lock_guard<std::recursive_mutex> lock(*m_lock);
+    if(HasFlag(HCPPOBJECT_FLAG_RUNNING))
+    {
+        //防止Run重入导致无限递归
+        return;
+    }
+    SetFlag(HCPPOBJECT_FLAG_RUNNING);
     if(!HasFlag(HCPPOBJECT_FLAG_RUN_INIT))
     {
         //执行初始化
@@ -454,5 +488,6 @@ void HCPPObject::Run()
         }
                  );
     }
+    ClearFlag(HCPPOBJECT_FLAG_RUNNING);
 }
 

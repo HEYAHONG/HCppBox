@@ -226,6 +226,7 @@ public:
         HCPPOBJECT_FLAG_TO_BE_DELETED,//准备被删除，当此标志位被被置位时，父对象（或其它对象）不应该使用此类的资源,在合适的时机将删除此对象。
         HCPPOBJECT_FLAG_RUNABLE,//对象是否可执行,当无此标志时，调用Run成员函数将无效果，当此标志被置位时，将执行内部操作，如InvokeInit与InvokeUpdate
         HCPPOBJECT_FLAG_RUN_INIT,//对象是否已执行INIT,若置位表示已执行INIT(不再执行InvokeInit函数)
+        HCPPOBJECT_FLAG_RUNNING,//对象是否正在执行Run,用于防止Run重入导致无限递归
         HCPPOBJECT_FLAG_END,//结束,无其它作用,其余标志需在此标志之前
     } Flag;/**<  标志位*/
 
