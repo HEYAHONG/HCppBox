@@ -21,15 +21,11 @@ jobs:
           libx11-dev libxext-dev libxkbcommon-dev libwayland-dev
           libserialport-dev
 
-      - name: Install cmake build-essential
+      - name: Install cmake build-essential scons
         run: >-
           sudo apt-get update &&
-          sudo apt-get install -y -f cmake build-essential
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'
+          sudo apt-get install -y -f cmake build-essential scons
 
       - name: Test scons
         working-directory: test
-        run: pip install scons && scons
+        run: scons
