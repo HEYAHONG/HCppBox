@@ -15,6 +15,15 @@ endif()
 
 project(test C CXX ASM)
 
+# 交叉编译时不使用 pkg-config 查找软件包：置空 PKG_CONFIG_EXECUTABLE 后，
+# FindPkgConfig 不会搜索宿主机上的 pkg-config，pkg_check_modules() 均返回
+# 未找到，避免把宿主机（native）的库误用于交叉编译目标。
+if(CMAKE_CROSSCOMPILING)
+    set(PKG_CONFIG_EXECUTABLE "" CACHE FILEPATH
+        "pkg-config is disabled when cross compiling" FORCE)
+    message(STATUS "Cross compiling: pkg-config is disabled")
+endif()
+
 add_compile_definitions(-DHRUNTIME_USING_SYMBOL_TABLE=1 )
 
 #设定HRC文件系统目录为fs
