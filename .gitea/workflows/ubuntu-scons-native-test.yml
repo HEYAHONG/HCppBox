@@ -21,6 +21,11 @@ jobs:
           libx11-dev libxext-dev libxkbcommon-dev libwayland-dev
           libserialport-dev
 
+      - name: Install cmake build-essential
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install -y -f cmake build-essential
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9'

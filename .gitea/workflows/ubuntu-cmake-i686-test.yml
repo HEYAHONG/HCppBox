@@ -25,6 +25,11 @@ jobs:
           libx11-dev libxext-dev libxkbcommon-dev libwayland-dev
           libserialport-dev
 
+      - name: Install cmake build-essential
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install -y -f cmake build-essential
+
       - name: Install i686 toolchain
         run: >-
           sudo apt-get update &&
