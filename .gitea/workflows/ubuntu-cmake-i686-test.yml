@@ -33,7 +33,7 @@ jobs:
       - name: Install i686 toolchain
         run: >-
           sudo apt-get update &&
-          sudo apt-get install -y -f gcc-i686-linux-gnu g++-i686-linux-gnu
+          sudo apt-get install -y -f gcc-i686-linux-gnu g++-i686-linux-gnu qemu-user
           build-essential make ninja-build
 
       - name: Configure CMake(x86)
@@ -54,6 +54,6 @@ jobs:
       - name: Test
         working-directory: ${{ gitea.workspace }}/build-x86
         run: >-
-          ${{ gitea.workspace }}/build-x86/HBoxTest/HBoxTest &&
-          ${{ gitea.workspace }}/build-x86/HRCTest/HRCTest &&
-          ${{ gitea.workspace }}/build-x86/HCPPObjectTest/HCPPObjectTest
+          qemu-i386 ${{ gitea.workspace }}/build-x86/HBoxTest/HBoxTest &&
+          qemu-i386 ${{ gitea.workspace }}/build-x86/HRCTest/HRCTest &&
+          qemu-i386 ${{ gitea.workspace }}/build-x86/HCPPObjectTest/HCPPObjectTest
