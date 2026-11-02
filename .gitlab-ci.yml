@@ -63,21 +63,23 @@ cmake-native:
 # ---------------------------------------------------------------------------
 cmake-i686:
   stage: build
+  variables:
+    LDFLAGS: -static -static-libgcc -static-libstdc++
   before_script:
     - !reference [.base, before_script]
     - !reference [.libs, before_script]
     - >-
       apt-get install -y -f --no-install-recommends
-      gcc-i686-linux-gnu g++-i686-linux-gnu make ninja-build
+      gcc-i686-linux-gnu g++-i686-linux-gnu make ninja-build qemu-user
   script:
     - >-
       cmake -B build-x86
       -DCMAKE_TOOLCHAIN_FILE="$CI_PROJECT_DIR/test/cmake/toolchain-i686.cmake"
       -DCMAKE_BUILD_TYPE=$BUILD_TYPE test
     - cmake --build build-x86 --config $BUILD_TYPE
-    - ./build-x86/HBoxTest/HBoxTest
-    - ./build-x86/HRCTest/HRCTest
-    - ./build-x86/HCPPObjectTest/HCPPObjectTest
+    - qemu-i386 ./build-x86/HBoxTest/HBoxTest
+    - qemu-i386 ./build-x86/HRCTest/HRCTest
+    - qemu-i386 ./build-x86/HCPPObjectTest/HCPPObjectTest
 
 # ---------------------------------------------------------------------------
 # CMake aarch64 (mirror of ubuntu-cmake-aarch64-test.yml)
