@@ -147,30 +147,50 @@ cmake-native-hplatformbox:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"'
   script:
-    - ASSET=$(ls dist/*.tar.gz | head -n 1)
-    - PKG_VERSION=testing
-    - >-
-      PKG_URL="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PKG_NAME/$PKG_VERSION/$ASSET"
-    # 删除同名制品包，实现“覆盖上次的发布文件”
-    - >-
-      pkg_id=$(curl -fsS --header "JOB-TOKEN: $CI_JOB_TOKEN"
-      "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages?package_name=$PKG_NAME&package_version=$PKG_VERSION"
-      | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data[0]["id"] if data else "")')
-    - >-
-      if [ -n "$pkg_id" ]; then
-      curl -fsS --request DELETE --header "JOB-TOKEN: $CI_JOB_TOKEN"
-      "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/$pkg_id"; fi
-    - >-
-      curl -fsS --header "JOB-TOKEN: $CI_JOB_TOKEN"
-      --upload-file "$ASSET" "$PKG_URL"
-    # 首次创建 testing Release 并挂上制品链接，后续仅覆盖制品内容
-    - >-
-      if ! curl -fsS -o /dev/null --header "JOB-TOKEN: $CI_JOB_TOKEN"
-      "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases/testing"; then
-      curl -fsS --request POST --header "JOB-TOKEN: $CI_JOB_TOKEN"
-      --header "Content-Type: application/json"
-      --data "{\"name\":\"testing\",\"tag_name\":\"testing\",\"ref\":\"$CI_COMMIT_SHA\",\"description\":\"Latest snapshot builds\",\"assets\":{\"links\":[{\"name\":\"$ASSET\",\"url\":\"$PKG_URL\"}]}}"
-      "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases"; fi
+    - |
+      set -eu
+      # 只把文件名用于制品 URL，避免把 dist/ 目录带进包注册表和 Release 链接。
+      ASSET_PATH=$(ls dist/*.tar.gz 2>/dev/null | head -n 1)
+      if [ -z "$ASSET_PATH" ]; then
+        echo "dist/ 中没有可发布的制品文件" >&2
+        exit 1
+      fi
+      ASSET_NAME=$(basename "$ASSET_PATH")
+      PKG_VERSION=testing
+      API="$CI_API_V4_URL/projects/$CI_PROJECT_ID"
+      AUTH="JOB-TOKEN: $CI_JOB_TOKEN"
+      PKG_URL="$API/packages/generic/$PKG_NAME/$PKG_VERSION/$ASSET_NAME"
+
+      # 删除同名制品包（连同其中的旧文件），实现“覆盖上次的发布文件”。
+      pkg_ids=$(curl -fsS --header "$AUTH" \
+          "$API/packages?package_name=$PKG_NAME&package_version=$PKG_VERSION" \
+          | python3 -c 'import json,sys; print(" ".join(str(p["id"]) for p in json.load(sys.stdin)))')
+      for pkg_id in $pkg_ids; do
+        curl -fsS --request DELETE --header "$AUTH" "$API/packages/$pkg_id"
+      done
+
+      # 上传新的制品文件到通用包注册表。
+      curl -fsS --header "$AUTH" --upload-file "$ASSET_PATH" "$PKG_URL"
+
+      # 确保 testing Release 存在；已存在时（或并发创建冲突时）直接复用。
+      if ! curl -fsS -o /dev/null --header "$AUTH" "$API/releases/testing"; then
+        curl -fsS --request POST --header "$AUTH" \
+          --header "Content-Type: application/json" \
+          --data "{\"name\":\"testing\",\"tag_name\":\"testing\",\"ref\":\"$CI_COMMIT_SHA\",\"description\":\"Latest snapshot builds\"}" \
+          "$API/releases" || true
+      fi
+
+      # 无论 Release 是否已存在，都删除同名旧链接后重新创建，保证页面上有文件。
+      link_id=$(curl -fsS --header "$AUTH" "$API/releases/testing/assets/links" \
+        | python3 -c 'import json,sys; name=sys.argv[1]; print(next((str(l["id"]) for l in json.load(sys.stdin) if l["name"] == name), ""))' \
+            "$ASSET_NAME")
+      if [ -n "$link_id" ]; then
+        curl -fsS --request DELETE --header "$AUTH" "$API/releases/testing/assets/links/$link_id"
+      fi
+      curl -fsS --request POST --header "$AUTH" \
+        --header "Content-Type: application/json" \
+        --data "{\"name\":\"$ASSET_NAME\",\"url\":\"$PKG_URL\",\"link_type\":\"package\"}" \
+        "$API/releases/testing/assets/links"
 
 release-htools:
   extends: .release
