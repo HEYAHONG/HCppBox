@@ -36,6 +36,8 @@ jobs:
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
         # CMAKE_INSTALL_PREFIX is redirected into the build tree so that the
         # install step does not need write access to /usr/local.
+        env:
+          LDFLAGS: -static -static-libgcc -static-libstdc++
         run: >-
           cmake -B ${{ github.workspace }}/build-mingw-x86_64
           -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/test/cmake/toolchain-x86_64-mingw.cmake

@@ -86,6 +86,8 @@ cmake-i686:
 # ---------------------------------------------------------------------------
 cmake-i686-mingw:
   stage: build
+  variables:
+    LDFLAGS: -static -static-libgcc -static-libstdc++
   before_script:
     - !reference [.base, before_script]
     - >-
@@ -111,6 +113,8 @@ cmake-i686-mingw:
 # ---------------------------------------------------------------------------
 cmake-x86_64-mingw:
   stage: build
+  variables:
+    LDFLAGS: -static -static-libgcc -static-libstdc++
   before_script:
     - !reference [.base, before_script]
     - >-
