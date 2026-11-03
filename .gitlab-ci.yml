@@ -82,6 +82,56 @@ cmake-i686:
     - qemu-i386 ./build-x86/HCPPObjectTest/HCPPObjectTest
 
 # ---------------------------------------------------------------------------
+# CMake i686 MinGW-w64 (mirror of ubuntu-cmake-i686-mingw-test.yml)
+# ---------------------------------------------------------------------------
+cmake-i686-mingw:
+  stage: build
+  before_script:
+    - !reference [.base, before_script]
+    - >-
+      apt-get install -y -f --no-install-recommends
+      gcc-mingw-w64-i686 g++-mingw-w64-i686 make ninja-build
+  script:
+    - >-
+      cmake -B build-mingw-i686
+      -DCMAKE_TOOLCHAIN_FILE="$CI_PROJECT_DIR/test/cmake/toolchain-i686-mingw.cmake"
+      -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      -DCMAKE_INSTALL_PREFIX="$CI_PROJECT_DIR/build-mingw-i686/install" test
+    - cmake --build build-mingw-i686 --config $BUILD_TYPE
+    - cmake --build build-mingw-i686 --config $BUILD_TYPE --target install
+    - mkdir -p dist
+    - tar -C build-mingw-i686 -czf dist/test-mingw-i686-snapshot.tar.gz test
+  artifacts:
+    paths:
+      - dist/
+    expire_in: never
+
+# ---------------------------------------------------------------------------
+# CMake x86_64 MinGW-w64 (mirror of ubuntu-cmake-x86_64-mingw-test.yml)
+# ---------------------------------------------------------------------------
+cmake-x86_64-mingw:
+  stage: build
+  before_script:
+    - !reference [.base, before_script]
+    - >-
+      apt-get install -y -f --no-install-recommends
+      gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 make ninja-build
+  script:
+    - >-
+      cmake -B build-mingw-x86_64
+      -DCMAKE_TOOLCHAIN_FILE="$CI_PROJECT_DIR/test/cmake/toolchain-x86_64-mingw.cmake"
+      -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      -DCMAKE_INSTALL_PREFIX="$CI_PROJECT_DIR/build-mingw-x86_64/install" test
+    - cmake --build build-mingw-x86_64 --config $BUILD_TYPE
+    - cmake --build build-mingw-x86_64 --config $BUILD_TYPE --target install
+    - mkdir -p dist
+    - tar -C build-mingw-x86_64 -czf dist/test-mingw-x86_64-snapshot.tar.gz test
+  artifacts:
+    paths:
+      - dist/
+    expire_in: never
+
+# ---------------------------------------------------------------------------
 # CMake aarch64 (mirror of ubuntu-cmake-aarch64-test.yml)
 # ---------------------------------------------------------------------------
 cmake-aarch64:
@@ -204,4 +254,20 @@ release-hplatformbox:
     PKG_NAME: hplatformbox
   needs:
     - job: cmake-native-hplatformbox
+      artifacts: true
+
+release-test-mingw-i686:
+  extends: .release
+  variables:
+    PKG_NAME: test-mingw-i686
+  needs:
+    - job: cmake-i686-mingw
+      artifacts: true
+
+release-test-mingw-x86_64:
+  extends: .release
+  variables:
+    PKG_NAME: test-mingw-x86_64
+  needs:
+    - job: cmake-x86_64-mingw
       artifacts: true

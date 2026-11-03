@@ -1,0 +1,71 @@
+# This workflow cross-compiles the CMake project for i686 Windows (MinGW-w64)
+# on Ubuntu. The produced binaries cannot be executed on the runner, so only
+# the build and install steps are verified (no test run).
+name: ubuntu cmake i686 mingw test
+
+on:
+  push:
+    tags: [testing]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install i686 MinGW-w64 toolchain
+        # Cross-compiling for Windows: the host (Linux) -dev packages
+        # (libopencv-dev, libwx*dev, libx11-dev, ...) are not usable for the
+        # Windows target, so only the MinGW-w64 cross toolchain and the build
+        # tools are installed here.
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install -y -f gcc-mingw-w64-i686 g++-mingw-w64-i686
+          build-essential make ninja-build
+
+      - name: Configure CMake(i686 mingw)
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only
+        # required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
+        # CMAKE_INSTALL_PREFIX is redirected into the build tree so that the
+        # install step does not need write access to /usr/local.
+        run: >-
+          cmake -B ${{ github.workspace }}/build-mingw-i686
+          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/test/cmake/toolchain-i686-mingw.cmake
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/build-mingw-i686/install
+          test
+
+      - name: Build(i686 mingw)
+        # Build your program with the given configuration
+        run: >-
+          cmake --build ${{ github.workspace }}/build-mingw-i686
+          --config ${{ env.BUILD_TYPE }}
+
+      - name: Install(i686 mingw)
+        # The test project installs its targets into
+        # ${CMAKE_BINARY_DIR}/test (bin/ and lib/).
+        run: >-
+          cmake --build ${{ github.workspace }}/build-mingw-i686
+          --config ${{ env.BUILD_TYPE }} --target install
+
+      - name: Package test
+        if: github.event_name == 'push'
+        run: >-
+          tar -C ${{ github.workspace }}/build-mingw-i686
+          -czf test-mingw-i686-snapshot.tar.gz test
+
+      - name: Upload snapshot to testing release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          gh release upload testing test-mingw-i686-snapshot.tar.gz
+          --clobber
