@@ -57,6 +57,10 @@
 #endif
 #endif
 
+/*
+ * 默认使用sys/stat.h文件
+ */
+#include "sys/stat.h"
 
 
 /*
