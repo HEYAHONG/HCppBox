@@ -22,7 +22,8 @@ stages:
         name: build_i686
         displayName: CMake i686 构建与测试（Ubuntu latest）
         certificate: ''
-        image: docker.io/library/ubuntu:latest
+        # Gitee Go 访问 Docker Hub 不稳定，使用 DaoCloud 公共镜像加速。
+        image: docker.m.daocloud.io/library/ubuntu:latest
         command:
           - set -e
           - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev gcc-i686-linux-gnu g++-i686-linux-gnu make ninja-build qemu-user

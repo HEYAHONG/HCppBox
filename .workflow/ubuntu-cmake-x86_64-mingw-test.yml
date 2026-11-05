@@ -24,7 +24,8 @@ stages:
         name: build_x86_64_mingw
         displayName: CMake x86_64 MinGW-w64 构建（Ubuntu latest）
         certificate: ''
-        image: docker.io/library/ubuntu:latest
+        # Gitee Go 访问 Docker Hub 不稳定，使用 DaoCloud 公共镜像加速。
+        image: docker.m.daocloud.io/library/ubuntu:latest
         command:
           - set -e
           - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl git jq gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 make ninja-build
