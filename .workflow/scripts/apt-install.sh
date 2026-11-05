@@ -16,4 +16,10 @@ fi
 export DEBIAN_FRONTEND=noninteractive
 
 $SUDO apt-get update
-$SUDO apt-get install -y -f --no-install-recommends "$@"
+if ! $SUDO apt-get install -y -f --no-install-recommends "$@"; then
+    if [ "${APT_OPTIONAL:-0}" = "1" ]; then
+        echo "可选软件包安装失败，已跳过：$*" >&2
+        exit 0
+    fi
+    exit 1
+fi

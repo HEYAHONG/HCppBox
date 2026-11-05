@@ -1,7 +1,7 @@
 # 对应 .gitea/workflows/ubuntu-cmake-native-hplatformbox.yml
 # 在 Gitee Go 的 GCC 构建环境中构建 hplatformbox 固件。
-# Ubuntu 20.04 软件源没有 picolibc-riscv64-unknown-elf 时，
-# hplatformbox/risc-v 会自动回退到 newlib。
+# jammy 的 riscv64-unknown-elf 工具链不带 newlib，必须安装
+# picolibc-riscv64-unknown-elf；代码在可用时也支持 newlib。
 # testing 标签更新时会上传 hplatformbox 快照到 Gitee Release "testing"；需配置 GITEE_TOKEN 流水线变量。
 version: '1.0'
 name: ubuntu-cmake-native-hplatformbox
@@ -26,7 +26,8 @@ stages:
         gccVersion: '10.3'
         commands:
           - set -e
-          - bash .workflow/scripts/apt-install.sh build-essential ca-certificates curl jq sdcc gcc-riscv64-unknown-elf
+          - bash .workflow/scripts/apt-install.sh build-essential ca-certificates curl jq sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
+          - riscv64-unknown-elf-gcc -specs=picolibcpp.specs --version
           - bash .workflow/scripts/bootstrap-cmake.sh
           - cmake -B build -DCMAKE_BUILD_TYPE=Release test
           - cmake --build build --config Release -t hplatformbox

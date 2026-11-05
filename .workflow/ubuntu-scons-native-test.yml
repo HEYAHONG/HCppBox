@@ -24,7 +24,9 @@ stages:
         commands:
           - set -e
           - bash .workflow/scripts/apt-install.sh build-essential scons
-          - (cd test && scons)
+          # SCons 默认不读取 CFLAGS/LINKFLAGS 环境变量，因此通过 PATH 注入编译器包装脚本，
+          # 统一使用非 PIE 编译/链接，避免 PIE 默认配置不一致导致 R_X86_64_32 链接错误。
+          - (cd test && real_cc="$(command -v gcc)" && real_cxx="$(command -v g++)" && REAL_CC="$real_cc" REAL_CXX="$real_cxx" PATH="$PWD/../.workflow/scripts/nopie:$PATH" scons)
         caches: []
         notify: []
         strategy:

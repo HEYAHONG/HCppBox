@@ -25,7 +25,7 @@ stages:
           - set -e
           - bash .workflow/scripts/apt-install.sh build-essential libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev gcc-i686-linux-gnu g++-i686-linux-gnu make ninja-build qemu-user
           - bash .workflow/scripts/bootstrap-cmake.sh
-          - LDFLAGS='-static -static-libgcc -static-libstdc++' cmake -B build-x86 -DCMAKE_TOOLCHAIN_FILE=test/cmake/toolchain-i686.cmake -DCMAKE_BUILD_TYPE=Release test
+          - LDFLAGS='-static -static-libgcc -static-libstdc++' cmake -B build-x86 -DCMAKE_TOOLCHAIN_FILE="$PWD/test/cmake/toolchain-i686.cmake" -DCMAKE_BUILD_TYPE=Release test
           - cmake --build build-x86 --config Release
           - (cd build-x86 && qemu-i386 ./HBoxTest/HBoxTest)
           - (cd build-x86 && qemu-i386 ./HRCTest/HRCTest)

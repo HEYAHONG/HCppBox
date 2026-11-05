@@ -27,7 +27,7 @@ stages:
           - set -e
           - bash .workflow/scripts/apt-install.sh build-essential ca-certificates curl gcc-mingw-w64-i686 g++-mingw-w64-i686 jq make ninja-build
           - bash .workflow/scripts/bootstrap-cmake.sh
-          - LDFLAGS='-static -static-libgcc -static-libstdc++' cmake -B build-mingw-i686 -DCMAKE_TOOLCHAIN_FILE=test/cmake/toolchain-i686-mingw.cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/build-mingw-i686/install" test
+          - LDFLAGS='-static -static-libgcc -static-libstdc++' cmake -B build-mingw-i686 -DCMAKE_TOOLCHAIN_FILE="$PWD/test/cmake/toolchain-i686-mingw.cmake" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/build-mingw-i686/install" test
           - cmake --build build-mingw-i686 --config Release
           - cmake --build build-mingw-i686 --config Release --target install
           - rm -f test-mingw-i686-snapshot.tar.gz && tar -C build-mingw-i686 -czf test-mingw-i686-snapshot.tar.gz test && bash .workflow/scripts/upload-release-asset.sh test-mingw-i686-snapshot.tar.gz

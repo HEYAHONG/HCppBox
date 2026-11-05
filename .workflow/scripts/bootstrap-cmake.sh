@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # 确保 CMake 版本满足项目要求。
 #
-# Gitee Go 的 build@gcc 构建镜像基于 Ubuntu 20.04，自带 CMake 3.16，
-# 低于本项目根 CMakeLists.txt 要求的 3.25。仅在版本不足时添加 Kitware
-# 官方 APT 源安装新版 CMake，避免无必要的第三方依赖。
+# Gitee Go 的 build@gcc 构建镜像当前基于 Ubuntu 22.04(jammy)，自带 CMake
+# 3.22，仍低于本项目根 CMakeLists.txt 要求的 3.25。仅在版本不足时添加
+# Kitware 官方 APT 源安装新版 CMake，避免无必要的第三方依赖。
 set -euo pipefail
 
 required="${CMAKE_MIN_VERSION:-3.25}"
@@ -35,7 +35,7 @@ $SUDO apt-get update
 $SUDO apt-get install -y --no-install-recommends ca-certificates curl gnupg
 
 . /etc/os-release
-codename="${UBUNTU_CODENAME:-${VERSION_CODENAME:-focal}}"
+codename="${UBUNTU_CODENAME:-${VERSION_CODENAME:-jammy}}"
 
 curl -fsSL https://apt.kitware.com/keys/kitware-archive-latest.asc \
     | gpg --dearmor \
