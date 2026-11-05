@@ -1,6 +1,7 @@
 # 对应 .gitea/workflows/ubuntu-cmake-i686-mingw-test.yml
-# 在 Gitee Go 的 GCC 构建环境中交叉编译 i686 Windows(MinGW-w64)。
-# 产物不能在 Linux 构建环境中运行，因此只验证构建和安装。
+# Gitee Go 自带的 build@gcc 环境较旧（Ubuntu 22.04 的 MinGW-w64 不支持
+# std::thread/std::mutex），这里改用 Docker 拉取最新 Ubuntu 镜像交叉编译
+# i686 Windows(MinGW-w64)。产物不能在 Linux 构建环境中运行，因此只验证构建和安装。
 # testing 标签更新时会上传 MinGW i686 快照到 Gitee Release "testing"；需配置 GITEE_TOKEN 流水线变量。
 version: '1.0'
 name: ubuntu-cmake-i686-mingw-test
@@ -19,14 +20,14 @@ stages:
     trigger: auto
     executor: []
     steps:
-      - step: build@gcc
+      - step: execute@docker
         name: build_i686_mingw
-        displayName: CMake i686 MinGW-w64 构建
-        gccVersion: '10.3'
-        commands:
+        displayName: CMake i686 MinGW-w64 构建（Ubuntu latest）
+        certificate: ''
+        image: docker.io/library/ubuntu:latest
+        command:
           - set -e
-          - bash .workflow/scripts/apt-install.sh build-essential ca-certificates curl gcc-mingw-w64-i686 g++-mingw-w64-i686 jq make ninja-build
-          - bash .workflow/scripts/bootstrap-cmake.sh
+          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl git jq gcc-mingw-w64-i686 g++-mingw-w64-i686 make ninja-build
           - LDFLAGS='-static -static-libgcc -static-libstdc++' cmake -B build-mingw-i686 -DCMAKE_TOOLCHAIN_FILE="$PWD/test/cmake/toolchain-i686-mingw.cmake" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/build-mingw-i686/install" test
           - cmake --build build-mingw-i686 --config Release
           - cmake --build build-mingw-i686 --config Release --target install

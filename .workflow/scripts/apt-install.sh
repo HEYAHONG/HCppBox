@@ -13,6 +13,31 @@ else
     SUDO="sudo"
 fi
 
+# 将 Ubuntu APT 源替换为中科大镜像，加速国内构建环境下载。
+# 兼容旧式 /etc/apt/sources.list 与 Ubuntu 24.04+ 的 deb822(ubuntu.sources)。
+ubuntu_mirror="http://mirrors.ustc.edu.cn"
+
+rewrite_ubuntu_mirror() {
+    if [ ! -r /etc/os-release ]; then
+        return 0
+    fi
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    if [ "${ID:-}" != "ubuntu" ]; then
+        return 0
+    fi
+
+    for file in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+        [ -f "$file" ] || continue
+        sed -i -E \
+            -e "s#https?://[^[:space:]]*ubuntu\.com/ubuntu-ports/?#${ubuntu_mirror}/ubuntu-ports/#g" \
+            -e "s#https?://[^[:space:]]*ubuntu\.com/ubuntu/?#${ubuntu_mirror}/ubuntu/#g" \
+            "$file"
+    done
+}
+
+rewrite_ubuntu_mirror
+
 export DEBIAN_FRONTEND=noninteractive
 
 $SUDO apt-get update

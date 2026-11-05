@@ -1,5 +1,6 @@
 # 对应 .gitea/workflows/ubuntu-cmake-native-test.yml
-# 在 Gitee Go 的 GCC 构建环境中本地构建并运行 CMake 测试。
+# Gitee Go 自带的 build@gcc 环境较旧（Ubuntu 22.04），这里改用 Docker
+# 拉取最新 Ubuntu 镜像执行构建，以获得新版 GCC/CMake。
 # testing 标签更新时会上传 htools 快照到 Gitee Release "testing"；需配置 GITEE_TOKEN 流水线变量。
 version: '1.0'
 name: ubuntu-cmake-native-test
@@ -18,14 +19,14 @@ stages:
     trigger: auto
     executor: []
     steps:
-      - step: build@gcc
+      - step: execute@docker
         name: build_native
-        displayName: CMake 本地构建与测试
-        gccVersion: '10.3'
-        commands:
+        displayName: CMake 本地构建与测试（Ubuntu latest）
+        certificate: ''
+        image: docker.io/library/ubuntu:latest
+        command:
           - set -e
-          - bash .workflow/scripts/apt-install.sh build-essential ca-certificates curl jq libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev
-          - bash .workflow/scripts/bootstrap-cmake.sh
+          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl git jq libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev
           - cmake -B build -DCMAKE_BUILD_TYPE=Release test
           - cmake --build build --config Release
           - cmake --build build --config Release -t htools

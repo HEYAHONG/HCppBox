@@ -1,4 +1,0 @@
-#!/bin/sh
-set -eu
-: "${REAL_CC:?REAL_CC 未设置}"
-exec "$(dirname "$0")/cc-wrapper.sh" "$REAL_CC" "$@"
