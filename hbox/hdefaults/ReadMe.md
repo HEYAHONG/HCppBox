@@ -87,10 +87,13 @@
 |   `HDEFAULTS_MUTEX_UNLOCK`   | 默认互斥锁解锁函数(无参数，无返回值)名称宏定义，要求锁支持递归。 | 一般用于嵌入式编程,一般使用临界区实现。对于无操作系统的环境,可采用计数+关中断的方式实现(参考rt-thread)。 |
 |        `HAVE_DLFCN_H`        |                  当前环境有`dlfcn.h`头文件                   | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
 |      `HAVE_SYS_MMAN_H`       |                 当前环境有`sys/mman.h`头文件                 | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
+|      `HAVE_SYS_IOCTL_H`      |                当前环境有`sys/ioctl.h`头文件                 | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
+|      `HAVE_SYS_STAT_H`       |                 当前环境有`sys/stat.h`头文件                 | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
 |       `HAVE_UNISTD_H`        |                  当前环境有`unistd.h`头文件                  | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
 |        `HAVE_FCNTL_H`        |                  当前环境有`fcntl.h`头文件                   | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
 |       `HAVE_THREADS_H`       |                 当前环境有`threads.h`头文件                  | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
 |      `HAVE_STDATOMIC_H`      |                当前环境有`stdatomic.h`头文件                 | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
+|       `HAVE_ENDIAN_H`        |                  当前环境有`endian.h`头文件                  | 使用`CMake`时自动判断，其它构建工具需自行根据实际情况添加。  |
 |          `FREERTOS`          |                    当前环境支持`FreeRTOS`                    | 通常用于外部支持的`FreeRTOS`,使用内置`FreeRTOS`内核(见[h3rdparty](../h3rdparty))时无需定义。启用此定义后，需要在配置头文件中包含`FreeRTOS`头文件（由于某些环境的头文件与官方的不一致，因此需要用户手动实现） |
 |   `HDEFAULTS_ZI_ATTRIBUTE`   |                   定义变量属性(初始化为0)                    |                                                              |
 |   `HDEFAULTS_RW_ATTRIBUTE`   |                  定义变量属性(初始化不为0)                   |                                                              |

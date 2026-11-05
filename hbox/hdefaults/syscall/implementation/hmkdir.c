@@ -39,7 +39,7 @@ HDEFAULTS_USERCALL_DEFINE2(hmkdir,HDEFAULTS_SYSCALL_HMKDIR,int,const char *,path
     ret=HMKDIR(pathname,mode);
 #elif defined(HDEFAULTS_OS_WINDOWS)
     ret=mkdir(pathname);
-#elif (defined(HDEFAULTS_OS_UNIX) || defined(HAVE_UNISTD_H)) && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
+#elif (defined(HDEFAULTS_OS_UNIX) || (defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H))) && (!defined(HDEFAULTS_OS_EMSCRIPTEN))
     ret=mkdir(pathname,mode);
 #elif !defined(HDEFAULTS_SYSCALL_NO_HFILEDESCRIPTOR)
     ret=-1;
