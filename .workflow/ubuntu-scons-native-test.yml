@@ -1,0 +1,31 @@
+# 对应 .gitea/workflows/ubuntu-scons-native-test.yml
+# 在 Gitee Go 的 GCC 构建环境中使用 SCons 本地构建。
+version: '1.0'
+name: ubuntu-scons-native-test
+displayName: ubuntu scons native test
+triggers:
+  trigger: auto
+  # 仅在 testing 标签更新时触发，避免每次 Push/PR 都消耗构建额度。
+  push:
+    tags:
+      precise:
+        - testing
+stages:
+  - name: build
+    displayName: 构建
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: build@gcc
+        name: build_scons
+        displayName: SCons 本地构建
+        gccVersion: '10.3'
+        commands:
+          - set -e
+          - bash .workflow/scripts/apt-install.sh build-essential scons
+          - (cd test && scons)
+        caches: []
+        notify: []
+        strategy:
+          retry: '0'

@@ -1,0 +1,36 @@
+# 对应 .gitea/workflows/ubuntu-cmake-aarch64-test.yml
+# 在 Gitee Go 的 GCC 构建环境中交叉编译 aarch64，并通过 qemu-user 运行测试。
+version: '1.0'
+name: ubuntu-cmake-aarch64-test
+displayName: ubuntu cmake aarch64 test
+triggers:
+  trigger: auto
+  # 仅在 testing 标签更新时触发，避免每次 Push/PR 都消耗构建额度。
+  push:
+    tags:
+      precise:
+        - testing
+stages:
+  - name: build
+    displayName: 构建与测试
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: build@gcc
+        name: build_aarch64
+        displayName: CMake aarch64 构建与测试
+        gccVersion: '10.3'
+        commands:
+          - set -e
+          - bash .workflow/scripts/apt-install.sh build-essential libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user
+          - bash .workflow/scripts/bootstrap-cmake.sh
+          - LDFLAGS='-static -static-libgcc -static-libstdc++' cmake -B build-aarch64 -DCMAKE_TOOLCHAIN_FILE=test/cmake/toolchain-aarch64.cmake -DCMAKE_BUILD_TYPE=Release test
+          - cmake --build build-aarch64 --config Release
+          - (cd build-aarch64 && qemu-aarch64 ./HBoxTest/HBoxTest)
+          - (cd build-aarch64 && qemu-aarch64 ./HRCTest/HRCTest)
+          - (cd build-aarch64 && qemu-aarch64 ./HCPPObjectTest/HCPPObjectTest)
+        caches: []
+        notify: []
+        strategy:
+          retry: '0'

@@ -1,0 +1,36 @@
+# 对应 .gitea/workflows/ubuntu-cmake-i686-test.yml
+# 在 Gitee Go 的 GCC 构建环境中交叉编译 i686，并通过 qemu-user 运行测试。
+version: '1.0'
+name: ubuntu-cmake-i686-test
+displayName: ubuntu cmake i686 test
+triggers:
+  trigger: auto
+  # 仅在 testing 标签更新时触发，避免每次 Push/PR 都消耗构建额度。
+  push:
+    tags:
+      precise:
+        - testing
+stages:
+  - name: build
+    displayName: 构建与测试
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: build@gcc
+        name: build_i686
+        displayName: CMake i686 构建与测试
+        gccVersion: '10.3'
+        commands:
+          - set -e
+          - bash .workflow/scripts/apt-install.sh build-essential libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev gcc-i686-linux-gnu g++-i686-linux-gnu make ninja-build qemu-user
+          - bash .workflow/scripts/bootstrap-cmake.sh
+          - LDFLAGS='-static -static-libgcc -static-libstdc++' cmake -B build-x86 -DCMAKE_TOOLCHAIN_FILE=test/cmake/toolchain-i686.cmake -DCMAKE_BUILD_TYPE=Release test
+          - cmake --build build-x86 --config Release
+          - (cd build-x86 && qemu-i386 ./HBoxTest/HBoxTest)
+          - (cd build-x86 && qemu-i386 ./HRCTest/HRCTest)
+          - (cd build-x86 && qemu-i386 ./HCPPObjectTest/HCPPObjectTest)
+        caches: []
+        notify: []
+        strategy:
+          retry: '0'

@@ -1,0 +1,41 @@
+# 对应 .gitea/workflows/ubuntu-cmake-i686-mingw-test.yml
+# 在 Gitee Go 的 GCC 构建环境中交叉编译 i686 Windows(MinGW-w64)。
+# 产物不能在 Linux 构建环境中运行，因此只验证构建和安装。
+# testing 标签更新时会上传 MinGW i686 快照到 Gitee Release "testing"；需配置 GITEE_TOKEN 流水线变量。
+version: '1.0'
+name: ubuntu-cmake-i686-mingw-test
+displayName: ubuntu cmake i686 mingw test
+triggers:
+  trigger: auto
+  # 仅在 testing 标签更新时触发，避免每次 Push/PR 都消耗构建额度。
+  push:
+    tags:
+      precise:
+        - testing
+stages:
+  - name: build
+    displayName: 构建与安装
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: build@gcc
+        name: build_i686_mingw
+        displayName: CMake i686 MinGW-w64 构建
+        gccVersion: '10.3'
+        commands:
+          - set -e
+          - bash .workflow/scripts/apt-install.sh build-essential ca-certificates curl gcc-mingw-w64-i686 g++-mingw-w64-i686 jq make ninja-build
+          - bash .workflow/scripts/bootstrap-cmake.sh
+          - LDFLAGS='-static -static-libgcc -static-libstdc++' cmake -B build-mingw-i686 -DCMAKE_TOOLCHAIN_FILE=test/cmake/toolchain-i686-mingw.cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/build-mingw-i686/install" test
+          - cmake --build build-mingw-i686 --config Release
+          - cmake --build build-mingw-i686 --config Release --target install
+          - rm -f test-mingw-i686-snapshot.tar.gz && tar -C build-mingw-i686 -czf test-mingw-i686-snapshot.tar.gz test && bash .workflow/scripts/upload-release-asset.sh test-mingw-i686-snapshot.tar.gz
+        artifacts:
+          - name: test-mingw-i686
+            path:
+              - ./build-mingw-i686/test
+        caches: []
+        notify: []
+        strategy:
+          retry: '0'
