@@ -1,7 +1,7 @@
 # 对应 .gitea/workflows/ubuntu-cmake-native-test.yml
 # Gitee Go 自带的 build@gcc 环境较旧（Ubuntu 22.04），这里改用 Docker
 # 拉取最新 Ubuntu 镜像执行构建，以获得新版 GCC/CMake。
-# testing 标签更新时会上传 htools 快照到 Gitee Release "testing"；需配置 GITEE_TOKEN 流水线变量。
+# 发布使用 Gitee 内置的 release@gitee 插件，无需配置 GITEE_TOKEN。
 version: '1.0'
 name: ubuntu-cmake-native-test
 displayName: ubuntu cmake native test
@@ -27,19 +27,40 @@ stages:
         image: docker.m.daocloud.io/library/ubuntu:latest
         command:
           - set -e
-          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl git jq libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev
+          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates git libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev
           - cmake -B build -DCMAKE_BUILD_TYPE=Release test
           - cmake --build build --config Release
           - cmake --build build --config Release -t htools
           - (cd build && ./HBoxTest/HBoxTest)
           - (cd build && ./HRCTest/HRCTest)
           - (cd build && ./HCPPObjectTest/HCPPObjectTest)
-          - . /etc/os-release && rm -f "htools-${ID}-${VERSION_ID}-snapshot.tar.gz" && tar -C build -czf "htools-${ID}-${VERSION_ID}-snapshot.tar.gz" htools && bash .workflow/scripts/upload-release-asset.sh "htools-${ID}-${VERSION_ID}-snapshot.tar.gz"
+          - rm -f htools-snapshot.tar.gz && tar -C build -czf htools-snapshot.tar.gz htools
         artifacts:
-          - name: htools
+          - name: htools-release
             path:
-              - ./build/htools
+              - ./htools-snapshot.tar.gz
         caches: []
+        notify: []
+        strategy:
+          retry: '0'
+  - name: release
+    displayName: 发布
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: release@gitee
+        name: release_htools
+        displayName: 发布 htools 到 Gitee Release
+        releaseName: testing
+        description: .workflow/release-notes.txt
+        tagName: testing
+        upstreamArtifact:
+          - htools-release
+        assertFiles:
+          - ./htools-snapshot.tar.gz
+        prerelease: true
+        allowUpdate: true
         notify: []
         strategy:
           retry: '0'

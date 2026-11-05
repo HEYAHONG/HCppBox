@@ -1,7 +1,7 @@
 # 对应 .gitea/workflows/ubuntu-cmake-native-hplatformbox.yml
 # Gitee Go 自带的 build@gcc 环境较旧（Ubuntu 22.04，RISC-V 工具链不支持
 # zicsr 扩展），这里改用 Docker 拉取最新 Ubuntu 镜像构建 hplatformbox 固件。
-# testing 标签更新时会上传 hplatformbox 快照到 Gitee Release "testing"；需配置 GITEE_TOKEN 流水线变量。
+# 发布使用 Gitee 内置的 release@gitee 插件，无需配置 GITEE_TOKEN。
 version: '1.0'
 name: ubuntu-cmake-native-hplatformbox
 displayName: ubuntu cmake native hplatformbox test
@@ -27,16 +27,37 @@ stages:
         image: docker.m.daocloud.io/library/ubuntu:latest
         command:
           - set -e
-          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl git jq sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
+          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates git sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
           - riscv64-unknown-elf-gcc -specs=picolibcpp.specs --version
           - cmake -B build -DCMAKE_BUILD_TYPE=Release test
           - cmake --build build --config Release -t hplatformbox
-          - rm -f hplatformbox-snapshot.tar.gz && tar -C build -czf hplatformbox-snapshot.tar.gz hplatformbox && bash .workflow/scripts/upload-release-asset.sh hplatformbox-snapshot.tar.gz
+          - rm -f hplatformbox-snapshot.tar.gz && tar -C build -czf hplatformbox-snapshot.tar.gz hplatformbox
         artifacts:
-          - name: hplatformbox
+          - name: hplatformbox-release
             path:
-              - ./build/hplatformbox
+              - ./hplatformbox-snapshot.tar.gz
         caches: []
+        notify: []
+        strategy:
+          retry: '0'
+  - name: release
+    displayName: 发布
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: release@gitee
+        name: release_hplatformbox
+        displayName: 发布 hplatformbox 到 Gitee Release
+        releaseName: testing
+        description: .workflow/release-notes.txt
+        tagName: testing
+        upstreamArtifact:
+          - hplatformbox-release
+        assertFiles:
+          - ./hplatformbox-snapshot.tar.gz
+        prerelease: true
+        allowUpdate: true
         notify: []
         strategy:
           retry: '0'

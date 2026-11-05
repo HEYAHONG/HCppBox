@@ -2,7 +2,7 @@
 # Gitee Go 自带的 build@gcc 环境较旧（Ubuntu 22.04 的 MinGW-w64 不支持
 # std::thread/std::mutex），这里改用 Docker 拉取最新 Ubuntu 镜像交叉编译
 # x86_64 Windows(MinGW-w64)。产物不能在 Linux 构建环境中运行，因此只验证构建和安装。
-# testing 标签更新时会上传 MinGW x86_64 快照到 Gitee Release "testing"；需配置 GITEE_TOKEN 流水线变量。
+# 发布使用 Gitee 内置的 release@gitee 插件，无需配置 GITEE_TOKEN。
 version: '1.0'
 name: ubuntu-cmake-x86_64-mingw-test
 displayName: ubuntu cmake x86_64 mingw test
@@ -28,16 +28,37 @@ stages:
         image: docker.m.daocloud.io/library/ubuntu:latest
         command:
           - set -e
-          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl git jq gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 make ninja-build
+          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates git gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 make ninja-build
           - LDFLAGS='-static -static-libgcc -static-libstdc++' cmake -B build-mingw-x86_64 -DCMAKE_TOOLCHAIN_FILE="$PWD/test/cmake/toolchain-x86_64-mingw.cmake" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/build-mingw-x86_64/install" test
           - cmake --build build-mingw-x86_64 --config Release
           - cmake --build build-mingw-x86_64 --config Release --target install
-          - rm -f test-mingw-x86_64-snapshot.tar.gz && tar -C build-mingw-x86_64 -czf test-mingw-x86_64-snapshot.tar.gz test && bash .workflow/scripts/upload-release-asset.sh test-mingw-x86_64-snapshot.tar.gz
+          - rm -f test-mingw-x86_64-snapshot.tar.gz && tar -C build-mingw-x86_64 -czf test-mingw-x86_64-snapshot.tar.gz test
         artifacts:
-          - name: test-mingw-x86_64
+          - name: test-mingw-x86_64-release
             path:
-              - ./build-mingw-x86_64/test
+              - ./test-mingw-x86_64-snapshot.tar.gz
         caches: []
+        notify: []
+        strategy:
+          retry: '0'
+  - name: release
+    displayName: 发布
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: release@gitee
+        name: release_x86_64_mingw
+        displayName: 发布 MinGW x86_64 到 Gitee Release
+        releaseName: testing
+        description: .workflow/release-notes.txt
+        tagName: testing
+        upstreamArtifact:
+          - test-mingw-x86_64-release
+        assertFiles:
+          - ./test-mingw-x86_64-snapshot.tar.gz
+        prerelease: true
+        allowUpdate: true
         notify: []
         strategy:
           retry: '0'
