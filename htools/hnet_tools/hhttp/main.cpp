@@ -94,20 +94,27 @@ static void show_banner()
     }
 }
 
-
+static hhttp_method_t http_method=HHTTP_METHOD_GET;
+static std::string http_body_buffer;
+static hhttp_string_t http_body=hhttp_string_from_cstring(http_body_buffer.c_str());
 static void check_args(int argc,char *argv[])
 {
     struct arg_lit  * help=NULL;
     struct arg_str  * uri=NULL;
+    struct arg_str  * method=NULL;
+    struct arg_str  * body=NULL;
     void *argtable[]=
     {
         uri=arg_str0(NULL,NULL,NULL,"http uri"),
+        method=arg_str0("X","method","GET","http method"),
+        body=arg_str0("d","data","","http body data"),
         help=arg_lit0("H","help","print this help and exit"),
         arg_end(20)
     };
     if(arg_nullcheck(argtable)!=0)
     {
         hfprintf(stderr,"arg_nullcheck error!\r\n");
+        arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
         hexit(-1);
     }
 
@@ -116,6 +123,7 @@ static void check_args(int argc,char *argv[])
         hfputs("arg_parse error!\r\n",stderr);
         hfputs("Usage:\r\n",stderr);
         arg_print_glossary(stderr,argtable,"  %-30s %s\n");
+        arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
         hexit(-1);
     }
 
@@ -123,6 +131,7 @@ static void check_args(int argc,char *argv[])
     {
         hfputs("Usage:\r\n",stdout);
         arg_print_glossary(stdout,argtable,"  %-30s %s\n");
+        arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
         hexit(-1);
     }
 
@@ -131,6 +140,25 @@ static void check_args(int argc,char *argv[])
     {
         uri_string=uri->sval[0];
     }
+
+    if(body->count > 0)
+    {
+        http_body_buffer=std::string(body->sval[0]);
+        http_body=hhttp_string_from_cstring(http_body_buffer.c_str());
+        http_method=HHTTP_METHOD_POST;
+    }
+
+    if(method->count > 0)
+    {
+        http_method=hhttp_method_from_string(hhttp_string_from_cstring(method->sval[0]));
+        if(http_method==HHTTP_METHOD_UNKNOWN)
+        {
+            hfprintf(stderr,"http method unknown!\r\n");
+            arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
+            hexit(-1);
+        }
+    }
+
 
     arg_freetable(argtable,sizeof(argtable)/sizeof(argtable[0]));
 }
@@ -439,9 +467,7 @@ static int http_main(void)
         /*
          * 发送请求
          */
-        hhttp_method_t method=HHTTP_METHOD_GET;
-        hhttp_string_t body=hhttp_string_from_cstring("");
-        if(!hhttp_client_send_request(&http_client,method,uri_string.c_str(),body))
+        if(!hhttp_client_send_request(&http_client,http_method,uri_string.c_str(),http_body))
         {
             hhttp_client_io_close(&socket_io);
             hfprintf(stderr,"[http] send request error!\r\n");
