@@ -27,15 +27,17 @@ stages:
         image: docker.m.daocloud.io/library/ubuntu:26.04
         command:
           - set -e
-          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates git sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
+          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl git python3 sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
           - riscv64-unknown-elf-gcc -specs=picolibcpp.specs --version
           - cmake -B build -DCMAKE_BUILD_TYPE=Release test
           - cmake --build build --config Release -t hplatformbox
           - rm -f hplatformbox-snapshot.tar.gz && tar -C build -czf hplatformbox-snapshot.tar.gz hplatformbox
+          - bash .workflow/scripts/fetch-release-body.sh release-body.txt
         artifacts:
           - name: hplatformbox-release
             path:
               - ./hplatformbox-snapshot.tar.gz
+              - ./release-body.txt
         caches: []
         notify: []
         strategy:
@@ -50,6 +52,7 @@ stages:
         name: release_hplatformbox
         displayName: 发布 hplatformbox 到 Gitee Release
         releaseName: testing
+        description: release-body.txt
         tagName: testing
         upstreamArtifact:
           - hplatformbox-release

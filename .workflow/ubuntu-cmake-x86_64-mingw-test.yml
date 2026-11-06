@@ -28,15 +28,17 @@ stages:
         image: docker.m.daocloud.io/library/ubuntu:26.04
         command:
           - set -e
-          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates git gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 make ninja-build
+          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl git python3 gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 make ninja-build
           - LDFLAGS='-static -static-libgcc -static-libstdc++' cmake -B build-mingw-x86_64 -DCMAKE_TOOLCHAIN_FILE="$PWD/test/cmake/toolchain-x86_64-mingw.cmake" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/build-mingw-x86_64/install" test
           - cmake --build build-mingw-x86_64 --config Release
           - cmake --build build-mingw-x86_64 --config Release --target install
           - rm -f test-mingw-x86_64-snapshot.tar.gz && tar -C build-mingw-x86_64 -czf test-mingw-x86_64-snapshot.tar.gz test
+          - bash .workflow/scripts/fetch-release-body.sh release-body.txt
         artifacts:
           - name: test-mingw-x86_64-release
             path:
               - ./test-mingw-x86_64-snapshot.tar.gz
+              - ./release-body.txt
         caches: []
         notify: []
         strategy:
@@ -51,6 +53,7 @@ stages:
         name: release_x86_64_mingw
         displayName: 发布 MinGW x86_64 到 Gitee Release
         releaseName: testing
+        description: release-body.txt
         tagName: testing
         upstreamArtifact:
           - test-mingw-x86_64-release

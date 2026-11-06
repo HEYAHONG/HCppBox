@@ -27,7 +27,7 @@ stages:
         image: docker.m.daocloud.io/library/ubuntu:26.04
         command:
           - set -e
-          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates git libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev
+          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl git python3 libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev
           - cmake -B build -DCMAKE_BUILD_TYPE=Release test
           - cmake --build build --config Release
           - cmake --build build --config Release -t htools
@@ -35,10 +35,12 @@ stages:
           - (cd build && ./HRCTest/HRCTest)
           - (cd build && ./HCPPObjectTest/HCPPObjectTest)
           - rm -f htools-ubuntu-26.04-snapshot.tar.gz && tar -C build -czf htools-ubuntu-26.04-snapshot.tar.gz htools
+          - bash .workflow/scripts/fetch-release-body.sh release-body.txt
         artifacts:
           - name: htools-release
             path:
               - ./htools-ubuntu-26.04-snapshot.tar.gz
+              - ./release-body.txt
         caches: []
         notify: []
         strategy:
@@ -53,6 +55,7 @@ stages:
         name: release_htools
         displayName: 发布 htools 到 Gitee Release
         releaseName: testing
+        description: release-body.txt
         tagName: testing
         upstreamArtifact:
           - htools-release

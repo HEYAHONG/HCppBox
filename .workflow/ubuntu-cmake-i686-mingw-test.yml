@@ -28,15 +28,17 @@ stages:
         image: docker.m.daocloud.io/library/ubuntu:26.04
         command:
           - set -e
-          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates git gcc-mingw-w64-i686 g++-mingw-w64-i686 make ninja-build
+          - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl git python3 gcc-mingw-w64-i686 g++-mingw-w64-i686 make ninja-build
           - LDFLAGS='-static -static-libgcc -static-libstdc++' cmake -B build-mingw-i686 -DCMAKE_TOOLCHAIN_FILE="$PWD/test/cmake/toolchain-i686-mingw.cmake" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/build-mingw-i686/install" test
           - cmake --build build-mingw-i686 --config Release
           - cmake --build build-mingw-i686 --config Release --target install
           - rm -f test-mingw-i686-snapshot.tar.gz && tar -C build-mingw-i686 -czf test-mingw-i686-snapshot.tar.gz test
+          - bash .workflow/scripts/fetch-release-body.sh release-body.txt
         artifacts:
           - name: test-mingw-i686-release
             path:
               - ./test-mingw-i686-snapshot.tar.gz
+              - ./release-body.txt
         caches: []
         notify: []
         strategy:
@@ -51,6 +53,7 @@ stages:
         name: release_i686_mingw
         displayName: 发布 MinGW i686 到 Gitee Release
         releaseName: testing
+        description: release-body.txt
         tagName: testing
         upstreamArtifact:
           - test-mingw-i686-release
