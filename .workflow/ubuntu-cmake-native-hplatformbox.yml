@@ -21,10 +21,10 @@ stages:
     steps:
       - step: execute@docker
         name: build_hplatformbox
-        displayName: 构建 hplatformbox（Ubuntu latest）
+        displayName: 构建 hplatformbox（Ubuntu 26.04）
         certificate: ''
         # Gitee Go 访问 Docker Hub 不稳定，使用 DaoCloud 公共镜像加速。
-        image: docker.m.daocloud.io/library/ubuntu:latest
+        image: docker.m.daocloud.io/library/ubuntu:26.04
         command:
           - set -e
           - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates git sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
@@ -50,7 +50,6 @@ stages:
         name: release_hplatformbox
         displayName: 发布 hplatformbox 到 Gitee Release
         releaseName: testing
-        description: .workflow/release-notes.txt
         tagName: testing
         upstreamArtifact:
           - hplatformbox-release

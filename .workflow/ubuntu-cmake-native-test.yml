@@ -21,10 +21,10 @@ stages:
     steps:
       - step: execute@docker
         name: build_native
-        displayName: CMake 本地构建与测试（Ubuntu latest）
+        displayName: CMake 本地构建与测试（Ubuntu 26.04）
         certificate: ''
         # Gitee Go 访问 Docker Hub 不稳定，使用 DaoCloud 公共镜像加速。
-        image: docker.m.daocloud.io/library/ubuntu:latest
+        image: docker.m.daocloud.io/library/ubuntu:26.04
         command:
           - set -e
           - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates git libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev
@@ -34,11 +34,11 @@ stages:
           - (cd build && ./HBoxTest/HBoxTest)
           - (cd build && ./HRCTest/HRCTest)
           - (cd build && ./HCPPObjectTest/HCPPObjectTest)
-          - rm -f htools-snapshot.tar.gz && tar -C build -czf htools-snapshot.tar.gz htools
+          - rm -f htools-ubuntu-26.04-snapshot.tar.gz && tar -C build -czf htools-ubuntu-26.04-snapshot.tar.gz htools
         artifacts:
           - name: htools-release
             path:
-              - ./htools-snapshot.tar.gz
+              - ./htools-ubuntu-26.04-snapshot.tar.gz
         caches: []
         notify: []
         strategy:
@@ -53,12 +53,11 @@ stages:
         name: release_htools
         displayName: 发布 htools 到 Gitee Release
         releaseName: testing
-        description: .workflow/release-notes.txt
         tagName: testing
         upstreamArtifact:
           - htools-release
         assertFiles:
-          - ./htools-snapshot.tar.gz
+          - ./htools-ubuntu-26.04-snapshot.tar.gz
         prerelease: true
         allowUpdate: true
         notify: []

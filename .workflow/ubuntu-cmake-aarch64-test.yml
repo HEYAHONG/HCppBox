@@ -20,10 +20,10 @@ stages:
     steps:
       - step: execute@docker
         name: build_aarch64
-        displayName: CMake aarch64 构建与测试（Ubuntu latest）
+        displayName: CMake aarch64 构建与测试（Ubuntu 26.04）
         certificate: ''
         # Gitee Go 访问 Docker Hub 不稳定，使用 DaoCloud 公共镜像加速。
-        image: docker.m.daocloud.io/library/ubuntu:latest
+        image: docker.m.daocloud.io/library/ubuntu:26.04
         command:
           - set -e
           - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates curl libopencv-dev libfreetype-dev "libwx*dev" libx11-dev libxext-dev libxkbcommon-dev libwayland-dev libserialport-dev gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user
