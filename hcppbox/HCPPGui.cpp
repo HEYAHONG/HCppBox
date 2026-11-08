@@ -812,15 +812,16 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 #ifdef WIN32
 #include <windows.h>
 #endif // WIN32
-//SDL 1.3为SDL2的开发版本(实质为SDL2),其按键值与SDL2一致
+//Emscripten的SDL兼容头文件使用SDL1接口,但是按键值采用SDL2编码
 #if SDL_VERSION_ATLEAST(3,0,0)
 #define HCPPGUI_SDL3 1
-#elif SDL_VERSION_ATLEAST(1,3,0)
+#elif SDL_VERSION_ATLEAST(2,0,0)
 #define HCPPGUI_SDL2 1
 #endif
 hgui_driver &driver=*hgui_driver_default_get();
 static uint32_t sdl_keysym_convert(uint32_t keycode)
 {
+//SDL 1.2的按键值已与HGUI兼容,无需转换;采用SDL2按键编码的实现(如Emscripten)需要转换
 #if SDL_VERSION_ATLEAST(1,3,0)
     uint32_t ret=keycode;
     switch(keycode)
