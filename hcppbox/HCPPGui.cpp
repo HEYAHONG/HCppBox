@@ -386,7 +386,8 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         {
         case VK_RETURN:
         {
-            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_RETURN;
+            //小键盘上的回车键为扩展键
+            key.key_value = (((lParam & 0x01000000) != 0) ? HGUI_GUI_EVENT_KEY_VALUE_KP_ENTER : HGUI_GUI_EVENT_KEY_VALUE_RETURN);
             hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
         }
         break;
@@ -532,6 +533,257 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         {
             //小键盘 /
             key.key_value = HGUI_GUI_EVENT_KEY_VALUE_KP_DIVIDE;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_CANCEL:
+        {
+            //Ctrl+Break
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_BREAK;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_BACK:
+        {
+            //退格键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_BACKSPACE;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_TAB:
+        {
+            //制表键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_TAB;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_CLEAR:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_CLEAR;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_PAUSE:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_PAUSE;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_SPACE:
+        {
+            //空格键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_SPACE;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_SNAPSHOT:
+        {
+            //Print Screen键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_PRINT;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_HELP:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_HELP;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_APPS:
+        {
+            //菜单键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_MENU;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_SLEEP:
+        {
+            //睡眠键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_POWER;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_NUMLOCK:
+        {
+            //数字锁定键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_NUMLOCK;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_CAPITAL:
+        {
+            //大写锁定键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_CAPSLOCK;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_SCROLL:
+        {
+            //滚动锁定键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_SCROLLOCK;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_SHIFT:
+        {
+            //右Shift键的扫描码为0x36
+            key.key_value = ((((lParam >> 16) & 0xFF) == 0x36) ? HGUI_GUI_EVENT_KEY_VALUE_RSHIFT : HGUI_GUI_EVENT_KEY_VALUE_LSHIFT);
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_LSHIFT:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_LSHIFT;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_RSHIFT:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_RSHIFT;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_CONTROL:
+        {
+            //右Ctrl键为扩展键
+            key.key_value = (((lParam & 0x01000000) != 0) ? HGUI_GUI_EVENT_KEY_VALUE_RCTRL : HGUI_GUI_EVENT_KEY_VALUE_LCTRL);
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_LCONTROL:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_LCTRL;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_RCONTROL:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_RCTRL;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_MENU:
+        {
+            //右Alt键为扩展键
+            key.key_value = (((lParam & 0x01000000) != 0) ? HGUI_GUI_EVENT_KEY_VALUE_RALT : HGUI_GUI_EVENT_KEY_VALUE_LALT);
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_LMENU:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_LALT;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_RMENU:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_RALT;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_LWIN:
+        {
+            //左Win键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_LSUPER;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_RWIN:
+        {
+            //右Win键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_RSUPER;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_1:
+        {
+            //;
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_SEMICOLON;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_PLUS:
+        {
+            //=
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_EQUALS;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_COMMA:
+        {
+            //,
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_COMMA;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_MINUS:
+        {
+            //-
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_MINUS;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_PERIOD:
+        {
+            //.
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_PERIOD;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_2:
+        {
+            // /
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_SLASH;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_3:
+        {
+            //`
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_BACKQUOTE;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_4:
+        {
+            //[
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_LEFTBRACKET;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_5:
+        {
+            //\
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_BACKSLASH;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_6:
+        {
+            //]
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_RIGHTBRACKET;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_7:
+        {
+            //'
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_QUOTE;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_OEM_102:
+        {
+            //某些键盘上额外的\键
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_BACKSLASH;
+            hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
+        }
+        break;
+        case VK_F13:
+        case VK_F14:
+        case VK_F15:
+        {
+            key.key_value = HGUI_GUI_EVENT_KEY_VALUE_F1+wParam-VK_F1;
             hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
         }
         break;
