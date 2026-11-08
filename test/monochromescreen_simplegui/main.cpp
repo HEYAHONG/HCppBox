@@ -1643,7 +1643,7 @@ static HMI_ENGINE_RESULT screen_curve_action_processevent(SGUI_SCR_DEV* Interfac
             SGUI_CURVE_POINT* point=SGUI_Curve_FocusedPoint(&screen_curve_object);
             if(NULL != point)
             {
-                if(SGUI_TRUE == SGUI_Curve_RemovePoint(&screen_curve_object,point))
+                if(SGUI_Curve_RemovePoint(&screen_curve_object,point))
                 {
                     screen_curve_release_point(point);
                 }

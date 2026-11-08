@@ -754,6 +754,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         case VK_OEM_5:
         {
             //\
+
             key.key_value = HGUI_GUI_EVENT_KEY_VALUE_BACKSLASH;
             hgui_gui_event_key_emit(&key, hgui_driver_event_input_helper, &driver);
         }
