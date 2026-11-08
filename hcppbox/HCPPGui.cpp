@@ -817,6 +817,8 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 #define HCPPGUI_SDL3 1
 #elif SDL_VERSION_ATLEAST(2,0,0)
 #define HCPPGUI_SDL2 1
+#else
+#define HCPPGUI_SDL1 1
 #endif
 hgui_driver &driver=*hgui_driver_default_get();
 static uint32_t sdl_keysym_convert(uint32_t keycode)
@@ -1451,3 +1453,18 @@ void *HCPPGuiInit(void)
 }
 
 #endif // WIN32
+
+HCPPGuiBackend HCPPGuiBackendType(void)
+{
+#if defined(HCPPGUI_SDL3)
+    return HCPPGUI_BACKEND_SDL3;
+#elif defined(HCPPGUI_SDL2)
+    return HCPPGUI_BACKEND_SDL2;
+#elif defined(HCPPGUI_SDL1)
+    return HCPPGUI_BACKEND_SDL1;
+#elif defined(WIN32)
+    return HCPPGUI_BACKEND_WIN32;
+#else
+    return HCPPGUI_BACKEND_NONE;
+#endif
+}

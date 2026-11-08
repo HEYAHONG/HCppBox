@@ -15,12 +15,31 @@ extern "C"
 {
 #endif // __cplusplus
 
+/** \brief HCPPGui后端类型
+ *
+ */
+typedef enum
+{
+    HCPPGUI_BACKEND_NONE = 0,
+    HCPPGUI_BACKEND_WIN32,
+    HCPPGUI_BACKEND_SDL1,
+    HCPPGUI_BACKEND_SDL2,
+    HCPPGUI_BACKEND_SDL3
+} HCPPGuiBackend;
+
 /** \brief HCPPGui初始化
  *
  * \return void* 不使用此指针
  *
  */
 void *HCPPGuiInit(void);
+
+/** \brief 获取HCPPGui后端类型
+ *
+ * \return HCPPGuiBackend 后端类型
+ *
+ */
+HCPPGuiBackend HCPPGuiBackendType(void);
 
 #ifdef HAVE_SDL
 #ifndef HCPPGUI_HAVE_SDL
