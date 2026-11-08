@@ -16,7 +16,7 @@
 #include "chrono"
 
 
-#if defined(WIN32) && !defined(HAVE_SDL)
+#if defined(WIN32) && !defined(HAVE_SDL) && !defined(HAVE_SDL2) && !defined(HAVE_SDL3)
 hgui_driver &driver=*hgui_driver_default_get();
 #include "windows.h"
 #include "tchar.h"
@@ -802,16 +802,26 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
     return 0;
 }
 
-#elif defined(HAVE_SDL)
+#elif defined(HAVE_SDL) || defined(HAVE_SDL2) || defined(HAVE_SDL3)
+#if defined(HAVE_SDL3)
+#include <SDL3/SDL.h>
+#else
 #include <SDL.h>
 #include <SDL_version.h>
+#endif
 #ifdef WIN32
 #include <windows.h>
 #endif // WIN32
+//SDL 1.3为SDL2的开发版本(实质为SDL2),其按键值与SDL2一致
+#if SDL_VERSION_ATLEAST(3,0,0)
+#define HCPPGUI_SDL3 1
+#elif SDL_VERSION_ATLEAST(1,3,0)
+#define HCPPGUI_SDL2 1
+#endif
 hgui_driver &driver=*hgui_driver_default_get();
 static uint32_t sdl_keysym_convert(uint32_t keycode)
 {
-#if ((SDL_MAJOR_VERSION)>=1) && ((SDL_MINOR_VERSION)>2)
+#if SDL_VERSION_ATLEAST(1,3,0)
     uint32_t ret=keycode;
     switch(keycode)
     {
@@ -877,6 +887,9 @@ static uint32_t sdl_keysym_convert(uint32_t keycode)
     case SDLK_F10:
     case SDLK_F11:
     case SDLK_F12:
+    case SDLK_F13:
+    case SDLK_F14:
+    case SDLK_F15:
     {
         ret=HGUI_GUI_EVENT_KEY_VALUE_F1+keycode-SDLK_F1;
     }
@@ -935,6 +948,122 @@ static uint32_t sdl_keysym_convert(uint32_t keycode)
         ret = HGUI_GUI_EVENT_KEY_VALUE_KP_DIVIDE;
     }
     break;
+    case SDLK_KP_EQUALS:
+    case SDLK_KP_EQUALSAS400:
+    {
+        //小键盘 =
+        ret = HGUI_GUI_EVENT_KEY_VALUE_KP_EQUALS;
+    }
+    break;
+    case SDLK_PAUSE:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_PAUSE;
+    }
+    break;
+    case SDLK_CLEAR:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_CLEAR;
+    }
+    break;
+    case SDLK_PRINTSCREEN:
+    {
+        //Print Screen键
+        ret = HGUI_GUI_EVENT_KEY_VALUE_PRINT;
+    }
+    break;
+    case SDLK_SYSREQ:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_SYSREQ;
+    }
+    break;
+    case SDLK_CANCEL:
+    {
+        //Ctrl+Break
+        ret = HGUI_GUI_EVENT_KEY_VALUE_BREAK;
+    }
+    break;
+    case SDLK_HELP:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_HELP;
+    }
+    break;
+    case SDLK_APPLICATION:
+    case SDLK_MENU:
+    {
+        //菜单键
+        ret = HGUI_GUI_EVENT_KEY_VALUE_MENU;
+    }
+    break;
+    case SDLK_POWER:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_POWER;
+    }
+    break;
+    case SDLK_NUMLOCKCLEAR:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_NUMLOCK;
+    }
+    break;
+    case SDLK_CAPSLOCK:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_CAPSLOCK;
+    }
+    break;
+    case SDLK_SCROLLLOCK:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_SCROLLOCK;
+    }
+    break;
+    case SDLK_LSHIFT:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_LSHIFT;
+    }
+    break;
+    case SDLK_RSHIFT:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_RSHIFT;
+    }
+    break;
+    case SDLK_LCTRL:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_LCTRL;
+    }
+    break;
+    case SDLK_RCTRL:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_RCTRL;
+    }
+    break;
+    case SDLK_LALT:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_LALT;
+    }
+    break;
+    case SDLK_RALT:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_RALT;
+    }
+    break;
+    case SDLK_LGUI:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_LSUPER;
+    }
+    break;
+    case SDLK_RGUI:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_RSUPER;
+    }
+    break;
+    case SDLK_MODE:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_MODE;
+    }
+    break;
+    case SDLK_UNDO:
+    {
+        ret = HGUI_GUI_EVENT_KEY_VALUE_UNDO;
+    }
+    break;
     default:
     {
 
@@ -950,6 +1079,9 @@ static class HCPPGuiDriver
 {
     std::recursive_mutex m_lock;
     SDL_Surface *screen;
+#if defined(HCPPGUI_SDL2) || defined(HCPPGUI_SDL3)
+    SDL_Window *window;
+#endif
 public:
     bool fill_rectangle(hgui_driver_t *driver,size_t x,size_t y,size_t w,size_t h,hgui_pixel_t pixel)
     {
@@ -964,7 +1096,11 @@ public:
                     //每个像素都进行一次转换
                     hgui_pixel_t final_pixel=hgui_pixel_bits_get(pixel,i,j);
                     SDL_Rect fill_rect= {(Sint16)i,(Sint16)j,(Uint16)1,(Uint16)1};
+#if defined(HCPPGUI_SDL3)
+                    SDL_FillSurfaceRect(screen, &fill_rect, final_pixel.pixel_32_bits);
+#else
                     SDL_FillRect(screen, &fill_rect, final_pixel.pixel_32_bits);
+#endif
                 }
             }
             /*
@@ -987,6 +1123,47 @@ public:
     {
         (void)driver;
         std::lock_guard<std::recursive_mutex> lock(m_lock);
+#if defined(HCPPGUI_SDL3)
+        if((SDL_WasInit(SDL_INIT_VIDEO)&SDL_INIT_VIDEO)==0)
+        {
+            if(!SDL_Init(SDL_INIT_VIDEO))
+            {
+                return false;
+            }
+        }
+        if(window==NULL)
+        {
+            window=SDL_CreateWindow("",320,240,0);
+            if(window==NULL)
+            {
+                return false;
+            }
+        }
+        if(screen==NULL)
+        {
+            screen=SDL_GetWindowSurface(window);
+        }
+#elif defined(HCPPGUI_SDL2)
+        if((SDL_WasInit(SDL_INIT_EVERYTHING)&SDL_INIT_VIDEO)==0)
+        {
+            if(SDL_Init(SDL_INIT_EVERYTHING)<0)
+            {
+                return false;
+            }
+        }
+        if(window==NULL)
+        {
+            window=SDL_CreateWindow("",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,320,240,SDL_WINDOW_SHOWN);
+            if(window==NULL)
+            {
+                return false;
+            }
+        }
+        if(screen==NULL)
+        {
+            screen=SDL_GetWindowSurface(window);
+        }
+#else
         if((SDL_WasInit(SDL_INIT_EVERYTHING)&SDL_INIT_VIDEO)==0)
         {
             if(SDL_Init(SDL_INIT_EVERYTHING)<0)
@@ -999,6 +1176,7 @@ public:
             screen=SDL_SetVideoMode(320,240,32,SDL_HWSURFACE);
             SDL_WM_SetCaption("","sdl");
         }
+#endif
 
         if(screen==NULL)
         {
@@ -1054,6 +1232,19 @@ public:
         }
         if(need_resize)
         {
+#if defined(HCPPGUI_SDL2) || defined(HCPPGUI_SDL3)
+            if(window!=NULL)
+            {
+                SDL_SetWindowSize(window,(int)(*w),(int)(*h));
+#if defined(HCPPGUI_SDL3) && SDL_VERSION_ATLEAST(3,2,0)
+                //等待窗口大小变更完成
+                SDL_SyncWindow(window);
+#endif
+                //窗口大小改变后需要重新获取窗口表面
+                screen=SDL_GetWindowSurface(window);
+                ret=true;
+            }
+#else
             if(screen!=NULL)
             {
                 SDL_FreeSurface(screen);
@@ -1062,7 +1253,21 @@ public:
                 SDL_WM_SetCaption("","sdl");
                 ret=true;
             }
+#endif
         }
+
+        if(screen==NULL)
+        {
+            return false;
+        }
+
+#if defined(HCPPGUI_SDL2) || defined(HCPPGUI_SDL3)
+        if(need_resize && (screen->w!=(*w) || screen->h!=(*h)))
+        {
+            //窗口大小变更可能尚未生效,此时返回请求的大小,窗口表面将在update中重新获取
+            return ret;
+        }
+#endif
 
         (*w)=screen->w;
         (*h)=screen->h;
@@ -1089,6 +1294,60 @@ public:
             {
                 switch(event.type)
                 {
+#if defined(HCPPGUI_SDL3)
+                case SDL_EVENT_QUIT:
+                case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+                {
+                    screen=NULL;
+                }
+                break;
+                case SDL_EVENT_WINDOW_RESIZED:
+                case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+                {
+                    if(window!=NULL)
+                    {
+                        screen=SDL_GetWindowSurface(window);
+                    }
+                }
+                break;
+                case SDL_EVENT_KEY_DOWN:
+                case SDL_EVENT_KEY_UP:
+                {
+                    SDL_KeyboardEvent *key = (SDL_KeyboardEvent*)&event;
+                    hgui_gui_event_key_t hkey= {0};
+                    hkey.key_value=sdl_keysym_convert((uint32_t)key->key);
+                    hkey.key_mode=key->mod;
+                    hkey.key_press_or_release=((event.type==SDL_EVENT_KEY_DOWN)?1:0);
+                    hgui_gui_event_key_emit(&hkey,hgui_driver_event_input_helper,driver);
+                }
+                break;
+#elif defined(HCPPGUI_SDL2)
+                case SDL_QUIT:
+                {
+                    screen=NULL;
+                }
+                break;
+                case SDL_WINDOWEVENT:
+                {
+                    if(event.window.event==SDL_WINDOWEVENT_SIZE_CHANGED && window!=NULL)
+                    {
+                        //窗口大小改变后需要重新获取窗口表面
+                        screen=SDL_GetWindowSurface(window);
+                    }
+                }
+                break;
+                case SDL_KEYDOWN:
+                case SDL_KEYUP:
+                {
+                    SDL_KeyboardEvent *key = (SDL_KeyboardEvent*)&event;
+                    hgui_gui_event_key_t hkey= {0};
+                    hkey.key_value=sdl_keysym_convert((uint32_t)key->keysym.sym);
+                    hkey.key_mode=key->keysym.mod;
+                    hkey.key_press_or_release=((event.type==SDL_KEYDOWN)?1:0);
+                    hgui_gui_event_key_emit(&hkey,hgui_driver_event_input_helper,driver);
+                }
+                break;
+#else
                 case SDL_QUIT:
                 {
                     screen=NULL;
@@ -1105,6 +1364,7 @@ public:
                     hgui_gui_event_key_emit(&hkey,hgui_driver_event_input_helper,driver);
                 }
                 break;
+#endif
                 default:
                 {
 
@@ -1116,7 +1376,14 @@ public:
 
         if(screen!=NULL)
         {
+#if defined(HCPPGUI_SDL2) || defined(HCPPGUI_SDL3)
+            if(window!=NULL)
+            {
+                SDL_UpdateWindowSurface(window);
+            }
+#else
             SDL_Flip(screen);
+#endif
         }
 
         return true;
@@ -1132,6 +1399,9 @@ public:
         return obj.is_ok(driver);
     }
     HCPPGuiDriver():screen(NULL)
+#if defined(HCPPGUI_SDL2) || defined(HCPPGUI_SDL3)
+        ,window(NULL)
+#endif
     {
         driver.usr=this;
         driver.fill_rectangle=g_fill_rectangle;
@@ -1139,7 +1409,7 @@ public:
         driver.resize=g_resize;
         driver.is_ok=g_is_ok;
         driver.pixel_mode = g_pixel_mode;
-#ifdef WIN32
+#if defined(WIN32) && !defined(HCPPGUI_SDL2) && !defined(HCPPGUI_SDL3)
 #ifndef __CYGWIN__
         SDL_SetModuleHandle(GetModuleHandle(NULL));
 #endif // __CYGWIN__
@@ -1148,11 +1418,21 @@ public:
     ~HCPPGuiDriver()
     {
         std::lock_guard<std::recursive_mutex> lock(m_lock);
+#if defined(HCPPGUI_SDL2) || defined(HCPPGUI_SDL3)
+        if(window!=NULL)
+        {
+            SDL_DestroyWindow(window);
+            window=NULL;
+        }
+        //窗口表面由SDL管理,无需释放
+        screen=NULL;
+#else
         if(screen!=NULL)
         {
             SDL_FreeSurface(screen);
         }
         screen=NULL;
+#endif
         SDL_Quit();
     }
 } g_HCPPGuiDriver;

@@ -24,7 +24,8 @@
 | 宏定义      | 说明                                          | 备注                  |
 | ----------- | --------------------------------------------- | --------------------- |
 | `HAVE_SDL`  | 为1时表示外部有SDL(1.x)库,某些组件将使用SDL。 | 一般由HCPPGui组件使用 |
-| `HAVE_SDL2` | 为1时表示外部有SDL2库,某些组件将使用SDL2。    |                       |
+| `HAVE_SDL2` | 为1时表示外部有SDL2库,某些组件将使用SDL2。    | 包括SDL 1.3(实质为SDL2) |
+| `HAVE_SDL3` | 为1时表示外部有SDL3库,某些组件将使用SDL3。    |                       |
 
 # CMake变量
 
@@ -115,7 +116,7 @@
 
 此组件主要依赖以下第三方库：
 
-- [SDL](https://libsdl.org/)：用于创建显示窗口，默认使用SDL1,Debian系Linux可使用`sudo apt-get install libsdl-dev`安装sdl1.2库。
+- [SDL](https://libsdl.org/)：用于创建显示窗口，默认使用SDL1（若未找到SDL1,则依次使用SDL2、SDL3）,Debian系Linux可使用`sudo apt-get install libsdl-dev`安装sdl1.2库。
 
 ### 文件列表
 

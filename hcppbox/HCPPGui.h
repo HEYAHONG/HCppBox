@@ -34,8 +34,14 @@ void *HCPPGuiInit(void);
 #endif // HCPPGUI_HAVE_SDL2
 #endif // HAVE_SDL2
 
+#ifdef HAVE_SDL3
+#ifndef HCPPGUI_HAVE_SDL3
+#define HCPPGUI_HAVE_SDL3 1
+#endif // HCPPGUI_HAVE_SDL3
+#endif // HAVE_SDL3
+
 #if defined(HDEFAULTS_OS_WINDOWS) && !defined(HCPPGUI_NO_GUI)
-#if defined(main) && defined(HCPPGUI_HAVE_SDL)
+#if defined(main) && (defined(HCPPGUI_HAVE_SDL) || defined(HCPPGUI_HAVE_SDL2) || defined(HCPPGUI_HAVE_SDL3))
 //windows下,SDL库会重新定义main为SDL_main,在此处取消定义
 #undef main
 #endif // main
