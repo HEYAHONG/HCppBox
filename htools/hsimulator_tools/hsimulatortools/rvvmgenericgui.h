@@ -37,7 +37,10 @@ struct chardev
 
 
 #ifdef __cplusplus
-#include <wx/msgqueue.h>
+#include <atomic>
+#include <mutex>
+#include <string>
+
 class RVVMGenericGui:public rvvmgenericbase
 {
     std::recursive_mutex m_vm_gui_lock;
@@ -58,15 +61,27 @@ private:
     virtual void RunMachine(rvvm_machine_t *machine);
     virtual void StopMachine(rvvm_machine_t *machine);
     rvvm_machine_t * m_running_machine;
+    //虚拟机线程结束时置位，由GUI线程的定时器统一恢复界面状态
+    std::atomic<bool> m_machine_finished;
     struct rvvm_serialport_t
     {
+        rvvm_serialport_t()
+            : dev(), index(0), parent(NULL),
+              InputDataCount(0), Flags(0), NotifyReady(false)
+        {
+        }
+
         rvvm_device_chardev_t dev;
         size_t index;
         RVVMGenericGui *parent;
-        wxMessageQueue<wxString> Output;
-        wxMessageQueue<uint8_t> Input;
+        //串口收发缓冲，避免逐字节使用wxMessageQueue带来的锁开销及GUI线程阻塞
+        std::mutex buffer_mutex;
+        std::string Output;
+        std::string Input;
         std::atomic<size_t> InputDataCount;
         std::atomic<uint32_t> Flags;
+        //UART初始化完成后才允许从输入线程直接触发中断
+        std::atomic<bool> NotifyReady;
     } m_machine_serialport[1];
     virtual void InitMachineSerialport();
     virtual void MachineSerialportLoop();
