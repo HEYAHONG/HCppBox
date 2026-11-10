@@ -368,7 +368,7 @@ void MiniRV32IMAV2GenericGui::OnButtonClick_MiniRV32IMA_Start(wxCommandEvent& ev
     m_finished.store(false);
 
     wxString error;
-    if(!LoadImage(error))
+    if(!LoadImageFile(error))
     {
         wxMessageBox(error,_T("启动失败"),wxOK|wxICON_ERROR,this);
         return;
@@ -433,7 +433,7 @@ void MiniRV32IMAV2GenericGui::StopVM()
     m_running.store(false);
 }
 
-bool MiniRV32IMAV2GenericGui::LoadImage(wxString& error)
+bool MiniRV32IMAV2GenericGui::LoadImageFile(wxString& error)
 {
     std::string image_name=m_filePicker_minirv32ima_image->GetPath().ToStdString();
     if(image_name.empty())

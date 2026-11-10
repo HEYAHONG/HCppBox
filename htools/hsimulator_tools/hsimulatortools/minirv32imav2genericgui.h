@@ -40,7 +40,7 @@ private:
     void OnButtonClick_MiniRV32IMA_Quit(wxCommandEvent& event);
     void OnTimer_MiniRV32IMA_MS_Timer(wxTimerEvent& event);
 
-    bool LoadImage(wxString& error);
+    bool LoadImageFile(wxString& error);
     void RunVM();
     void StopVM();
     void SetRunningUI(bool running);
