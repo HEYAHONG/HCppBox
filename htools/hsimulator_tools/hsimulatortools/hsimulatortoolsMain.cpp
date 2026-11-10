@@ -32,6 +32,8 @@
 #include "guibase.h"
 #include "rvvm/rvvm.h"
 #include "rvvmgenericgui.h"
+#include "mcs51genericgui.h"
+#include "minirv32imav2genericgui.h"
 
 hsimulatortoolsFrame::hsimulatortoolsFrame(wxFrame *frame)
     : mainframe(frame)
@@ -50,6 +52,24 @@ hsimulatortoolsFrame::hsimulatortoolsFrame(wxFrame *frame)
         }
     }
     hcppbox_init();
+
+    /*
+     * 添加HBox内置模拟器菜单
+     */
+    {
+        wxMenu* hboxMenu=new wxMenu();
+        wxMenuItem* mcs51Item=new wxMenuItem(hboxMenu,wxID_ANY,_T("Mini-MCS51"));
+        hboxMenu->Append(mcs51Item);
+
+        wxMenuItem* hboxItem=new wxMenuItem(m_menu_virtualmachine,wxID_ANY,_T("HBox"),wxEmptyString,wxITEM_NORMAL,hboxMenu);
+        m_menu_virtualmachine->Append(hboxItem);
+
+        wxMenuItem* rv32imaItem=new wxMenuItem(m_menu_virtualmachine,wxID_ANY,_T("mini-rv32ima"));
+        m_menu_virtualmachine->Append(rv32imaItem);
+
+        Bind(wxEVT_COMMAND_MENU_SELECTED,wxCommandEventHandler(hsimulatortoolsFrame::OnMenuSelectionHBoxMCS51),this,mcs51Item->GetId());
+        Bind(wxEVT_COMMAND_MENU_SELECTED,wxCommandEventHandler(hsimulatortoolsFrame::OnMenuSelectionMiniRV32IMA),this,rv32imaItem->GetId());
+    }
 
     if(!rvvm_check_abi(RVVM_ABI_VERSION))
     {
@@ -99,5 +119,17 @@ void hsimulatortoolsFrame::OnMenuSelectionRVVMGeneric( wxCommandEvent& event )
 {
     RVVMGenericGui *vm=new RVVMGenericGui(mainauinotebook);
     mainauinotebook->AddPage(vm,_T("RVVM-通用"),true);
+}
+
+void hsimulatortoolsFrame::OnMenuSelectionHBoxMCS51( wxCommandEvent& event )
+{
+    MCS51GenericGui *vm=new MCS51GenericGui(mainauinotebook);
+    mainauinotebook->AddPage(vm,_T("Mini-MCS51"),true);
+}
+
+void hsimulatortoolsFrame::OnMenuSelectionMiniRV32IMA( wxCommandEvent& event )
+{
+    MiniRV32IMAV2GenericGui *vm=new MiniRV32IMAV2GenericGui(mainauinotebook);
+    mainauinotebook->AddPage(vm,_T("mini-rv32ima"),true);
 }
 

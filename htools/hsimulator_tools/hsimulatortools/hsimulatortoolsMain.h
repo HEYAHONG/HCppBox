@@ -24,6 +24,8 @@ public:
 protected:
     virtual void OnMSTimer( wxTimerEvent& event );
     virtual void OnMenuSelectionRVVMGeneric( wxCommandEvent& event );
+    virtual void OnMenuSelectionHBoxMCS51( wxCommandEvent& event );
+    virtual void OnMenuSelectionMiniRV32IMA( wxCommandEvent& event );
 private:
     virtual void OnClose(wxCloseEvent& event);
     virtual void OnQuit(wxCommandEvent& event);
