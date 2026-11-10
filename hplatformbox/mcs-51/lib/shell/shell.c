@@ -341,7 +341,11 @@ void libmono_shell_process(int ch) LIBMONO_FUNCTION_ATTRIBUTE
         {
             if(libmono_shell_flags.echo_enable!=0)
             {
-                putchar(ch);
+                /*
+                 * 兼容更多终端
+                 */
+                putchar('\r');
+                putchar('\n');
             }
             libmono_shell_buffer[libmono_shell_buffer_index]='\0';
             start_process=true;
