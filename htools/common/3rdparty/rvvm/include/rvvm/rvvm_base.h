@@ -112,7 +112,7 @@ typedef unsigned long long __uint64_t;
 #define RVVM_ABI_VERSION -1
 
 /**
- * @defgroup rvvm_types RVVM Types
+ * @defgroup rvvm_types Base types and definitions
  * @addtogroup rvvm_types
  * @{
  */
@@ -129,6 +129,7 @@ typedef uint32_t rvvm_irq_t;
 
 /**
  * PCI bus address
+ *
  * Encodes func [0:2] dev [3:7] bus [8:15] domain [16:31]
  */
 typedef uint32_t rvvm_pci_addr_t;
@@ -162,6 +163,11 @@ typedef struct rvvm_reg_dev rvvm_reg_dev_t;
  * Character device handle
  */
 typedef struct rvvm_char_dev rvvm_char_dev_t;
+
+/**
+ * Network device handle
+ */
+typedef struct rvvm_net_dev rvvm_net_dev_t;
 
 /**
  * GPIO device handle
@@ -248,6 +254,6 @@ typedef struct rvvm_pci_bus pci_bus_t;
 
 typedef struct rvvm_i2c_bus i2c_bus_t;
 
-typedef struct rvvm_intc rvvm_intc_t;
+typedef struct rvvm_irq_dev rvvm_intc_t;
 
 #endif

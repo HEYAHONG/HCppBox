@@ -86,6 +86,12 @@ static void rvjit_flush_icache(const void* addr, size_t size)
     FlushInstructionCache(GetCurrentProcess(), start, size);
 #elif defined(RVJIT_ARM64) && defined(GNU_EXTS)
     rvjit_arm64_fluch_icache(start, size);
+#elif defined(RVJIT_LA64) && defined(GNU_EXTS)
+    // LoongArch maintains I/D cache coherency in hardware, but a barrier must
+    // be inserted to prevent pipeline hazard.
+    UNUSED(start);
+    UNUSED(size);
+    __asm__ __volatile__("ibar 0" : : : "memory");
 #elif defined(RVJIT_APPLE_SILICON)
     sys_icache_invalidate(start, size);
 #elif defined(RVJIT_RISCV) && defined(__linux__) && defined(__NR_riscv_flush_icache)

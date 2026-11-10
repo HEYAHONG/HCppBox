@@ -61,8 +61,8 @@ else
 fi
 
 if [ -f "${script_dir}/RVVM/CMakeLists.txt" ]; then
-	rsync -rl --progress "${script_dir}/RVVM/src/" "${script_dir}/src/"
-	rsync -rl --progress "${script_dir}/RVVM/include/" "${script_dir}/include/"
+	rsync -rl --delete --progress "${script_dir}/RVVM/src/" "${script_dir}/src/"
+	rsync -rl --delete --progress "${script_dir}/RVVM/include/" "${script_dir}/include/"
 	rsync -rl --progress "${script_dir}/RVVM/CMakeLists.txt" "${script_dir}/CMakeLists.txt"
 	rsync -rl --progress "${script_dir}/RVVM/LICENSE-GPL" "${script_dir}/"
 	rsync -rl --progress "${script_dir}/RVVM/LICENSE-MPL" "${script_dir}/"

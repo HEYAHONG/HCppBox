@@ -352,7 +352,8 @@ static void handle_dhcp(tap_dev_t* tap, const uint8_t* buffer, size_t size, net_
 
     uint8_t frame[TAP_FRAME_SIZE];
     uint8_t* ipv4 = create_eth_frame(tap, frame, ETH2_IPv4);
-    uint8_t* udp = create_ipv4_frame(ipv4, 278 + UDP_HDR_SIZE, IP_PROTO_UDP, (const uint8_t*)"\xFF\xFF\xFF\xFF", GATEWAY_IP);
+    const uint8_t* reply_ip = read_uint32_be_m(buffer + 12) ? buffer + 12 : (const uint8_t*)"\xFF\xFF\xFF\xFF";
+    uint8_t* udp = create_ipv4_frame(ipv4, 278 + UDP_HDR_SIZE, IP_PROTO_UDP, reply_ip, GATEWAY_IP);
     uint8_t* dhcp = create_udp_datagram(udp, 278, 68, 67);
 
     dhcp[0] = OP_RESPONSE;
@@ -450,15 +451,16 @@ static void handle_udp(tap_dev_t* tap, const uint8_t* buffer, size_t size, net_a
     }
     udp_size -= UDP_HDR_SIZE;
 
+    // Renewals use the leased source IP; intercept before any UDP forwarding entry.
+    if (src->type == NET_TYPE_IPV4 && src->port == 68 && dst->port == 67
+        && (memcmp(dst->ip, GATEWAY_IP, PLEN_IPv4) == 0 || read_uint32_be_m(dst->ip) == 0xFFFFFFFF)) {
+        handle_dhcp(tap, udb_buff, udp_size, src);
+        return;
+    }
+
     spin_lock(&tap->lock);
     tap_sock_t* ts = (tap_sock_t*)hashmap_get(&tap->udp_ports, src->port);
     if (ts == NULL) {
-        if (dst->port == 67 && (read_uint32_be_m(src->ip) == 0)) {
-            spin_unlock(&tap->lock);
-            handle_dhcp(tap, udb_buff, udp_size, src);
-            return;
-        }
-
         net_sock_t* sock = net_udp_bind(NET_IPV4_ANY);
         net_sock_set_blocking(sock, false);
         if (sock) {
@@ -757,8 +759,8 @@ static void handle_ipv4(tap_dev_t* tap, const uint8_t* buffer, size_t size)
         // This is a fragmented frame
         return;
     }
-    if (unlikely(size < total_length)) {
-        // Encoded size exceeds frame size
+    if (unlikely(total_length < header_length || size < total_length)) {
+        // Bogus IP header length or encoded size exceeds frame size
         return;
     }
 
@@ -819,9 +821,20 @@ static void handle_arp(tap_dev_t* tap, const uint8_t* buffer, size_t size)
     uint8_t frame[ARPv4_HDR_SIZE + ETH2_HDR_SIZE];
     uint16_t ptype = read_uint16_be_m(buffer + 2);
     uint16_t oper  = read_uint16_be_m(buffer + 6);
-    if (oper == OP_REQUEST && ptype == ETH2_IPv4 && memcmp(buffer + 14, buffer + 24, 4)) {
+    const uint8_t* sender_ip = buffer + 14;
+    const uint8_t* target_ip = buffer + 24;
+
+    // Answer IPv4 ARP requests, but stay silent for three cases:
+    //  - gratuitous ARP (sender == target)
+    //  - requests for the client's own address (target == CLIENT_IP)
+    //  - DAD probes (sender == 0.0.0.0): a reply makes the guest's DHCP
+    //    duplicate-address check see a phantom conflict and drop the lease
+    if (oper == OP_REQUEST && ptype == ETH2_IPv4
+        && memcmp(sender_ip, target_ip, PLEN_IPv4)
+        && memcmp(target_ip, CLIENT_IP, PLEN_IPv4)
+        && memcmp(sender_ip, net_ipv4_any_addr.ip, PLEN_IPv4)) {
         uint8_t* arp = create_eth_frame(tap, frame, ETH2_ARP);
-        create_arp_frame(tap, arp, buffer + 24);
+        create_arp_frame(tap, arp, target_ip);
         eth_send(tap, frame, ARPv4_HDR_SIZE + ETH2_HDR_SIZE);
     }
 }

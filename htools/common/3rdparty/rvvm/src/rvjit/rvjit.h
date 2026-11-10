@@ -79,6 +79,12 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
 #define RVJIT_ARM      1
 #define RVJIT_ABI_SYSV 1
 
+#elif (defined(__loongarch__) && __loongarch_lp64) || defined(_M_LOONGARCH64)
+
+#define RVJIT_LA64         1
+#define RVJIT_ABI_SYSV     1
+#define RVJIT_NATIVE_64BIT 1
+
 #else
 
 #error No JIT support for the target platform!!!
