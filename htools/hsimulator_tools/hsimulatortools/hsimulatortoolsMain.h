@@ -26,6 +26,7 @@ protected:
     virtual void OnMenuSelectionRVVMGeneric( wxCommandEvent& event );
     virtual void OnMenuSelectionHBoxMCS51( wxCommandEvent& event );
     virtual void OnMenuSelectionMiniRV32IMA( wxCommandEvent& event );
+    virtual void OnMenuSelectionMiniRISCV( wxCommandEvent& event );
 private:
     virtual void OnClose(wxCloseEvent& event);
     virtual void OnQuit(wxCommandEvent& event);

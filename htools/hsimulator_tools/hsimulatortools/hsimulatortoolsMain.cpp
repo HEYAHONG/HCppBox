@@ -34,6 +34,7 @@
 #include "rvvmgenericgui.h"
 #include "mcs51genericgui.h"
 #include "minirv32imav2genericgui.h"
+#include "minirisvcgenericgui.h"
 
 hsimulatortoolsFrame::hsimulatortoolsFrame(wxFrame *frame)
     : mainframe(frame)
@@ -61,6 +62,9 @@ hsimulatortoolsFrame::hsimulatortoolsFrame(wxFrame *frame)
         wxMenuItem* mcs51Item=new wxMenuItem(hboxMenu,wxID_ANY,_T("Mini-MCS51"));
         hboxMenu->Append(mcs51Item);
 
+        wxMenuItem* riscvItem=new wxMenuItem(hboxMenu,wxID_ANY,_T("Mini-RISCV"));
+        hboxMenu->Append(riscvItem);
+
         wxMenuItem* hboxItem=new wxMenuItem(m_menu_virtualmachine,wxID_ANY,_T("HBox"),wxEmptyString,wxITEM_NORMAL,hboxMenu);
         m_menu_virtualmachine->Append(hboxItem);
 
@@ -69,6 +73,7 @@ hsimulatortoolsFrame::hsimulatortoolsFrame(wxFrame *frame)
 
         Bind(wxEVT_COMMAND_MENU_SELECTED,wxCommandEventHandler(hsimulatortoolsFrame::OnMenuSelectionHBoxMCS51),this,mcs51Item->GetId());
         Bind(wxEVT_COMMAND_MENU_SELECTED,wxCommandEventHandler(hsimulatortoolsFrame::OnMenuSelectionMiniRV32IMA),this,rv32imaItem->GetId());
+        Bind(wxEVT_COMMAND_MENU_SELECTED,wxCommandEventHandler(hsimulatortoolsFrame::OnMenuSelectionMiniRISCV),this,riscvItem->GetId());
     }
 
     if(!rvvm_check_abi(RVVM_ABI_VERSION))
@@ -131,5 +136,11 @@ void hsimulatortoolsFrame::OnMenuSelectionMiniRV32IMA( wxCommandEvent& event )
 {
     MiniRV32IMAV2GenericGui *vm=new MiniRV32IMAV2GenericGui(mainauinotebook);
     mainauinotebook->AddPage(vm,_T("mini-rv32ima"),true);
+}
+
+void hsimulatortoolsFrame::OnMenuSelectionMiniRISCV( wxCommandEvent& event )
+{
+    MiniRISCVGenericGui *vm=new MiniRISCVGenericGui(mainauinotebook);
+    mainauinotebook->AddPage(vm,_T("Mini-RISCV"),true);
 }
 
