@@ -2053,6 +2053,7 @@ static const hruntime_symbol_t hruntime_hbox_symbol[]=
     {hdefaults_str(hs_rp_pio_sm_cfg),(uintptr_t)&hs_rp_pio_sm_cfg},
     {hdefaults_str(hs_rp_pio_sm_status),(uintptr_t)&hs_rp_pio_sm_status},
     {hdefaults_str(hs_rp_pio_sm_exec),(uintptr_t)&hs_rp_pio_sm_exec},
+    {hdefaults_str(hs_rp_pio_sm_exec_immediate),(uintptr_t)&hs_rp_pio_sm_exec_immediate},
     {hdefaults_str(hs_rp_pio_sm_tick),(uintptr_t)&hs_rp_pio_sm_tick},
     {hdefaults_str(hs_rp_pio_sm_fifo_init),(uintptr_t)&hs_rp_pio_sm_fifo_init},
     {hdefaults_str(hs_rp_pio_sm_fifo_is_empty),(uintptr_t)&hs_rp_pio_sm_fifo_is_empty},

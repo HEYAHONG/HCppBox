@@ -32,7 +32,7 @@ size_t hs_rp_pio_sm_size(void);
  *
  *
  */
-#define HS_RP_PIO_SM_SIZE() ((((sizeof(uintptr_t)*2+sizeof(uint32_t)*6)/sizeof(uint32_t))+(((sizeof(uintptr_t)*2+sizeof(uint32_t)*6)%sizeof(uint32_t))?1:0))*sizeof(uint32_t))
+#define HS_RP_PIO_SM_SIZE() ((((sizeof(uintptr_t)*2+sizeof(uint32_t)*8)/sizeof(uint32_t))+(((sizeof(uintptr_t)*2+sizeof(uint32_t)*8)%sizeof(uint32_t))?1:0))*sizeof(uint32_t))
 #endif // HS_RP_PIO_SM_SIZE
 
 typedef enum
@@ -93,7 +93,12 @@ typedef enum
     HS_RP_PIO_SM_IN_SHIFTDIR,
     HS_RP_PIO_SM_AUTOPULL,
     HS_RP_PIO_SM_AUTOPUSH,
-    HS_RP_PIO_SM_SIDESET_CNT
+    HS_RP_PIO_SM_SIDESET_CNT,
+    HS_RP_PIO_SM_SIDE_EN,           //SIDESET可选使能位(EXECCTRL_SIDE_EN)，使用SIDESET_CNT的最高位作为使能
+    HS_RP_PIO_SM_WRAP_BOTTOM,       //程序回绕起始地址(EXECCTRL_WRAP_BOTTOM)
+    HS_RP_PIO_SM_WRAP_TOP,          //程序回绕结束地址(EXECCTRL_WRAP_TOP)
+    HS_RP_PIO_SM_WRAP_ENABLE,       //程序回绕使能，0=关闭(默认)，1=使能
+    HS_RP_PIO_SM_SM_ID              //状态机编号(0~3)，用于IRQ/WAIT IRQ的相对寻址
 } hs_rp_pio_sm_cfg_opt_t;
 
 /** \brief 配置状态机，注意：此函数不是线程安全的，必要时需要加锁。
@@ -122,7 +127,12 @@ typedef enum
     HS_RP_PIO_SM_AUTOPULL_STATUS,
     HS_RP_PIO_SM_AUTOPUSH_STATUS,
     HS_RP_PIO_SM_SIDESET_CNT_STATUS,
-    HS_RP_PIO_SM_STALL_STATUS
+    HS_RP_PIO_SM_STALL_STATUS,
+    HS_RP_PIO_SM_SIDE_EN_STATUS,
+    HS_RP_PIO_SM_WRAP_BOTTOM_STATUS,
+    HS_RP_PIO_SM_WRAP_TOP_STATUS,
+    HS_RP_PIO_SM_WRAP_ENABLE_STATUS,
+    HS_RP_PIO_SM_SM_ID_STATUS
 } hs_rp_pio_sm_status_opt_t;
 
 /** \brief 状态机状态,注意：此函数不是线程安全的，必要时需要加锁。
@@ -218,11 +228,26 @@ typedef union
 
 /** \brief 状态机执行指令，注意：此函数不是线程安全的，必要时需要加锁。
  *
+ * 此函数按正常程序流执行指令，普通指令执行后会自动更新PC。
+ * 若要模拟硬件SMx_INSTR/pio_sm_exec()的“立即执行且不占用程序槽”的行为，请使用hs_rp_pio_sm_exec_immediate()。
+ *
  * \param sm hs_rp_pio_sm_t* 状态机指针
  * \param instruction hs_rp_pio_sm_instruction_t 指令
  *
  */
 void hs_rp_pio_sm_exec(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction);
+
+/** \brief 立即执行指令(等价于硬件SMx_INSTR/pio_sm_exec)，注意：此函数不是线程安全的，必要时需要加锁。
+ *
+ * 该指令替代PC当前指向的下一条指令执行，普通指令不会自动递增PC；JMP/MOV PC/OUT PC等修改PC的指令仍会更新PC。
+ * 指令会同步执行(不消耗tick)。若指令stall，将在后续hs_rp_pio_sm_tick()中继续执行；
+ * 再次调用本函数会替换尚未完成的立即执行指令。
+ *
+ * \param sm hs_rp_pio_sm_t* 状态机指针
+ * \param instruction hs_rp_pio_sm_instruction_t 指令
+ *
+ */
+void hs_rp_pio_sm_exec_immediate(hs_rp_pio_sm_t *sm,hs_rp_pio_sm_instruction_t instruction);
 
 
 /** \brief 状态机节拍,由于pio对时序要求比较高，推荐在定时器中调用此函数。注意：此函数不是线程安全的，必要时需要加锁。
@@ -313,7 +338,11 @@ typedef struct
         uint32_t autopull:1;//1=自动pull
         uint32_t autopush:1;//1=自动push
         uint32_t disable_rxfifo:1;//关闭RX FIFO，使用随机访问
-        uint32_t sideset_cnt:3;//,sideset特性，0~5
+        uint32_t sideset_cnt:3;//,sideset特性，0~5(包含可选使能位)
+        uint32_t side_en:1;//sideset可选使能位，1=最高位作为使能
+        uint32_t wrap_bottom:5;//程序回绕起始地址
+        uint32_t wrap_top:5;//程序回绕结束地址
+        uint32_t wrap_enable:1;//程序回绕使能
     };
 } hs_rp_pio_sm_memory_t;
 

@@ -25,14 +25,18 @@ const hs_rp_pio_sm_memory_t hs_rp_pio_sm_rom_hello_pio=
         0x0000  //  2: jmp    0
     },
     {
-        0,
-        0,
-        1,
-        1,
-        0,
-        0,
-        0,
-        0
+        0,  //pull_thresh
+        0,  //push_thresh
+        1,  //out_shiftdir
+        1,  //in_shiftdir
+        0,  //autopull
+        0,  //autopush
+        0,  //disable_rxfifo
+        0,  //sideset_cnt
+        0,  //side_en
+        0,  //wrap_bottom
+        31, //wrap_top
+        0   //wrap_enable
     }
 };
 
@@ -55,6 +59,8 @@ void hs_rp_pio_hello_pio_init(hs_rp_pio_hello_pio_t *pio,hs_rp_pio_hello_pio_io_
     pio->io=hook;
     hs_rp_pio_init(&pio->pio,hs_rp_pio_hello_pio_io_process,usr);
     pio->pio.memory=hs_rp_pio_sm_rom_hello_pio;
+    //memory在初始化之后赋值,此处把程序配置加载到状态机(避免重复调用用户RESET回调)
+    hs_rp_pio_sm_load_memory_cfg((hs_rp_pio_sm_t *)&pio->pio,&pio->pio.rxfifo,&pio->pio.memory);
 }
 
 void hs_rp_pio_hello_pio_tick(hs_rp_pio_hello_pio_t* pio,size_t cycles)
