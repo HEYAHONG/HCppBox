@@ -43,11 +43,11 @@ ENTRY(_start)
 MEMORY
 {
 	flash (rx!w) :
-		ORIGIN = DEFINED(__flash) ? __flash : 0xD0000000,
+		ORIGIN = DEFINED(__flash) ? __flash : 0x00000000,
 		LENGTH = DEFINED(__flash_size) ? __flash_size : 0x00200000
 	ram (w!rx) :
 		ORIGIN = DEFINED(__ram) ? __ram : 0x20000000,
-		LENGTH = DEFINED(__ram_size) ? __ram_size : 0x00002000
+		LENGTH = DEFINED(__ram_size) ? __ram_size : 0x00004000
 }
 
 PHDRS
@@ -61,6 +61,7 @@ PHDRS
 SECTIONS
 {
 	PROVIDE(__stack = ORIGIN(ram) + LENGTH(ram));
+	PROVIDE(__freertos_irq_stack_top = __stack);
 
 	/*
 	 * 向量表
@@ -94,19 +95,23 @@ SECTIONS
 		PROVIDE (_etext = __text_end);
 		PROVIDE (etext = __text_end);
 
+		. = ALIGN(8);
 		PROVIDE ( __hshell_command_start = . );
 		KEEP (*(SORT(.HShellCommand)))
 		PROVIDE ( __hshell_command_end = . );
 
+		. = ALIGN(8);
 		PROVIDE ( __hruntime_init_start = . );
 		KEEP (*(SORT(.HRuntimeInit)))
 		PROVIDE ( __hruntime_init_end = . );
 
 
+		. = ALIGN(8);
 		PROVIDE ( __hruntime_loop_start = . );
 		KEEP (*(SORT(.HRuntimeLoop)))
 		PROVIDE ( __hruntime_loop_end = . );
 
+		. = ALIGN(8);
 		PROVIDE ( __hruntime_symbol_start = . );
 		KEEP (*(SORT(.HRuntimeSymbol)))
 		PROVIDE ( __hruntime_symbol_end = . );

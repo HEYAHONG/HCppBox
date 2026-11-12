@@ -32,10 +32,14 @@ size_t hs_risc_v_core_rv32_size(void);
  *
  *
  */
-#define HS_RISC_V_CORE_RV32_SIZE()  (sizeof(uintptr_t)*2+sizeof(uint32_t)*3+HS_RISC_V_CORE_RV32_ALIGNED_FILL_SIZE(uintptr_t,uint32_t))
+#define HS_RISC_V_CORE_RV32_SIZE()  (sizeof(uintptr_t)*2+sizeof(uint32_t)*4+sizeof(uint64_t)*2+sizeof(uint32_t)+sizeof(uint64_t))
 #endif // HS_RISC_V_CORE_RV32_SIZE
 
 
+/*
+ * 注意:Sv32页表的读取与A/D位更新通过HS_RISC_V_CORE_RV32_IO_MEMORY_READ/WRITE完成。
+ * 若页表内存的IO操作未实现(返回false),内核将按无MMU方式运行。
+ */
 typedef enum
 {
     HS_RISC_V_CORE_RV32_IO_RESET=0,                                     /**< IO初始化 */
@@ -67,6 +71,9 @@ typedef enum
     HS_RISC_V_CORE_RV32_IO_INSTRUCTION_EBREAK_EXEC,                     /**< ebreak指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
     HS_RISC_V_CORE_RV32_IO_INSTRUCTION_MRET_EXEC,                       /**< mret指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
     HS_RISC_V_CORE_RV32_IO_INSTRUCTION_WFI_EXEC,                        /**< wfi指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_SRET_EXEC,                       /**< sret指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_URET_EXEC,                       /**< uret指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
+    HS_RISC_V_CORE_RV32_IO_INSTRUCTION_SFENCE_VMA_EXEC,                 /**< sfence.vma指令执行。地址为当前PC值,数据为待执行的指令(类型为uint32_t)。 */
 } hs_risc_v_core_rv32_io_opt_t;                                         /**< RISC-V RV32 IO选项。IO选项通常占32位中的低24位 */
 
 typedef enum

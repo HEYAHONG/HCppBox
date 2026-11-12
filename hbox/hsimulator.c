@@ -34,4 +34,7 @@
 #include "hsimulator/risc-v/risc-v_opcodes.c"
 #include "hsimulator/risc-v/risc-v_common.c"
 #include "hsimulator/risc-v/risc-v_core_rv32.c"
+#include "hsimulator/risc-v/risc-v_core_rv64.c"
+#include "hsimulator/risc-v/risc-v_machine_rv32.c"
+#include "hsimulator/risc-v/risc-v_machine_rv64.c"
 

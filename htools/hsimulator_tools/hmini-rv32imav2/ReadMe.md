@@ -116,11 +116,15 @@ objcopy -I binary -O srec --image-base=0 Image文件 srec程序文件
 };
 ```
 
+# 程序 
 
+本模拟器除了支持原版mini-rv32ima测试固件外，还支持bin文件
+
+示例程序见[../../../hplatformbox/risc-v/sim/mini-rv32ima/](../../../hplatformbox/risc-v/sim/mini-rv32ima/)
 
 # 注意
 
-- 本版不支持CSR测试。
+- 本版不支持CSR测试,使用原版测试固件的需要注意。
 - 本程序可直接加载Image文件（注意需要内嵌initrd到Image）。
 
 # 编译

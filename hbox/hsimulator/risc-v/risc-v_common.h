@@ -188,6 +188,90 @@ typedef enum
     HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZIFENCEI= (1ULL << (26+2)),              /**< RV32Zicsr扩展指令集 */
     HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZIFENCEI= (1ULL << (26+2)),              /**< RV64Zicsr扩展指令集 */
 
+    //"Zba"扩展：地址生成指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZBA= (1ULL << (9)),             /**< RV32Zba扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZBA= (1ULL << (9)),             /**< RV64Zba扩展指令集 */
+
+    //"Zbb"扩展：基本位操作指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZBB= (1ULL << (10)),            /**< RV32Zbb扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZBB= (1ULL << (10)),            /**< RV64Zbb扩展指令集 */
+
+    //"Zbc"扩展：无进位乘法指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZBC= (1ULL << (11)),            /**< RV32Zbc扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZBC= (1ULL << (11)),            /**< RV64Zbc扩展指令集 */
+
+    //"Zbs"扩展：单比特操作指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZBS= (1ULL << (12)),            /**< RV32Zbs扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZBS= (1ULL << (12)),            /**< RV64Zbs扩展指令集 */
+
+    //"Zicond"扩展：条件零化指令，依赖"Zicsr"
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICOND= (1ULL << (13)),         /**< RV32Zicond扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZICOND= (1ULL << (13)),         /**< RV64Zicond扩展指令集 */
+
+    //"Zcb"扩展：基础压缩指令，依赖"C"扩展
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZCB= (1ULL << (14)),            /**< RV32Zcb扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZCB= (1ULL << (14)),            /**< RV64Zcb扩展指令集 */
+
+    //"Zicbom"扩展：缓存块管理指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICBOM= (1ULL << (15)),         /**< RV32Zicbom扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZICBOM= (1ULL << (15)),         /**< RV64Zicbom扩展指令集 */
+
+    //"Zicboz"扩展：缓存块零化指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICBOZ= (1ULL << (16)),         /**< RV32Zicboz扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZICBOZ= (1ULL << (16)),         /**< RV64Zicboz扩展指令集 */
+
+    //"Zicbop"扩展：预取指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZICBOP= (1ULL << (17)),         /**< RV32Zicbop扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZICBOP= (1ULL << (17)),         /**< RV64Zicbop扩展指令集 */
+
+    //"Zawrs"扩展：等待保留集指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZAWRS= (1ULL << (18)),          /**< RV32Zawrs扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZAWRS= (1ULL << (18)),          /**< RV64Zawrs扩展指令集 */
+
+    //"Zacas"扩展：原子比较交换指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZACAS= (1ULL << (19)),          /**< RV32Zacas扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZACAS= (1ULL << (19)),          /**< RV64Zacas扩展指令集 */
+
+    //"Zabha"扩展：字节/半字原子操作指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZABHA= (1ULL << (20)),          /**< RV32Zabha扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZABHA= (1ULL << (20)),          /**< RV64Zabha扩展指令集 */
+
+    //"Zkne"扩展：AES加密指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZKNE= (1ULL << (23)),           /**< RV32Zkne扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZKNE= (1ULL << (23)),           /**< RV64Zkne扩展指令集 */
+
+    //"Zknd"扩展：AES解密指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZKND= (1ULL << (26)),           /**< RV32Zknd扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZKND= (1ULL << (26)),           /**< RV64Zknd扩展指令集 */
+
+    //"Zknh"扩展：SHA2哈希指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZKNH= (1ULL << (29)),           /**< RV32Zknh扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZKNH= (1ULL << (29)),           /**< RV64Zknh扩展指令集 */
+
+    //"Zksed"扩展：SM4分组密码指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZKSED= (1ULL << (30)),          /**< RV32Zksed扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZKSED= (1ULL << (30)),          /**< RV64Zksed扩展指令集 */
+
+    //"Zksh"扩展：SM3哈希指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZKSH= (1ULL << (31)),           /**< RV32Zksh扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZKSH= (1ULL << (31)),           /**< RV64Zksh扩展指令集 */
+
+    //"Zbkb"扩展：位操作（密码学）
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZBKB= (1ULL << (21)),           /**< RV32Zbkb扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZBKB= (1ULL << (21)),           /**< RV64Zbkb扩展指令集 */
+
+    //"Zbkc"扩展：无进位乘法（密码学）
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZBKC= (1ULL << (22)),           /**< RV32Zbkc扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZBKC= (1ULL << (22)),           /**< RV64Zbkc扩展指令集 */
+
+    //"Zbkx"扩展：交叉排列（密码学）
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZBKX= (1ULL << (24)),           /**< RV32Zbkx扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZBKX= (1ULL << (24)),           /**< RV64Zbkx扩展指令集 */
+
+    //"Svinval"扩展：细粒度地址翻译失效指令
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV32SVINVAL= (1ULL << (25)),        /**< RV32Svinval扩展指令集 */
+    HS_RISC_V_COMMON_INSTRUCTION_SET_RV64SVINVAL= (1ULL << (25)),        /**< RV64Svinval扩展指令集 */
+
 } hs_risc_v_common_instruction_set_t;                                   /**< 指令集类型 */
 
 
@@ -233,6 +317,25 @@ bool hs_risc_v_common_instruction_set_sets_has_rv32g(uint32_t sets);
  *
  */
 bool hs_risc_v_common_instruction_set_sets_has_rv64g(uint32_t sets);
+
+
+/** \brief RISC-V 32位位操作指令集B（包括Zba/Zbb/Zbs）
+ *
+ *
+ */
+#define HS_RISC_V_COMMON_INSTRUCTION_SET_RV32B  (\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZBA |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZBB |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV32ZBS )
+
+/** \brief RISC-V 64位位操作指令集B（包括Zba/Zbb/Zbs）
+ *
+ *
+ */
+#define HS_RISC_V_COMMON_INSTRUCTION_SET_RV64B  (\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZBA |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZBB |\
+                                                 HS_RISC_V_COMMON_INSTRUCTION_SET_RV64ZBS )
 
 
 /** \brief 指令集集合中是否有某个指令集
