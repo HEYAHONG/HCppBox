@@ -134,8 +134,28 @@ jobs:
 
           $root = $env:VCPKG_INSTALLATION_ROOT -replace '\\', '/'
           $installed = "$root/installed/$env:VCPKG_TRIPLET"
-          # Make the vcpkg toolchain available to the nested htools builds too.
-          "CMAKE_TOOLCHAIN_FILE=$root/scripts/buildsystems/vcpkg.cmake" >> $env:GITHUB_ENV
+          # Runner-specific toolchain wrapper: chain the vcpkg toolchain and
+          # teach FindwxWidgets the vcpkg Windows layout (Release libs in lib/,
+          # Debug libs in debug/lib). This file lives in RUNNER_TEMP, not in the
+          # repository, and is inherited by the nested htools builds too.
+          $wxToolchain = Join-Path $env:RUNNER_TEMP 'vcpkg-wx-toolchain.cmake'
+          @'
+          include("$ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake")
+
+          if(WIN32)
+              set(_wx_vcpkg_root "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+              if(EXISTS "${_wx_vcpkg_root}/include/wx/wx.h")
+                  set(wxWidgets_ROOT_DIR "${_wx_vcpkg_root}" CACHE PATH "" FORCE)
+                  set(WX_ROOT_DIR "${_wx_vcpkg_root}" CACHE INTERNAL "" FORCE)
+                  set(wxWidgets_LIB_DIR "${_wx_vcpkg_root}/lib" CACHE PATH "" FORCE)
+                  set(WX_LIB_DIR "${_wx_vcpkg_root}/lib" CACHE INTERNAL "" FORCE)
+                  set(wxWidgets_CONFIGURATION mswu CACHE STRING "" FORCE)
+                  set(wxWidgets_USE_REL_AND_DBG OFF CACHE BOOL "" FORCE)
+              endif()
+              unset(_wx_vcpkg_root)
+          endif()
+          '@ | Set-Content -Path $wxToolchain -Encoding ASCII
+          "CMAKE_TOOLCHAIN_FILE=$($wxToolchain -replace '\\', '/')" >> $env:GITHUB_ENV
           "VCPKG_DEFAULT_TRIPLET=$env:VCPKG_TRIPLET" >> $env:GITHUB_ENV
           "VCPKG_ROOT=$root" >> $env:GITHUB_ENV
           # pkgconf provides pkg-config, which htools uses for freetype and
@@ -159,35 +179,45 @@ jobs:
           include(FindPkgConfig)
           find_package(OpenCV QUIET)
           find_package(wxWidgets 3.2.0 QUIET)
-          set(_wx_module_found "${wxWidgets_FOUND}")
-          set(_wx_module_ver "${wxWidgets_VERSION}")
-          set(_wx_module_lib "${wxWidgets_LIB_DIR}")
-          set(_wx_module_cfg "${wxWidgets_CONFIGURATION}")
-          find_package(wxWidgets 3.2.0 CONFIG QUIET)
+          set(_wx_found "${wxWidgets_FOUND}")
+          set(_wx_ver "${wxWidgets_VERSION}")
+          set(_wx_lib "${wxWidgets_LIB_DIR}")
+          set(_wx_cfg "${wxWidgets_CONFIGURATION}")
+          set(_wx_inc "${wxWidgets_INCLUDE_DIRS}")
+          set(_wx_libs "${wxWidgets_LIBRARIES}")
           pkg_check_modules(LIBSERIALPORT QUIET libserialport)
           pkg_check_modules(LIBEVENT QUIET libevent)
           pkg_check_modules(LIBEVENT_CORE QUIET libevent_core)
           pkg_check_modules(LIBEVENT_EXTRA QUIET libevent_extra)
           message(STATUS "DEPCHECK OpenCV_FOUND=${OpenCV_FOUND} OPENCV_FOUND=${OPENCV_FOUND} OpenCV_DIR=${OpenCV_DIR}")
-          message(STATUS "DEPCHECK wx module=${_wx_module_found} ver=${_wx_module_ver} libdir=${_wx_module_lib} cfg=${_wx_module_cfg}")
-          message(STATUS "DEPCHECK wx config=${wxWidgets_FOUND} ver=${wxWidgets_VERSION} libs=${wxWidgets_LIBRARIES}")
+          message(STATUS "DEPCHECK wx found=${_wx_found} ver=${_wx_ver} lib=${_wx_lib} cfg=${_wx_cfg}")
+          message(STATUS "DEPCHECK wx inc=${_wx_inc} libs=${_wx_libs}")
           message(STATUS "DEPCHECK LIBSERIALPORT_FOUND=${LIBSERIALPORT_FOUND} version=${LIBSERIALPORT_VERSION}")
           message(STATUS "DEPCHECK LIBEVENT_FOUND=${LIBEVENT_FOUND} CORE=${LIBEVENT_CORE_FOUND} EXTRA=${LIBEVENT_EXTRA_FOUND} version=${LIBEVENT_VERSION}")
-          foreach(_f "${wxWidgets_ROOT_DIR}/include/wx/wx.h" "${wxWidgets_ROOT_DIR}/include/wx/version.h" "${_wx_module_lib}/mswu/wx/setup.h" "${_wx_module_lib}/mswud/wx/setup.h")
+          foreach(_f "${wxWidgets_ROOT_DIR}/include/wx/wx.h" "${_wx_lib}/mswu/wx/setup.h")
             if(EXISTS "${_f}")
               message(STATUS "DEPCHECK exists ${_f}")
             else()
               message(STATUS "DEPCHECK missing ${_f}")
             endif()
           endforeach()
-          file(GLOB _wxlibs "${_wx_module_lib}/*base*" "${_wx_module_lib}/*core*")
+          file(GLOB _wxlibs "${_wx_lib}/*base*" "${_wx_lib}/*core*")
           message(STATUS "DEPCHECK wxlibs=${_wxlibs}")
           '@ | Set-Content -Path (Join-Path $checkDir 'CMakeLists.txt') -Encoding ASCII
           cmake -S $checkDir -B (Join-Path $checkDir 'build') `
             -G "$env:CMAKE_GENERATOR" `
             -DCMAKE_TOOLCHAIN_FILE="$env:CMAKE_TOOLCHAIN_FILE" `
-            -DVCPKG_TARGET_TRIPLET=$env:VCPKG_TRIPLET
+            -DVCPKG_TARGET_TRIPLET=$env:VCPKG_TRIPLET `
+            -DVCPKG_TRACE_FIND_PACKAGE=ON
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $installed = Join-Path $env:VCPKG_INSTALLATION_ROOT "installed/$env:VCPKG_TRIPLET"
+          Write-Host '--- wxwidgets package files ---'
+          Get-ChildItem (Join-Path $installed 'share/wxwidgets') -Force -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty Name
+          Write-Host "wrapper: $(Test-Path (Join-Path $installed 'share/wxwidgets/vcpkg-cmake-wrapper.cmake'))"
+          Write-Host "header:  $(Test-Path (Join-Path $installed 'include/wx/wx.h'))"
+          Get-ChildItem (Join-Path $installed 'lib') -Filter 'wx*' -ErrorAction SilentlyContinue |
+            Select-Object -First 15 -ExpandProperty Name
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. CMAKE_BUILD_TYPE is used
