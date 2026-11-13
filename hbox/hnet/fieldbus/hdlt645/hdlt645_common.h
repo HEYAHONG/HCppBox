@@ -369,6 +369,139 @@ void  hdlt645_frame_set_data_err(uint8_t *frame,size_t frame_len,uint8_t err);
 #define HDLT645_COM_Z_RESERVED1     (0x01)
 
 
+/*
+ * 电表运行状态字1
+ */
+#define HDLT645_STATUS1_REACTIVE_DIR                    (0x0020)  /**< 无功功率方向,0正向,1反向 */
+#define HDLT645_STATUS1_ACTIVE_DIR                      (0x0010)  /**< 有功功率方向,0正向,1反向 */
+#define HDLT645_STATUS1_OUTAGE_BATTERY                  (0x0008)  /**< 停电抄表电池,0正常,1欠压 */
+#define HDLT645_STATUS1_CLOCK_BATTERY                   (0x0004)  /**< 时钟电池,0正常,1欠压 */
+#define HDLT645_STATUS1_DEMAND_MODE                     (0x0002)  /**< 需量积算方式,0滑差,1区间 */
+
+/*
+ * 电表运行状态字2
+ */
+#define HDLT645_STATUS2_REACTIVE_C_DIR                  (0x0040)  /**< C相无功功率方向,0正向,1反向 */
+#define HDLT645_STATUS2_REACTIVE_B_DIR                  (0x0020)  /**< B相无功功率方向,0正向,1反向 */
+#define HDLT645_STATUS2_REACTIVE_A_DIR                  (0x0010)  /**< A相无功功率方向,0正向,1反向 */
+#define HDLT645_STATUS2_ACTIVE_C_DIR                    (0x0004)  /**< C相有功功率方向,0正向,1反向 */
+#define HDLT645_STATUS2_ACTIVE_B_DIR                    (0x0002)  /**< B相有功功率方向,0正向,1反向 */
+#define HDLT645_STATUS2_ACTIVE_A_DIR                    (0x0001)  /**< A相有功功率方向,0正向,1反向 */
+
+/*
+ * 电表运行状态字3(操作类)
+ */
+#define HDLT645_STATUS3_RELAY                           (0x0010)  /**< 继电器状态,0通,1断 */
+#define HDLT645_STATUS3_PROGRAM_ENABLE                  (0x0008)  /**< 编程允许,0禁止,1许可 */
+#define HDLT645_STATUS3_POWER_SUPPLY_MASK               (0x0006)  /**< 供电方式掩码 */
+#define HDLT645_STATUS3_POWER_SUPPLY_MAIN               (0x0000)  /**< 供电方式,主电源 */
+#define HDLT645_STATUS3_POWER_SUPPLY_AUX                (0x0002)  /**< 供电方式,辅助电源 */
+#define HDLT645_STATUS3_POWER_SUPPLY_BATTERY            (0x0004)  /**< 供电方式,电池供电 */
+#define HDLT645_STATUS3_PERIOD                          (0x0001)  /**< 当前运行时段,0第一套,1第二套 */
+
+/*
+ * 电表运行状态字4(A相故障状态)
+ */
+#define HDLT645_STATUS4_PHASE_LOSS                      (0x0080)  /**< 断相 */
+#define HDLT645_STATUS4_POWER_FLOW                      (0x0040)  /**< 潮流方向 */
+#define HDLT645_STATUS4_OVERLOAD                        (0x0020)  /**< 过载 */
+#define HDLT645_STATUS4_OVERCURRENT                     (0x0010)  /**< 过流 */
+#define HDLT645_STATUS4_CURRENT_LOSS                    (0x0008)  /**< 失流 */
+#define HDLT645_STATUS4_OVERVOLTAGE                     (0x0004)  /**< 过压 */
+#define HDLT645_STATUS4_UNDERVOLTAGE                    (0x0002)  /**< 欠压 */
+#define HDLT645_STATUS4_VOLTAGE_LOSS                    (0x0001)  /**< 失压 */
+#define HDLT645_STATUS4_CURRENT_BREAK                   (0x0100)  /**< 断流 */
+
+/*
+ * 电表运行状态字5(B相故障状态)
+ */
+#define HDLT645_STATUS5_PHASE_LOSS                      (0x0080)  /**< 断相 */
+#define HDLT645_STATUS5_POWER_FLOW                      (0x0040)  /**< 潮流方向 */
+#define HDLT645_STATUS5_OVERLOAD                        (0x0020)  /**< 过载 */
+#define HDLT645_STATUS5_OVERCURRENT                     (0x0010)  /**< 过流 */
+#define HDLT645_STATUS5_CURRENT_LOSS                    (0x0008)  /**< 失流 */
+#define HDLT645_STATUS5_OVERVOLTAGE                     (0x0004)  /**< 过压 */
+#define HDLT645_STATUS5_UNDERVOLTAGE                    (0x0002)  /**< 欠压 */
+#define HDLT645_STATUS5_VOLTAGE_LOSS                    (0x0001)  /**< 失压 */
+#define HDLT645_STATUS5_CURRENT_BREAK                   (0x0100)  /**< 断流 */
+
+/*
+ * 电表运行状态字6(C相故障状态)
+ */
+#define HDLT645_STATUS6_PHASE_LOSS                      (0x0080)  /**< 断相 */
+#define HDLT645_STATUS6_POWER_FLOW                      (0x0040)  /**< 潮流方向 */
+#define HDLT645_STATUS6_OVERLOAD                        (0x0020)  /**< 过载 */
+#define HDLT645_STATUS6_OVERCURRENT                     (0x0010)  /**< 过流 */
+#define HDLT645_STATUS6_CURRENT_LOSS                    (0x0008)  /**< 失流 */
+#define HDLT645_STATUS6_OVERVOLTAGE                     (0x0004)  /**< 过压 */
+#define HDLT645_STATUS6_UNDERVOLTAGE                    (0x0002)  /**< 欠压 */
+#define HDLT645_STATUS6_VOLTAGE_LOSS                    (0x0001)  /**< 失压 */
+#define HDLT645_STATUS6_CURRENT_BREAK                   (0x0100)  /**< 断流 */
+
+/*
+ * 电表运行状态字7(合相故障状态)
+ */
+#define HDLT645_STATUS7_DEMAND_EXCEED                   (0x0040)  /**< 需量超限 */
+#define HDLT645_STATUS7_POWER_FAIL                      (0x0020)  /**< 掉电 */
+#define HDLT645_STATUS7_AUX_POWER_LOSS                  (0x0010)  /**< 辅助电源失电 */
+#define HDLT645_STATUS7_CURRENT_IMBALANCE               (0x0008)  /**< 电流不平衡 */
+#define HDLT645_STATUS7_VOLTAGE_IMBALANCE               (0x0004)  /**< 电压不平衡 */
+#define HDLT645_STATUS7_CURRENT_REVERSE                 (0x0002)  /**< 电流逆相序 */
+#define HDLT645_STATUS7_VOLTAGE_REVERSE                 (0x0001)  /**< 电压逆相序 */
+
+/*
+ * 有功组合方式特征字
+ */
+#define HDLT645_ACTIVE_COMB_REVERSE_SUB                 (0x08)    /**< 反向有功,0不减,1减 */
+#define HDLT645_ACTIVE_COMB_REVERSE_ADD                 (0x04)    /**< 反向有功,0不加,1加 */
+#define HDLT645_ACTIVE_COMB_FORWARD_SUB                 (0x02)    /**< 正向有功,0不减,1减 */
+#define HDLT645_ACTIVE_COMB_FORWARD_ADD                 (0x01)    /**< 正向有功,0不加,1加 */
+
+/*
+ * 无功组合方式1、2特征字
+ */
+#define HDLT645_REACTIVE_COMB_IV_SUB                    (0x80)    /**< IV象限,0不减,1减 */
+#define HDLT645_REACTIVE_COMB_IV_ADD                    (0x40)    /**< IV象限,0不加,1加 */
+#define HDLT645_REACTIVE_COMB_III_SUB                   (0x20)    /**< III象限,0不减,1减 */
+#define HDLT645_REACTIVE_COMB_III_ADD                   (0x10)    /**< III象限,0不加,1加 */
+#define HDLT645_REACTIVE_COMB_II_SUB                    (0x08)    /**< II象限,0不减,1减 */
+#define HDLT645_REACTIVE_COMB_II_ADD                    (0x04)    /**< II象限,0不加,1加 */
+#define HDLT645_REACTIVE_COMB_I_SUB                     (0x02)    /**< I象限,0不减,1减 */
+#define HDLT645_REACTIVE_COMB_I_ADD                     (0x01)    /**< I象限,0不加,1加 */
+
+/*
+ * 周休日特征字
+ */
+#define HDLT645_WEEKDAY_SATURDAY                        (0x40)    /**< 周六,0休息,1工作 */
+#define HDLT645_WEEKDAY_FRIDAY                          (0x20)    /**< 周五,0休息,1工作 */
+#define HDLT645_WEEKDAY_THURSDAY                        (0x10)    /**< 周四,0休息,1工作 */
+#define HDLT645_WEEKDAY_WEDNESDAY                       (0x08)    /**< 周三,0休息,1工作 */
+#define HDLT645_WEEKDAY_TUESDAY                         (0x04)    /**< 周二,0休息,1工作 */
+#define HDLT645_WEEKDAY_MONDAY                          (0x02)    /**< 周一,0休息,1工作 */
+#define HDLT645_WEEKDAY_SUNDAY                          (0x01)    /**< 周日,0休息,1工作 */
+
+/*
+ * 负荷记录模式字
+ */
+#define HDLT645_LOAD_RECORD_DEMAND                      (0x20)    /**< 当前需量 */
+#define HDLT645_LOAD_RECORD_QUADRANT_ENERGY             (0x10)    /**< 四象限无功总电能 */
+#define HDLT645_LOAD_RECORD_ENERGY                      (0x08)    /**< 有、无功总电能 */
+#define HDLT645_LOAD_RECORD_POWER_FACTOR                (0x04)    /**< 功率因数 */
+#define HDLT645_LOAD_RECORD_POWER                       (0x02)    /**< 有、无功功率 */
+#define HDLT645_LOAD_RECORD_VOLTAGE_CURRENT_FREQUENCY   (0x01)    /**< 电压、电流、频率 */
+
+/*
+ * 冻结数据模式字
+ */
+#define HDLT645_FREEZE_VARIABLE                         (0x80)    /**< 变量 */
+#define HDLT645_FREEZE_REVERSE_DEMAND                   (0x40)    /**< 反向有功最大需量及发生时间 */
+#define HDLT645_FREEZE_FORWARD_DEMAND                   (0x20)    /**< 正向有功最大需量及发生时间 */
+#define HDLT645_FREEZE_QUADRANT_ENERGY                  (0x10)    /**< 四象限无功总电能 */
+#define HDLT645_FREEZE_REACTIVE2_ENERGY                 (0x08)    /**< 组合无功2电能 */
+#define HDLT645_FREEZE_REACTIVE1_ENERGY                 (0x04)    /**< 组合无功1电能 */
+#define HDLT645_FREEZE_REVERSE_ENERGY                   (0x02)    /**< 反向有功电能 */
+#define HDLT645_FREEZE_FORWARD_ENERGY                   (0x01)    /**< 正向有功电能 */
+
 
 #ifdef __cplusplus
 }
