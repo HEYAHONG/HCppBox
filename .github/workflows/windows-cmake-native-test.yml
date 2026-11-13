@@ -110,12 +110,15 @@ jobs:
           # pcre2 is promoted to a direct request with [core] so wxWidgets does
           # not enable its JIT feature, which needs an api.github.com gitlink
           # lookup (rate limited on shared runner IPs).
+          # openssl makes hhttp/hhttpd build with TLS support: their CMakeLists
+          # define HAVE_OPENSSL when find_package(OpenSSL) succeeds.
           $maxAttempts = 5
           for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
             Write-Host "vcpkg install: attempt $attempt of $maxAttempts"
             & $vcpkg install `
               "opencv4[core,jpeg,png,webp]" `
-              "wxwidgets[webview]" freetype libserialport libevent pkgconf `
+              "wxwidgets[webview]" freetype libserialport libevent `
+              openssl pkgconf `
               "pcre2[core]" `
               --triplet $env:VCPKG_TRIPLET `
               --overlay-ports="${env:GITHUB_WORKSPACE}/.github/vcpkg-ports" `
@@ -136,9 +139,11 @@ jobs:
           $installed = "$root/installed/$env:VCPKG_TRIPLET"
           # Runner-specific toolchain wrapper: chain the vcpkg toolchain and
           # teach FindwxWidgets the vcpkg Windows layout (Release libs in lib/,
-          # Debug libs in debug/lib). This file lives in RUNNER_TEMP, not in the
-          # repository, and is inherited by the nested htools builds too.
-          $wxToolchain = Join-Path $env:RUNNER_TEMP 'vcpkg-wx-toolchain.cmake'
+          # Debug libs in debug/lib), then point FindOpenSSL at the same tree so
+          # hhttp/hhttpd are compiled with TLS support. This file lives in
+          # RUNNER_TEMP, not in the repository, and is inherited by the nested
+          # htools builds too.
+          $ciToolchain = Join-Path $env:RUNNER_TEMP 'vcpkg-ci-toolchain.cmake'
           @'
           include("$ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake")
 
@@ -157,9 +162,13 @@ jobs:
               set(wxWidgets_CONFIGURATION mswu CACHE STRING "" FORCE)
               set(wxWidgets_USE_REL_AND_DBG OFF CACHE BOOL "" FORCE)
           endif()
+          # hhttp/hhttpd use find_package(OpenSSL); FindOpenSSL searches
+          # OPENSSL_ROOT_DIR before the default system locations.
+          set(OPENSSL_ROOT_DIR "${_wx_vcpkg_root}" CACHE PATH "" FORCE)
           unset(_wx_vcpkg_root)
-          '@ | Set-Content -Path $wxToolchain -Encoding ASCII
-          "CMAKE_TOOLCHAIN_FILE=$($wxToolchain -replace '\\', '/')" >> $env:GITHUB_ENV
+          unset(_wx_vcpkg_base)
+          '@ | Set-Content -Path $ciToolchain -Encoding ASCII
+          "CMAKE_TOOLCHAIN_FILE=$($ciToolchain -replace '\\', '/')" >> $env:GITHUB_ENV
           "VCPKG_DEFAULT_TRIPLET=$env:VCPKG_TRIPLET" >> $env:GITHUB_ENV
           "VCPKG_ROOT=$root" >> $env:GITHUB_ENV
           # pkgconf provides pkg-config, which htools uses for freetype and
@@ -172,7 +181,8 @@ jobs:
 
       - name: Report third-party detection
         # CI sanity check: print what the same vcpkg toolchain resolves for
-        # OpenCV, wxWidgets and libserialport (the libraries used by htools).
+        # OpenCV, wxWidgets, libserialport and OpenSSL (the libraries used by
+        # htools).
         shell: pwsh
         run: |
           $checkDir = Join-Path $env:RUNNER_TEMP 'depcheck'
@@ -182,6 +192,7 @@ jobs:
           project(depcheck CXX)
           include(FindPkgConfig)
           find_package(OpenCV QUIET)
+          find_package(OpenSSL QUIET)
           find_package(wxWidgets 3.2.0 QUIET)
           set(_wx_found "${wxWidgets_FOUND}")
           set(_wx_ver "${wxWidgets_VERSION}")
@@ -194,6 +205,7 @@ jobs:
           pkg_check_modules(LIBEVENT_CORE QUIET libevent_core)
           pkg_check_modules(LIBEVENT_EXTRA QUIET libevent_extra)
           message(STATUS "DEPCHECK OpenCV_FOUND=${OpenCV_FOUND} OPENCV_FOUND=${OPENCV_FOUND} OpenCV_DIR=${OpenCV_DIR}")
+          message(STATUS "DEPCHECK OPENSSL_FOUND=${OPENSSL_FOUND} ver=${OPENSSL_VERSION} ssl=${OPENSSL_SSL_LIBRARY} crypto=${OPENSSL_CRYPTO_LIBRARY}")
           message(STATUS "DEPCHECK wx found=${_wx_found} ver=${_wx_ver} lib=${_wx_lib} cfg=${_wx_cfg}")
           message(STATUS "DEPCHECK wx inc=${_wx_inc} libs=${_wx_libs}")
           message(STATUS "DEPCHECK LIBSERIALPORT_FOUND=${LIBSERIALPORT_FOUND} version=${LIBSERIALPORT_VERSION}")
@@ -269,7 +281,7 @@ jobs:
         # The htools executables are installed into build/htools/bin. Copy the
         # runtime DLLs of the vcpkg libraries next to them so the packaged
         # tools are self-contained (OpenCV, wxWidgets, freetype,
-        # libserialport and their dependencies).
+        # libserialport, libevent, OpenSSL and their dependencies).
         shell: pwsh
         run: |
           $src = Join-Path $env:VCPKG_INSTALLATION_ROOT "installed/$env:VCPKG_TRIPLET/bin"
