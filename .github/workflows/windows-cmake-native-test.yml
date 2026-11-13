@@ -92,6 +92,9 @@ jobs:
         # Only the OpenCV modules used by imageresourcegenerate are enabled
         # (core/imgproc/imgcodecs are always built; only image codecs are
         # selectable features) to avoid the heavy default dnn/gapi features.
+        # TIFF is deliberately not enabled: its find_dependency() makes the
+        # OpenCV export fail with "cmake_policy PUSH without matching POP"
+        # when TIFF is not resolved in this project context (OpenCV 4.14).
         shell: pwsh
         env:
           VCPKG_DISABLE_METRICS: "1"
@@ -113,7 +116,7 @@ jobs:
           for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
             Write-Host "vcpkg install: attempt $attempt of $maxAttempts"
             & $vcpkg install `
-              "opencv4[core,jpeg,png,tiff,webp]" `
+              "opencv4[core,jpeg,png,webp]" `
               "wxwidgets[webview]" freetype libserialport pkgconf `
               "pcre2[core]" `
               --triplet $env:VCPKG_TRIPLET `
