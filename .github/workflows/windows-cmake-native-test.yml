@@ -82,17 +82,20 @@ jobs:
         # pkgconf is installed because htools detects freetype and
         # libserialport with pkg-config.
         # Only the OpenCV modules used by imageresourcegenerate are enabled
-        # (core/imgproc/imgcodecs plus common image codecs) to avoid building
-        # the heavy default dnn/gapi/etc. features.
+        # (core/imgproc/imgcodecs are always built; only image codecs are
+        # selectable features) to avoid the heavy default dnn/gapi features.
         shell: pwsh
         env:
           VCPKG_DISABLE_METRICS: "1"
           # Only the Release configuration is built/needed here.
           VCPKG_BUILD_TYPE: release
         run: |
+          # vcvars64.bat points VCPKG_ROOT at the Visual Studio bundled copy;
+          # align it with the vcpkg used by this workflow.
+          $env:VCPKG_ROOT = $env:VCPKG_INSTALLATION_ROOT
           $vcpkg = Join-Path $env:VCPKG_INSTALLATION_ROOT 'vcpkg.exe'
           & $vcpkg install `
-            "opencv4[core,imgproc,imgcodecs,jpeg,png,tiff,webp]" `
+            "opencv4[core,jpeg,png,tiff,webp]" `
             "wxwidgets[webview]" freetype libserialport pkgconf `
             --triplet $env:VCPKG_TRIPLET `
             --overlay-ports="${env:GITHUB_WORKSPACE}/.github/vcpkg-ports" `
@@ -104,6 +107,7 @@ jobs:
           # Make the vcpkg toolchain available to the nested htools builds too.
           "CMAKE_TOOLCHAIN_FILE=$root/scripts/buildsystems/vcpkg.cmake" >> $env:GITHUB_ENV
           "VCPKG_DEFAULT_TRIPLET=$env:VCPKG_TRIPLET" >> $env:GITHUB_ENV
+          "VCPKG_ROOT=$root" >> $env:GITHUB_ENV
           # pkgconf provides pkg-config, which htools uses for freetype and
           # libserialport detection.
           "PKG_CONFIG=$installed/tools/pkgconf/pkgconf.exe" >> $env:GITHUB_ENV
