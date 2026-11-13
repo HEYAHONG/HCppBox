@@ -9,10 +9,14 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
-  # Visual Studio is a multi-configuration generator. Restrict it to the
-  # requested configuration so that the nested `cmake --build` invocations in
-  # htools (which do not pass --config) also build Release instead of Debug.
-  CMAKE_CONFIGURATION_TYPES: Release
+  # Use NMake Makefiles instead of the Visual Studio (IDE) generator: the
+  # htools subdirectory is added with EXCLUDE_FROM_ALL, which excludes its
+  # targets from Visual Studio solution/project files. NMake Makefiles is a
+  # non-IDE (single-configuration) generator and keeps every target buildable.
+  CMAKE_GENERATOR: NMake Makefiles
+  # NMake Makefiles is single-configuration. Export the build type so that the
+  # nested htools builds (which do not pass CMAKE_BUILD_TYPE) also use Release.
+  CMAKE_BUILD_TYPE: Release
 
 jobs:
   build:
@@ -23,18 +27,21 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Resolve MSVC toolchain
-        # windows-latest currently uses the windows-2025-vs2026 image, which
-        # only provides Visual Studio 2026 (generator "Visual Studio 18 2026").
-        # Detect the installed Visual Studio instance instead of hard-coding a
-        # version so the workflow also works on VS 2022 runner images.
+      - name: Setup MSVC environment
+        # NMake Makefiles needs the MSVC developer environment (cl, nmake).
+        # Detect the installed Visual Studio instance and import the variables
+        # configured by vcvars64.bat into later steps. The detected version is
+        # also used for the msvcXXXX part of the release asset names.
         shell: pwsh
         run: |
           $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $vsPath = & $vswhere -latest -products * `
+            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationPath
           $vsVersion = & $vswhere -latest -products * `
             -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
             -property installationVersion
-          if (-not $vsVersion) {
+          if (-not $vsPath -or -not $vsVersion) {
             throw 'No Visual Studio installation with the MSVC toolchain was found.'
           }
 
@@ -45,10 +52,26 @@ jobs:
             18 { '2026' }
             default { throw "Unsupported Visual Studio version: $vsVersion" }
           }
-
-          "VS_GENERATOR=Visual Studio $vsMajor $vsYear" >> $env:GITHUB_ENV
           "MSVC_VERSION=msvc$vsYear" >> $env:GITHUB_ENV
           Write-Host "MSVC toolchain: $vsVersion (Visual Studio $vsMajor $vsYear)"
+
+          $vcvars = Join-Path $vsPath 'VC\Auxiliary\Build\vcvars64.bat'
+          if (-not (Test-Path $vcvars)) {
+            throw "vcvars64.bat not found: $vcvars"
+          }
+
+          # Run vcvars64.bat in cmd and copy the resulting environment into
+          # GITHUB_ENV. GitHub's reserved variables must not be overwritten.
+          $batFile = Join-Path $env:RUNNER_TEMP 'setup-msvc.bat'
+          Set-Content -Path $batFile -Encoding ASCII `
+            -Value "@call `"$vcvars`" >nul`r`n@set"
+          $skip = '^(GITHUB_|RUNNER_|ACTIONS_|INPUT_|STATE_)'
+          cmd /c $batFile | ForEach-Object {
+            if ($_ -match '^([^=]+)=(.*)$' -and $Matches[1] -notmatch $skip) {
+              "$($Matches[1])=$($Matches[2])" >> $env:GITHUB_ENV
+            }
+          }
+          Remove-Item $batFile -Force
 
       # Note: unlike the Ubuntu workflow, the Windows runner has no
       # pkg-config based third-party libraries (wxWidgets, OpenCV, freetype,
@@ -56,15 +79,15 @@ jobs:
       # by htools/common/CheckExternalLibrariesAndTools.cmake.
 
       - name: Configure CMake
-        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only
-        # required if you are using a single-configuration generator such as make.
+        # Configure CMake in a 'build' subdirectory. CMAKE_BUILD_TYPE is used
+        # by the single-configuration NMake Makefiles generator.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
         # CMAKE_INSTALL_PREFIX is redirected into the build tree so that the
         # install step does not need write access to Program Files.
         shell: pwsh
         run: >-
           cmake -B "${env:GITHUB_WORKSPACE}/build"
-          -G "$env:VS_GENERATOR" -A x64
+          -G "$env:CMAKE_GENERATOR"
           -DCMAKE_BUILD_TYPE=$env:BUILD_TYPE
           -DCMAKE_INSTALL_PREFIX="${env:GITHUB_WORKSPACE}/build/install"
           test
@@ -73,20 +96,18 @@ jobs:
         # Build your program with the given configuration
         shell: pwsh
         run: >-
-          cmake --build "${env:GITHUB_WORKSPACE}/build"
-          --config $env:BUILD_TYPE &&
-          cmake --build "${env:GITHUB_WORKSPACE}/build"
-          --config $env:BUILD_TYPE -t htools
+          cmake --build "${env:GITHUB_WORKSPACE}/build" &&
+          cmake --build "${env:GITHUB_WORKSPACE}/build" -t htools
 
       - name: Test
         working-directory: ${{ github.workspace }}/build
         shell: pwsh
         run: |
-          & "./HBoxTest/${env:BUILD_TYPE}/HBoxTest.exe"
+          & "./HBoxTest/HBoxTest.exe"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          & "./HRCTest/${env:BUILD_TYPE}/HRCTest.exe"
+          & "./HRCTest/HRCTest.exe"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          & "./HCPPObjectTest/${env:BUILD_TYPE}/HCPPObjectTest.exe"
+          & "./HCPPObjectTest/HCPPObjectTest.exe"
           exit $LASTEXITCODE
 
       - name: Install
@@ -95,8 +116,7 @@ jobs:
         # CMAKE_INSTALL_PREFIX inside the build tree.
         shell: pwsh
         run: >-
-          cmake --build "${env:GITHUB_WORKSPACE}/build"
-          --config $env:BUILD_TYPE --target install
+          cmake --build "${env:GITHUB_WORKSPACE}/build" --target install
 
       - name: Resolve release asset name
         # Only publish from pushes to master; pull requests from forks have a
