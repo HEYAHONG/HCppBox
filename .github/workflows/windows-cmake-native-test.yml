@@ -1,0 +1,147 @@
+# This workflow builds and tests the CMake project natively on Windows using
+# MSVC (Visual Studio 2022).
+name: windows cmake native test
+
+on:
+  push:
+    tags: [testing]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+  # Visual Studio generator used for the MSVC build. Its major version is used
+  # to derive the msvcXXXX part of the release asset name.
+  VS_GENERATOR: Visual Studio 17 2022
+  # Visual Studio is a multi-configuration generator. Restrict it to the
+  # requested configuration so that the nested `cmake --build` invocations in
+  # htools (which do not pass --config) also build Release instead of Debug.
+  CMAKE_CONFIGURATION_TYPES: Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Note: unlike the Ubuntu workflow, the Windows runner has no
+      # pkg-config based third-party libraries (wxWidgets, OpenCV, freetype,
+      # libserialport, libevent), so the tools depending on them are skipped
+      # by htools/common/CheckExternalLibrariesAndTools.cmake.
+
+      - name: Configure CMake
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only
+        # required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
+        # CMAKE_INSTALL_PREFIX is redirected into the build tree so that the
+        # install step does not need write access to Program Files.
+        shell: pwsh
+        run: >-
+          cmake -B "${env:GITHUB_WORKSPACE}/build"
+          -G "$env:VS_GENERATOR" -A x64
+          -DCMAKE_BUILD_TYPE=$env:BUILD_TYPE
+          -DCMAKE_INSTALL_PREFIX="${env:GITHUB_WORKSPACE}/build/install"
+          test
+
+      - name: Build
+        # Build your program with the given configuration
+        shell: pwsh
+        run: >-
+          cmake --build "${env:GITHUB_WORKSPACE}/build"
+          --config $env:BUILD_TYPE &&
+          cmake --build "${env:GITHUB_WORKSPACE}/build"
+          --config $env:BUILD_TYPE -t htools
+
+      - name: Test
+        working-directory: ${{ github.workspace }}/build
+        shell: pwsh
+        run: |
+          & "./HBoxTest/${env:BUILD_TYPE}/HBoxTest.exe"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "./HRCTest/${env:BUILD_TYPE}/HRCTest.exe"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "./HCPPObjectTest/${env:BUILD_TYPE}/HCPPObjectTest.exe"
+          exit $LASTEXITCODE
+
+      - name: Install
+        # The test project installs its targets into ${CMAKE_BINARY_DIR}/test
+        # (bin/ and lib/). Third-party install rules go to the redirected
+        # CMAKE_INSTALL_PREFIX inside the build tree.
+        shell: pwsh
+        run: >-
+          cmake --build "${env:GITHUB_WORKSPACE}/build"
+          --config $env:BUILD_TYPE --target install
+
+      - name: Resolve release asset name
+        # Only publish from pushes to master; pull requests from forks have a
+        # read-only GITHUB_TOKEN and cannot upload release assets.
+        # The name is derived at runtime from the runner OS/architecture and
+        # the installed Visual Studio (MSVC) toolchain, e.g.
+        # htools-windows-msvc2022-x64-snapshot.zip and
+        # test-windows-msvc2022-x64-snapshot.zip.
+        if: github.event_name == 'push'
+        shell: pwsh
+        run: |
+          if ($env:VS_GENERATOR -notmatch 'Visual Studio (\d+)') {
+            throw "Cannot parse the Visual Studio generator: $env:VS_GENERATOR"
+          }
+          $vsMajor = [int]$Matches[1]
+
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $vsVersion = & $vswhere -latest -products * `
+            -version "[${vsMajor}.0,$($vsMajor + 1).0)" `
+            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationVersion
+          if (-not $vsVersion) {
+            throw 'No Visual Studio installation with the MSVC toolchain was found.'
+          }
+
+          # Visual Studio 17.x is MSVC 2022, 18.x is MSVC 2026.
+          $msvc = switch ($vsMajor) {
+            17 { 'msvc2022' }
+            18 { 'msvc2026' }
+            default { "msvc$vsMajor" }
+          }
+
+          $os = ${env:RUNNER_OS}.ToLowerInvariant()
+          $arch = ${env:RUNNER_ARCH}.ToLowerInvariant()
+          $suffix = "$os-$msvc-$arch-snapshot.zip"
+          "HTOOLS_ASSET=htools-$suffix" >> $env:GITHUB_ENV
+          "TEST_ASSET=test-$suffix" >> $env:GITHUB_ENV
+          Write-Host "Release assets: htools-$suffix, test-$suffix"
+
+      - name: Package htools
+        # Use the tar command shipped with Windows (C:\Windows\System32\tar.exe,
+        # bsdtar); `-a` selects the zip format from the .zip extension. Call it
+        # by full path because the GNU tar bundled with Git (which cannot create
+        # zip archives) may also be present on PATH.
+        if: github.event_name == 'push'
+        shell: pwsh
+        run: |
+          $tar = Join-Path $env:SystemRoot 'System32\tar.exe'
+          & $tar -C "${env:GITHUB_WORKSPACE}/build" `
+            -a -c -f "${env:GITHUB_WORKSPACE}/${env:HTOOLS_ASSET}" htools
+          exit $LASTEXITCODE
+
+      - name: Package test
+        # Package the test project's install tree (${CMAKE_BINARY_DIR}/test).
+        if: github.event_name == 'push'
+        shell: pwsh
+        run: |
+          $tar = Join-Path $env:SystemRoot 'System32\tar.exe'
+          & $tar -C "${env:GITHUB_WORKSPACE}/build" `
+            -a -c -f "${env:GITHUB_WORKSPACE}/${env:TEST_ASSET}" test
+          exit $LASTEXITCODE
+
+      - name: Upload snapshots to testing release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: >-
+          gh release upload testing
+          "${env:GITHUB_WORKSPACE}/${env:HTOOLS_ASSET}"
+          "${env:GITHUB_WORKSPACE}/${env:TEST_ASSET}"
+          --clobber
