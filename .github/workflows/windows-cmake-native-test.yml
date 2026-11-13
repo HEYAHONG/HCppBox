@@ -144,9 +144,10 @@ jobs:
 
           # NOTE: WIN32 is not defined yet while a toolchain file is being
           # processed, so do not guard this with if(WIN32). Build the path from
-          # runner environment variables rather than vcpkg cache variables,
-          # which are not available yet at toolchain-processing time.
-          set(_wx_vcpkg_root "$ENV{VCPKG_INSTALLATION_ROOT}/installed/$ENV{VCPKG_TRIPLET}")
+          # runner environment variables (normalized to forward slashes so it
+          # matches the path FindwxWidgets later caches).
+          file(TO_CMAKE_PATH "$ENV{VCPKG_INSTALLATION_ROOT}" _wx_vcpkg_base)
+          set(_wx_vcpkg_root "${_wx_vcpkg_base}/installed/$ENV{VCPKG_TRIPLET}")
           message(STATUS "WXWRAP root=${_wx_vcpkg_root}")
           if(EXISTS "${_wx_vcpkg_root}/include/wx/wx.h")
               set(wxWidgets_ROOT_DIR "${_wx_vcpkg_root}" CACHE PATH "" FORCE)
