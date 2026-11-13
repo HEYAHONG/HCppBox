@@ -142,18 +142,19 @@ jobs:
           @'
           include("$ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake")
 
-          if(WIN32)
-              set(_wx_vcpkg_root "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
-              if(EXISTS "${_wx_vcpkg_root}/include/wx/wx.h")
-                  set(wxWidgets_ROOT_DIR "${_wx_vcpkg_root}" CACHE PATH "" FORCE)
-                  set(WX_ROOT_DIR "${_wx_vcpkg_root}" CACHE INTERNAL "" FORCE)
-                  set(wxWidgets_LIB_DIR "${_wx_vcpkg_root}/lib" CACHE PATH "" FORCE)
-                  set(WX_LIB_DIR "${_wx_vcpkg_root}/lib" CACHE INTERNAL "" FORCE)
-                  set(wxWidgets_CONFIGURATION mswu CACHE STRING "" FORCE)
-                  set(wxWidgets_USE_REL_AND_DBG OFF CACHE BOOL "" FORCE)
-              endif()
-              unset(_wx_vcpkg_root)
+          # NOTE: WIN32 is not defined yet while a toolchain file is being
+          # processed, so do not guard this with if(WIN32). The wrapper is only
+          # used by the Windows workflow; EXISTS keeps it safe anyway.
+          set(_wx_vcpkg_root "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+          if(EXISTS "${_wx_vcpkg_root}/include/wx/wx.h")
+              set(wxWidgets_ROOT_DIR "${_wx_vcpkg_root}" CACHE PATH "" FORCE)
+              set(WX_ROOT_DIR "${_wx_vcpkg_root}" CACHE INTERNAL "" FORCE)
+              set(wxWidgets_LIB_DIR "${_wx_vcpkg_root}/lib" CACHE PATH "" FORCE)
+              set(WX_LIB_DIR "${_wx_vcpkg_root}/lib" CACHE INTERNAL "" FORCE)
+              set(wxWidgets_CONFIGURATION mswu CACHE STRING "" FORCE)
+              set(wxWidgets_USE_REL_AND_DBG OFF CACHE BOOL "" FORCE)
           endif()
+          unset(_wx_vcpkg_root)
           '@ | Set-Content -Path $wxToolchain -Encoding ASCII
           "CMAKE_TOOLCHAIN_FILE=$($wxToolchain -replace '\\', '/')" >> $env:GITHUB_ENV
           "VCPKG_DEFAULT_TRIPLET=$env:VCPKG_TRIPLET" >> $env:GITHUB_ENV

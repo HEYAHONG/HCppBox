@@ -84,11 +84,11 @@ if(WIN32)
     find_package(wxWidgets 3.2.0 CONFIG QUIET COMPONENTS
         core base adv aui stc webview html gl richtext)
     if(NOT wxWidgets_FOUND)
-        find_package(wxWidgets 3.2.0 REQUIRED
+        find_package(wxWidgets 3.2.0 REQUIRED COMPONENTS
             core base adv aui stc webview html gl richtext)
     endif()
 else()
-    find_package(wxWidgets 3.2.0 REQUIRED all)
+    find_package(wxWidgets 3.2.0 REQUIRED COMPONENTS all)
 endif()
 if(wxWidgets_USE_FILE)
     include(${wxWidgets_USE_FILE})
