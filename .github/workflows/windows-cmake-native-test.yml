@@ -28,7 +28,15 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        # Retry once if the initial clone/fetch fails due to a network error.
+        id: checkout
+        uses: actions/checkout@v5
+        continue-on-error: true
+
+      - name: Checkout (retry)
+        if: steps.checkout.outcome == 'failure'
+        uses: actions/checkout@v5
 
       - name: Setup MSVC environment
         # NMake Makefiles needs the MSVC developer environment (cl, nmake).
@@ -94,13 +102,34 @@ jobs:
           # align it with the vcpkg used by this workflow.
           $env:VCPKG_ROOT = $env:VCPKG_INSTALLATION_ROOT
           $vcpkg = Join-Path $env:VCPKG_INSTALLATION_ROOT 'vcpkg.exe'
-          & $vcpkg install `
-            "opencv4[core,jpeg,png,tiff,webp]" `
-            "wxwidgets[webview]" freetype libserialport pkgconf `
-            --triplet $env:VCPKG_TRIPLET `
-            --overlay-ports="${env:GITHUB_WORKSPACE}/.github/vcpkg-ports" `
-            --clean-after-build
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          # vcpkg downloads many archives (GitHub, GitLab, MSYS2, ...). Retry
+          # transient network failures; already-built packages are resumed on
+          # the next attempt.
+          # pcre2 is promoted to a direct request with [core] so wxWidgets does
+          # not enable its JIT feature, which needs an api.github.com gitlink
+          # lookup (rate limited on shared runner IPs).
+          $maxAttempts = 5
+          for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+            Write-Host "vcpkg install: attempt $attempt of $maxAttempts"
+            & $vcpkg install `
+              "opencv4[core,jpeg,png,tiff,webp]" `
+              "wxwidgets[webview]" freetype libserialport pkgconf `
+              "pcre2[core]" `
+              --triplet $env:VCPKG_TRIPLET `
+              --overlay-ports="${env:GITHUB_WORKSPACE}/.github/vcpkg-ports" `
+              --clean-after-build
+            if ($LASTEXITCODE -eq 0) {
+              break
+            }
+            if ($attempt -eq $maxAttempts) {
+              Write-Host "vcpkg install failed after $maxAttempts attempts."
+              exit $LASTEXITCODE
+            }
+            $delay = 30 * $attempt
+            Write-Warning "vcpkg install failed (exit $LASTEXITCODE); retrying in $delay seconds."
+            Start-Sleep -Seconds $delay
+          }
 
           $root = $env:VCPKG_INSTALLATION_ROOT -replace '\\', '/'
           $installed = "$root/installed/$env:VCPKG_TRIPLET"
@@ -217,8 +246,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
-        run: >-
-          gh release upload testing
-          "${env:GITHUB_WORKSPACE}/${env:HTOOLS_ASSET}"
-          "${env:GITHUB_WORKSPACE}/${env:TEST_ASSET}"
-          --clobber
+        run: |
+          $maxAttempts = 5
+          for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+            Write-Host "gh release upload: attempt $attempt of $maxAttempts"
+            & gh release upload testing `
+              "${env:GITHUB_WORKSPACE}/${env:HTOOLS_ASSET}" `
+              "${env:GITHUB_WORKSPACE}/${env:TEST_ASSET}" `
+              --clobber
+            if ($LASTEXITCODE -eq 0) {
+              break
+            }
+            if ($attempt -eq $maxAttempts) {
+              Write-Host "gh release upload failed after $maxAttempts attempts."
+              exit $LASTEXITCODE
+            }
+            $delay = 10 * $attempt
+            Write-Warning "gh release upload failed (exit $LASTEXITCODE); retrying in $delay seconds."
+            Start-Sleep -Seconds $delay
+          }
