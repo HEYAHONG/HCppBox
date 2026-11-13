@@ -57,11 +57,20 @@ FIND_PACKAGE(Threads REQUIRED)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}  ${CMAKE_THREAD_LIBS_INIT})
 
 if(WIN32)
-    find_package(wxWidgets 3.2.0 REQUIRED core base adv aui stc webview net html gl richtext )
+    # Prefer the CMake config package installed by vcpkg's wxWidgets 3.3;
+    # fall back to module-mode FindwxWidgets for other installations.
+    find_package(wxWidgets 3.2.0 CONFIG QUIET COMPONENTS
+        core base adv aui stc webview net html gl richtext)
+    if(NOT wxWidgets_FOUND)
+        find_package(wxWidgets 3.2.0 REQUIRED
+            core base adv aui stc webview net html gl richtext)
+    endif()
 else()
     find_package(wxWidgets 3.2.0 REQUIRED all)
 endif()
-include(${wxWidgets_USE_FILE})
+if(wxWidgets_USE_FILE)
+    include(${wxWidgets_USE_FILE})
+endif()
 target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
 
 #添加libserialport

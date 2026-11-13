@@ -12,7 +12,7 @@ else()
     message(STATUS "Disable dotfontscan_tool!" )
 endif()
 
-if(OPENCV_FOUND)
+if(OpenCV_FOUND)
     #添加imageresourcegenerate工具构建
     add_custom_target(imageresourcegenerate_tool  ${CMAKE_COMMAND} -E make_directory imageresourcegenerate && ${CMAKE_COMMAND}  -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR} -S ${CMAKE_CURRENT_SOURCE_DIR}/imageresourcegenerate/ -B imageresourcegenerate && ${CMAKE_COMMAND} --build imageresourcegenerate -t install
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/

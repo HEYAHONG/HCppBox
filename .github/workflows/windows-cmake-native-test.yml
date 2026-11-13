@@ -98,8 +98,6 @@ jobs:
         shell: pwsh
         env:
           VCPKG_DISABLE_METRICS: "1"
-          # Only the Release configuration is built/needed here.
-          VCPKG_BUILD_TYPE: release
         run: |
           # vcvars64.bat points VCPKG_ROOT at the Visual Studio bundled copy;
           # align it with the vcpkg used by this workflow.
@@ -117,7 +115,7 @@ jobs:
             Write-Host "vcpkg install: attempt $attempt of $maxAttempts"
             & $vcpkg install `
               "opencv4[core,jpeg,png,webp]" `
-              "wxwidgets[webview]" freetype libserialport pkgconf `
+              "wxwidgets[webview]" freetype libserialport libevent pkgconf `
               "pcre2[core]" `
               --triplet $env:VCPKG_TRIPLET `
               --overlay-ports="${env:GITHUB_WORKSPACE}/.github/vcpkg-ports" `
@@ -147,6 +145,49 @@ jobs:
           # Required to run tools/tests that link against vcpkg libraries.
           "$installed/bin" >> $env:GITHUB_PATH
           "$installed/tools/pkgconf" >> $env:GITHUB_PATH
+
+      - name: Report third-party detection
+        # CI sanity check: print what the same vcpkg toolchain resolves for
+        # OpenCV, wxWidgets and libserialport (the libraries used by htools).
+        shell: pwsh
+        run: |
+          $checkDir = Join-Path $env:RUNNER_TEMP 'depcheck'
+          New-Item -ItemType Directory -Force -Path $checkDir | Out-Null
+          @'
+          cmake_minimum_required(VERSION 3.25)
+          project(depcheck CXX)
+          include(FindPkgConfig)
+          find_package(OpenCV QUIET)
+          find_package(wxWidgets 3.2.0 QUIET)
+          set(_wx_module_found "${wxWidgets_FOUND}")
+          set(_wx_module_ver "${wxWidgets_VERSION}")
+          set(_wx_module_lib "${wxWidgets_LIB_DIR}")
+          set(_wx_module_cfg "${wxWidgets_CONFIGURATION}")
+          find_package(wxWidgets 3.2.0 CONFIG QUIET)
+          pkg_check_modules(LIBSERIALPORT QUIET libserialport)
+          pkg_check_modules(LIBEVENT QUIET libevent)
+          pkg_check_modules(LIBEVENT_CORE QUIET libevent_core)
+          pkg_check_modules(LIBEVENT_EXTRA QUIET libevent_extra)
+          message(STATUS "DEPCHECK OpenCV_FOUND=${OpenCV_FOUND} OPENCV_FOUND=${OPENCV_FOUND} OpenCV_DIR=${OpenCV_DIR}")
+          message(STATUS "DEPCHECK wx module=${_wx_module_found} ver=${_wx_module_ver} libdir=${_wx_module_lib} cfg=${_wx_module_cfg}")
+          message(STATUS "DEPCHECK wx config=${wxWidgets_FOUND} ver=${wxWidgets_VERSION} libs=${wxWidgets_LIBRARIES}")
+          message(STATUS "DEPCHECK LIBSERIALPORT_FOUND=${LIBSERIALPORT_FOUND} version=${LIBSERIALPORT_VERSION}")
+          message(STATUS "DEPCHECK LIBEVENT_FOUND=${LIBEVENT_FOUND} CORE=${LIBEVENT_CORE_FOUND} EXTRA=${LIBEVENT_EXTRA_FOUND} version=${LIBEVENT_VERSION}")
+          foreach(_f "${wxWidgets_ROOT_DIR}/include/wx/wx.h" "${wxWidgets_ROOT_DIR}/include/wx/version.h" "${_wx_module_lib}/mswu/wx/setup.h" "${_wx_module_lib}/mswud/wx/setup.h")
+            if(EXISTS "${_f}")
+              message(STATUS "DEPCHECK exists ${_f}")
+            else()
+              message(STATUS "DEPCHECK missing ${_f}")
+            endif()
+          endforeach()
+          file(GLOB _wxlibs "${_wx_module_lib}/*base*" "${_wx_module_lib}/*core*")
+          message(STATUS "DEPCHECK wxlibs=${_wxlibs}")
+          '@ | Set-Content -Path (Join-Path $checkDir 'CMakeLists.txt') -Encoding ASCII
+          cmake -S $checkDir -B (Join-Path $checkDir 'build') `
+            -G "$env:CMAKE_GENERATOR" `
+            -DCMAKE_TOOLCHAIN_FILE="$env:CMAKE_TOOLCHAIN_FILE" `
+            -DVCPKG_TARGET_TRIPLET=$env:VCPKG_TRIPLET
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. CMAKE_BUILD_TYPE is used
