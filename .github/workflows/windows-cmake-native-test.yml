@@ -1,5 +1,5 @@
 # This workflow builds and tests the CMake project natively on Windows using
-# MSVC (Visual Studio 2022).
+# MSVC (the Visual Studio toolchain provided by the runner image).
 name: windows cmake native test
 
 on:
@@ -9,9 +9,6 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
-  # Visual Studio generator used for the MSVC build. Its major version is used
-  # to derive the msvcXXXX part of the release asset name.
-  VS_GENERATOR: Visual Studio 17 2022
   # Visual Studio is a multi-configuration generator. Restrict it to the
   # requested configuration so that the nested `cmake --build` invocations in
   # htools (which do not pass --config) also build Release instead of Debug.
@@ -25,6 +22,33 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+
+      - name: Resolve MSVC toolchain
+        # windows-latest currently uses the windows-2025-vs2026 image, which
+        # only provides Visual Studio 2026 (generator "Visual Studio 18 2026").
+        # Detect the installed Visual Studio instance instead of hard-coding a
+        # version so the workflow also works on VS 2022 runner images.
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $vsVersion = & $vswhere -latest -products * `
+            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationVersion
+          if (-not $vsVersion) {
+            throw 'No Visual Studio installation with the MSVC toolchain was found.'
+          }
+
+          $vsMajor = [int]($vsVersion.Split('.')[0])
+          $vsYear = switch ($vsMajor) {
+            16 { '2019' }
+            17 { '2022' }
+            18 { '2026' }
+            default { throw "Unsupported Visual Studio version: $vsVersion" }
+          }
+
+          "VS_GENERATOR=Visual Studio $vsMajor $vsYear" >> $env:GITHUB_ENV
+          "MSVC_VERSION=msvc$vsYear" >> $env:GITHUB_ENV
+          Write-Host "MSVC toolchain: $vsVersion (Visual Studio $vsMajor $vsYear)"
 
       # Note: unlike the Ubuntu workflow, the Windows runner has no
       # pkg-config based third-party libraries (wxWidgets, OpenCV, freetype,
@@ -78,36 +102,15 @@ jobs:
         # Only publish from pushes to master; pull requests from forks have a
         # read-only GITHUB_TOKEN and cannot upload release assets.
         # The name is derived at runtime from the runner OS/architecture and
-        # the installed Visual Studio (MSVC) toolchain, e.g.
-        # htools-windows-msvc2022-x64-snapshot.zip and
-        # test-windows-msvc2022-x64-snapshot.zip.
+        # the detected Visual Studio (MSVC) toolchain, e.g.
+        # htools-windows-msvc2026-x64-snapshot.zip and
+        # test-windows-msvc2026-x64-snapshot.zip.
         if: github.event_name == 'push'
         shell: pwsh
         run: |
-          if ($env:VS_GENERATOR -notmatch 'Visual Studio (\d+)') {
-            throw "Cannot parse the Visual Studio generator: $env:VS_GENERATOR"
-          }
-          $vsMajor = [int]$Matches[1]
-
-          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
-          $vsVersion = & $vswhere -latest -products * `
-            -version "[${vsMajor}.0,$($vsMajor + 1).0)" `
-            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-            -property installationVersion
-          if (-not $vsVersion) {
-            throw 'No Visual Studio installation with the MSVC toolchain was found.'
-          }
-
-          # Visual Studio 17.x is MSVC 2022, 18.x is MSVC 2026.
-          $msvc = switch ($vsMajor) {
-            17 { 'msvc2022' }
-            18 { 'msvc2026' }
-            default { "msvc$vsMajor" }
-          }
-
           $os = ${env:RUNNER_OS}.ToLowerInvariant()
           $arch = ${env:RUNNER_ARCH}.ToLowerInvariant()
-          $suffix = "$os-$msvc-$arch-snapshot.zip"
+          $suffix = "$os-$($env:MSVC_VERSION)-$arch-snapshot.zip"
           "HTOOLS_ASSET=htools-$suffix" >> $env:GITHUB_ENV
           "TEST_ASSET=test-$suffix" >> $env:GITHUB_ENV
           Write-Host "Release assets: htools-$suffix, test-$suffix"
