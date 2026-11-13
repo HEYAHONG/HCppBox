@@ -1,0 +1,11 @@
+{
+  "name": "libserialport",
+  "version": "0.1.2",
+  "description": "Cross-platform serial port access library",
+  "homepage": "https://sigrok.org/wiki/Libserialport",
+  "license": "LGPL-3.0-or-later",
+  "supports": "windows",
+  "dependencies": [
+    "vcpkg-cmake"
+  ]
+}

@@ -17,6 +17,9 @@ env:
   # NMake Makefiles is single-configuration. Export the build type so that the
   # nested htools builds (which do not pass CMAKE_BUILD_TYPE) also use Release.
   CMAKE_BUILD_TYPE: Release
+  # vcpkg triplet used for the third-party libraries. The dynamic variant
+  # (x64-windows) is required so the runtime DLLs can be packaged.
+  VCPKG_TRIPLET: x64-windows
 
 jobs:
   build:
@@ -73,10 +76,41 @@ jobs:
           }
           Remove-Item $batFile -Force
 
-      # Note: unlike the Ubuntu workflow, the Windows runner has no
-      # pkg-config based third-party libraries (wxWidgets, OpenCV, freetype,
-      # libserialport, libevent), so the tools depending on them are skipped
-      # by htools/common/CheckExternalLibrariesAndTools.cmake.
+      - name: Install vcpkg dependencies
+        # libserialport is not in the official vcpkg registry, so it is
+        # provided by the local overlay port under .github/vcpkg-ports/.
+        # pkgconf is installed because htools detects freetype and
+        # libserialport with pkg-config.
+        # Only the OpenCV modules used by imageresourcegenerate are enabled
+        # (core/imgproc/imgcodecs plus common image codecs) to avoid building
+        # the heavy default dnn/gapi/etc. features.
+        shell: pwsh
+        env:
+          VCPKG_DISABLE_METRICS: "1"
+          # Only the Release configuration is built/needed here.
+          VCPKG_BUILD_TYPE: release
+        run: |
+          $vcpkg = Join-Path $env:VCPKG_INSTALLATION_ROOT 'vcpkg.exe'
+          & $vcpkg install `
+            "opencv4[core,imgproc,imgcodecs,jpeg,png,tiff,webp]" `
+            "wxwidgets[webview]" freetype libserialport pkgconf `
+            --triplet $env:VCPKG_TRIPLET `
+            --overlay-ports="${env:GITHUB_WORKSPACE}/.github/vcpkg-ports" `
+            --clean-after-build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          $root = $env:VCPKG_INSTALLATION_ROOT -replace '\\', '/'
+          $installed = "$root/installed/$env:VCPKG_TRIPLET"
+          # Make the vcpkg toolchain available to the nested htools builds too.
+          "CMAKE_TOOLCHAIN_FILE=$root/scripts/buildsystems/vcpkg.cmake" >> $env:GITHUB_ENV
+          "VCPKG_DEFAULT_TRIPLET=$env:VCPKG_TRIPLET" >> $env:GITHUB_ENV
+          # pkgconf provides pkg-config, which htools uses for freetype and
+          # libserialport detection.
+          "PKG_CONFIG=$installed/tools/pkgconf/pkgconf.exe" >> $env:GITHUB_ENV
+          "PKG_CONFIG_PATH=$installed/lib/pkgconfig;$installed/share/pkgconfig" >> $env:GITHUB_ENV
+          # Required to run tools/tests that link against vcpkg libraries.
+          "$installed/bin" >> $env:GITHUB_PATH
+          "$installed/tools/pkgconf" >> $env:GITHUB_PATH
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. CMAKE_BUILD_TYPE is used
@@ -88,6 +122,8 @@ jobs:
         run: >-
           cmake -B "${env:GITHUB_WORKSPACE}/build"
           -G "$env:CMAKE_GENERATOR"
+          -DCMAKE_TOOLCHAIN_FILE="$env:CMAKE_TOOLCHAIN_FILE"
+          -DVCPKG_TARGET_TRIPLET=$env:VCPKG_TRIPLET
           -DCMAKE_BUILD_TYPE=$env:BUILD_TYPE
           -DCMAKE_INSTALL_PREFIX="${env:GITHUB_WORKSPACE}/build/install"
           test
@@ -117,6 +153,20 @@ jobs:
         shell: pwsh
         run: >-
           cmake --build "${env:GITHUB_WORKSPACE}/build" --target install
+
+      - name: Copy vcpkg runtime DLLs
+        # The htools executables are installed into build/htools/bin. Copy the
+        # runtime DLLs of the vcpkg libraries next to them so the packaged
+        # tools are self-contained (OpenCV, wxWidgets, freetype,
+        # libserialport and their dependencies).
+        shell: pwsh
+        run: |
+          $src = Join-Path $env:VCPKG_INSTALLATION_ROOT "installed/$env:VCPKG_TRIPLET/bin"
+          $dst = Join-Path $env:GITHUB_WORKSPACE 'build/htools/bin'
+          New-Item -ItemType Directory -Force -Path $dst | Out-Null
+          Copy-Item -Path (Join-Path $src '*.dll') -Destination $dst -Force
+          Get-ChildItem -Path $dst -Filter '*.dll' |
+            Select-Object -ExpandProperty Name
 
       - name: Resolve release asset name
         # Only publish from pushes to master; pull requests from forks have a
