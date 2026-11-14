@@ -205,7 +205,6 @@ cmake-native-hplatformbox:
   stage: build
   tags:
     - saas-windows-medium-amd64
-  shell: powershell
   timeout: 4h
   rules:
     # Windows builds are expensive and only publish snapshots, so run them on
