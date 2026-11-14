@@ -1,5 +1,7 @@
 # GitLab CI mirror of the GitHub Actions workflows in .github/workflows.
-# Jobs run in the official Ubuntu image (root), so sudo is not needed.
+# Most jobs run in the official Ubuntu image (root), so sudo is not needed.
+# The Windows jobs run on the GitLab.com hosted Windows runner tagged
+# "saas-windows-medium-amd64" (Visual Studio Build Tools).
 # The "testing" release assets are stored in the GitLab generic package
 # registry, so a rerun replaces the previous snapshot instead of failing.
 
@@ -192,6 +194,285 @@ cmake-native-hplatformbox:
     expire_in: never
 
 # ---------------------------------------------------------------------------
+# Windows MSVC (mirror of windows-cmake-native-test.yml)
+#
+# Runs on the GitLab.com hosted Windows runner (Visual Studio Build Tools).
+# A current vcpkg is cloned into the job workspace so the old preinstalled
+# C:\vcpkg checkout is not used. The zips are published as job artifacts and,
+# on master pushes, as links of the "testing" release.
+# ---------------------------------------------------------------------------
+.windows-msvc:
+  stage: build
+  tags:
+    - saas-windows-medium-amd64
+  shell: powershell
+  timeout: 4h
+  rules:
+    # Windows builds are expensive and only publish snapshots, so run them on
+    # master pushes like the other release jobs. Remove this rule to also
+    # validate Windows on merge request pipelines.
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"'
+  retry:
+    max: 1
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+  script:
+    - |
+      $ErrorActionPreference = 'Stop'
+
+      $env:CMAKE_GENERATOR = 'NMake Makefiles'
+      $env:CMAKE_BUILD_TYPE = $env:BUILD_TYPE
+
+      Write-Host "Target: $env:TARGET_ARCH (vcpkg triplet $env:VCPKG_TRIPLET, $env:VCVARS)"
+
+      # --- MSVC developer environment -------------------------------------
+      $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+      if (-not (Test-Path $vswhere)) {
+          throw "vswhere.exe not found: $vswhere"
+      }
+      $vsPath = & $vswhere -latest -products * `
+        -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+        -property installationPath
+      $vsVersion = & $vswhere -latest -products * `
+        -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+        -property installationVersion
+      if (-not $vsPath -or -not $vsVersion) {
+          throw 'No Visual Studio installation with the MSVC toolchain was found.'
+      }
+      $vsMajor = [int]($vsVersion.Split('.')[0])
+      $vsYear = switch ($vsMajor) {
+          16 { '2019' }
+          17 { '2022' }
+          18 { '2026' }
+          default { throw "Unsupported Visual Studio version: $vsVersion" }
+      }
+      $env:MSVC_VERSION = "msvc$vsYear"
+      Write-Host "MSVC toolchain: $vsVersion (Visual Studio $vsMajor $vsYear)"
+
+      $vcvars = Join-Path $vsPath "VC\Auxiliary\Build\$env:VCVARS"
+      if (-not (Test-Path $vcvars)) {
+          throw "$env:VCVARS not found: $vcvars"
+      }
+      $batFile = Join-Path $env:TEMP 'gitlab-setup-msvc.bat'
+      Set-Content -Path $batFile -Encoding ASCII -Value "@call `"$vcvars`" >nul`r`n@set"
+      $envLines = cmd /c $batFile
+      if ($LASTEXITCODE -ne 0) {
+          throw "Failed to run $env:VCVARS"
+      }
+      Remove-Item $batFile -Force
+      foreach ($line in $envLines) {
+          if ($line -match '^([^=]+)=(.*)$') {
+              Set-Item -Path "env:$($Matches[1])" -Value $Matches[2]
+          }
+      }
+
+      # --- vcpkg -----------------------------------------------------------
+      # CI_VCPKG_ROOT may point at a pre-provisioned vcpkg. Otherwise clone
+      # the latest vcpkg into the workspace (the image's C:\vcpkg baseline is
+      # from 2023 and is too old for the current port recipes).
+      $env:VCPKG_DISABLE_METRICS = '1'
+      $vcpkgRoot = $env:CI_VCPKG_ROOT
+      if (-not $vcpkgRoot -or -not (Test-Path (Join-Path $vcpkgRoot 'vcpkg.exe'))) {
+          $vcpkgRoot = Join-Path $env:CI_PROJECT_DIR 'vcpkg'
+          if (-not (Test-Path (Join-Path $vcpkgRoot 'vcpkg.exe'))) {
+              $cloned = $false
+              for ($attempt = 1; $attempt -le 5; $attempt++) {
+                  Write-Host "vcpkg clone: attempt $attempt of 5"
+                  if (Test-Path $vcpkgRoot) {
+                      Remove-Item -Recurse -Force $vcpkgRoot -ErrorAction SilentlyContinue
+                  }
+                  git clone --depth 1 https://github.com/microsoft/vcpkg.git $vcpkgRoot
+                  if ($LASTEXITCODE -eq 0) {
+                      $cloned = $true
+                      break
+                  }
+                  Start-Sleep -Seconds (10 * $attempt)
+              }
+              if (-not $cloned) {
+                  throw 'Failed to clone vcpkg'
+              }
+              & (Join-Path $vcpkgRoot 'bootstrap-vcpkg.bat') -disableMetrics
+              if ($LASTEXITCODE -ne 0) {
+                  throw 'Failed to bootstrap vcpkg'
+              }
+          }
+      }
+      $env:VCPKG_ROOT = $vcpkgRoot
+      $vcpkg = Join-Path $vcpkgRoot 'vcpkg.exe'
+      $overlayPorts = (($env:CI_PROJECT_DIR) -replace '\\', '/') + '/.github/vcpkg-ports'
+      Write-Host "vcpkg: $vcpkgRoot"
+
+      # --- third-party dependencies ---------------------------------------
+      $maxAttempts = 5
+      for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+          Write-Host "vcpkg install: attempt $attempt of $maxAttempts"
+          & $vcpkg install `
+              "opencv4[core,jpeg,png,webp]" `
+              "wxwidgets[webview]" freetype libserialport libevent `
+              openssl pkgconf `
+              "pcre2[core]" `
+              --triplet $env:VCPKG_TRIPLET `
+              --overlay-ports=$overlayPorts `
+              --clean-after-build
+          if ($LASTEXITCODE -eq 0) {
+              break
+          }
+          if ($attempt -eq $maxAttempts) {
+              throw "vcpkg install failed after $maxAttempts attempts"
+          }
+          $delay = 30 * $attempt
+          Write-Warning "vcpkg install failed (exit $LASTEXITCODE); retrying in $delay seconds."
+          Start-Sleep -Seconds $delay
+      }
+
+      # --- CMake toolchain wrapper ----------------------------------------
+      $root = $vcpkgRoot -replace '\\', '/'
+      $installed = "$root/installed/$env:VCPKG_TRIPLET"
+      $ciToolchain = Join-Path $env:CI_PROJECT_DIR 'vcpkg-ci-toolchain.cmake'
+      @'
+      # Normalize the vcpkg root before use so a Windows path with
+      # backslashes cannot be misread as a CMake escape sequence.
+      file(TO_CMAKE_PATH "$ENV{VCPKG_ROOT}" _vcpkg_base)
+      include("${_vcpkg_base}/scripts/buildsystems/vcpkg.cmake")
+
+      # NOTE: WIN32 is not defined yet while a toolchain file is being
+      # processed, so do not guard this with if(WIN32). Paths are normalized
+      # to forward slashes so they match the paths FindwxWidgets caches.
+      set(_vcpkg_root "${_vcpkg_base}/installed/$ENV{VCPKG_TRIPLET}")
+      message(STATUS "WXWRAP root=${_vcpkg_root}")
+      if(EXISTS "${_vcpkg_root}/include/wx/wx.h")
+          set(wxWidgets_ROOT_DIR "${_vcpkg_root}" CACHE PATH "" FORCE)
+          set(WX_ROOT_DIR "${_vcpkg_root}" CACHE INTERNAL "" FORCE)
+          set(wxWidgets_LIB_DIR "${_vcpkg_root}/lib" CACHE PATH "" FORCE)
+          set(WX_LIB_DIR "${_vcpkg_root}/lib" CACHE INTERNAL "" FORCE)
+          set(wxWidgets_CONFIGURATION mswu CACHE STRING "" FORCE)
+          set(wxWidgets_USE_REL_AND_DBG OFF CACHE BOOL "" FORCE)
+      endif()
+      # hhttp/hhttpd use find_package(OpenSSL); FindOpenSSL searches
+      # OPENSSL_ROOT_DIR before the default system locations.
+      set(OPENSSL_ROOT_DIR "${_vcpkg_root}" CACHE PATH "" FORCE)
+      unset(_vcpkg_root)
+      unset(_vcpkg_base)
+      '@ | Set-Content -Path $ciToolchain -Encoding ASCII
+
+      $env:CMAKE_TOOLCHAIN_FILE = $ciToolchain -replace '\\', '/'
+      $env:VCPKG_DEFAULT_TRIPLET = $env:VCPKG_TRIPLET
+      $env:PKG_CONFIG = "$installed/tools/pkgconf/pkgconf.exe"
+      $env:PKG_CONFIG_PATH = "$installed/lib/pkgconfig;$installed/share/pkgconfig"
+      $env:PATH = "$installed/bin;$installed/tools/pkgconf;$env:PATH"
+
+      # --- dependency detection report ------------------------------------
+      $checkDir = Join-Path $env:TEMP 'depcheck'
+      New-Item -ItemType Directory -Force -Path $checkDir | Out-Null
+      @'
+      cmake_minimum_required(VERSION 3.25)
+      project(depcheck CXX)
+      include(FindPkgConfig)
+      find_package(OpenCV QUIET)
+      find_package(OpenSSL QUIET)
+      find_package(wxWidgets 3.2.0 QUIET)
+      set(_wx_found "${wxWidgets_FOUND}")
+      set(_wx_ver "${wxWidgets_VERSION}")
+      set(_wx_lib "${wxWidgets_LIB_DIR}")
+      set(_wx_cfg "${wxWidgets_CONFIGURATION}")
+      pkg_check_modules(LIBSERIALPORT QUIET libserialport)
+      pkg_check_modules(LIBEVENT QUIET libevent)
+      pkg_check_modules(LIBEVENT_CORE QUIET libevent_core)
+      pkg_check_modules(LIBEVENT_EXTRA QUIET libevent_extra)
+      message(STATUS "DEPCHECK OpenCV_FOUND=${OpenCV_FOUND} OpenCV_DIR=${OpenCV_DIR}")
+      message(STATUS "DEPCHECK OPENSSL_FOUND=${OPENSSL_FOUND} ver=${OPENSSL_VERSION}")
+      message(STATUS "DEPCHECK wx found=${_wx_found} ver=${_wx_ver} lib=${_wx_lib} cfg=${_wx_cfg}")
+      message(STATUS "DEPCHECK LIBSERIALPORT_FOUND=${LIBSERIALPORT_FOUND} version=${LIBSERIALPORT_VERSION}")
+      message(STATUS "DEPCHECK LIBEVENT_FOUND=${LIBEVENT_FOUND} CORE=${LIBEVENT_CORE_FOUND} EXTRA=${LIBEVENT_EXTRA_FOUND} version=${LIBEVENT_VERSION}")
+      '@ | Set-Content -Path (Join-Path $checkDir 'CMakeLists.txt') -Encoding ASCII
+      cmake -S $checkDir -B (Join-Path $checkDir 'build') `
+        -G "$env:CMAKE_GENERATOR" `
+        -DCMAKE_TOOLCHAIN_FILE="$env:CMAKE_TOOLCHAIN_FILE" `
+        -DVCPKG_TARGET_TRIPLET=$env:VCPKG_TRIPLET
+      if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+      }
+
+      # --- configure, build and test --------------------------------------
+      $buildDir = Join-Path $env:CI_PROJECT_DIR 'build'
+      cmake -B $buildDir `
+        -G "$env:CMAKE_GENERATOR" `
+        -DCMAKE_TOOLCHAIN_FILE="$env:CMAKE_TOOLCHAIN_FILE" `
+        -DVCPKG_TARGET_TRIPLET=$env:VCPKG_TRIPLET `
+        -DCMAKE_BUILD_TYPE=$env:BUILD_TYPE `
+        -DCMAKE_INSTALL_PREFIX="$buildDir\install" `
+        test
+      if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+      }
+
+      cmake --build $buildDir
+      if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+      }
+      cmake --build $buildDir -t htools
+      if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+      }
+
+      Push-Location $buildDir
+      & .\HBoxTest\HBoxTest.exe
+      if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+      }
+      & .\HRCTest\HRCTest.exe
+      if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+      }
+      & .\HCPPObjectTest\HCPPObjectTest.exe
+      if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+      }
+      Pop-Location
+
+      cmake --build $buildDir --target install
+      if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+      }
+
+      # --- package self-contained snapshots --------------------------------
+      $dllSrc = Join-Path $vcpkgRoot "installed\$env:VCPKG_TRIPLET\bin"
+      $dllDst = Join-Path $buildDir 'htools\bin'
+      New-Item -ItemType Directory -Force -Path $dllDst | Out-Null
+      Copy-Item -Path (Join-Path $dllSrc '*.dll') -Destination $dllDst -Force
+      Get-ChildItem -Path $dllDst -Filter '*.dll' | Select-Object -ExpandProperty Name
+
+      $dist = Join-Path $env:CI_PROJECT_DIR 'dist'
+      New-Item -ItemType Directory -Force -Path $dist | Out-Null
+      $tar = Join-Path $env:SystemRoot 'System32\tar.exe'
+      $suffix = "windows-$($env:MSVC_VERSION)-$($env:TARGET_ARCH.ToLowerInvariant())-snapshot.zip"
+      & $tar -C $buildDir -a -c -f (Join-Path $dist "htools-$suffix") htools
+      if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+      }
+      & $tar -C $buildDir -a -c -f (Join-Path $dist "test-$suffix") test
+      if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+      }
+      Get-ChildItem -Path $dist | Select-Object Name, Length
+  artifacts:
+    paths:
+      - dist/*.zip
+    expire_in: never
+
+windows-msvc:
+  extends: .windows-msvc
+  parallel:
+    matrix:
+      - TARGET_ARCH: x64
+        VCPKG_TRIPLET: x64-windows
+        VCVARS: vcvars64.bat
+      - TARGET_ARCH: x86
+        VCPKG_TRIPLET: x86-windows
+        VCVARS: vcvars32.bat
+
+# ---------------------------------------------------------------------------
 # Releases
 # ---------------------------------------------------------------------------
 .release:
@@ -274,4 +555,92 @@ release-test-mingw-x86_64:
     PKG_NAME: test-mingw-x86_64
   needs:
     - job: cmake-x86_64-mingw
+      artifacts: true
+
+# ---------------------------------------------------------------------------
+# Windows release (publishes every zip from dist/ to the testing release)
+# ---------------------------------------------------------------------------
+.release-windows:
+  stage: release
+  before_script:
+    - !reference [.base, before_script]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"'
+  script:
+    - |
+      set -eu
+      shopt -s nullglob
+      files=(dist/*.zip)
+      if [ ${#files[@]} -eq 0 ]; then
+        echo "dist/ 中没有可发布的 zip 制品文件" >&2
+        exit 1
+      fi
+      PKG_VERSION=testing
+      API="$CI_API_V4_URL/projects/$CI_PROJECT_ID"
+      AUTH="JOB-TOKEN: $CI_JOB_TOKEN"
+
+      # 删除同名制品包（连同其中的旧文件），实现“覆盖上次的发布文件”。
+      pkg_ids=$(curl -fsS --header "$AUTH" \
+          "$API/packages?package_name=$PKG_NAME&package_version=$PKG_VERSION" \
+          | python3 -c 'import json,sys; print(" ".join(str(p["id"]) for p in json.load(sys.stdin)))')
+      for pkg_id in $pkg_ids; do
+        curl -fsS --request DELETE --header "$AUTH" "$API/packages/$pkg_id"
+      done
+
+      # 上传本任务的全部 zip 制品到通用包注册表。
+      for asset_path in "${files[@]}"; do
+        asset_name=$(basename "$asset_path")
+        pkg_url="$API/packages/generic/$PKG_NAME/$PKG_VERSION/$asset_name"
+        curl -fsS --header "$AUTH" --upload-file "$asset_path" "$pkg_url"
+        echo "uploaded $asset_name"
+      done
+
+      # 确保 testing Release 存在；已存在时（或并发创建冲突时）直接复用。
+      if ! curl -fsS -o /dev/null --header "$AUTH" "$API/releases/testing"; then
+        curl -fsS --request POST --header "$AUTH" \
+          --header "Content-Type: application/json" \
+          --data "{\"name\":\"testing\",\"tag_name\":\"testing\",\"ref\":\"$CI_COMMIT_SHA\",\"description\":\"Latest snapshot builds\"}" \
+          "$API/releases" || true
+      fi
+
+      # 无论 Release 是否已存在，都删除同名旧链接后重新创建，保证页面上有文件。
+      for asset_path in "${files[@]}"; do
+        asset_name=$(basename "$asset_path")
+        pkg_url="$API/packages/generic/$PKG_NAME/$PKG_VERSION/$asset_name"
+        link_id=$(curl -fsS --header "$AUTH" "$API/releases/testing/assets/links" \
+          | python3 -c 'import json,sys; name=sys.argv[1]; print(next((str(l["id"]) for l in json.load(sys.stdin) if l["name"] == name), ""))' \
+              "$asset_name")
+        if [ -n "$link_id" ]; then
+          curl -fsS --request DELETE --header "$AUTH" "$API/releases/testing/assets/links/$link_id"
+        fi
+        curl -fsS --request POST --header "$AUTH" \
+          --header "Content-Type: application/json" \
+          --data "{\"name\":\"$asset_name\",\"url\":\"$pkg_url\",\"link_type\":\"package\"}" \
+          "$API/releases/testing/assets/links"
+      done
+
+release-windows-x64:
+  extends: .release-windows
+  variables:
+    PKG_NAME: htools-windows-x64
+  needs:
+    - job: windows-msvc
+      parallel:
+        matrix:
+          - TARGET_ARCH: x64
+            VCPKG_TRIPLET: x64-windows
+            VCVARS: vcvars64.bat
+      artifacts: true
+
+release-windows-x86:
+  extends: .release-windows
+  variables:
+    PKG_NAME: htools-windows-x86
+  needs:
+    - job: windows-msvc
+      parallel:
+        matrix:
+          - TARGET_ARCH: x86
+            VCPKG_TRIPLET: x86-windows
+            VCVARS: vcvars32.bat
       artifacts: true
