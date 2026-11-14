@@ -1,5 +1,6 @@
 # This workflow builds and tests the CMake project natively on Windows using
-# MSVC (the Visual Studio toolchain provided by the runner image).
+# MSVC (the Visual Studio toolchain provided by the runner image). It builds
+# both the x64 and the x86 (32-bit) architectures in a matrix.
 name: windows cmake native test
 
 on:
@@ -17,15 +18,30 @@ env:
   # NMake Makefiles is single-configuration. Export the build type so that the
   # nested htools builds (which do not pass CMAKE_BUILD_TYPE) also use Release.
   CMAKE_BUILD_TYPE: Release
-  # vcpkg triplet used for the third-party libraries. The dynamic variant
-  # (x64-windows) is required so the runtime DLLs can be packaged.
-  VCPKG_TRIPLET: x64-windows
 
 jobs:
   build:
+    name: build (${{ matrix.arch }})
     runs-on: windows-latest
     permissions:
       contents: write
+    strategy:
+      # Keep the other architecture running even if one of them fails.
+      fail-fast: false
+      matrix:
+        include:
+          # Dynamic vcpkg triplets are required so the runtime DLLs can be
+          # packaged next to the executables.
+          - arch: x64
+            triplet: x64-windows
+            vcvars: vcvars64.bat
+          - arch: x86
+            triplet: x86-windows
+            vcvars: vcvars32.bat
+    env:
+      VCPKG_TRIPLET: ${{ matrix.triplet }}
+      TARGET_ARCH: ${{ matrix.arch }}
+      VCVARS: ${{ matrix.vcvars }}
 
     steps:
       - name: Checkout
@@ -41,8 +57,9 @@ jobs:
       - name: Setup MSVC environment
         # NMake Makefiles needs the MSVC developer environment (cl, nmake).
         # Detect the installed Visual Studio instance and import the variables
-        # configured by vcvars64.bat into later steps. The detected version is
-        # also used for the msvcXXXX part of the release asset names.
+        # configured by vcvars64.bat (x64) or vcvars32.bat (x86) into later
+        # steps. The detected version is also used for the msvcXXXX part of the
+        # release asset names.
         shell: pwsh
         run: |
           $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
@@ -66,13 +83,15 @@ jobs:
           "MSVC_VERSION=msvc$vsYear" >> $env:GITHUB_ENV
           Write-Host "MSVC toolchain: $vsVersion (Visual Studio $vsMajor $vsYear)"
 
-          $vcvars = Join-Path $vsPath 'VC\Auxiliary\Build\vcvars64.bat'
+          $vcvars = Join-Path $vsPath "VC\Auxiliary\Build\$env:VCVARS"
           if (-not (Test-Path $vcvars)) {
-            throw "vcvars64.bat not found: $vcvars"
+            throw "$env:VCVARS not found: $vcvars"
           }
 
-          # Run vcvars64.bat in cmd and copy the resulting environment into
-          # GITHUB_ENV. GitHub's reserved variables must not be overwritten.
+          # Run the vcvars batch file in cmd and copy the resulting environment
+          # into GITHUB_ENV. GitHub's reserved variables must not be
+          # overwritten.
+          Write-Host "MSVC target architecture: $env:TARGET_ARCH ($env:VCVARS)"
           $batFile = Join-Path $env:RUNNER_TEMP 'setup-msvc.bat'
           Set-Content -Path $batFile -Encoding ASCII `
             -Value "@call `"$vcvars`" >nul`r`n@set"
@@ -99,8 +118,8 @@ jobs:
         env:
           VCPKG_DISABLE_METRICS: "1"
         run: |
-          # vcvars64.bat points VCPKG_ROOT at the Visual Studio bundled copy;
-          # align it with the vcpkg used by this workflow.
+          # The MSVC environment points VCPKG_ROOT at the Visual Studio bundled
+          # copy; align it with the vcpkg used by this workflow.
           $env:VCPKG_ROOT = $env:VCPKG_INSTALLATION_ROOT
           $vcpkg = Join-Path $env:VCPKG_INSTALLATION_ROOT 'vcpkg.exe'
 
@@ -294,15 +313,16 @@ jobs:
       - name: Resolve release asset name
         # Only publish from pushes to master; pull requests from forks have a
         # read-only GITHUB_TOKEN and cannot upload release assets.
-        # The name is derived at runtime from the runner OS/architecture and
-        # the detected Visual Studio (MSVC) toolchain, e.g.
-        # htools-windows-msvc2026-x64-snapshot.zip and
-        # test-windows-msvc2026-x64-snapshot.zip.
+        # The name is derived at runtime from the target architecture and the
+        # detected Visual Studio (MSVC) toolchain, e.g.
+        # htools-windows-msvc2026-x64-snapshot.zip,
+        # htools-windows-msvc2026-x86-snapshot.zip,
+        # test-windows-msvc2026-x64-snapshot.zip, etc.
         if: github.event_name == 'push'
         shell: pwsh
         run: |
           $os = ${env:RUNNER_OS}.ToLowerInvariant()
-          $arch = ${env:RUNNER_ARCH}.ToLowerInvariant()
+          $arch = $env:TARGET_ARCH.ToLowerInvariant()
           $suffix = "$os-$($env:MSVC_VERSION)-$arch-snapshot.zip"
           "HTOOLS_ASSET=htools-$suffix" >> $env:GITHUB_ENV
           "TEST_ASSET=test-$suffix" >> $env:GITHUB_ENV
