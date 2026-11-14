@@ -120,6 +120,21 @@ add_executable(${PROJECT_NAME}_rvvm_cli ${CMAKE_CURRENT_LIST_DIR}/../../common/3
 target_link_libraries(${PROJECT_NAME}_rvvm_cli PRIVATE rvvm_common)
 set_target_properties(${PROJECT_NAME}_rvvm_cli PROPERTIES OUTPUT_NAME ${PROJECT_NAME}_rvvm)
 
+if(MSVC)
+    # wxWidgets' UsewxWidgets.cmake adds UNICODE/_UNICODE at directory scope,
+    # so they also leak into the RVVM sources. Newer Windows SDKs only declare
+    # the ANSI GetEnvironmentStringsA when UNICODE is undefined; otherwise MSVC
+    # generates an implicit cdecl reference which cannot be resolved on 32-bit
+    # builds (the exported Win32 symbol uses __stdcall decoration). Build RVVM
+    # as an ANSI application by undefining the macros on the RVVM targets only.
+    foreach(_rvvm_target rvvm_objlib ${PROJECT_NAME}_rvvm_static ${PROJECT_NAME}_rvvm_cli)
+        if(TARGET ${_rvvm_target})
+            target_compile_options(${_rvvm_target} PRIVATE /UUNICODE /U_UNICODE)
+        endif()
+    endforeach()
+    unset(_rvvm_target)
+endif()
+
 
 include(GNUInstallDirs)
 if(NOT DEFINED HTOOLS_INSTALL_DIR)
