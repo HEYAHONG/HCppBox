@@ -682,6 +682,8 @@ struct helf_elf64_rela
 #define HELF_EM_UNICORE     110             /* Microprocessor series from PKU-Unity Ltd. and MPRC of Peking University */
 #define HELF_EM_AARCH64     183             /* AArch64 (64-bit ARM) */
 #define HELF_EM_RISCV       243             /* RISC-V */
+#define HELF_EM_MOXIE       223             /* Moxie */
+#define HELF_EM_MOXIE_OLD   0xFEED          /* Old Moxie */
 /* Non-standard or deprecated. */
 #define HELF_EM_486         6               /* Intel i486. */
 #define HELF_EM_MIPS_RS4_BE 10              /* MIPS R4000 Big-Endian */

@@ -18,6 +18,11 @@ extern "C"
 #include "hsimulator/rp_pio_sm/rp_pio.h"
 #include "hsimulator/mcs_51/mcs_51.h"
 #include "hsimulator/risc-v/risc-v.h"
+#include "hsimulator/moxie/moxie_core.h"
+#include "hsimulator/moxie/moxie_core_el.h"
+#include "hsimulator/moxie/moxie_moxiebox_common.h"
+#include "hsimulator/moxie/moxie_moxiebox.h"
+#include "hsimulator/moxie/moxie_moxiebox_el.h"
 
 #ifdef __cplusplus
 }

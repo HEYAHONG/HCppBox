@@ -38,3 +38,8 @@
 #include "hsimulator/risc-v/risc-v_machine_rv32.c"
 #include "hsimulator/risc-v/risc-v_machine_rv64.c"
 
+#include "hsimulator/moxie/moxie_core.c"
+#include "hsimulator/moxie/moxie_core_el.c"
+#include "hsimulator/moxie/moxie_moxiebox.c"
+#include "hsimulator/moxie/moxie_moxiebox_el.c"
+

@@ -9,4 +9,5 @@
 #include "helf.h"
 
 #include "helf/helf_common.c"
+#include "helf/helf_moxie.c"
 

@@ -15,6 +15,7 @@ extern "C"
 #endif // __cplusplus
 
 #include "helf/helf_common.h"
+#include "helf/helf_moxie.h"
 
 #ifdef __cplusplus
 }

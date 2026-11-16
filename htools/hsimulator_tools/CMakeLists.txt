@@ -39,6 +39,14 @@ add_dependencies(hsimulator_tools hmini-riscv_tool)
 message(STATUS "Enable hmini-riscv_tool!" )
 
 
+#添加hmoxiebox工具构建
+add_custom_target(hmoxiebox_tool  ${CMAKE_COMMAND} -E make_directory hmoxiebox && ${CMAKE_COMMAND} -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR}  -S ${CMAKE_CURRENT_SOURCE_DIR}/hmoxiebox/ -B hmoxiebox && ${CMAKE_COMMAND} --build hmoxiebox -t install
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+    USES_TERMINAL)
+add_dependencies(hsimulator_tools hmoxiebox_tool)
+message(STATUS "Enable hmoxiebox_tool!" )
+
+
 #添加hmini-mcs51工具构建
 add_custom_target(hmini-mcs51_tool  ${CMAKE_COMMAND} -E make_directory hmini-mcs51 && ${CMAKE_COMMAND} -DHTOOLS_INSTALL_DIR=${HTOOLS_INSTALL_DIR}  -S ${CMAKE_CURRENT_SOURCE_DIR}/hmini-mcs51/ -B hmini-mcs51 && ${CMAKE_COMMAND} --build hmini-mcs51 -t install
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/

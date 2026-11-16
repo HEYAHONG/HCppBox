@@ -8,5 +8,6 @@
 - [hmini-rv32ima](hmini-rv32ima)：mini-rv32ima模拟器
 - [hmini-rv32imav2](hmini-rv32imav2)：mini-rv32ima模拟器(V2)
 - [hmini-riscv](hmini-riscv)：mini-riscv模拟器
+- [hmoxiebox](hmoxiebox):moxie虚拟机
 - [hmini-mcs51](hmini-mcs51)：mini-mcs51模拟器
 
