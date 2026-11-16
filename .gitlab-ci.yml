@@ -168,9 +168,8 @@ scons-native:
   before_script:
     - !reference [.base, before_script]
     - !reference [.libs, before_script]
-    - apt-get install -y -f --no-install-recommends python3-pip
+    - apt-get install -y -f --no-install-recommends scons
   script:
-    - pip3 install --break-system-packages scons
     - cd test && scons
 
 # ---------------------------------------------------------------------------
