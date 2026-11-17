@@ -84,6 +84,34 @@ size_t helf_file_input_read(helf_file_input_t *input,uintptr_t address,void *buf
     return input->read(input,address,buffer,buffer_length);
 }
 
+void helf_file_output_init(helf_file_output_t *output,helf_file_output_read_t read,helf_file_output_write_t write,void *usr)
+{
+    if(output!=NULL)
+    {
+        output->read=read;
+        output->write=write;
+        output->usr=usr;
+    }
+}
+
+size_t helf_file_output_read(helf_file_output_t *output,uintptr_t address,void *buffer,size_t buffer_length)
+{
+    if(output==NULL || output->read==NULL)
+    {
+        return 0;
+    }
+    return output->read(output,address,buffer,buffer_length);
+}
+
+size_t helf_file_output_write(helf_file_output_t *output,uintptr_t address,const void *buffer,size_t buffer_length)
+{
+    if(output==NULL || output->write==NULL)
+    {
+        return 0;
+    }
+    return output->write(output,address,buffer,buffer_length);
+}
+
 bool helf_file_input_is_big_endian(helf_file_input_t *input_file)
 {
     bool ret=false;
@@ -766,14 +794,14 @@ bool helf_file_input_64_bits_header_get(helf_file_input_t *input_file,helf_elf64
 
 typedef struct
 {
-    uint32_t    p_type[4];         /* Identifies program segment type */
-    uint32_t    p_flags[4];        /* Segment flags */
-    uint64_t    p_offset[8];       /* Segment file offset */
-    uint64_t    p_vaddr[8];        /* Segment virtual address */
-    uint64_t    p_paddr[8];        /* Segment physical address */
-    uint64_t    p_filesz[8];       /* Segment size in file */
-    uint64_t    p_memsz[8];        /* Segment size in memory */
-    uint64_t    p_align[8];        /* Segment alignment, file & memory */
+    uint8_t    p_type[4];         /* Identifies program segment type */
+    uint8_t    p_flags[4];        /* Segment flags */
+    uint8_t    p_offset[8];       /* Segment file offset */
+    uint8_t    p_vaddr[8];        /* Segment virtual address */
+    uint8_t    p_paddr[8];        /* Segment physical address */
+    uint8_t    p_filesz[8];       /* Segment size in file */
+    uint8_t    p_memsz[8];        /* Segment size in memory */
+    uint8_t    p_align[8];        /* Segment alignment, file & memory */
 }  helf_elf64_program_header_bytes_t;
 
 bool helf_file_input_64_bits_program_header_get(helf_file_input_t *input_file,size_t index,helf_elf64_program_header_t *programheader)

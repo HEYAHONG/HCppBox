@@ -168,6 +168,69 @@ void helf_file_input_init(helf_file_input_t *input,helf_file_input_read_t read,v
  */
 size_t helf_file_input_read(helf_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length);
 
+typedef struct helf_file_output helf_file_output_t;
+
+/** \brief ELF输出文件读取
+ *
+ * \param output helf_file_output_t* 输出文件
+ * \param address uintptr_t 文件内部的地址
+ * \param buffer void* 缓冲区地址
+ * \param buffer_length size_t 缓冲区大小
+ * \return size_t 已读取的大小
+ *
+ */
+typedef size_t (*helf_file_output_read_t)(helf_file_output_t *output,uintptr_t address,void *buffer,size_t buffer_length);
+
+/** \brief ELF输出文件写入
+ *
+ * \param output helf_file_output_t* 输出文件
+ * \param address uintptr_t 文件内部的地址
+ * \param buffer const void* 缓冲区地址
+ * \param buffer_length size_t 缓冲区大小
+ * \return size_t 已写入的大小
+ *
+ */
+typedef size_t (*helf_file_output_write_t)(helf_file_output_t *output,uintptr_t address,const void *buffer,size_t buffer_length);
+
+struct helf_file_output
+{
+    helf_file_output_read_t read;
+    helf_file_output_write_t write;
+    void *usr;
+};
+
+/** \brief ELF输出文件初始化
+ *
+ * \param output helf_file_output_t*        输出文件
+ * \param read helf_file_output_read_t      文件读取操作
+ * \param write helf_file_output_write_t    文件写入操作
+ * \param usr void* 用户操作
+ *
+ */
+void helf_file_output_init(helf_file_output_t *output,helf_file_output_read_t read,helf_file_output_write_t write,void *usr);
+
+/** \brief ELF输出文件读取
+ *
+ * \param output helf_file_output_t* 输出文件
+ * \param address uintptr_t 文件内部的地址
+ * \param buffer void* 缓冲区地址
+ * \param buffer_length size_t 缓冲区大小
+ * \return size_t 已读取的大小
+ *
+ */
+size_t helf_file_output_read(helf_file_output_t *output,uintptr_t address,void *buffer,size_t buffer_length);
+
+/** \brief ELF输出文件写入
+ *
+ * \param output helf_file_output_t* 输出文件
+ * \param address uintptr_t 文件内部的地址
+ * \param buffer const void* 缓冲区地址
+ * \param buffer_length size_t 缓冲区大小
+ * \return size_t 已写入的大小
+ *
+ */
+size_t helf_file_output_write(helf_file_output_t *output,uintptr_t address,const void *buffer,size_t buffer_length);
+
 /** \brief ELF文件是否为大端
  *
  * \param input helf_file_input_t* 输入文件
@@ -589,106 +652,252 @@ struct helf_elf64_rela
 /*
  * e_machine
  */
-#define HELF_EM_NONE        0               /* Unknown machine. */
-#define HELF_EM_M32         1               /* AT&T WE32100. */
-#define HELF_EM_SPARC       2               /* Sun SPARC. */
-#define HELF_EM_386         3               /* Intel i386. */
-#define HELF_EM_68K         4               /* Motorola 68000. */
-#define HELF_EM_88K         5               /* Motorola 88000. */
-#define HELF_EM_IAMCU       6               /* Intel MCU. */
-#define HELF_EM_860         7               /* Intel i860. */
-#define HELF_EM_MIPS        8               /* MIPS R3000 Big-Endian only. */
-#define HELF_EM_S370        9               /* IBM System/370. */
-#define HELF_EM_MIPS_RS3_LE 10              /* MIPS R3000 Little-Endian. */
-#define HELF_EM_PARISC      15              /* HP PA-RISC. */
-#define HELF_EM_VPP500      17              /* Fujitsu VPP500. */
-#define HELF_EM_SPARC32PLUS 18              /* SPARC v8plus. */
-#define HELF_EM_960         19              /* Intel 80960. */
-#define HELF_EM_PPC         20              /* PowerPC 32-bit. */
-#define HELF_EM_PPC64       21              /* PowerPC 64-bit. */
-#define HELF_EM_S390        22              /* IBM System/390. */
-#define HELF_EM_V800        36              /* NEC V800. */
-#define HELF_EM_FR20        37              /* Fujitsu FR20. */
-#define HELF_EM_RH32        38              /* TRW RH-32. */
-#define HELF_EM_RCE         39              /* Motorola RCE. */
-#define HELF_EM_ARM         40              /* ARM. */
-#define HELF_EM_SH          42              /* Hitachi SH. */
-#define HELF_EM_SPARCV9     43              /* SPARC v9 64-bit. */
-#define HELF_EM_TRICORE     44              /* Siemens TriCore embedded processor. */
-#define HELF_EM_ARC         45              /* Argonaut RISC Core. */
-#define HELF_EM_H8_300      46              /* Hitachi H8/300. */
-#define HELF_EM_H8_300H     47              /* Hitachi H8/300H. */
-#define HELF_EM_H8S         48              /* Hitachi H8S. */
-#define HELF_EM_H8_500      49              /* Hitachi H8/500. */
-#define HELF_EM_IA_64       50              /* Intel IA-64 Processor. */
-#define HELF_EM_MIPS_X      51              /* Stanford MIPS-X. */
-#define HELF_EM_COLDFIRE    52              /* Motorola ColdFire. */
-#define HELF_EM_68HC12      53              /* Motorola M68HC12. */
-#define HELF_EM_MMA         54              /* Fujitsu MMA. */
-#define HELF_EM_PCP         55              /* Siemens PCP. */
-#define HELF_EM_NCPU        56              /* Sony nCPU. */
-#define HELF_EM_NDR1        57              /* Denso NDR1 microprocessor. */
-#define HELF_EM_STARCORE    58              /* Motorola Star*Core processor. */
-#define HELF_EM_ME16        59              /* Toyota ME16 processor. */
-#define HELF_EM_ST100       60              /* STMicroelectronics ST100 processor. */
-#define HELF_EM_TINYJ       61              /* Advanced Logic Corp. TinyJ processor. */
-#define HELF_EM_X86_64      62              /* Advanced Micro Devices x86-64 */
-#define HELF_EM_AMD64       HELF_EM_X86_64  /* Advanced Micro Devices x86-64 (compat) */
-#define HELF_EM_PDSP        63              /* Sony DSP Processor. */
-#define HELF_EM_FX66        66              /* Siemens FX66 microcontroller. */
-#define HELF_EM_ST9PLUS     67              /* STMicroelectronics ST9+ 8/16 microcontroller. */
-#define HELF_EM_ST7         68              /* STmicroelectronics ST7 8-bit  microcontroller. */
-#define HELF_EM_68HC16      69              /* Motorola MC68HC16 microcontroller. */
-#define HELF_EM_68HC11      70              /* Motorola MC68HC11 microcontroller. */
-#define HELF_EM_68HC08      71              /* Motorola MC68HC08 microcontroller. */
-#define HELF_EM_68HC05      72              /* Motorola MC68HC05 microcontroller. */
-#define HELF_EM_SVX         73              /* Silicon Graphics SVx. */
-#define HELF_EM_ST19        74              /* STMicroelectronics ST19 8-bit mc. */
-#define HELF_EM_VAX         75              /* Digital VAX. */
-#define HELF_EM_CRIS        76              /* Axis Communications 32-bit embedded   processor. */
-#define HELF_EM_JAVELIN     77              /* Infineon Technologies 32-bit embedded processor. */
-#define HELF_EM_FIREPATH    78              /* Element 14 64-bit DSP Processor. */
-#define HELF_EM_ZSP         79              /* LSI Logic 16-bit DSP Processor. */
-#define HELF_EM_MMIX        80              /* Donald Knuth's educational 64-bit proc. */
-#define HELF_EM_HUANY       81              /* Harvard University machine-independent  object files. */
-#define HELF_EM_PRISM       82              /* SiTera Prism. */
-#define HELF_EM_AVR         83              /* Atmel AVR 8-bit microcontroller. */
-#define HELF_EM_FR30        84              /* Fujitsu FR30. */
-#define HELF_EM_D10V        85              /* Mitsubishi D10V. */
-#define HELF_EM_D30V        86              /* Mitsubishi D30V. */
-#define HELF_EM_V850        87              /* NEC v850. */
-#define HELF_EM_M32R        88              /* Mitsubishi M32R. */
-#define HELF_EM_MN10300     89              /* Matsushita MN10300. */
-#define HELF_EM_MN10200     90              /* Matsushita MN10200. */
-#define HELF_EM_PJ          91              /* picoJava. */
-#define HELF_EM_OPENRISC    92              /* OpenRISC 32-bit embedded processor. */
-#define HELF_EM_ARC_A5      93              /* ARC Cores Tangent-A5. */
-#define HELF_EM_XTENSA      94              /* Tensilica Xtensa Architecture. */
-#define HELF_EM_VIDEOCORE   95              /* Alphamosaic VideoCore processor. */
-#define HELF_EM_TMM_GPP     96              /* Thompson Multimedia General Purpose   Processor. */
-#define HELF_EM_NS32K       97              /* National Semiconductor 32000 series. */
-#define HELF_EM_TPC         98              /* Tenor Network TPC processor. */
-#define HELF_EM_SNP1K       99              /* Trebia SNP 1000 processor. */
-#define HELF_EM_ST200       100             /* STMicroelectronics ST200 microcontroller. */
-#define HELF_EM_IP2K        101             /* Ubicom IP2xxx microcontroller family. */
-#define HELF_EM_MAX         102             /* MAX Processor. */
-#define HELF_EM_CR          103             /* National Semiconductor CompactRISC  microprocessor. */
-#define HELF_EM_F2MC16      104             /* Fujitsu F2MC16. */
-#define HELF_EM_MSP430      105             /* Texas Instruments embedded microcontroller  msp430. */
-#define HELF_EM_BLACKFIN    106             /* Analog Devices Blackfin (DSP) processor. */
-#define HELF_EM_SE_C33      107             /* S1C33 Family of Seiko Epson processors. */
-#define HELF_EM_SEP         108             /* Sharp embedded microprocessor. */
-#define HELF_EM_ARCA        109             /* Arca RISC Microprocessor. */
-#define HELF_EM_UNICORE     110             /* Microprocessor series from PKU-Unity Ltd. and MPRC of Peking University */
-#define HELF_EM_AARCH64     183             /* AArch64 (64-bit ARM) */
-#define HELF_EM_RISCV       243             /* RISC-V */
-#define HELF_EM_MOXIE       223             /* Moxie */
-#define HELF_EM_MOXIE_OLD   0xFEED          /* Old Moxie */
+#define HELF_EM_NONE            0           /* Unknown machine. */
+#define HELF_EM_M32             1           /* AT&T WE32100. */
+#define HELF_EM_SPARC           2           /* Sun SPARC. */
+#define HELF_EM_386             3           /* Intel i386. */
+#define HELF_EM_68K             4           /* Motorola 68000. */
+#define HELF_EM_88K             5           /* Motorola 88000. */
+#define HELF_EM_IAMCU           6           /* Intel MCU. */
+#define HELF_EM_860             7           /* Intel i860. */
+#define HELF_EM_MIPS            8           /* MIPS R3000 Big-Endian only. */
+#define HELF_EM_S370            9           /* IBM System/370. */
+#define HELF_EM_MIPS_RS3_LE     10          /* MIPS R3000 Little-Endian. */
+#define HELF_EM_OLD_SPARCV9     11          /* Old SPARC v9. */
+#define HELF_EM_PARISC          15          /* HP PA-RISC. */
+#define HELF_EM_PPC_OLD         17          /* Old PowerPC. */
+#define HELF_EM_VPP550          17          /* Fujitsu VPP500. */
+#define HELF_EM_SPARC32PLUS     18          /* SPARC v8plus. */
+#define HELF_EM_960             19          /* Intel 80960. */
+#define HELF_EM_PPC             20          /* PowerPC 32-bit. */
+#define HELF_EM_PPC64           21          /* PowerPC 64-bit. */
+#define HELF_EM_S390            22          /* IBM System/390. */
+#define HELF_EM_SPU             23          /* Sony/Toshiba/IBM SPU. */
+#define HELF_EM_V800            36          /* NEC V800. */
+#define HELF_EM_FR20            37          /* Fujitsu FR20. */
+#define HELF_EM_RH32            38          /* TRW RH-32. */
+#define HELF_EM_MCORE           39          /* Motorola M*Core. */
+#define HELF_EM_RCE             39          /* Old name for MCore. */
+#define HELF_EM_ARM             40          /* ARM. */
+#define HELF_EM_OLD_ALPHA       41          /* Digital Alpha. */
+#define HELF_EM_SH              42          /* Renesas SuperH. */
+#define HELF_EM_SPARCV9         43          /* SPARC v9 64-bit. */
+#define HELF_EM_TRICORE         44          /* Siemens TriCore embedded processor. */
+#define HELF_EM_ARC             45          /* Argonaut RISC Core. */
+#define HELF_EM_H8_300          46          /* Hitachi H8/300. */
+#define HELF_EM_H8_300H         47          /* Hitachi H8/300H. */
+#define HELF_EM_H8S             48          /* Hitachi H8S. */
+#define HELF_EM_H8_500          49          /* Hitachi H8/500. */
+#define HELF_EM_IA_64           50          /* Intel IA-64 Processor. */
+#define HELF_EM_MIPS_X          51          /* Stanford MIPS-X. */
+#define HELF_EM_COLDFIRE        52          /* Motorola ColdFire. */
+#define HELF_EM_68HC12          53          /* Motorola M68HC12. */
+#define HELF_EM_MMA             54          /* Fujitsu MMA. */
+#define HELF_EM_PCP             55          /* Siemens PCP. */
+#define HELF_EM_NCPU            56          /* Sony nCPU. */
+#define HELF_EM_NDR1            57          /* Denso NDR1 microprocessor. */
+#define HELF_EM_STARCORE        58          /* Motorola Star*Core processor. */
+#define HELF_EM_ME16            59          /* Toyota ME16 processor. */
+#define HELF_EM_ST100           60          /* STMicroelectronics ST100 processor. */
+#define HELF_EM_TINYJ           61          /* Advanced Logic Corp. TinyJ processor. */
+#define HELF_EM_X86_64          62          /* Advanced Micro Devices x86-64. */
+#define HELF_EM_AMD64           HELF_EM_X86_64  /* Advanced Micro Devices x86-64 (compat) */
+#define HELF_EM_PDSP            63          /* Sony DSP Processor. */
+#define HELF_EM_PDP10           64          /* Digital PDP-10. */
+#define HELF_EM_PDP11           65          /* Digital PDP-11. */
+#define HELF_EM_FX66            66          /* Siemens FX66 microcontroller. */
+#define HELF_EM_ST9PLUS         67          /* STMicroelectronics ST9+ 8/16 microcontroller. */
+#define HELF_EM_ST7             68          /* STMicroelectronics ST7 8-bit microcontroller. */
+#define HELF_EM_68HC16          69          /* Motorola MC68HC16 microcontroller. */
+#define HELF_EM_68HC11          70          /* Motorola MC68HC11 microcontroller. */
+#define HELF_EM_68HC08          71          /* Motorola MC68HC08 microcontroller. */
+#define HELF_EM_68HC05          72          /* Motorola MC68HC05 microcontroller. */
+#define HELF_EM_SVX             73          /* Silicon Graphics SVx. */
+#define HELF_EM_ST19            74          /* STMicroelectronics ST19 8-bit mc. */
+#define HELF_EM_VAX             75          /* Digital VAX. */
+#define HELF_EM_CRIS            76          /* Axis Communications 32-bit embedded processor. */
+#define HELF_EM_JAVELIN         77          /* Infineon Technologies 32-bit embedded processor. */
+#define HELF_EM_FIREPATH        78          /* Element 14 64-bit DSP Processor. */
+#define HELF_EM_ZSP             79          /* LSI Logic 16-bit DSP Processor. */
+#define HELF_EM_MMIX            80          /* Donald Knuth's educational 64-bit processor. */
+#define HELF_EM_HUANY           81          /* Harvard University machine-independent object files. */
+#define HELF_EM_PRISM           82          /* SiTera Prism. */
+#define HELF_EM_AVR             83          /* Atmel AVR 8-bit microcontroller. */
+#define HELF_EM_FR30            84          /* Fujitsu FR30. */
+#define HELF_EM_D10V            85          /* Mitsubishi D10V. */
+#define HELF_EM_D30V            86          /* Mitsubishi D30V. */
+#define HELF_EM_V850            87          /* NEC v850. */
+#define HELF_EM_M32R            88          /* Mitsubishi M32R. */
+#define HELF_EM_MN10300         89          /* Matsushita MN10300. */
+#define HELF_EM_MN10200         90          /* Matsushita MN10200. */
+#define HELF_EM_PJ              91          /* picoJava. */
+#define HELF_EM_OR1K            92          /* OpenRISC 1000 32-bit embedded processor. */
+#define HELF_EM_OPENRISC        HELF_EM_OR1K /* OpenRISC 1000 (compat) */
+#define HELF_EM_ARC_COMPACT     93          /* ARC International ARCompact processor. */
+#define HELF_EM_ARC_A5          HELF_EM_ARC_COMPACT /* ARC Cores Tangent-A5 */
+#define HELF_EM_XTENSA          94          /* Tensilica Xtensa Architecture. */
+#define HELF_EM_SCORE_OLD       95          /* Old Sunplus S+core7 backend magic number. */
+#define HELF_EM_VIDEOCORE       95          /* Alphamosaic VideoCore processor. */
+#define HELF_EM_TMM_GPP         96          /* Thompson Multimedia General Purpose Processor. */
+#define HELF_EM_NS32K           97          /* National Semiconductor 32000 series. */
+#define HELF_EM_TPC             98          /* Tenor Network TPC processor. */
+#define HELF_EM_PJ_OLD          99          /* Old value for picoJava. */
+#define HELF_EM_SNP1K           99          /* Trebia SNP 1000 processor. */
+#define HELF_EM_ST200           100         /* STMicroelectronics ST200 microcontroller. */
+#define HELF_EM_IP2K            101         /* Ubicom IP2xxx microcontroller family. */
+#define HELF_EM_MAX             102         /* MAX Processor. */
+#define HELF_EM_CR              103         /* National Semiconductor CompactRISC microprocessor. */
+#define HELF_EM_F2MC16          104         /* Fujitsu F2MC16. */
+#define HELF_EM_MSP430          105         /* Texas Instruments embedded microcontroller msp430. */
+#define HELF_EM_BLACKFIN        106         /* Analog Devices Blackfin (DSP) processor. */
+#define HELF_EM_SE_C33          107         /* S1C33 Family of Seiko Epson processors. */
+#define HELF_EM_SEP             108         /* Sharp embedded microprocessor. */
+#define HELF_EM_ARCA            109         /* Arca RISC Microprocessor. */
+#define HELF_EM_UNICORE         110         /* Microprocessor series from PKU-Unity Ltd. and MPRC of Peking University. */
+#define HELF_EM_EXCESS          111         /* eXcess: 16/32/64-bit configurable embedded CPU. */
+#define HELF_EM_DXP             112         /* Icera Semiconductor Inc. Deep Execution Processor. */
+#define HELF_EM_ALTERA_NIOS2    113         /* Altera Nios II soft-core processor. */
+#define HELF_EM_CRX             114         /* National Semiconductor CRX. */
+#define HELF_EM_CR16_OLD        115         /* Old National Semiconductor CompactRISC. */
+#define HELF_EM_XGATE           115         /* Motorola XGATE embedded processor. */
+#define HELF_EM_C166            116         /* Infineon C16x/XC16x processor. */
+#define HELF_EM_M16C            117         /* Renesas M16C series microprocessors. */
+#define HELF_EM_DSPIC30F        118         /* Microchip Technology dsPIC30F Digital Signal Controller. */
+#define HELF_EM_CE              119         /* Freescale Communication Engine RISC core. */
+#define HELF_EM_M32C            120         /* Renesas M32C series microprocessors. */
+#define HELF_EM_TSK3000         131         /* Altium TSK3000 core. */
+#define HELF_EM_RS08            132         /* Freescale RS08 embedded processor. */
+#define HELF_EM_ECOG2           134         /* Cyan Technology eCOG2 microprocessor. */
+#define HELF_EM_SCORE           135         /* Sunplus Score. */
+#define HELF_EM_SCORE7          135         /* Sunplus S+core7 RISC processor. */
+#define HELF_EM_DSP24           136         /* New Japan Radio (NJR) 24-bit DSP Processor. */
+#define HELF_EM_VIDEOCORE3      137         /* Broadcom VideoCore III processor. */
+#define HELF_EM_LATTICEMICO32   138         /* RISC processor for Lattice FPGA architecture. */
+#define HELF_EM_SE_C17          139         /* Seiko Epson C17 family. */
+#define HELF_EM_TI_C6000        140         /* Texas Instruments TMS320C6000 DSP family. */
+#define HELF_EM_TI_C2000        141         /* Texas Instruments TMS320C2000 DSP family. */
+#define HELF_EM_TI_C5500        142         /* Texas Instruments TMS320C55x DSP family. */
+#define HELF_EM_TI_PRU          144         /* Texas Instruments Programmable Realtime Unit. */
+#define HELF_EM_MMDSP_PLUS      160         /* STMicroelectronics 64bit VLIW Data Signal Processor. */
+#define HELF_EM_CYPRESS_M8C     161         /* Cypress M8C microprocessor. */
+#define HELF_EM_R32C            162         /* Renesas R32C series microprocessors. */
+#define HELF_EM_TRIMEDIA        163         /* NXP Semiconductors TriMedia architecture family. */
+#define HELF_EM_QDSP6           164         /* QUALCOMM DSP6 Processor. */
+#define HELF_EM_8051            165         /* Intel 8051 and variants. */
+#define HELF_EM_STXP7X          166         /* STMicroelectronics STxP7x family. */
+#define HELF_EM_NDS32           167         /* Andes Technology compact code size embedded RISC processor family. */
+#define HELF_EM_ECOG1           168         /* Cyan Technology eCOG1X family. */
+#define HELF_EM_ECOG1X          168         /* Cyan Technology eCOG1X family. */
+#define HELF_EM_MAXQ30          169         /* Dallas Semiconductor MAXQ30 Core Micro-controllers. */
+#define HELF_EM_XIMO16          170         /* New Japan Radio (NJR) 16-bit DSP Processor. */
+#define HELF_EM_MANIK           171         /* M2000 Reconfigurable RISC Microprocessor. */
+#define HELF_EM_CRAYNV2         172         /* Cray Inc. NV2 vector architecture. */
+#define HELF_EM_RX              173         /* Renesas RX family. */
+#define HELF_EM_METAG           174         /* Imagination Technologies Meta processor architecture. */
+#define HELF_EM_MCST_ELBRUS     175         /* MCST Elbrus general purpose hardware architecture. */
+#define HELF_EM_ECOG16          176         /* Cyan Technology eCOG16 family. */
+#define HELF_EM_CR16            177         /* National Semiconductor CompactRISC 16-bit processor. */
+#define HELF_EM_ETPU            178         /* Freescale Extended Time Processing Unit. */
+#define HELF_EM_SLE9X           179         /* Infineon Technologies SLE9X core. */
+#define HELF_EM_L1OM            180         /* Intel L1OM. */
+#define HELF_EM_K1OM            181         /* Intel K1OM. */
+#define HELF_EM_INTEL182        182         /* Reserved by Intel. */
+#define HELF_EM_AARCH64         183         /* ARM 64-bit architecture. */
+#define HELF_EM_ARM184          184         /* Reserved by ARM. */
+#define HELF_EM_AVR32           185         /* Atmel Corporation 32-bit microprocessor family. */
+#define HELF_EM_STM8            186         /* STMicroelectronics STM8 8-bit microcontroller. */
+#define HELF_EM_TILE64          187         /* Tilera TILE64 multicore architecture family. */
+#define HELF_EM_TILEPRO         188         /* Tilera TILEPro multicore architecture family. */
+#define HELF_EM_MICROBLAZE      189         /* Xilinx MicroBlaze 32-bit RISC soft processor core. */
+#define HELF_EM_CUDA            190         /* NVIDIA CUDA architecture. */
+#define HELF_EM_TILEGX          191         /* Tilera TILE-Gx multicore architecture family. */
+#define HELF_EM_CLOUDSHIELD     192         /* CloudShield architecture family. */
+#define HELF_EM_COREA_1ST       193         /* KIPO-KAIST Core-A 1st generation processor family. */
+#define HELF_EM_COREA_2ND       194         /* KIPO-KAIST Core-A 2nd generation processor family. */
+#define HELF_EM_ARC_COMPACT2    195         /* Synopsys ARCompact V2. */
+#define HELF_EM_OPEN8           196         /* Open8 8-bit RISC soft processor core. */
+#define HELF_EM_RL78            197         /* Renesas RL78 family. */
+#define HELF_EM_VIDEOCORE5      198         /* Broadcom VideoCore V processor. */
+#define HELF_EM_78K0R           199         /* Renesas 78K0R. */
+#define HELF_EM_56800EX         200         /* Freescale 56800EX Digital Signal Controller (DSC). */
+#define HELF_EM_BA1             201         /* Beyond BA1 CPU architecture. */
+#define HELF_EM_BA2             202         /* Beyond BA2 CPU architecture. */
+#define HELF_EM_XCORE           203         /* XMOS xCORE processor family. */
+#define HELF_EM_MCHP_PIC        204         /* Microchip 8-bit PIC(r) family. */
+#define HELF_EM_INTELGT         205         /* Intel Graphics Technology. */
+#define HELF_EM_INTEL206        206         /* Reserved by Intel. */
+#define HELF_EM_INTEL207        207         /* Reserved by Intel. */
+#define HELF_EM_INTEL208        208         /* Reserved by Intel. */
+#define HELF_EM_INTEL209        209         /* Reserved by Intel. */
+#define HELF_EM_KM32            210         /* KM211 KM32 32-bit processor. */
+#define HELF_EM_KMX32           211         /* KM211 KMX32 32-bit processor. */
+#define HELF_EM_KMX16           212         /* KM211 KMX16 16-bit processor. */
+#define HELF_EM_KMX8            213         /* KM211 KMX8 8-bit processor. */
+#define HELF_EM_KVARC           214         /* KM211 KVARC processor. */
+#define HELF_EM_CDP             215         /* Paneve CDP architecture family. */
+#define HELF_EM_COGE            216         /* Cognitive Smart Memory Processor. */
+#define HELF_EM_COOL            217         /* Bluechip Systems CoolEngine. */
+#define HELF_EM_NORC            218         /* Nanoradio Optimized RISC. */
+#define HELF_EM_CSR_KALIMBA     219         /* CSR Kalimba architecture family. */
+#define HELF_EM_Z80             220         /* Zilog Z80. */
+#define HELF_EM_VISIUM          221         /* Controls and Data Services VISIUMcore processor. */
+#define HELF_EM_FT32            222         /* FTDI Chip FT32 high performance 32-bit RISC architecture. */
+#define HELF_EM_MOXIE           223         /* Moxie processor family. */
+#define HELF_EM_AMDGPU          224         /* AMD GPU architecture. */
+#define HELF_EM_RISCV           243         /* RISC-V. */
+#define HELF_EM_LANAI           244         /* Lanai 32-bit processor. */
+#define HELF_EM_CEVA            245         /* CEVA Processor Architecture Family. */
+#define HELF_EM_CEVA_X2         246         /* CEVA X2 Processor Family. */
+#define HELF_EM_BPF             247         /* Linux BPF in-kernel virtual machine. */
+#define HELF_EM_GRAPHCORE_IPU   248         /* Graphcore Intelligent Processing Unit. */
+#define HELF_EM_IMG1            249         /* Imagination Technologies. */
+#define HELF_EM_NFP             250         /* Netronome Flow Processor. */
+#define HELF_EM_VE              251         /* NEC Vector Engine. */
+#define HELF_EM_CSKY            252         /* C-SKY processor family. */
+#define HELF_EM_ARC_COMPACT3_64 253         /* Synopsys ARCv2.3 64-bit. */
+#define HELF_EM_MCS6502         254         /* MOS Technology MCS 6502 processor. */
+#define HELF_EM_ARC_COMPACT3    255         /* Synopsys ARCv2.3 32-bit. */
+#define HELF_EM_KVX             256         /* Kalray VLIW core of the MPPA processor family. */
+#define HELF_EM_65816           257         /* WDC 65816/65C816. */
+#define HELF_EM_LOONGARCH       258         /* LoongArch. */
+#define HELF_EM_KF32            259         /* ChipON KungFu32. */
+#define HELF_EM_U16_U8CORE      260         /* LAPIS nX-U16/U8. */
+#define HELF_EM_TACHYUM         261         /* Tachyum. */
+#define HELF_EM_56800EF         262         /* NXP 56800EF Digital Signal Controller (DSC). */
+
 /* Non-standard or deprecated. */
-#define HELF_EM_486         6               /* Intel i486. */
-#define HELF_EM_MIPS_RS4_BE 10              /* MIPS R4000 Big-Endian */
-#define HELF_EM_ALPHA_STD   41              /* Digital Alpha (standard value). */
-#define HELF_EM_ALPHA       0x9026          /* Alpha (written in the absence of an ABI) */
+#define HELF_EM_486             6           /* Intel i486. */
+#define HELF_EM_MIPS_RS4_BE     10          /* MIPS R4000 Big-Endian */
+#define HELF_EM_ALPHA_STD       41          /* Digital Alpha (standard value). */
+#define HELF_EM_ALPHA           0x9026      /* Alpha (written in the absence of an ABI) */
+#define HELF_EM_AVR_OLD         0x1057      /* Old AVR magic number. */
+#define HELF_EM_MSP430_OLD      0x1059      /* Old MSP430 magic number. */
+#define HELF_EM_MT              0x2530      /* Morpho MT. */
+#define HELF_EM_CYGNUS_FR30     0x3330      /* FR30 magic number. */
+#define HELF_EM_WEBASSEMBLY     0x4157      /* WebAssembly (LLVM). */
+#define HELF_EM_XC16X           0x4688      /* Infineon C166-V2 core. */
+#define HELF_EM_S12Z            0x4DEF      /* Freescale S12Z. */
+#define HELF_EM_CYGNUS_FRV      0x5441      /* FRV magic number. */
+#define HELF_EM_DLX             0x5aa5      /* DLX magic number. */
+#define HELF_EM_CYGNUS_D10V     0x7650      /* D10V magic number. */
+#define HELF_EM_CYGNUS_D30V     0x7676      /* D30V magic number. */
+#define HELF_EM_IP2K_OLD        0x8217      /* Old Ubicom IP2xxx magic number. */
+#define HELF_EM_CYGNUS_POWERPC  0x9025      /* Cygnus PowerPC ELF backend. */
+#define HELF_EM_CYGNUS_M32R     0x9041      /* Cygnus M32R ELF backend. */
+#define HELF_EM_CYGNUS_V850     0x9080      /* V850 backend magic number. */
+#define HELF_EM_S390_OLD        0xa390      /* Old S/390 backend magic number. */
+#define HELF_EM_XTENSA_OLD      0xabc7      /* Old Xtensa magic number. */
+#define HELF_EM_XSTORMY16       0xad45      /* XSTORMY16 magic number. */
+#define HELF_EM_MICROBLAZE_OLD  0xbaab      /* Old MicroBlaze magic number. */
+#define HELF_EM_CYGNUS_MN10300  0xbeef      /* Cygnus MN10300 magic number. */
+#define HELF_EM_CYGNUS_MN10200  0xdead      /* Cygnus MN10200 magic number. */
+#define HELF_EM_M32C_OLD        0xFEB0      /* Old Renesas M32C magic number. */
+#define HELF_EM_IQ2000          0xFEBA      /* Vitesse IQ2000. */
+#define HELF_EM_NIOS32          0xFEBB      /* NIOS magic number. */
+#define HELF_EM_CYGNUS_MEP      0xF00D      /* Toshiba MeP. */
+#define HELF_EM_MOXIE_OLD       0xFEED      /* Old Moxie. */
+#define HELF_EM_ADAPTEVA_EPIPHANY 0x1223    /* Adapteva's Epiphany architecture. */
+#define HELF_EM_CSKY_OLD        HELF_EM_MCORE /* Old C-SKY magic number. */
 
 
 /* Special value for e_phnum.  This indicates that the real number of

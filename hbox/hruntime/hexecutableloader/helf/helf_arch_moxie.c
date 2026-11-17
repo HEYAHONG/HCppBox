@@ -1,12 +1,18 @@
 /***************************************************************
- * Name:      helf_moxie.c
- * Purpose:   实现helf_moxie接口
+ * Name:      helf_arch_moxie.c
+ * Purpose:   实现helf_arch_moxie接口
  * Author:    HYH (hyhsystem.cn)
  * Created:   2026-11-16
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#include "helf_moxie.h"
+#include "helf_arch_moxie.h"
+
+static const uint16_t helf_moxie_machines[]=
+{
+    HELF_EM_MOXIE,
+    HELF_EM_MOXIE_OLD,
+};
 
 static bool helf_moxie_header_get(helf_file_input_t *input_file,helf_elf32_file_header_t *header)
 {
@@ -474,4 +480,131 @@ size_t helf_moxie_load_segment_total_memsz_get(helf_file_input_t *input_file)
         ret+=info.memsz;
     }
     return ret;
+}
+
+size_t helf_moxie_relocation_section_count_get(helf_file_input_t *input_file)
+{
+    if(!helf_moxie_is_moxie(input_file))
+    {
+        return 0;
+    }
+    return helf_arch_relocation_section_count_get(input_file);
+}
+
+bool helf_moxie_relocation_section_info_get(helf_file_input_t *input_file,size_t index,helf_arch_relocation_section_info_t *info)
+{
+    if(!helf_moxie_is_moxie(input_file))
+    {
+        return false;
+    }
+    return helf_arch_relocation_section_info_get(input_file,index,info);
+}
+
+size_t helf_moxie_relocation_count_get(helf_file_input_t *input_file,size_t section_index)
+{
+    if(!helf_moxie_is_moxie(input_file))
+    {
+        return 0;
+    }
+    return helf_arch_relocation_count_get(input_file,section_index);
+}
+
+bool helf_moxie_relocation_get(helf_file_input_t *input_file,size_t section_index,size_t index,helf_arch_relocation_info_t *info)
+{
+    if(!helf_moxie_is_moxie(input_file))
+    {
+        return false;
+    }
+    return helf_arch_relocation_get(input_file,section_index,index,info);
+}
+
+bool helf_moxie_relocation_symbol_info_get(helf_file_input_t *input_file,const helf_arch_relocation_info_t *relocation,helf_arch_symbol_info_t *info)
+{
+    if(!helf_moxie_is_moxie(input_file))
+    {
+        return false;
+    }
+    return helf_arch_relocation_symbol_info_get(input_file,relocation,info);
+}
+
+static const helf_arch_relocation_type_name_t helf_moxie_relocation_type_names[]=
+{
+    {0,0,"R_MOXIE_NONE"},
+    {1,4,"R_MOXIE_32"},
+    {2,2,"R_MOXIE_PCREL10"},
+};
+
+const char *helf_moxie_relocation_type_name_get(uint32_t type)
+{
+    return helf_arch_relocation_type_name_get(helf_moxie_relocation_type_names,sizeof(helf_moxie_relocation_type_names)/sizeof(helf_moxie_relocation_type_names[0]),type);
+}
+
+uint8_t helf_moxie_relocation_size_get(uint32_t type)
+{
+    return helf_arch_relocation_type_size_get(helf_moxie_relocation_type_names,sizeof(helf_moxie_relocation_type_names)/sizeof(helf_moxie_relocation_type_names[0]),type);
+}
+
+bool helf_moxie_relocation_address_info_get(helf_file_input_t *input_file,const helf_arch_relocation_info_t *relocation,helf_arch_relocation_address_info_t *info)
+{
+    if(!helf_moxie_is_moxie(input_file) || relocation==NULL)
+    {
+        return false;
+    }
+    uint8_t size=helf_moxie_relocation_size_get(relocation->type);
+    if(size==0)
+    {
+        return false;
+    }
+    return helf_arch_relocation_address_info_get(input_file,relocation,size,info);
+}
+
+size_t helf_moxie_relocation_data_get(helf_file_input_t *input_file,const helf_arch_relocation_info_t *relocation,void *buffer,size_t buffer_length)
+{
+    if(!helf_moxie_is_moxie(input_file) || relocation==NULL)
+    {
+        return 0;
+    }
+    uint8_t size=helf_moxie_relocation_size_get(relocation->type);
+    if(size==0)
+    {
+        return 0;
+    }
+    return helf_arch_relocation_data_get(input_file,relocation,size,buffer,buffer_length);
+}
+
+bool helf_moxie_is_shared_object(helf_file_input_t *input_file)
+{
+    return helf_arch_is_shared_object(input_file,helf_moxie_machines,sizeof(helf_moxie_machines)/sizeof(helf_moxie_machines[0]),HELF_ELFCLASS_32);
+}
+
+bool helf_moxie_is_relocatable(helf_file_input_t *input_file)
+{
+    return helf_arch_is_relocatable(input_file,helf_moxie_machines,sizeof(helf_moxie_machines)/sizeof(helf_moxie_machines[0]),HELF_ELFCLASS_32);
+}
+
+size_t helf_moxie_dynamic_count_get(helf_file_input_t *input_file)
+{
+    if(!helf_moxie_is_moxie(input_file))
+    {
+        return 0;
+    }
+    return helf_arch_dynamic_count_get(input_file);
+}
+
+bool helf_moxie_dynamic_info_get(helf_file_input_t *input_file,size_t index,helf_arch_dynamic_info_t *info)
+{
+    if(!helf_moxie_is_moxie(input_file))
+    {
+        return false;
+    }
+    return helf_arch_dynamic_info_get(input_file,index,info);
+}
+
+bool helf_moxie_dynamic_string_get(helf_file_input_t *input_file,uint64_t offset,char *buffer,size_t buffer_length)
+{
+    if(!helf_moxie_is_moxie(input_file))
+    {
+        return false;
+    }
+    return helf_arch_dynamic_string_get(input_file,offset,buffer,buffer_length);
 }

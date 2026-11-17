@@ -1,17 +1,18 @@
 /***************************************************************
- * Name:      helf_moxie.h
- * Purpose:   声明helf_moxie接口
+ * Name:      helf_arch_moxie.h
+ * Purpose:   声明helf_arch_moxie接口
  * Author:    HYH (hyhsystem.cn)
  * Created:   2026-11-16
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
-#ifndef __HELF_MOXIE_H__
-#define __HELF_MOXIE_H__
+#ifndef __HELF_ARCH_MOXIE_H__
+#define __HELF_ARCH_MOXIE_H__
 #include "stdint.h"
 #include "stdbool.h"
 #include "stdlib.h"
 #include "helf_common.h"
+#include "helf_arch.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -297,8 +298,138 @@ size_t helf_moxie_program_header_count_get(helf_file_input_t *input_file);
  */
 bool helf_moxie_program_header_get(helf_file_input_t *input_file,size_t index,helf_elf32_program_header_t *programheader);
 
+/** \brief 获取Moxie ELF重定位节数量
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \return size_t 重定位节数量(SHT_REL/SHT_RELA)
+ *
+ */
+size_t helf_moxie_relocation_section_count_get(helf_file_input_t *input_file);
+
+/** \brief 按重定位节序号获取Moxie重定位节信息
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param index size_t 重定位节序号(仅计数SHT_REL/SHT_RELA节)
+ * \param info helf_arch_relocation_section_info_t* 重定位节信息
+ * \return bool 是否成功
+ *
+ */
+bool helf_moxie_relocation_section_info_get(helf_file_input_t *input_file,size_t index,helf_arch_relocation_section_info_t *info);
+
+/** \brief 获取Moxie重定位节表项数量
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param section_index size_t 重定位节索引
+ * \return size_t 表项数量
+ *
+ */
+size_t helf_moxie_relocation_count_get(helf_file_input_t *input_file,size_t section_index);
+
+/** \brief 获取Moxie重定位表项
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param section_index size_t 重定位节索引
+ * \param index size_t 表项索引
+ * \param info helf_arch_relocation_info_t* 重定位表项信息
+ * \return bool 是否成功
+ *
+ */
+bool helf_moxie_relocation_get(helf_file_input_t *input_file,size_t section_index,size_t index,helf_arch_relocation_info_t *info);
+
+/** \brief 获取Moxie重定位表项对应的符号信息
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param relocation const helf_arch_relocation_info_t* 重定位表项信息
+ * \param info helf_arch_symbol_info_t* 符号信息
+ * \return bool 是否成功
+ *
+ */
+bool helf_moxie_relocation_symbol_info_get(helf_file_input_t *input_file,const helf_arch_relocation_info_t *relocation,helf_arch_symbol_info_t *info);
+
+/** \brief 获取Moxie重定位类型名称
+ *
+ * \param type uint32_t 重定位类型
+ * \return const char * 重定位类型名称,未知返回NULL
+ *
+ */
+const char *helf_moxie_relocation_type_name_get(uint32_t type);
+
+/** \brief 获取Moxie重定位类型对应的目标字节数
+ *
+ * \param type uint32_t 重定位类型
+ * \return uint8_t 目标字节数,0表示未知
+ *
+ */
+uint8_t helf_moxie_relocation_size_get(uint32_t type);
+
+/** \brief 解析Moxie重定位地址信息
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param relocation const helf_arch_relocation_info_t* 重定位表项信息
+ * \param info helf_arch_relocation_address_info_t* 重定位地址信息
+ * \return bool 是否成功
+ *
+ */
+bool helf_moxie_relocation_address_info_get(helf_file_input_t *input_file,const helf_arch_relocation_info_t *relocation,helf_arch_relocation_address_info_t *info);
+
+/** \brief 获取Moxie待重定位地址的字节数据
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param relocation const helf_arch_relocation_info_t* 重定位表项信息
+ * \param buffer void* 用户提供的缓冲区
+ * \param buffer_length size_t 缓冲区长度
+ * \return size_t 实际读取的字节数,0表示失败
+ *
+ */
+size_t helf_moxie_relocation_data_get(helf_file_input_t *input_file,const helf_arch_relocation_info_t *relocation,void *buffer,size_t buffer_length);
+
+/** \brief 是否为Moxie动态链接库/共享对象
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \return bool 是否为Moxie动态链接库/共享对象(ET_DYN)
+ *
+ */
+bool helf_moxie_is_shared_object(helf_file_input_t *input_file);
+
+/** \brief 是否为Moxie可重定位对象
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \return bool 是否为Moxie可重定位对象(ET_REL)
+ *
+ */
+bool helf_moxie_is_relocatable(helf_file_input_t *input_file);
+
+/** \brief 获取Moxie动态段项数量
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \return size_t 动态段项数量
+ *
+ */
+size_t helf_moxie_dynamic_count_get(helf_file_input_t *input_file);
+
+/** \brief 获取Moxie动态段项信息
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param index size_t 动态段项索引
+ * \param info helf_arch_dynamic_info_t* 动态段项信息
+ * \return bool 是否成功
+ *
+ */
+bool helf_moxie_dynamic_info_get(helf_file_input_t *input_file,size_t index,helf_arch_dynamic_info_t *info);
+
+/** \brief 获取Moxie动态字符串表中的字符串
+ *
+ * \param input_file helf_file_input_t* 输入文件
+ * \param offset uint64_t 字符串在动态字符串表中的偏移
+ * \param buffer char* 用户提供的缓冲区
+ * \param buffer_length size_t 缓冲区长度
+ * \return bool 是否成功
+ *
+ */
+bool helf_moxie_dynamic_string_get(helf_file_input_t *input_file,uint64_t offset,char *buffer,size_t buffer_length);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
-#endif // __HELF_MOXIE_H__
+#endif // __HELF_ARCH_MOXIE_H__
