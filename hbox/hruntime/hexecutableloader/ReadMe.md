@@ -14,6 +14,14 @@ intelhex格式通常用于嵌入式领域,其可用于存储程序文件(如MCU)
 
 具体实现见[hintelhex](hintelhex)。
 
+## hsrecord
+
+读取或者写入Motorola S记录(srecord)文件。
+
+srecord格式通常用于嵌入式领域,其可用于存储程序文件(如MCU)也可用于存储数据(如EEPROM数据)。
+
+具体实现见[hsrecord](hsrecord)。
+
 ## hcoff
 
 辅助读取COFF文件。

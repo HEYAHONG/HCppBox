@@ -9,6 +9,7 @@
 #include "hexecutableloader.h"
 
 #include "hexecutableloader/hintelhex.c"
+#include "hexecutableloader/hsrecord.c"
 #include "hexecutableloader/hcoff.c"
 #include "hexecutableloader/helf.c"
 
