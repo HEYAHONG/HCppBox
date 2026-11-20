@@ -19,6 +19,8 @@ extern "C"
 
 
 
+typedef struct hcoff_file_input hcoff_file_input_t;
+
 typedef struct hcoff_fileheader hcoff_fileheader_t;
 struct hcoff_fileheader
 {
@@ -75,10 +77,47 @@ struct hcoff_fileheader
 /*
  * hcoff_fileheader_t标志位
  */
-#define HCOFF_FILEHEADER_F_FLAGS_F_EXEC                 (0x0002)
+#define HCOFF_FILEHEADER_F_FLAGS_F_RELFLG               (0x0001)    /**< 重定位信息被剥离 */
+#define HCOFF_FILEHEADER_F_FLAGS_F_EXEC                 (0x0002)    /**< 文件可执行(无未解析的外部引用) */
+#define HCOFF_FILEHEADER_F_FLAGS_F_LNNO                 (0x0004)    /**< 行号信息被剥离 */
+#define HCOFF_FILEHEADER_F_FLAGS_F_LSYMS                (0x0008)    /**< 本地符号被剥离 */
+#define HCOFF_FILEHEADER_F_FLAGS_IMAGE_FILE_RELOCS_STRIPPED             (0x0001)
+#define HCOFF_FILEHEADER_F_FLAGS_IMAGE_FILE_EXECUTABLE_IMAGE            (0x0002)
+#define HCOFF_FILEHEADER_F_FLAGS_IMAGE_FILE_LINE_NUMS_STRIPPED         (0x0004)
+#define HCOFF_FILEHEADER_F_FLAGS_IMAGE_FILE_LOCAL_SYMS_STRIPPED        (0x0008)
+#define HCOFF_FILEHEADER_F_FLAGS_IMAGE_FILE_LARGE_ADDRESS_AWARE        (0x0020)
+#define HCOFF_FILEHEADER_F_FLAGS_IMAGE_FILE_32BIT_MACHINE              (0x0100)
 #define HCOFF_FILEHEADER_F_FLAGS_IMAGE_FILE_SYSTEM      (0x1000)
 #define HCOFF_FILEHEADER_F_FLAGS_IMAGE_FILE_DLL         (0x2000)
+#define HCOFF_FILEHEADER_F_FLAGS_IMAGE_FILE_UP_SYSTEM_ONLY             (0x4000)
 
+
+/** \brief 获取机器类型名称
+ *
+ * \param magic uint16_t 机器类型,见HCOFF_FILEHEADER_F_MAGIC_*
+ * \return const char* 机器类型名称，未知类型返回"unknown"
+ *
+ */
+const char *hcoff_machine_name(uint16_t magic);
+
+/** \brief 判断机器类型是否是64位
+ *
+ * \param magic uint16_t 机器类型,见HCOFF_FILEHEADER_F_MAGIC_*
+ * \return bool 是否是64位
+ *
+ */
+bool hcoff_machine_is_64bit(uint16_t magic);
+
+/** \brief 获取机器类型对应的重定位入口大小
+ *
+ * 不同的架构在COFF文件中使用的重定位入口大小可能不同(如ARM、RISC-V、LoongArch使用14字节,
+ * SH、Z80、Z8K使用16字节,MIPS使用8字节)。
+ *
+ * \param magic uint16_t 机器类型,见HCOFF_FILEHEADER_F_MAGIC_*
+ * \return size_t 重定位入口大小
+ *
+ */
+size_t hcoff_machine_relocation_entry_size(uint16_t magic);
 
 /** \brief COFF读取文件头
  *
@@ -89,6 +128,16 @@ struct hcoff_fileheader
  *
  */
 bool hcoff_fileheader_read(hcoff_fileheader_t *fileheader,const uint8_t* fileheader_bytes,size_t fileheader_bytes_length);
+
+/** \brief COFF在指定文件偏移读取文件头
+ *
+ * \param fileheader hcoff_fileheader_t*    COFF文件头
+ * \param input_file hcoff_file_input_t*    输入文件
+ * \param offset uintptr_t                  文件头在文件中的偏移(PE文件需要跳过DOS头)
+ * \return bool 是否成功读取
+ *
+ */
+bool hcoff_fileheader_read_at(hcoff_fileheader_t *fileheader,hcoff_file_input_t *input_file,uintptr_t offset);
 
 
 /** \brief COFF文件头获取节在文件中地址
@@ -117,8 +166,6 @@ size_t hcoff_fileheader_section_count_get(hcoff_fileheader_t *fileheader);
 bool hcoff_fileheader_is_relocatable_object_file(hcoff_fileheader_t *fileheader);
 
 
-typedef struct hcoff_file_input hcoff_file_input_t;
-
 /** \brief COFF输入文件读取
  *
  * \param input hcoff_file_input_t* 输入文件
@@ -134,6 +181,8 @@ struct hcoff_file_input
 {
     hcoff_file_input_read_t read;
     void *usr;
+    uintptr_t size;         /**< 文件大小,size_valid为true时有效 */
+    bool size_valid;        /**< 文件大小是否有效 */
 };
 
 /** \brief COFF输入文件初始化
@@ -145,6 +194,16 @@ struct hcoff_file_input
  */
 void hcoff_file_input_init(hcoff_file_input_t *input,hcoff_file_input_read_t read,void *usr);
 
+/** \brief COFF输入文件初始化(带文件大小)
+ *
+ * \param input hcoff_file_input_t*     输入文件
+ * \param read hcoff_file_input_read_t  文件读取操作
+ * \param usr void* 用户操作
+ * \param size size_t 文件大小
+ *
+ */
+void hcoff_file_input_init_with_size(hcoff_file_input_t *input,hcoff_file_input_read_t read,void *usr,size_t size);
+
 /** \brief COFF输入文件读取
  *
  * \param input hcoff_file_input_t* 输入文件
@@ -155,6 +214,132 @@ void hcoff_file_input_init(hcoff_file_input_t *input,hcoff_file_input_read_t rea
  *
  */
 size_t hcoff_file_input_read(hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length);
+
+/** \brief 读取16位无符号整数(小端)
+ *
+ * \param buffer const void* 缓冲区
+ * \return uint16_t 数值
+ *
+ */
+uint16_t hcoff_get_uint16_le(const void *buffer);
+
+/** \brief 读取16位无符号整数(大端)
+ *
+ * \param buffer const void* 缓冲区
+ * \return uint16_t 数值
+ *
+ */
+uint16_t hcoff_get_uint16_be(const void *buffer);
+
+/** \brief 读取32位无符号整数(小端)
+ *
+ * \param buffer const void* 缓冲区
+ * \return uint32_t 数值
+ *
+ */
+uint32_t hcoff_get_uint32_le(const void *buffer);
+
+/** \brief 读取32位无符号整数(大端)
+ *
+ * \param buffer const void* 缓冲区
+ * \return uint32_t 数值
+ *
+ */
+uint32_t hcoff_get_uint32_be(const void *buffer);
+
+/** \brief 读取64位无符号整数(小端)
+ *
+ * \param buffer const void* 缓冲区
+ * \return uint64_t 数值
+ *
+ */
+uint64_t hcoff_get_uint64_le(const void *buffer);
+
+/** \brief 读取64位无符号整数(大端)
+ *
+ * \param buffer const void* 缓冲区
+ * \return uint64_t 数值
+ *
+ */
+uint64_t hcoff_get_uint64_be(const void *buffer);
+
+/** \brief 读取16位无符号整数
+ *
+ * \param buffer const void* 缓冲区
+ * \param is_big_endian bool 是否为大端
+ * \return uint16_t 数值
+ *
+ */
+uint16_t hcoff_get_uint16(const void *buffer,bool is_big_endian);
+
+/** \brief 读取32位无符号整数
+ *
+ * \param buffer const void* 缓冲区
+ * \param is_big_endian bool 是否为大端
+ * \return uint32_t 数值
+ *
+ */
+uint32_t hcoff_get_uint32(const void *buffer,bool is_big_endian);
+
+/** \brief 读取64位无符号整数
+ *
+ * \param buffer const void* 缓冲区
+ * \param is_big_endian bool 是否为大端
+ * \return uint64_t 数值
+ *
+ */
+uint64_t hcoff_get_uint64(const void *buffer,bool is_big_endian);
+
+/** \brief 写入16位无符号整数(小端)
+ *
+ * \param buffer void* 缓冲区
+ * \param value uint16_t 数值
+ *
+ */
+void hcoff_put_uint16_le(void *buffer,uint16_t value);
+
+/** \brief 写入32位无符号整数(小端)
+ *
+ * \param buffer void* 缓冲区
+ * \param value uint32_t 数值
+ *
+ */
+void hcoff_put_uint32_le(void *buffer,uint32_t value);
+
+/** \brief 写入64位无符号整数(小端)
+ *
+ * \param buffer void* 缓冲区
+ * \param value uint64_t 数值
+ *
+ */
+void hcoff_put_uint64_le(void *buffer,uint64_t value);
+
+/** \brief 写入16位无符号整数
+ *
+ * \param buffer void* 缓冲区
+ * \param value uint16_t 数值
+ * \param is_big_endian bool 是否为大端
+ *
+ */
+void hcoff_put_uint16(void *buffer,uint16_t value,bool is_big_endian);
+
+/** \brief 写入32位无符号整数
+ *
+ * \param buffer void* 缓冲区
+ * \param value uint32_t 数值
+ * \param is_big_endian bool 是否为大端
+ *
+ */
+void hcoff_put_uint32(void *buffer,uint32_t value,bool is_big_endian);
+
+/** \brief 写入64位无符号整数
+ *
+ * \param buffer void* 缓冲区
+ * \param value uint64_t 数值
+ * \param is_big_endian bool 是否为大端
+ *
+ */
+void hcoff_put_uint64(void *buffer,uint64_t value,bool is_big_endian);
 
 
 /** \brief COFF文件是否为大端
@@ -207,9 +392,20 @@ struct hcoff_sectionheader
  * hcoff_sectionheader_t标志
  */
 #define HCOFF_SECTIONHEADER_S_FLAGS_STYP_DATA                   (1 << 6)
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_CNT_CODE                  (0x00000020)    /**< 节包含代码 */
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_CNT_INITIALIZED_DATA      (0x00000040)    /**< 节包含已初始化数据 */
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_CNT_UNINITIALIZED_DATA    (0x00000080)    /**< 节包含未初始化数据 */
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_LNK_INFO                  (0x00000200)    /**< 节包含注释等信息 */
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_LNK_REMOVE                (0x00000800)    /**< 节内容不进入映像 */
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_LNK_COMDAT                (0x00001000)    /**< COMDAT节 */
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_LNK_NRELOC_OVFL           (0x01000000)    /**< 重定位数量溢出(扩展重定位) */
 #define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_MEM_DISCARDABLE   (1 << 25)
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_MEM_EXECUTE       (1U << 29)
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_MEM_READ          (1U << 30)
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_MEM_WRITE         (1U << 31)
 #define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_MEM_SHARED        (1 << 28)
-#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_MEM_READ          (1 << 30)
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_MEM_NOT_CACHED    (1 << 26)
+#define HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_MEM_NOT_PAGED     (1 << 27)
 
 
 /** \brief COFF文件读取节头
@@ -221,6 +417,29 @@ struct hcoff_sectionheader
  *
  */
 bool hcoff_sectionheader_read(hcoff_sectionheader_t *sectionheader,size_t index,hcoff_file_input_t *input_file);
+
+/** \brief COFF在指定文件偏移读取节头
+ *
+ * \param sectionheader hcoff_sectionheader_t* 节头
+ * \param index size_t 引索，从0开始
+ * \param section_table_offset uintptr_t 节表在文件中的偏移
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return bool 是否读取成功
+ *
+ */
+bool hcoff_sectionheader_read_at(hcoff_sectionheader_t *sectionheader,size_t index,uintptr_t section_table_offset,hcoff_file_input_t *input_file);
+
+/** \brief COFF文件读取节的重定位数量(处理扩展重定位)
+ *
+ * 当节头s_nreloc为0xFFFF且设置了IMAGE_SCN_LNK_NRELOC_OVFL时,真正的重定位数量存储在
+ * 第一个重定位入口的r_vaddr中。
+ *
+ * \param sectionheader const hcoff_sectionheader_t* 节头
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return size_t 重定位数量
+ *
+ */
+size_t hcoff_section_relocation_count_get(const hcoff_sectionheader_t *sectionheader,hcoff_file_input_t *input_file);
 
 /** \brief COFF文件读取节名称(当名称长度超过7时，需要从字符串表中获取名称字符串)
  *
@@ -388,6 +607,18 @@ struct hcoff_symbol_entry
  *
  */
 bool hcoff_symbol_entry_read(hcoff_symbol_entry_t *symbol_entry,size_t index,hcoff_file_input_t *input_file);
+
+/** \brief COFF读取符号入口(不检查是否为符号)
+ *
+ * 此函数用于顺序遍历符号表,调用者需要自行通过e_numaux跳过辅助信息。
+ *
+ * \param symbol_entry hcoff_symbol_entry_t* 符号入口
+ * \param index size_t 引索
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \return bool 是否成功
+ *
+ */
+bool hcoff_symbol_entry_read_at(hcoff_symbol_entry_t *symbol_entry,size_t index,hcoff_file_input_t *input_file);
 
 /** \brief COFF文件读取符号名称(当名称长度超过8时，需要从字符串表中获取名称字符串)
  *

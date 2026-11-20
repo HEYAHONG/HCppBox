@@ -1,5 +1,5 @@
 /***************************************************************
- * Name:      hcoff_amd64.h
+ * Name:      hcoff_arch_amd64.h
  * Purpose:   声明hcoff_amd64接口
  * Author:    HYH (hyhsystem.cn)
  * Created:   2025-05-23

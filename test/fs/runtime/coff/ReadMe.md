@@ -13,6 +13,9 @@
 - `helloworld.i386.msvc.obj`:MSVC X86环境下执行:`cl /c /utf-8 /Fohelloworld.i386.msvc.obj /nologo helloworld.c`
 - `helloworld.x86_64.msvc.obj`:MSVC X64环境下执行:`cl /c /utf-8 /Fohelloworld.x86_64.msvc.obj /nologo helloworld.c`
 - `helloworld.aarch64.msvc.obj`:MSVC arm64环境下执行:`cl /c /utf-8 /Fohelloworld.aarch64.msvc.obj /nologo helloworld.c`
+- `helloworld.arm.obj`:`clang --target=armv7-w64-windows-gnu -O2 -c arm_helloworld.c -o helloworld.arm.obj`
+
+PE(EXE/DLL)测试文件见[pe](pe)目录。
 
 # 可重定位文件
 

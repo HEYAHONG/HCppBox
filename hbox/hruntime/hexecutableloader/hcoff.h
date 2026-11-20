@@ -15,9 +15,15 @@ extern "C"
 #endif // __cplusplus
 
 #include "hcoff/hcoff_common.h"
-#include "hcoff/hcoff_i386.h"
-#include "hcoff/hcoff_amd64.h"
-#include "hcoff/hcoff_aarch64.h"
+#include "hcoff/hcoff_arch.h"
+#include "hcoff/hcoff_relocatable.h"
+#include "hcoff/hcoff_arch_i386.h"
+#include "hcoff/hcoff_arch_amd64.h"
+#include "hcoff/hcoff_arch_aarch64.h"
+#include "hcoff/hcoff_arch_arm.h"
+#include "hcoff/hcoff_arch_riscv.h"
+#include "hcoff/hcoff_arch_loongarch.h"
+#include "hcoff/hcoff_pe.h"
 #include "hcoff/hcoff_namespace.h"
 
 #ifdef __cplusplus

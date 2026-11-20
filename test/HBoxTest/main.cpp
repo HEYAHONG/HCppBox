@@ -1866,6 +1866,175 @@ static int hruntime_test(int argc,const char *argv[])
                 }
             }
         }
+        {
+            //PE测试(EXE/DLL)
+            const char *pe_list[]=
+            {
+                "runtime/coff/pe/helloworld.x86_64.exe",
+                "runtime/coff/pe/helloworld.x86_64.dll",
+                "runtime/coff/pe/helloworld.i386.exe",
+                "runtime/coff/pe/helloworld.i386.dll",
+                "runtime/coff/pe/helloworld.static.x86_64.exe",
+                "runtime/coff/pe/helloworld.static.i386.exe",
+                "runtime/coff/pe/pei-aarch64-little.exe",
+                "runtime/coff/pe/pei-riscv64-little.exe"
+            };
+            for(size_t i=0; i<sizeof(pe_list)/sizeof(pe_list[0]); i++)
+            {
+                const char * RC_PATH=pe_list[i];
+                const uint8_t * pe_data=RCGetHandle(RC_PATH);
+                size_t pe_data_size=RCGetSize(RC_PATH);
+                if(pe_data==NULL || pe_data_size==0)
+                {
+                    printf("hcoff pe:%s not found\r\n",RC_PATH);
+                    continue;
+                }
+                hcoff_file_input_t input_file= {0};
+                hcoff_file_input_init_with_size(&input_file,[](hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length) -> size_t
+                {
+                    size_t ret=0;
+                    if(input == NULL || input->usr==NULL || buffer == NULL )
+                    {
+                        return ret;
+                    }
+                    if(input->size_valid && address+buffer_length > input->size)
+                    {
+                        return ret;
+                    }
+                    const uint8_t *data=(const uint8_t *)input->usr;
+                    memcpy(buffer,&data[address],buffer_length);
+                    ret=buffer_length;
+                    return ret;
+
+                },(void *)pe_data,pe_data_size);
+                hcoff_pe_header_t pe_header= {0};
+                if(hcoff_pe_header_read(&pe_header,&input_file))
+                {
+                    printf("hcoff pe:%s machine=%s(%04X),dll=%s,64bit=%s,static=%s,sections=%d,entry=%08X,image_base=%llX,image_size=%08X\r\n",
+                           RC_PATH,
+                           hcoff_machine_name(pe_header.coff_header.f_magic),
+                           (unsigned)pe_header.coff_header.f_magic,
+                           hcoff_pe_header_is_dll(&pe_header)?"true":"false",
+                           pe_header.is_64bit?"true":"false",
+                           hcoff_pe_is_static_linked(&pe_header,&input_file)?"true":"false",
+                           (int)pe_header.coff_header.f_nscns,
+                           (unsigned)pe_header.address_of_entry_point,
+                           (unsigned long long)pe_header.image_base,
+                           (unsigned)pe_header.size_of_image);
+                    printf("hcoff pe:exports=%d,import_dlls=%d,base_relocations=%d\r\n",
+                           (int)hcoff_pe_export_count(&pe_header,&input_file),
+                           (int)hcoff_pe_import_dll_count(&pe_header,&input_file),
+                           (int)hcoff_pe_base_relocation_foreach(&pe_header,&input_file,NULL,NULL));
+                    {
+                        char export_name[128]= {0};
+                        char forwarder_name[128]= {0};
+                        hcoff_pe_export_t export_info= {0};
+                        for(size_t j=0; j<hcoff_pe_export_name_count(&pe_header,&input_file); j++)
+                        {
+                            if(hcoff_pe_export_name_get(&pe_header,&input_file,j,&export_info,export_name,sizeof(export_name),forwarder_name,sizeof(forwarder_name)))
+                            {
+                                printf("hcoff pe export:%s(ordinal=%d,rva=%08X,forwarder=%s)\r\n",
+                                       export_info.name!=NULL?export_info.name:"",
+                                       (int)export_info.ordinal,
+                                       (unsigned)export_info.function_rva,
+                                       export_info.is_forwarder?"true":"false");
+                            }
+                        }
+                    }
+                    {
+                        char dll_name[128]= {0};
+                        char function_name[128]= {0};
+                        hcoff_pe_import_t import_info= {0};
+                        for(size_t j=0; j<hcoff_pe_import_dll_count(&pe_header,&input_file); j++)
+                        {
+                            const char *current_dll=hcoff_pe_import_dll_name_get(&pe_header,&input_file,j,dll_name,sizeof(dll_name));
+                            printf("hcoff pe import dll:%s(count=%d)\r\n",current_dll!=NULL?current_dll:"",(int)hcoff_pe_import_count(&pe_header,&input_file,j));
+                        }
+                        if(hcoff_pe_import_find(&pe_header,&input_file,"hello_add",&import_info,dll_name,sizeof(dll_name),function_name,sizeof(function_name)))
+                        {
+                            printf("hcoff pe import:hello_add from %s,iat=%08X\r\n",import_info.dll_name!=NULL?import_info.dll_name:"",(unsigned)import_info.iat_rva);
+                        }
+                    }
+                    size_t pe_image_size=hcoff_pe_image_buffer_size_get(&input_file);
+                    if(pe_image_size!=0)
+                    {
+                        void *pe_image_buffer=hmmap(NULL,pe_image_size,HMMAN_PROT_READ | HMMAN_PROT_WRITE | HMMAN_PROT_EXEC,HMMAN_MAP_ANONYMOUS | HMMAN_MAP_SHARED,(-1),0);
+                        if(pe_image_buffer!=NULL)
+                        {
+                            hcoff_pe_image_t pe_image= {0};
+                            if(hcoff_pe_image_init(&pe_image,&input_file,pe_image_buffer,pe_image_size))
+                            {
+                                printf("hcoff pe image:load ok,relocated=%s,entry=%p\r\n",pe_image.relocated?"true":"false",hcoff_pe_image_entry_point(&pe_image));
+                                if(hcoff_pe_image_export_find(&pe_image,"hello_add")!=NULL)
+                                {
+                                    printf("hcoff pe image:export hello_add found\r\n");
+                                }
+                                hcoff_pe_image_deinit(&pe_image);
+                            }
+                            hmunmap(pe_image_buffer,pe_image_size);
+                        }
+                    }
+                    {
+                        //内部使用hmmap申请内存的版本
+                        hcoff_pe_image_t *pe_image_alloc=hcoff_pe_image_new(&input_file);
+                        if(pe_image_alloc!=NULL)
+                        {
+                            printf("hcoff pe image(alloc):load ok\r\n");
+                            hcoff_pe_image_delete(pe_image_alloc);
+                        }
+                    }
+                }
+            }
+        }
+        {
+            //ARM COFF可重定位对象测试
+            const char * RC_PATH="runtime/coff/helloworld.arm.obj";
+            const uint8_t * arm_data=RCGetHandle(RC_PATH);
+            size_t arm_data_size=RCGetSize(RC_PATH);
+            if(arm_data!=NULL && arm_data_size!=0)
+            {
+                hcoff_file_input_t input_file= {0};
+                hcoff_file_input_init_with_size(&input_file,[](hcoff_file_input_t *input,uintptr_t address,void *buffer,size_t buffer_length) -> size_t
+                {
+                    if(input == NULL || input->usr==NULL || buffer == NULL )
+                    {
+                        return 0;
+                    }
+                    if(input->size_valid && address+buffer_length > input->size)
+                    {
+                        return 0;
+                    }
+                    memcpy(buffer,&((const uint8_t *)input->usr)[address],buffer_length);
+                    return buffer_length;
+                },(void *)arm_data,arm_data_size);
+                size_t arm_image_size=hcoff_arm_relocatable_image_size_get(&input_file);
+                if(arm_image_size!=0)
+                {
+                    void *arm_image_buffer=hmmap(NULL,arm_image_size,HMMAN_PROT_READ | HMMAN_PROT_WRITE | HMMAN_PROT_EXEC,HMMAN_MAP_ANONYMOUS | HMMAN_MAP_SHARED,(-1),0);
+                    if(arm_image_buffer!=NULL)
+                    {
+                        hcoff_namespace_t ns= {0};
+                        hcoff_namespace_relocatable_t relocatable= {0};
+                        if(hcoff_namespace_relocatable_init(&ns,&relocatable,&input_file,arm_image_buffer,arm_image_size))
+                        {
+                            const hruntime_symbol_t *foo=hcoff_namespace_symbol_find(&ns,"arm_foo");
+                            printf("hcoff arm:load ok,machine=%s,arm_foo=%p\r\n",hcoff_machine_name(ns.machine_type),(void *)(foo!=NULL?foo->symbol_addr:0));
+                            hcoff_namespace_relocatable_deinit(&ns,&relocatable);
+                        }
+                        hmunmap(arm_image_buffer,arm_image_size);
+                    }
+                }
+                {
+                    //内部使用hmmap申请内存的版本
+                    const hcoff_arm_relocatable_t *arm_relocatable=hcoff_arm_relocatable_new_with_usr(&input_file,NULL,NULL);
+                    if(arm_relocatable!=NULL)
+                    {
+                        printf("hcoff arm(alloc):load ok\r\n");
+                        hcoff_arm_relocatable_delete(arm_relocatable);
+                    }
+                }
+            }
+        }
 #if defined(_M_IX86) || defined(__i386__) || defined(i386) || defined(__i686__) || defined(i686)
 #if defined(HDEFAULTS_OS_UNIX) || defined(HDEFAULTS_OS_WINDOWS)
         {

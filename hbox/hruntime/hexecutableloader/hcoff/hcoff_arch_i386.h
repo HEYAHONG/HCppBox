@@ -1,5 +1,5 @@
 /***************************************************************
- * Name:      hcoff_i386.h
+ * Name:      hcoff_arch_i386.h
  * Purpose:   声明hcoff_i386接口
  * Author:    HYH (hyhsystem.cn)
  * Created:   2025-05-21

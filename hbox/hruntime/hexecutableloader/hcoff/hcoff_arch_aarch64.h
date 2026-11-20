@@ -1,5 +1,5 @@
 /***************************************************************
- * Name:      hcoff_aarch64.h
+ * Name:      hcoff_arch_aarch64.h
  * Purpose:   声明hcoff_aarch64接口
  * Author:    HYH (hyhsystem.cn)
  * Created:   2025-05-26

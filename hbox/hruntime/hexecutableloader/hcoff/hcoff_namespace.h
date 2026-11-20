@@ -9,8 +9,10 @@
 #ifndef __HCOFF_NAMESPACE_H__
 #define __HCOFF_NAMESPACE_H__
 #include "hcoff_common.h"
+#include "hcoff_relocatable.h"
 #include "stdbool.h"
 #include "hmemory.h"
+#include "hruntime.h"
 /*
  * 命名空间主要用于防止符号名称的冲突，不同命名空间的符号名称可以相同且不会出现覆盖的情况
  */
@@ -49,7 +51,29 @@ struct hcoff_namespace_relocatable
     hdoublylinkedlist_head_t relocatable_list_head;
     const void *      relocatable_handle;
     uint16_t    machine_type;
+    bool        relocatable_buffer_owned;   /**< 映像缓冲区是否由内部申请(兼容旧接口) */
+    hcoff_relocatable_t generic_relocatable;/**< 通用可重定位对象(ARM/RISC-V/LoongArch) */
 };
+
+/** \brief HCOFF 命名空间 初始化可重定位对象(使用用户提供的缓冲区)
+ *
+ * \param ns hcoff_namespace_t *命名空间
+ * \param namespace_relocatable hcoff_namespace_relocatable_t* 可重定位对象(由调用者提供)
+ * \param input_file hcoff_file_input_t* 输入文件
+ * \param buffer void* 用户提供的映像缓冲区
+ * \param buffer_size size_t 缓冲区大小
+ * \return bool 是否成功
+ *
+ */
+bool hcoff_namespace_relocatable_init(hcoff_namespace_t *ns,hcoff_namespace_relocatable_t *namespace_relocatable,hcoff_file_input_t *input_file,void *buffer,size_t buffer_size);
+
+/** \brief HCOFF 命名空间 清理可重定位对象(不释放用户提供的缓冲区)
+ *
+ * \param ns hcoff_namespace_t *命名空间
+ * \param namespace_relocatable hcoff_namespace_relocatable_t* 可重定位文件指针
+ *
+ */
+void hcoff_namespace_relocatable_deinit(hcoff_namespace_t *ns,hcoff_namespace_relocatable_t *namespace_relocatable);
 
 /** \brief HCOFF 命名空间 创建可重定位对象
  *

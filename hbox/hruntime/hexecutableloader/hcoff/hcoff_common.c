@@ -8,6 +8,297 @@
  **************************************************************/
 #include "hcoff_common.h"
 #include "stdlib.h"
+#include "string.h"
+
+const char *hcoff_machine_name(uint16_t magic)
+{
+    const char *ret="unknown";
+    switch(magic)
+    {
+    case HCOFF_FILEHEADER_F_MAGIC_UNKNOWN:
+        ret="unknown";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_ALPHA:
+        ret="alpha";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_ALPHA64:
+        ret="alpha64";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_AM33:
+        ret="am33";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_AMD64:
+        ret="amd64";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_ARM:
+        ret="arm";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_ARM64:
+        ret="arm64";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_ARMNT:
+        ret="armnt";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_CEE:
+        ret="cee";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_CEF:
+        ret="cef";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_EBC:
+        ret="ebc";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_I386:
+        ret="i386";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_IA64:
+        ret="ia64";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_LOONGARCH64:
+        ret="loongarch64";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_M32R:
+        ret="m32r";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_M68K:
+        ret="m68k";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_MIPS16:
+        ret="mips16";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_MIPSFPU:
+        ret="mipsfpu";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_MIPSFPU16:
+        ret="mipsfpu16";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_POWERPC:
+        ret="powerpc";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_POWERPCFP:
+        ret="powerpcfp";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_R10000:
+        ret="r10000";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_R3000:
+        ret="r3000";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_R4000:
+        ret="r4000";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_RISCV32:
+        ret="riscv32";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_RISCV64:
+        ret="riscv64";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_SH3:
+        ret="sh3";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_SH3DSP:
+        ret="sh3dsp";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_SH3E:
+        ret="sh3e";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_SH4:
+        ret="sh4";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_SH5:
+        ret="sh5";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_THUMB:
+        ret="thumb";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_TRICORE:
+        ret="tricore";
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_WCEMIPSV2:
+        ret="wcemipsv2";
+        break;
+    default:
+        break;
+    }
+    return ret;
+}
+
+bool hcoff_machine_is_64bit(uint16_t magic)
+{
+    bool ret=false;
+    switch(magic)
+    {
+    case HCOFF_FILEHEADER_F_MAGIC_ALPHA64:
+    case HCOFF_FILEHEADER_F_MAGIC_AMD64:
+    case HCOFF_FILEHEADER_F_MAGIC_ARM64:
+    case HCOFF_FILEHEADER_F_MAGIC_IA64:
+    case HCOFF_FILEHEADER_F_MAGIC_LOONGARCH64:
+    case HCOFF_FILEHEADER_F_MAGIC_RISCV64:
+    case HCOFF_FILEHEADER_F_MAGIC_SH5:
+        ret=true;
+        break;
+    default:
+        break;
+    }
+    return ret;
+}
+
+size_t hcoff_machine_relocation_entry_size(uint16_t magic)
+{
+    size_t ret=10;
+    switch(magic)
+    {
+    case HCOFF_FILEHEADER_F_MAGIC_ALPHA:
+    case HCOFF_FILEHEADER_F_MAGIC_ALPHA64:
+        ret=16;
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_LOONGARCH64:
+    case HCOFF_FILEHEADER_F_MAGIC_RISCV32:
+    case HCOFF_FILEHEADER_F_MAGIC_RISCV64:
+        //PE COFF使用r_vaddr+r_symndx+r_type+r_offset布局
+        ret=14;
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_MIPS16:
+    case HCOFF_FILEHEADER_F_MAGIC_MIPSFPU:
+    case HCOFF_FILEHEADER_F_MAGIC_MIPSFPU16:
+    case HCOFF_FILEHEADER_F_MAGIC_R3000:
+    case HCOFF_FILEHEADER_F_MAGIC_R4000:
+    case HCOFF_FILEHEADER_F_MAGIC_R10000:
+    case HCOFF_FILEHEADER_F_MAGIC_WCEMIPSV2:
+        //MIPS ECOFF使用8字节压缩格式
+        ret=8;
+        break;
+    case HCOFF_FILEHEADER_F_MAGIC_SH3:
+    case HCOFF_FILEHEADER_F_MAGIC_SH3DSP:
+    case HCOFF_FILEHEADER_F_MAGIC_SH3E:
+    case HCOFF_FILEHEADER_F_MAGIC_SH4:
+        //非PE的SH COFF使用16字节重定位入口
+        ret=16;
+        break;
+    default:
+        ret=10;
+        break;
+    }
+    return ret;
+}
+
+uint16_t hcoff_get_uint16_le(const void *buffer)
+{
+    const uint8_t *p=(const uint8_t *)buffer;
+    return (uint16_t)(p[0] | ((uint16_t)p[1] << 8));
+}
+
+uint16_t hcoff_get_uint16_be(const void *buffer)
+{
+    const uint8_t *p=(const uint8_t *)buffer;
+    return (uint16_t)(((uint16_t)p[0] << 8) | p[1]);
+}
+
+uint32_t hcoff_get_uint32_le(const void *buffer)
+{
+    const uint8_t *p=(const uint8_t *)buffer;
+    return (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
+}
+
+uint32_t hcoff_get_uint32_be(const void *buffer)
+{
+    const uint8_t *p=(const uint8_t *)buffer;
+    return ((uint32_t)p[0] << 24) | ((uint32_t)p[1] << 16) | ((uint32_t)p[2] << 8) | (uint32_t)p[3];
+}
+
+uint64_t hcoff_get_uint64_le(const void *buffer)
+{
+    const uint8_t *p=(const uint8_t *)buffer;
+    return ((uint64_t)hcoff_get_uint32_le(p)) | (((uint64_t)hcoff_get_uint32_le(p+4)) << 32);
+}
+
+uint64_t hcoff_get_uint64_be(const void *buffer)
+{
+    const uint8_t *p=(const uint8_t *)buffer;
+    return (((uint64_t)hcoff_get_uint32_be(p)) << 32) | ((uint64_t)hcoff_get_uint32_be(p+4));
+}
+
+uint16_t hcoff_get_uint16(const void *buffer,bool is_big_endian)
+{
+    return is_big_endian?hcoff_get_uint16_be(buffer):hcoff_get_uint16_le(buffer);
+}
+
+uint32_t hcoff_get_uint32(const void *buffer,bool is_big_endian)
+{
+    return is_big_endian?hcoff_get_uint32_be(buffer):hcoff_get_uint32_le(buffer);
+}
+
+uint64_t hcoff_get_uint64(const void *buffer,bool is_big_endian)
+{
+    return is_big_endian?hcoff_get_uint64_be(buffer):hcoff_get_uint64_le(buffer);
+}
+
+void hcoff_put_uint16_le(void *buffer,uint16_t value)
+{
+    uint8_t *p=(uint8_t *)buffer;
+    p[0]=(uint8_t)(value & 0xFF);
+    p[1]=(uint8_t)((value >> 8) & 0xFF);
+}
+
+void hcoff_put_uint32_le(void *buffer,uint32_t value)
+{
+    uint8_t *p=(uint8_t *)buffer;
+    p[0]=(uint8_t)(value & 0xFF);
+    p[1]=(uint8_t)((value >> 8) & 0xFF);
+    p[2]=(uint8_t)((value >> 16) & 0xFF);
+    p[3]=(uint8_t)((value >> 24) & 0xFF);
+}
+
+void hcoff_put_uint64_le(void *buffer,uint64_t value)
+{
+    uint8_t *p=(uint8_t *)buffer;
+    hcoff_put_uint32_le(p,(uint32_t)(value & 0xFFFFFFFF));
+    hcoff_put_uint32_le(p+4,(uint32_t)((value >> 32) & 0xFFFFFFFF));
+}
+
+void hcoff_put_uint16(void *buffer,uint16_t value,bool is_big_endian)
+{
+    if(is_big_endian)
+    {
+        uint8_t *p=(uint8_t *)buffer;
+        p[0]=(uint8_t)((value >> 8) & 0xFF);
+        p[1]=(uint8_t)(value & 0xFF);
+    }
+    else
+    {
+        hcoff_put_uint16_le(buffer,value);
+    }
+}
+
+void hcoff_put_uint32(void *buffer,uint32_t value,bool is_big_endian)
+{
+    if(is_big_endian)
+    {
+        uint8_t *p=(uint8_t *)buffer;
+        p[0]=(uint8_t)((value >> 24) & 0xFF);
+        p[1]=(uint8_t)((value >> 16) & 0xFF);
+        p[2]=(uint8_t)((value >> 8) & 0xFF);
+        p[3]=(uint8_t)(value & 0xFF);
+    }
+    else
+    {
+        hcoff_put_uint32_le(buffer,value);
+    }
+}
+
+void hcoff_put_uint64(void *buffer,uint64_t value,bool is_big_endian)
+{
+    if(is_big_endian)
+    {
+        uint8_t *p=(uint8_t *)buffer;
+        hcoff_put_uint32(p,(uint32_t)((value >> 32) & 0xFFFFFFFF),true);
+        hcoff_put_uint32(p+4,(uint32_t)(value & 0xFFFFFFFF),true);
+    }
+    else
+    {
+        hcoff_put_uint64_le(buffer,value);
+    }
+}
 
 static bool hcoff_fileheader_is_magic_number(uint16_t magic)
 {
@@ -184,6 +475,60 @@ bool hcoff_fileheader_read(hcoff_fileheader_t *fileheader,const uint8_t* filehea
     return ret;
 }
 
+bool hcoff_fileheader_read_at(hcoff_fileheader_t *fileheader,hcoff_file_input_t *input_file,uintptr_t offset)
+{
+    bool ret=false;
+    if(fileheader==NULL || input_file==NULL)
+    {
+        return ret;
+    }
+    uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
+    if(sizeof(buffer) > hcoff_file_input_read(input_file,offset,buffer,sizeof(buffer)))
+    {
+        return ret;
+    }
+    ret=hcoff_fileheader_read(fileheader,buffer,sizeof(buffer));
+    return ret;
+}
+
+static bool hcoff_file_input_fileheader_read(hcoff_file_input_t *input_file,hcoff_fileheader_t *fileheader)
+{
+    if(input_file==NULL || fileheader==NULL)
+    {
+        return false;
+    }
+    //常规COFF文件
+    if(hcoff_fileheader_read_at(fileheader,input_file,0))
+    {
+        return true;
+    }
+    //PE文件:DOS头+"PE\0\0"+COFF文件头
+    uint8_t dos_header[64]= {0};
+    if(sizeof(dos_header) > hcoff_file_input_read(input_file,0,dos_header,sizeof(dos_header)))
+    {
+        return false;
+    }
+    if(hcoff_get_uint16_le(dos_header) != 0x5A4D)
+    {
+        return false;
+    }
+    uint32_t nt_offset=hcoff_get_uint32_le(dos_header+0x3C);
+    if(nt_offset < 0x40)
+    {
+        return false;
+    }
+    uint8_t signature[4]= {0};
+    if(sizeof(signature) > hcoff_file_input_read(input_file,nt_offset,signature,sizeof(signature)))
+    {
+        return false;
+    }
+    if(hcoff_get_uint32_le(signature) != 0x00004550)
+    {
+        return false;
+    }
+    return hcoff_fileheader_read_at(fileheader,input_file,nt_offset+4);
+}
+
 uintptr_t hcoff_fileheader_section_offset_get(hcoff_fileheader_t *fileheader)
 {
     uintptr_t ret=0;
@@ -219,6 +564,19 @@ void hcoff_file_input_init(hcoff_file_input_t *input,hcoff_file_input_read_t rea
     {
         input->read=read;
         input->usr=usr;
+        input->size=0;
+        input->size_valid=false;
+    }
+}
+
+void hcoff_file_input_init_with_size(hcoff_file_input_t *input,hcoff_file_input_read_t read,void *usr,size_t size)
+{
+    if(input!=NULL)
+    {
+        input->read=read;
+        input->usr=usr;
+        input->size=size;
+        input->size_valid=true;
     }
 }
 
@@ -235,44 +593,97 @@ bool hcoff_file_input_is_big_endian(hcoff_file_input_t *input_file)
 {
     bool ret=false;
     {
-        hcoff_fileheader_t filehdr;
-        uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
+        hcoff_fileheader_t filehdr= {0};
+        uint8_t buffer[2]= {0};
+        if(!hcoff_file_input_fileheader_read(input_file,&filehdr))
+        {
+            return ret;
+        }
         if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
         {
             return ret;
         }
-        if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+        if(buffer[0]=='M' && buffer[1]=='Z')
         {
-            return ret;
+            //PE文件固定为小端模式
+            return false;
         }
         ret=((filehdr.f_magic&0xFF) != buffer[0]);
     }
     return ret;
 }
 
-bool hcoff_sectionheader_read(hcoff_sectionheader_t *sectionheader,size_t index,hcoff_file_input_t *input_file)
+bool hcoff_sectionheader_read_at(hcoff_sectionheader_t *sectionheader,size_t index,uintptr_t section_table_offset,hcoff_file_input_t *input_file)
 {
     bool ret=false;
-    if(sectionheader==NULL)
+    if(sectionheader==NULL || input_file==NULL || section_table_offset == 0)
     {
         return ret;
     }
     bool is_big_endian=false;
-    uintptr_t section_offset=0;
-    size_t section_count=0;
     {
         hcoff_fileheader_t filehdr;
         uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
-        if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+        if(sizeof(buffer) <= hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+        {
+            if(hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+            {
+                is_big_endian=((filehdr.f_magic&0xFF) != buffer[0]);
+            }
+            else
+            {
+                //非常规COFF(如PE文件),默认采用小端模式
+                is_big_endian=false;
+            }
+        }
+    }
+
+    hcoff_sectionheader_bytes_t sectionheader_bytes= {0};
+
+    if(sizeof(sectionheader_bytes) > hcoff_file_input_read(input_file,section_table_offset+index*sizeof(sectionheader_bytes),&sectionheader_bytes,sizeof(sectionheader_bytes)))
+    {
+        return ret;
+    }
+
+    ret=true;
+    memcpy(sectionheader->s_name,sectionheader_bytes.s_name,sizeof(sectionheader->s_name));
+    sectionheader->s_paddr=hcoff_get_uint32(sectionheader_bytes.s_paddr,is_big_endian);
+    sectionheader->s_vaddr=hcoff_get_uint32(sectionheader_bytes.s_vaddr,is_big_endian);
+    sectionheader->s_size=hcoff_get_uint32(sectionheader_bytes.s_size,is_big_endian);
+    sectionheader->s_scnptr=hcoff_get_uint32(sectionheader_bytes.s_scnptr,is_big_endian);
+    sectionheader->s_relptr=hcoff_get_uint32(sectionheader_bytes.s_relptr,is_big_endian);
+    sectionheader->s_lnnoptr=hcoff_get_uint32(sectionheader_bytes.s_lnnoptr,is_big_endian);
+    sectionheader->s_nreloc=hcoff_get_uint16(sectionheader_bytes.s_nreloc,is_big_endian);
+    sectionheader->s_nlnno=hcoff_get_uint16(sectionheader_bytes.s_nlnno,is_big_endian);
+    sectionheader->s_flags=hcoff_get_uint32(sectionheader_bytes.s_flags,is_big_endian);
+    return ret;
+}
+
+bool hcoff_sectionheader_read(hcoff_sectionheader_t *sectionheader,size_t index,hcoff_file_input_t *input_file)
+{
+    bool ret=false;
+    if(sectionheader==NULL || input_file==NULL)
+    {
+        return ret;
+    }
+    uintptr_t section_offset=0;
+    size_t section_count=0;
+    {
+        hcoff_fileheader_t filehdr= {0};
+        if(!hcoff_file_input_fileheader_read(input_file,&filehdr))
         {
             return ret;
         }
-        if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+        uintptr_t fileheader_offset=0;
+        uint8_t dos_header[64]= {0};
+        if(sizeof(dos_header) <= hcoff_file_input_read(input_file,0,dos_header,sizeof(dos_header)) &&
+                hcoff_get_uint16_le(dos_header) == 0x5A4D &&
+                hcoff_get_uint32_le(dos_header+0x3C) >= 0x40)
         {
-            return ret;
+            //PE文件,节表位于NT头+COFF文件头+可选头之后
+            fileheader_offset=hcoff_get_uint32_le(dos_header+0x3C)+4;
         }
-        is_big_endian=((filehdr.f_magic&0xFF) != buffer[0]);
-        section_offset=hcoff_fileheader_section_offset_get(&filehdr);
+        section_offset=fileheader_offset+sizeof(hcoff_fileheader_bytes_t)+filehdr.f_opthdr;
         section_count=hcoff_fileheader_section_count_get(&filehdr);
     }
 
@@ -280,72 +691,7 @@ bool hcoff_sectionheader_read(hcoff_sectionheader_t *sectionheader,size_t index,
     {
         return ret;
     }
-
-    hcoff_sectionheader_bytes_t sectionheader_bytes= {0};
-
-    if(sizeof(sectionheader_bytes) > hcoff_file_input_read(input_file,section_offset+index*sizeof(sectionheader_bytes),&sectionheader_bytes,sizeof(sectionheader_bytes)))
-    {
-        return ret;
-    }
-
-    ret=true;
-
-    if(is_big_endian)
-    {
-#ifdef HCOFF_COMMON_GETUINT32
-#undef HCOFF_COMMON_GETUINT32
-#endif // HCOFF_COMMON_GETUINT32
-#define HCOFF_COMMON_GETUINT32(v,a) v=a[0]*(1ULL << 24) + a[1]*(1ULL << 16)+a[2]*(1ULL << 8) + a[3]*(1ULL << 0)
-#ifdef HCOFF_COMMON_GETUINT16
-#undef HCOFF_COMMON_GETUINT16
-#endif // HCOFF_COMMON_GETUINT16
-#define HCOFF_COMMON_GETUINT16(v,a) v=a[0]*(1ULL << 8) + a[1]*(1ULL << 0)
-
-        memcpy(sectionheader->s_name,sectionheader_bytes.s_name,sizeof(sectionheader->s_name));
-        HCOFF_COMMON_GETUINT32(sectionheader->s_paddr,sectionheader_bytes.s_paddr);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_vaddr,sectionheader_bytes.s_vaddr);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_size,sectionheader_bytes.s_size);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_scnptr,sectionheader_bytes.s_scnptr);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_relptr,sectionheader_bytes.s_relptr);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_lnnoptr,sectionheader_bytes.s_lnnoptr);
-        HCOFF_COMMON_GETUINT16(sectionheader->s_nreloc,sectionheader_bytes.s_nreloc);
-        HCOFF_COMMON_GETUINT16(sectionheader->s_nlnno,sectionheader_bytes.s_nlnno);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_flags,sectionheader_bytes.s_flags);
-
-
-#undef HCOFF_COMMON_GETUINT32
-#undef HCOFF_COMMON_GETUINT16
-    }
-    else
-    {
-
-#ifdef HCOFF_COMMON_GETUINT32
-#undef HCOFF_COMMON_GETUINT32
-#endif // HCOFF_COMMON_GETUINT32
-#define HCOFF_COMMON_GETUINT32(v,a) v=a[0]*(1ULL << 0) + a[1]*(1ULL << 8)+a[2]*(1ULL << 16) + a[3]*(1ULL << 24)
-#ifdef HCOFF_COMMON_GETUINT16
-#undef HCOFF_COMMON_GETUINT16
-#endif // HCOFF_COMMON_GETUINT16
-#define HCOFF_COMMON_GETUINT16(v,a) v=a[0]*(1ULL << 0) + a[1]*(1ULL << 8)
-
-        memcpy(sectionheader->s_name,sectionheader_bytes.s_name,sizeof(sectionheader->s_name));
-        HCOFF_COMMON_GETUINT32(sectionheader->s_paddr,sectionheader_bytes.s_paddr);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_vaddr,sectionheader_bytes.s_vaddr);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_size,sectionheader_bytes.s_size);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_scnptr,sectionheader_bytes.s_scnptr);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_relptr,sectionheader_bytes.s_relptr);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_lnnoptr,sectionheader_bytes.s_lnnoptr);
-        HCOFF_COMMON_GETUINT16(sectionheader->s_nreloc,sectionheader_bytes.s_nreloc);
-        HCOFF_COMMON_GETUINT16(sectionheader->s_nlnno,sectionheader_bytes.s_nlnno);
-        HCOFF_COMMON_GETUINT32(sectionheader->s_flags,sectionheader_bytes.s_flags);
-
-
-#undef HCOFF_COMMON_GETUINT32
-#undef HCOFF_COMMON_GETUINT16
-
-    }
-
-    return ret;
+    return hcoff_sectionheader_read_at(sectionheader,index,section_offset,input_file);
 }
 
 const char *hcoff_sectionheader_name_read(const hcoff_sectionheader_t *sectionheader,hcoff_file_input_t *input_file,void *namebuf,size_t namebulen)
@@ -379,14 +725,14 @@ const char *hcoff_sectionheader_name_read(const hcoff_sectionheader_t *sectionhe
         uintptr_t strtab_offset=0;
         size_t strtab_size=0;
         {
-            hcoff_fileheader_t filehdr;
-            uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
-            if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+            hcoff_fileheader_t filehdr= {0};
+            if(!hcoff_file_input_fileheader_read(input_file,&filehdr))
             {
                 return NULL;
             }
-            if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+            if(filehdr.f_symptr==0)
             {
+                //PE映像可能不包含符号表,此时无法解析长名称
                 return NULL;
             }
             strtab_offset=filehdr.f_symptr+filehdr.f_nsyms*sizeof(hcoff_symbol_entry_bytes_t);
@@ -395,16 +741,9 @@ const char *hcoff_sectionheader_name_read(const hcoff_sectionheader_t *sectionhe
             {
                 return NULL;
             }
-            if((filehdr.f_magic&0xFF) != buffer[0])
-            {
-                strtab_size=strtab_size_buffer[0]*(1ULL << 24)+strtab_size_buffer[1]*(1ULL << 16) + strtab_size_buffer[2]*(1ULL << 8)+strtab_size_buffer[0]*(1ULL << 0);
-            }
-            else
-            {
-                strtab_size=strtab_size_buffer[0]*(1ULL << 0)+strtab_size_buffer[1]*(1ULL << 8) + strtab_size_buffer[2]*(1ULL << 16)+strtab_size_buffer[0]*(1ULL << 24);
-            }
+            strtab_size=hcoff_get_uint32(strtab_size_buffer,hcoff_file_input_is_big_endian(input_file));
         }
-        if(str_index > strtab_size)
+        if(str_index >= strtab_size || namebuf==NULL || namebulen < 2)
         {
             return NULL;
         }
@@ -446,73 +785,97 @@ bool hcoff_sectionheader_name_match(const char *section_name,const hcoff_section
     return ret;
 }
 
+size_t hcoff_section_relocation_count_get(const hcoff_sectionheader_t *sectionheader,hcoff_file_input_t *input_file)
+{
+    size_t ret=0;
+    if(sectionheader==NULL || input_file==NULL)
+    {
+        return ret;
+    }
+    ret=sectionheader->s_nreloc;
+    if(sectionheader->s_nreloc == 0xFFFF && (sectionheader->s_flags & HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_LNK_NRELOC_OVFL)!=0)
+    {
+        //扩展重定位:第一个重定位入口的r_vaddr存储实际数量
+        bool is_big_endian=hcoff_file_input_is_big_endian(input_file);
+        uint8_t buffer[4]= {0};
+        if(4 <= hcoff_file_input_read(input_file,sectionheader->s_relptr,buffer,sizeof(buffer)))
+        {
+            uint32_t overflow_count=hcoff_get_uint32(buffer,is_big_endian);
+            //实际数量需要减去存储数量的第一个重定位入口
+            ret=(overflow_count > 0)?(size_t)(overflow_count-1):0;
+        }
+    }
+    return ret;
+}
+
 bool hcoff_section_relocation_read(hcoff_section_relocation_t *relocation,size_t index,const hcoff_sectionheader_t *sectionheader,hcoff_file_input_t *input_file)
 {
     bool ret=false;
-    if(relocation==NULL || sectionheader == NULL || index >= sectionheader->s_nreloc)
+    if(relocation==NULL || sectionheader == NULL || input_file==NULL)
+    {
+        return ret;
+    }
+    size_t relocation_count=hcoff_section_relocation_count_get(sectionheader,input_file);
+    if(index >= relocation_count)
     {
         return ret;
     }
     bool is_big_endian=false;
+    uint16_t machine=HCOFF_FILEHEADER_F_MAGIC_UNKNOWN;
     {
-        hcoff_fileheader_t filehdr;
-        uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
-        if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+        hcoff_fileheader_t filehdr= {0};
+        if(!hcoff_file_input_fileheader_read(input_file,&filehdr))
         {
             return ret;
         }
-        if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
-        {
-            return ret;
-        }
-        is_big_endian=((filehdr.f_magic&0xFF) != buffer[0]);
+        is_big_endian=hcoff_file_input_is_big_endian(input_file);
+        machine=filehdr.f_magic;
     }
 
-    uintptr_t section_relocation_offset=sectionheader->s_relptr;
-    hcoff_section_relocation_bytes_t relocation_bytes= {0};
-    if(sizeof(hcoff_section_relocation_bytes_t) > hcoff_file_input_read(input_file,section_relocation_offset+index*sizeof(hcoff_section_relocation_bytes_t),&relocation_bytes,sizeof(relocation_bytes)))
+    size_t entry_size=hcoff_machine_relocation_entry_size(machine);
+    size_t entry_index=index;
+    if(sectionheader->s_nreloc == 0xFFFF && (sectionheader->s_flags & HCOFF_SECTIONHEADER_S_FLAGS_IMAGE_SCN_LNK_NRELOC_OVFL)!=0)
+    {
+        //跳过扩展重定位的数量入口
+        entry_index++;
+    }
+    uint8_t relocation_bytes[16]= {0};
+    if(entry_size > sizeof(relocation_bytes) || entry_size > hcoff_file_input_read(input_file,sectionheader->s_relptr+entry_index*entry_size,relocation_bytes,entry_size))
     {
         return ret;
     }
     ret=true;
-    if(is_big_endian)
+    switch(machine)
     {
-#ifdef HCOFF_COMMON_GETUINT32
-#undef HCOFF_COMMON_GETUINT32
-#endif // HCOFF_COMMON_GETUINT32
-#define HCOFF_COMMON_GETUINT32(v,a) v=a[0]*(1ULL << 24) + a[1]*(1ULL << 16)+a[2]*(1ULL << 8) + a[3]*(1ULL << 0)
-#ifdef HCOFF_COMMON_GETUINT16
-#undef HCOFF_COMMON_GETUINT16
-#endif // HCOFF_COMMON_GETUINT16
-#define HCOFF_COMMON_GETUINT16(v,a) v=a[0]*(1ULL << 8) + a[1]*(1ULL << 0)
-
-        HCOFF_COMMON_GETUINT32(relocation->r_vaddr,relocation_bytes.r_vaddr);
-        HCOFF_COMMON_GETUINT32(relocation->r_symndx,relocation_bytes.r_symndx);
-        HCOFF_COMMON_GETUINT16(relocation->r_type,relocation_bytes.r_type);
-
-#undef HCOFF_COMMON_GETUINT32
-#undef HCOFF_COMMON_GETUINT16
+    case HCOFF_FILEHEADER_F_MAGIC_LOONGARCH64:
+    case HCOFF_FILEHEADER_F_MAGIC_RISCV32:
+    case HCOFF_FILEHEADER_F_MAGIC_RISCV64:
+    {
+        //r_vaddr(4)+r_symndx(4)+r_type(2)+r_offset(4)
+        relocation->r_vaddr=hcoff_get_uint32(relocation_bytes,is_big_endian);
+        relocation->r_symndx=hcoff_get_uint32(relocation_bytes+4,is_big_endian);
+        relocation->r_type=hcoff_get_uint16(relocation_bytes+8,is_big_endian);
     }
-    else
+    break;
+    case HCOFF_FILEHEADER_F_MAGIC_SH3:
+    case HCOFF_FILEHEADER_F_MAGIC_SH3DSP:
+    case HCOFF_FILEHEADER_F_MAGIC_SH3E:
+    case HCOFF_FILEHEADER_F_MAGIC_SH4:
     {
-
-#ifdef HCOFF_COMMON_GETUINT32
-#undef HCOFF_COMMON_GETUINT32
-#endif // HCOFF_COMMON_GETUINT32
-#define HCOFF_COMMON_GETUINT32(v,a) v=a[0]*(1ULL << 0) + a[1]*(1ULL << 8)+a[2]*(1ULL << 16) + a[3]*(1ULL << 24)
-#ifdef HCOFF_COMMON_GETUINT16
-#undef HCOFF_COMMON_GETUINT16
-#endif // HCOFF_COMMON_GETUINT16
-#define HCOFF_COMMON_GETUINT16(v,a) v=a[0]*(1ULL << 0) + a[1]*(1ULL << 8)
-
-        HCOFF_COMMON_GETUINT32(relocation->r_vaddr,relocation_bytes.r_vaddr);
-        HCOFF_COMMON_GETUINT32(relocation->r_symndx,relocation_bytes.r_symndx);
-        HCOFF_COMMON_GETUINT16(relocation->r_type,relocation_bytes.r_type);
-
-
-#undef HCOFF_COMMON_GETUINT32
-#undef HCOFF_COMMON_GETUINT16
-
+        //r_vaddr(4)+r_symndx(4)+r_offset(4)+r_type(2)+r_stuff(2)
+        relocation->r_vaddr=hcoff_get_uint32(relocation_bytes,is_big_endian);
+        relocation->r_symndx=hcoff_get_uint32(relocation_bytes+4,is_big_endian);
+        relocation->r_type=hcoff_get_uint16(relocation_bytes+12,is_big_endian);
+    }
+    break;
+    default:
+    {
+        //r_vaddr(4)+r_symndx(4)+r_type(2)
+        relocation->r_vaddr=hcoff_get_uint32(relocation_bytes,is_big_endian);
+        relocation->r_symndx=hcoff_get_uint32(relocation_bytes+4,is_big_endian);
+        relocation->r_type=hcoff_get_uint16(relocation_bytes+8,is_big_endian);
+    }
+    break;
     }
     return ret;
 }
@@ -520,13 +883,8 @@ bool hcoff_section_relocation_read(hcoff_section_relocation_t *relocation,size_t
 bool hcoff_symbol_is_symbol(size_t index,hcoff_file_input_t *input_file)
 {
     bool ret=false;
-    hcoff_fileheader_t filehdr;
-    uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
-    if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
-    {
-        return ret;
-    }
-    if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+    hcoff_fileheader_t filehdr= {0};
+    if(!hcoff_file_input_fileheader_read(input_file,&filehdr))
     {
         return ret;
     }
@@ -561,12 +919,17 @@ bool hcoff_symbol_is_symbol(size_t index,hcoff_file_input_t *input_file)
 
 bool hcoff_symbol_entry_read(hcoff_symbol_entry_t *symbol_entry,size_t index,hcoff_file_input_t *input_file)
 {
-    bool ret=false;
-    if(symbol_entry==NULL)
-    {
-        return ret;
-    }
     if(!hcoff_symbol_is_symbol(index,input_file))
+    {
+        return false;
+    }
+    return hcoff_symbol_entry_read_at(symbol_entry,index,input_file);
+}
+
+bool hcoff_symbol_entry_read_at(hcoff_symbol_entry_t *symbol_entry,size_t index,hcoff_file_input_t *input_file)
+{
+    bool ret=false;
+    if(symbol_entry==NULL || input_file==NULL)
     {
         return ret;
     }
@@ -574,17 +937,12 @@ bool hcoff_symbol_entry_read(hcoff_symbol_entry_t *symbol_entry,size_t index,hco
     uintptr_t symboltable_offset=0;
     size_t symboltable_count=0;
     {
-        hcoff_fileheader_t filehdr;
-        uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
-        if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+        hcoff_fileheader_t filehdr= {0};
+        if(!hcoff_file_input_fileheader_read(input_file,&filehdr))
         {
             return ret;
         }
-        if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
-        {
-            return ret;
-        }
-        is_big_endian=((filehdr.f_magic&0xFF) != buffer[0]);
+        is_big_endian=hcoff_file_input_is_big_endian(input_file);
         symboltable_offset=filehdr.f_symptr;
         symboltable_count=filehdr.f_nsyms;
     }
@@ -697,14 +1055,14 @@ const char *hcoff_symbol_entry_name_read(const hcoff_symbol_entry_t *symbol_entr
         uintptr_t strtab_offset=0;
         size_t strtab_size=0;
         {
-            hcoff_fileheader_t filehdr;
-            uint8_t buffer[sizeof(hcoff_fileheader_t)]= {0};
-            if(sizeof(buffer) > hcoff_file_input_read(input_file,0,buffer,sizeof(buffer)))
+            hcoff_fileheader_t filehdr= {0};
+            if(!hcoff_file_input_fileheader_read(input_file,&filehdr))
             {
                 return NULL;
             }
-            if(!hcoff_fileheader_read(&filehdr,buffer,sizeof(buffer)))
+            if(filehdr.f_symptr==0)
             {
+                //PE映像可能不包含符号表,此时无法解析长名称
                 return NULL;
             }
             strtab_offset=filehdr.f_symptr+filehdr.f_nsyms*sizeof(hcoff_symbol_entry_bytes_t);
@@ -713,16 +1071,9 @@ const char *hcoff_symbol_entry_name_read(const hcoff_symbol_entry_t *symbol_entr
             {
                 return NULL;
             }
-            if((filehdr.f_magic&0xFF) != buffer[0])
-            {
-                strtab_size=strtab_size_buffer[0]*(1ULL << 24)+strtab_size_buffer[1]*(1ULL << 16) + strtab_size_buffer[2]*(1ULL << 8)+strtab_size_buffer[0]*(1ULL << 0);
-            }
-            else
-            {
-                strtab_size=strtab_size_buffer[0]*(1ULL << 0)+strtab_size_buffer[1]*(1ULL << 8) + strtab_size_buffer[2]*(1ULL << 16)+strtab_size_buffer[0]*(1ULL << 24);
-            }
+            strtab_size=hcoff_get_uint32(strtab_size_buffer,hcoff_file_input_is_big_endian(input_file));
         }
-        if(str_index > strtab_size)
+        if(str_index >= strtab_size || namebuf==NULL || namebulen < 2)
         {
             return NULL;
         }
