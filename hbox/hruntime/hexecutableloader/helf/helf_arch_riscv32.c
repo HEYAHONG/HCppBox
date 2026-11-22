@@ -558,6 +558,7 @@ bool helf_riscv32_relocation_howto_get(uint32_t type,helf_arch_relocation_howto_
 /* helf_relocation_howto_end */
 
 
+
 bool helf_riscv32_relocation_apply(uint32_t type,uint8_t *target,uintptr_t place,uintptr_t symbol_address,int64_t addend,const helf_arch_relocation_context_t *context)
 {
     bool big_endian=(context!=NULL)?context->big_endian:false;

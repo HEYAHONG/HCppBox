@@ -475,3 +475,4 @@ bool helf_m68hc11_relocation_howto_get(uint32_t type,helf_arch_relocation_howto_
 }
 /* helf_relocation_howto_end */
 
+

@@ -760,6 +760,7 @@ bool helf_ppc64_relocation_howto_get(uint32_t type,helf_arch_relocation_howto_t 
 /* helf_relocation_howto_end */
 
 
+
 static size_t helf_ppc64_relocation_toc_count_get(helf_file_input_t *input_file)
 {
     size_t count=0;
