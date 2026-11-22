@@ -92,6 +92,31 @@ namespace astyle {
 
 const char* g_version = ASTYLE_VERSION;
 
+/**
+ * Make formatted text end with exactly one line end (--eof-newline).
+ * Trailing empty or whitespace-only lines are removed, and a missing
+ * final line end is added. Empty or whitespace-only text is not changed.
+ *
+ * @param text      the formatted output text, modified in place.
+ * @param eol       the line end to append; "\n" is used if empty.
+ * @return          true if the text was changed.
+ */
+static bool enforceEOFNewline(std::string& text, const std::string& eol)
+{
+	const size_t lastChar = text.find_last_not_of(" \t\r\n");
+	if (lastChar == std::string::npos)
+		return false;
+	const std::string& newEOL = eol.empty() ? std::string("\n") : eol;
+	size_t contentEnd = text.find_first_of("\r\n", lastChar + 1);
+	if (contentEnd == std::string::npos)
+		contentEnd = text.length();
+	if (text.compare(contentEnd, std::string::npos, newEOL) == 0)
+		return false;
+	text.erase(contentEnd);
+	text.append(newEOL);
+	return true;
+}
+
 //-----------------------------------------------------------------------------
 // ASStreamIterator class
 // typename will be stringstream for AStyle
@@ -441,9 +466,10 @@ void ASConsole::formatCinToCout()
 	initializeOutputEOL(formatter.getLineEndFormat());
 	formatter.init(&streamIterator);
 
+	std::ostringstream out;
 	while (formatter.hasMoreLines())
 	{
-		std::cout << formatter.nextLine();
+		out << formatter.nextLine();
 
 		if (LINEEND_DEFAULT == formatter.getLineEndFormat())
 		{
@@ -452,18 +478,23 @@ void ASConsole::formatCinToCout()
 
 		if (formatter.hasMoreLines())
 		{
-			std::cout << outputEOL;
+			out << outputEOL;
 		}
 		else
 		{
 			// this can happen if the file if missing a closing brace and break-blocks is requested
 			if (formatter.getIsLineReady())
 			{
-				std::cout << outputEOL;
-				std::cout << formatter.nextLine();
+				out << outputEOL;
+				out << formatter.nextLine();
 			}
 		}
 	}
+
+	std::string textOut = out.str();
+	if (formatter.getEOFNewlineMode())
+		enforceEOFNewline(textOut, outputEOL);
+	std::cout << textOut;
 	std::cout.flush();
 }
 
@@ -556,10 +587,26 @@ void ASConsole::formatFile(const std::string& fileName_)
 			}
 			else
 			{
+				// SF #616: an input without any line end (an empty file or a single line)
+				// gets no line end in the output, there is nothing to convert
 				filesAreIdentical = streamIterator.compareToInputBuffer(nextLine) &&
-				                    (LINEEND_DEFAULT == formatter.getLineEndFormat() || streamIterator.getLastOutputEOL() == outputEOL);
+				                    (LINEEND_DEFAULT == formatter.getLineEndFormat()
+				                     || streamIterator.getLastOutputEOL().empty()
+				                     || streamIterator.getLastOutputEOL() == outputEOL);
 			}
 			streamIterator.checkForEmptyLine = false;
+		}
+	}
+
+	// the line compare above does not see line ends at the end of the file,
+	// so any change made here means the output differs from the input
+	if (formatter.getEOFNewlineMode())
+	{
+		std::string textOut = out.str();
+		if (enforceEOFNewline(textOut, outputEOL))
+		{
+			out.str(textOut);
+			filesAreIdentical = false;
 		}
 	}
 
@@ -1749,7 +1796,7 @@ void ASConsole::printHelp() const
 	std::cout << "    1. The command line options have precedence.\n";
 	std::cout << "    2. The project option file has precedence over the default file\n";
 	std::cout << "       o the file name indicated by the --project= command line option.\n";
-	std::cout << "       o the file named .astylerc or _ astylerc.\n";
+	std::cout << "       o the file named .astylerc or _astylerc.\n";
 	std::cout << "       o the file name identified by ARTISTIC_STYLE_PROJECT_OPTIONS.\n";
 	std::cout << "       o the file is disabled by --project=none on the command line.\n";
 	std::cout << "    3. The default option file that can be used for all projects.\n";
@@ -1757,7 +1804,7 @@ void ASConsole::printHelp() const
 	std::cout << "       o the file path indicated by ARTISTIC_STYLE_OPTIONS.\n";
 	std::cout << "       o the file named .astylerc in the HOME directory (for Linux).\n";
 	std::cout << "       o the file name astylerc in the APPDATA directory (for Windows).\n";
-	std::cout << "       o the file is disabled by --project=none on the command line.\n";
+	std::cout << "       o the file is disabled by --options=none on the command line.\n";
 	std::cout << "    Long options within the option files may be written without '--'.\n";
 	std::cout << "    Line-end comments begin with a '#'.\n";
 	std::cout << '\n';
@@ -1866,7 +1913,7 @@ void ASConsole::printHelp() const
 	std::cout << "    indent is # spaces long. Not specifying # will result\n";
 	std::cout << "    in a default assumption of 4 spaces per indent.\n";
 	std::cout << '\n';
-	std::cout << "    --indent=force-tab=#  OR  -T#\n";
+	std::cout << "    --indent=force-tab  OR  --indent=force-tab=#  OR  -T  OR  -T#\n";
 	std::cout << "    Indent using tab characters, assuming that each\n";
 	std::cout << "    indent is # spaces long. Force tabs to be used in areas\n";
 	std::cout << "    AStyle would prefer to use spaces.\n";
@@ -1914,6 +1961,9 @@ void ASConsole::printHelp() const
 	std::cout << "    --indent-namespaces  OR  -N\n";
 	std::cout << "    Indent the contents of namespace blocks.\n";
 	std::cout << '\n';
+	std::cout << "    --indent-extern-c  OR  -xE\n";
+	std::cout << "    Indent the contents of extern \"C\" blocks.\n";
+	std::cout << '\n';
 	std::cout << "    --indent-after-parens  OR  -xU\n";
 	std::cout << "    Indent, instead of align, continuation lines following lines\n";
 	std::cout << "    that contain an opening paren '(' or an assignment '='. \n";
@@ -1943,7 +1993,7 @@ void ASConsole::printHelp() const
 	std::cout << "    Indent line comments that start in column one.\n";
 	std::cout << '\n';
 	std::cout << "    --indent-lambda\n";
-	std::cout << "    Indent C++ lambda functions\n";
+	std::cout << "    Indent C++ lambda functions.\n";
 	std::cout << '\n';
 	std::cout << "    --min-conditional-indent=#  OR  -m#\n";
 	std::cout << "    Indent a minimal # spaces in a continuous conditional\n";
@@ -1963,7 +2013,7 @@ void ASConsole::printHelp() const
 	std::cout << "Padding Options:\n";
 	std::cout << "----------------\n";
 	std::cout << "    --break-blocks  OR  -f\n";
-	std::cout << "    Insert empty lines around unrelated blocks, labels, classes, ...\n";
+	std::cout << "    Insert empty lines around unrelated blocks, labels, classes, ...\n\n";
 	std::cout << "    --break-blocks=all  OR  -F  additionally inserts empty lines\n";
 	std::cout << "    around closing headers (e.g. 'else', 'catch', ...), structs,\n";
 	std::cout << "    and functions.\n";
@@ -1995,25 +2045,24 @@ void ASConsole::printHelp() const
 	std::cout << "    --pad-paren=out  OR  -d\n";
 	std::cout << "    Insert space padding around parenthesis on the outside only.\n";
 	std::cout << '\n';
-	std::cout << "    --pad-first-paren-out  OR  -xd\n";
-	std::cout << "    Insert space padding around first parenthesis in a series on\n";
-	std::cout << "    the outside only.\n";
-	std::cout << '\n';
 	std::cout << "    --pad-paren=in  OR  -D\n";
 	std::cout << "    Insert space padding around parenthesis on the inside only.\n";
-	std::cout << '\n';
-	std::cout << "    --pad-empty-paren  OR  -xo\n";
-	std::cout << "    Apply padding to empty pairs of parentheses; combine with other\n";
-	std::cout << "    parenthesis padding options.\n";
-	std::cout << '\n';
-	std::cout << "    --pad-header  OR  -H\n";
-	std::cout << "    Insert space padding after paren headers (e.g. 'if', 'for'...).\n";
 	std::cout << '\n';
 	std::cout << "    --pad-paren=none  OR  -U\n";
 	std::cout << "    Remove unnecessary space padding around parenthesis. This\n";
 	std::cout << "    can be used in combination with the 'pad' options above.\n";
 	std::cout << '\n';
-
+	std::cout << "    --pad-empty-paren  OR  -xo\n";
+	std::cout << "    Apply padding to empty pairs of parentheses; combine with other\n";
+	std::cout << "    parenthesis padding options.\n";
+	std::cout << '\n';
+	std::cout << "    --pad-first-paren-out  OR  -xd\n";
+	std::cout << "    Insert space padding around first parenthesis in a series on\n";
+	std::cout << "    the outside only.\n";
+	std::cout << '\n';
+	std::cout << "    --pad-header  OR  -H\n";
+	std::cout << "    Insert space padding after paren headers (e.g. 'if', 'for'...).\n";
+	std::cout << '\n';
 	std::cout << "    --pad-brackets\n";
 	std::cout << "    Insert space padding around square brackets on both the\n";
 	std::cout << "    outside and the inside.\n";
@@ -2045,6 +2094,10 @@ void ASConsole::printHelp() const
 	std::cout << '\n';
 	std::cout << "    --squeeze-ws\n";
 	std::cout << "    Remove superfluous whitespace.\n";
+	std::cout << '\n';
+	std::cout << "    --eof-newline\n";
+	std::cout << "    End the file with exactly one line end. Empty lines at the\n";
+	std::cout << "    end of the file are removed and a missing line end is added.\n";
 	std::cout << '\n';
 	std::cout << "    --preserve-ws\n";
 	std::cout << "    Preserve whitespace near comma operators if squeeze-ws is not set.\n";
@@ -2157,10 +2210,10 @@ void ASConsole::printHelp() const
 	std::cout << "    Indent an Objective-C source file.\n";
 	std::cout << '\n';
 	std::cout << "    --mode=js\n";
-	std::cout << "    Indent a JavaScript source file.\n";
+	std::cout << "    Indent a JavaScript source file (experimental).\n";
 	std::cout << '\n';
 	std::cout << "    --mode=gsc\n";
-	std::cout << "    Indent a GSC source file.\n";
+	std::cout << "    Indent a GSC source file (experimental).\n";
 	std::cout << '\n';
 	std::cout << "Objective-C Options:\n";
 	std::cout << "--------------------\n";
@@ -2187,7 +2240,7 @@ void ASConsole::printHelp() const
 	std::cout << "    --align-method-colon  OR  -xM\n";
 	std::cout << "    Align the colons in an Objective-C method definition.\n";
 	std::cout << '\n';
-	std::cout << "    --pad-method-colon=none    OR  -xP\n";
+	std::cout << "    --pad-method-colon=none    OR  -xP0\n";
 	std::cout << "    --pad-method-colon=all     OR  -xP1\n";
 	std::cout << "    --pad-method-colon=after   OR  -xP2\n";
 	std::cout << "    --pad-method-colon=before  OR  -xP3\n";
@@ -2202,7 +2255,7 @@ void ASConsole::printHelp() const
 	std::cout << "    --suffix=none  OR  -n\n";
 	std::cout << "    Do not retain a backup of the original file.\n";
 	std::cout << '\n';
-	std::cout << "    --recursive  OR  -r\n";
+	std::cout << "    --recursive  OR  -r  OR  -R\n";
 	std::cout << "    Process subdirectories recursively.\n";
 	std::cout << '\n';
 	std::cout << "    --dry-run\n";
@@ -2276,7 +2329,7 @@ void ASConsole::printHelp() const
 	std::cout << "    --version  OR  -V\n";
 	std::cout << "    Print version number.\n";
 	std::cout << '\n';
-	std::cout << "    --help  OR  -h\n";
+	std::cout << "    --help  OR  -h  OR  -?\n";
 	std::cout << "    Print this help message.\n";
 	std::cout << '\n';
 	std::cout << "    --html  OR  -! (deprecated)\n";
@@ -3310,6 +3363,10 @@ void ASOptions::parseOption(const std::string& arg)
 	{
 		formatter.setNamespaceIndent(true);
 	}
+	else if (isOption(arg, "xE", "indent-extern-c"))
+	{
+		formatter.setExternCIndent(true);
+	}
 	else if (isOption(arg, "C", "indent-classes"))
 	{
 		formatter.setClassIndent(true);
@@ -3691,6 +3748,39 @@ bool ASOptions::parseOptionContinued(const std::string& arg)
 	{
 		formatter.setObjCColonPaddingMode(COLON_PAD_BEFORE);
 	}
+	else if (isOption(arg, "eof-newline"))
+	{
+		formatter.setEOFNewlineMode(true);
+	}
+	else if (isOption(arg, "squeeze-ws"))
+	{
+		formatter.setSqueezeWhitespace(true);
+	}
+	else if (isOption(arg, "preserve-ws"))
+	{
+		formatter.setPreserveWhitespace(true);
+	}
+	else if (isOption(arg, "pad-brackets"))
+	{
+		formatter.setBracketsOutsidePaddingMode(true);
+		formatter.setBracketsInsidePaddingMode(true);
+	}
+	else if (isOption(arg, "pad-brackets-in") || isOption(arg, "pad-brackets=in"))
+	{
+		formatter.setBracketsInsidePaddingMode(true);
+	}
+	else if (isOption(arg, "pad-brackets-out") || isOption(arg, "pad-brackets=out"))
+	{
+		formatter.setBracketsOutsidePaddingMode(true);
+	}
+	else if (isOption(arg, "unpad-brackets") || isOption(arg, "pad-brackets=none"))
+	{
+		formatter.setBracketsUnPaddingMode(true);
+	}
+	else if (isOption(arg, "indent-lambda"))
+	{
+		formatter.setLambdaIndentation(true);
+	}
 
 #ifdef ASTYLE_LIB
 	// End of options used by GUI /////////////////////////////////////////////////////////////////
@@ -3797,35 +3887,6 @@ bool ASOptions::parseOptionContinued(const std::string& arg)
 			formatter.setLineEndFormat(LINEEND_LINUX);
 		else if (lineendType == 3)
 			formatter.setLineEndFormat(LINEEND_MACOLD);
-	}
-	else if (isOption(arg, "squeeze-ws"))
-	{
-		formatter.setSqueezeWhitespace(true);
-	}
-	else if (isOption(arg, "preserve-ws"))
-	{
-		formatter.setPreserveWhitespace(true);
-	}
-	else if (isOption(arg, "pad-brackets"))
-	{
-		formatter.setBracketsOutsidePaddingMode(true);
-		formatter.setBracketsInsidePaddingMode(true);
-	}
-	else if (isOption(arg, "pad-brackets-in") || isOption(arg, "pad-brackets=in"))
-	{
-		formatter.setBracketsInsidePaddingMode(true);
-	}
-	else if (isOption(arg, "pad-brackets-out") || isOption(arg, "pad-brackets=out"))
-	{
-		formatter.setBracketsOutsidePaddingMode(true);
-	}
-	else if (isOption(arg, "unpad-brackets") || isOption(arg, "pad-brackets=none"))
-	{
-		formatter.setBracketsUnPaddingMode(true);
-	}
-	else if (isOption(arg, "indent-lambda"))
-	{
-		formatter.setLambdaIndentation(true);
 	}
 	else
 	{
@@ -4410,6 +4471,8 @@ extern "C" EXPORT char* STDCALL AStyleMain(const char* pSourceIn,		// the source
 	}
 
 	std::string textOut = out.str();
+	if (formatter.getEOFNewlineMode())
+		enforceEOFNewline(textOut, streamIterator.getLastOutputEOL());
 	size_t textSizeOut = textOut.length();
 	char* pTextOut = fpMemoryAlloc((long) textSizeOut + 1);     // call memory allocation function
 	if (pTextOut == nullptr)

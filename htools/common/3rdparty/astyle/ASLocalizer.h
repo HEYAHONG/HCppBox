@@ -7,6 +7,7 @@
 #ifndef ASLOCALIZER_H
 #define ASLOCALIZER_H
 
+#include <new>
 #include <string>
 #include <vector>
 

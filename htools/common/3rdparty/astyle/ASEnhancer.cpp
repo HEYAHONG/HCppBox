@@ -85,8 +85,9 @@ void ASEnhancer::init(int  _fileType,
  * unindents the case blocks
  *
  * @param line       the original formatted line will be updated if necessary.
+ * @param isNoIndentLine  the line was not indented by ASBeautifier, it is parsed but not re-indented.
  */
-void ASEnhancer::enhance(std::string& line, bool isInNamespace, bool isInPreprocessor, bool isInSQL)
+void ASEnhancer::enhance(std::string& line, bool isInNamespace, bool isInPreprocessor, bool isInSQL, bool isNoIndentLine)
 {
 	shouldUnindentLine = true;
 	shouldUnindentComment = false;
@@ -125,6 +126,11 @@ void ASEnhancer::enhance(std::string& line, bool isInNamespace, bool isInPreproc
 
 	// parse characters in the current line
 	parseCurrentLine(line, isInPreprocessor, isInSQL);
+
+	// the continuation of a block comment which follows code keeps its original indent,
+	// it must not be changed again or it moves with each formatting run
+	if (isNoIndentLine)
+		return;
 
 	// check for SQL indentable lines
 	if (isInDeclareSection)

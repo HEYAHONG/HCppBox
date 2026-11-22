@@ -29,7 +29,7 @@
 #include <cstring>              // need both string and cstring for GCC
 #endif
 
-#define ASTYLE_VERSION "3.6.19"
+#define ASTYLE_VERSION "3.6.27"
 
 namespace astyle
 {
@@ -243,7 +243,7 @@ public:
     static void buildCastOperators(std::vector<const std::string*>* castOperators);
     static void buildHeaders(std::vector<const std::string*>* headers, int fileType, bool beautifier = false);
     static void buildIndentableMacros(std::vector<const std::pair<const std::string, const std::string>* >* indentableMacros);
-    static void buildIndentableHeaders(std::vector<const std::string*>* indentableHeaders);
+    static void buildIndentableHeaders(std::vector<const std::string*>* indentableHeaders, int fileType);
     static void buildNonAssignmentOperators(std::vector<const std::string*>* nonAssignmentOperators, int fileType);
     static void buildNonParenHeaders(std::vector<const std::string*>* nonParenHeaders, int fileType, bool beautifier = false);
     static void buildOperators(std::vector<const std::string*>* operators, int fileType);
@@ -275,7 +275,7 @@ public:
     static const std::string AS_GSC_OPEN_COMMENT, AS_GSC_CLOSE_COMMENT;
     static const std::string AS_OPEN_CONFLICT, AS_MIDDLE_CONFLICT, AS_CLOSE_CONFLICT;
     static const std::string AS_BAR_DEFINE, AS_BAR_INCLUDE, AS_BAR_IF, AS_BAR_EL, AS_BAR_ENDIF;
-    static const std::string AS_AUTO, AS_RETURN, AS_REQUIRES;
+    static const std::string AS_AUTO, AS_DECLTYPE, AS_RETURN, AS_CO_RETURN, AS_CO_YIELD, AS_REQUIRES;
     static const std::string AS_CIN, AS_COUT, AS_CERR, AS_MAPPING;
     static const std::string AS_ASSIGN, AS_PLUS_ASSIGN, AS_MINUS_ASSIGN, AS_MULT_ASSIGN;
     static const std::string AS_DIV_ASSIGN, AS_MOD_ASSIGN, AS_XOR_ASSIGN, AS_OR_ASSIGN, AS_AND_ASSIGN;
@@ -290,6 +290,7 @@ public:
     static const std::string AS_NOT, AS_BIT_XOR, AS_BIT_OR, AS_BIT_AND, AS_BIT_NOT;
     static const std::string AS_QUESTION, AS_COLON, AS_SEMICOLON, AS_COMMA, AS_DOT;
     static const std::string AS_ASM, AS__ASM__, AS_MS_ASM, AS_MS__ASM;
+    static const std::string AS__ATTRIBUTE__, AS__DECLSPEC, AS_ALIGNAS;
     static const std::string AS_QFOREACH, AS_QFOREVER, AS_FOREVER;
     static const std::string AS_FOREACH, AS_LOCK, AS_UNSAFE, AS_FIXED;
     static const std::string AS_GET, AS_SET, AS_ADD, AS_REMOVE;
@@ -396,6 +397,7 @@ public:
     void setModeManuallySet(bool state);
     void setModifierIndent(bool state);
     void setNamespaceIndent(bool state);
+    void setExternCIndent(bool state);
     void setAlignMethodColon(bool state);
     void setSpaceIndentation(int length = 4);
     void setSwitchIndent(bool state);
@@ -429,6 +431,7 @@ public:
     [[nodiscard]] bool getModeManuallySet() const;
     [[nodiscard]] bool getModifierIndent() const;
     [[nodiscard]] bool getNamespaceIndent() const;
+    [[nodiscard]] bool getExternCIndent() const;
     [[nodiscard]] bool getPreprocDefineIndent() const;
     [[nodiscard]] bool getSwitchIndent() const;
 
@@ -445,6 +448,8 @@ protected:
     [[nodiscard]] bool isGitConflictMarker(std::string_view line) const;
     [[nodiscard]] bool lineStartsWithNumericType(std::string_view line) const;
     [[nodiscard]] size_t findConstevalConditionEnd(std::string_view line, size_t index) const;
+    [[nodiscard]] bool isBlockCommentNoBeautify() const;
+    [[nodiscard]] bool isInIndentOffMode() const;
 
 
     // variables set by ASFormatter - must be updated in activeBeautifierStack
@@ -452,6 +457,7 @@ protected:
     int  runInIndentContinuation;
     int  nonInStatementBrace;
     int  objCColonAlignSubsequent;		// for subsequent lines not counting indent
+    int  commentLineDeficit;			// columns a comment line starts left of its opener (bug #611)
     int  bracesNestingLevel;
     int  bracesNestingLevelOfStruct;
 
@@ -470,6 +476,9 @@ protected:
     int lastLambdaDepth;
     int lambdaCaptureParenDepth;       // parenDepth inside a lambda capture '[', or -1
     int lambdaIntroducerParenDepth;    // parenDepth of the lambda introducer after the capture
+    int newKeywordParenDepth;          // parenDepth of a C#/Java 'new' within parens, or -1
+    int newKeywordSpaceIndent;         // spaceIndentCount of the line containing that 'new'
+    int blockSpaceIndent;              // space indent of a 'new' initializer block within parens
     bool preserveWhitespace;
     bool shouldPreserveIndent;
 
@@ -494,14 +503,20 @@ private:  // functions
     [[nodiscard]] int  getContinuationIndentAssign(std::string_view line, size_t currPos) const;
     [[nodiscard]] int  getContinuationIndentComma(std::string_view line, size_t currPos) const;
     [[nodiscard]] int  getObjCFollowingKeyword(std::string_view line, int bracePos) const;
+    [[nodiscard]] std::vector<size_t> getTemplateArgumentIndents(std::string_view line, size_t currPos) const;
+    [[nodiscard]] int  getWhitespaceWidth(std::string_view ws) const;
     [[nodiscard]] bool isIndentedPreprocessor(std::string_view line, size_t currPos) const;
     [[nodiscard]] bool isLineEndComment(std::string_view line, int startPos) const;
     [[nodiscard]] bool isPreprocessorConditionalCplusplus(std::string_view line) const;
     [[nodiscard]] bool isInPreprocessorUnterminatedComment(std::string_view line);
     [[nodiscard]] bool isTopLevel() const;
+    [[nodiscard]] bool isUnindentedExternCBrace() const;
     [[nodiscard]] bool isDeclarationContinuationLine(std::string_view line) const;
     [[nodiscard]] bool isUsingBeforeFirstCase(std::string_view line) const;
+    [[nodiscard]] bool isCallContinuationLine(std::string_view line) const;
     [[nodiscard]] bool statementEndsWithComma(std::string_view line, int index) const;
+    [[nodiscard]] bool isDesignatedInitializer(std::string_view line, size_t index) const;
+    [[nodiscard]] bool isAssignmentTargetOnly(std::string_view line, size_t index, size_t start = 0) const;
 
     [[nodiscard]] std::string getIndentedSpaceEquivalent(std::string_view line_) const;
     void popLambda();
@@ -516,7 +531,7 @@ private:  // functions
     void handleParens(std::string_view line, size_t i, bool tabIncrementIn, bool* isInOperator, char ch);
     void handleClosingParen(std::string_view line, size_t i, bool tabIncrementIn);
     void handlePotentialHeaderSection(std::string_view line, size_t* i, bool tabIncrementIn, bool* isInOperator);
-    void handlePotentialOperatorSection(std::string_view line, size_t* i, bool tabIncrementIn, bool* haveAssignmentThisLine, bool isInOperator);
+    void handlePotentialOperatorSection(std::string_view line, size_t* i, bool tabIncrementIn, bool* haveAssignmentThisLine, bool isInOperator, bool prevLineEndsWithAssign, size_t* methodChainIndentSize, size_t* prevAssignEnd, size_t* assignChainBaseSize);
 
 private:  // variables
     int beautifierFileType;
@@ -547,10 +562,11 @@ private:  // variables
         std::vector<size_t> continuationIndentSizes;
         bool isInClassInitializer = false;
         bool isInClassHeaderTab = false;
+        int prevBlockSpaceIndent = 0;      // blockSpaceIndent of the enclosing block
     };
     std::unique_ptr<std::vector<ParenBlockState>> parenBlockStateStack;    // aligned with parenDepthStack
     std::unique_ptr<std::vector<bool>> blockConditionalStack;
-    std::unique_ptr<std::vector<bool>> blockQuestionStack;      // isInQuestion at a block brace, e.g. a lambda in a ?: sequence
+    std::unique_ptr<std::vector<int>> blockQuestionStack;       // questionMarkCount at a block brace, e.g. a lambda in a ?: sequence
     std::unique_ptr<std::vector<bool>> parenStatementStack;
     std::unique_ptr<std::vector<bool>> braceBlockStateStack;
     std::unique_ptr<std::vector<bool>> lambdaBodyStateStack;    // aligned with braceBlockStateStack, true for a lambda body
@@ -562,6 +578,7 @@ private:  // variables
     std::unique_ptr<std::vector<int>> lambdaParenDepthStack;
     std::unique_ptr<std::vector<size_t>> lambdaBraceDepthStack;
     std::vector<std::pair<size_t, size_t> > squeezeWSStack;
+    std::vector<int> templateArgIndents;    // SF #325: indents of open template argument lists, outermost first
 
     ASSourceIterator* sourceIterator;
     const std::string* currentHeader;
@@ -576,11 +593,12 @@ private:  // variables
     bool isInAsm;
     bool isInAsmOneLine;
     bool isInAsmBlock;
+    bool isInAsmBlockBody;
     bool isInComment;
     bool isInPreprocessorComment;
     bool isInRunInComment;
     bool isInCase;
-    bool isInQuestion;
+    int  questionMarkCount;     // '?' not yet matched by the ':' of a ?: sequence
     bool isContinuation;
     bool isInHeader;
     bool isInTemplate;
@@ -602,7 +620,9 @@ private:  // variables
     bool isInEnum;
     bool isInEnumTypeID;
     bool isInStruct;
+    bool isInDesignatedInit;		// continuation indent registered by '.member = value' in a brace array
     bool isInLet;
+    bool isInExternCHeader;		// 'extern "C"' found, waiting for its opening brace (SF #162)
     bool isInTrailingReturnType;
     bool isInConstevalCondition;
     bool isInLambdaIntroducer;
@@ -614,6 +634,7 @@ private:  // variables
     bool noIndentIfAfterElse;
     bool caseIndent;
     bool namespaceIndent;
+    bool externCIndent;
     bool blockIndent;
     bool braceIndent;
     bool braceIndentVtk;
@@ -630,12 +651,15 @@ private:  // variables
     bool lineStartsInComment;
     bool blockCommentNoIndent;
     bool blockCommentNoBeautify;
+    int  commentOpenerColumn;       // output column of an open block comment's opener (bug #611)
     bool previousLineProbationTab;
     bool lineBeginsWithOpenBrace;
     bool lineBeginsWithCloseBrace;
     bool lineBeginsWithComma;
+    bool prevLineBeginsWithComma;
     bool lineIsCommentOnly;
     bool lineIsLineCommentOnly;
+    bool lineEndsInLineComment;     // set by parseCurrentLine() (bug #613)
     bool shouldIndentBracedLine;
     bool isInSwitch;
     bool foundPreCommandHeader;
@@ -668,13 +692,15 @@ private:  // variables
     int  maxContinuationIndent;
     int  classInitializerIndents;
     int  templateDepth;
+    int  templateArgExtraDepth;         // '<' opened after a template argument continuation started
+    int  templateArgIndentStackSize;    // continuationIndentStack size before it
     int  squareBracketCount;
     int  prevFinalLineSpaceIndentCount;
     int  prevFinalLineIndentCount;
     int  defineIndentCount;
     int  preprocBlockIndent;
     int lambdaStartIndent;
-    size_t quoteContinuationIndent;
+    int  quoteContinuationIndent;
     char quoteChar;
     char prevNonSpaceCh;
     char currentNonSpaceCh;
@@ -694,7 +720,7 @@ public:  // functions
     ASEnhancer() = default;
     void init(int, int, int, bool, bool, bool, bool, bool, bool, bool,
               std::vector<const std::pair<const std::string, const std::string>* >*, bool);
-    void enhance(std::string& line, bool isInNamespace, bool isInPreprocessor, bool isInSQL);
+    void enhance(std::string& line, bool isInNamespace, bool isInPreprocessor, bool isInSQL, bool isNoIndentLine = false);
 
 private:  // functions
     void   convertForceTabIndentToSpaces(std::string&  line) const;
@@ -778,6 +804,7 @@ public:	// functions
     void extracted();
     std::string nextLine();
     LineEndFormat getLineEndFormat() const;
+    bool getEOFNewlineMode() const;
     bool getIsLineReady() const;
     void setFormattingStyle(FormatStyle style);
     void setAddBracesMode(bool state);
@@ -816,6 +843,7 @@ public:	// functions
     void setAttachReturnTypeDecl(bool state);
     void setIndentCol1CommentsMode(bool state);
     void setLineEndFormat(LineEndFormat fmt);
+    void setEOFNewlineMode(bool state);
     void setMaxCodeLength(int max);
     void setMaxCodeLengthMode(MaxCodeLengthMode mode);
     void setIgnoreSideCommentLengths(bool state);
@@ -865,6 +893,7 @@ private:  // functions
     bool computeChecksumIn(std::string_view currentLine_);
     bool computeChecksumOut(std::string_view beautifiedLine);
     bool addBracesToStatement();
+    bool isMultiLineStatementEndFound() const;
     bool removeBracesFromStatement();
     bool commentAndHeaderFollows();
     bool getNextChar();
@@ -898,6 +927,8 @@ private:  // functions
     bool isUnaryOperator() const;
     bool isUniformInitializerBrace() const;
     bool isLambdaBodyWithParamsBrace() const;
+    bool isDecltypeInitializerBrace() const;
+    bool isLambdaIntroducerEnd(const std::string& line, int bracePos) const;
     bool isModuleImportColon() const;
     bool isImmediatelyPostCast() const;
     bool isInExponent() const;
@@ -926,6 +957,10 @@ private:  // functions
     void clearFormattedLineSplitPoints();
     void convertTabToSpaces();
     void findReturnTypeSplitPoint(const std::string& firstLine);
+    bool isOnlyFunctionSpecifiers(const std::string& line, size_t start, size_t end) const;
+    void setSpecifierAttachLines(std::vector<size_t>& attachLines, bool isAlreadyBroken, size_t breakLineNum);
+    size_t findAttributeEnd(std::string_view line, size_t index) const;
+    size_t skipLeadingAttributes(std::string_view line, size_t index) const;
     void formatArrayRunIn();
     void formatRunIn();
     void formatArrayBraces(BraceType braceType, bool isOpeningArrayBrace);
@@ -1006,12 +1041,14 @@ private:  // variables
     std::unique_ptr<std::vector<const std::string*>> preBraceHeaderStack;
     std::unique_ptr<std::vector<BraceType>> braceTypeStack;
     std::unique_ptr<std::vector<size_t>> requiresBodyStack;   // braceTypeStack sizes of requires-expression bodies
+    std::unique_ptr<std::vector<size_t>> lambdaBodyStack;     // braceTypeStack sizes of lambda bodies with a parameter list
     std::unique_ptr<std::vector<bool>> braceQuestionMarkStack; // foundQuestionMark at each open brace
     std::unique_ptr<std::vector<int>> parenStack;
     std::unique_ptr<std::vector<bool>> structStack;
     std::unique_ptr<std::vector<bool>> questionMarkStack;
 
     std::string currentLine;
+    std::string previousInputLine;		// the source line before currentLine
     std::string formattedLine;
     std::string readyFormattedLine;
     std::string verbatimDelimiter;
@@ -1033,18 +1070,25 @@ private:  // variables
     int  templateDepth;
     int  squareBracketCount;
     int  parenthesesCount;
+    int  addedBraceStatementParenDepth;
 
     size_t  squeezeEmptyLineNum;
     size_t  squeezeEmptyLineCount;
 
     size_t checksumIn;
     size_t checksumOut;
+    int  formattedLineCommentDeficit;   // commentLineDeficit of formattedLine (bug #611)
+    int  readyFormattedLineCommentDeficit;
+    int  pendingCommentDeficit;         // deficit of the line trimmed but not yet appended
+    size_t commentRepositionSpaces;     // spaces inserted before a comment in the current line
+    size_t movedCommentLineIndent;      // indent of the code line of a comment moved to a new line
     std::optional<size_t> currentLineFirstBraceNum;	// first brace location on currentLine
     size_t formattedLineCommentNum;     // comment location on formattedLine
     size_t leadingSpaces;
     size_t maxCodeLength;
     std::optional<size_t> methodAttachCharNum;
     size_t methodAttachLineNum;
+    std::vector<size_t> methodAttachSpecifierLines;	// lines to attach to a specifier-only line (bug #505)
     std::optional<size_t> methodBreakCharNum;
     size_t methodBreakLineNum;
 
@@ -1088,6 +1132,7 @@ private:  // variables
     bool shouldUnPadParens;
     bool shouldConvertTabs;
     bool shouldIndentCol1Comments;
+    bool shouldEndWithSingleNewline;
     bool shouldIndentPreprocBlock;
     bool shouldCloseTemplates;
     bool shouldAttachExternC;
@@ -1124,6 +1169,7 @@ private:  // variables
     bool foundNamespaceHeader;
     bool foundClassHeader;
     bool foundStructHeader;
+    bool foundDefinitionAttribute;
     bool foundInterfaceHeader;
     bool foundPreCommandHeader;
     bool foundPreCommandMacro;
@@ -1144,10 +1190,12 @@ private:  // variables
     bool isInAsm;
     bool isInAsmOneLine;
     bool isInAsmBlock;
+    bool isInAsmBlockBody;
     bool isLineReady;
     bool elseHeaderFollowsComments;
     bool caseHeaderFollowsComments;
     bool isPreviousBraceBlockRelated;
+    bool isPreviousBraceLambdaBody;
     bool isInPotentialCalculation;
     bool isCharImmediatelyPostComment;
     bool isPreviousCharPostComment;
@@ -1167,6 +1215,7 @@ private:  // variables
     bool isInObjCSelector;
     bool breakCurrentOneLineBlock;
     bool shouldRemoveNextClosingBrace;
+    bool shouldAddClosingBraceAtStatementEnd;
     bool isInBraceRunIn;
     bool returnTypeChecked;
     bool currentLineBeginsWithBrace;
@@ -1230,6 +1279,7 @@ private:  // variables
     bool prependEmptyLine;
     bool isPreviousReadyLinePreprocCondStart;
     bool appendOpeningBrace;
+    bool appendClosingBrace;
     bool foundClosingHeader;
     bool isInHeader;
     bool isImmediatelyPostHeader;

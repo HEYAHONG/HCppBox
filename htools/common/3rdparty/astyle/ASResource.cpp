@@ -21,6 +21,7 @@ const std::string ASResource::_AS_FINALLY = std::string("__finally");
 const std::string ASResource::_AS_TRY = std::string("__try");
 const std::string ASResource::AS_ADD = std::string("add");
 const std::string ASResource::AS_AUTO = std::string("auto");
+const std::string ASResource::AS_DECLTYPE = std::string("decltype");
 const std::string ASResource::AS_REQUIRES = std::string("requires");
 const std::string ASResource::AS_AUTORELEASEPOOL = std::string("autoreleasepool");
 const std::string ASResource::AS_CASE = std::string("case");
@@ -90,6 +91,10 @@ const std::string ASResource::AS__ASM__ = std::string("__asm__");
 const std::string ASResource::AS_MS_ASM = std::string("_asm");
 const std::string ASResource::AS_MS__ASM = std::string("__asm");
 
+const std::string ASResource::AS__ATTRIBUTE__ = std::string("__attribute__");
+const std::string ASResource::AS__DECLSPEC = std::string("__declspec");
+const std::string ASResource::AS_ALIGNAS = std::string("alignas");
+
 const std::string ASResource::AS_BAR_DEFINE = std::string("#define");
 const std::string ASResource::AS_BAR_INCLUDE = std::string("#include");
 const std::string ASResource::AS_BAR_IF = std::string("#if");
@@ -128,6 +133,8 @@ const std::string ASResource::AS_GCC_MIN_ASSIGN = std::string("<?");
 const std::string ASResource::AS_GCC_MAX_ASSIGN = std::string(">?");
 
 const std::string ASResource::AS_RETURN = std::string("return");
+const std::string ASResource::AS_CO_RETURN = std::string("co_return");
+const std::string ASResource::AS_CO_YIELD = std::string("co_yield");
 const std::string ASResource::AS_CIN = std::string("cin");
 const std::string ASResource::AS_COUT = std::string("cout");
 const std::string ASResource::AS_CERR = std::string("cerr");
@@ -319,10 +326,20 @@ void ASResource::buildHeaders(std::vector<const std::string*>* headers, int file
  * Used by ONLY ASBeautifier.cpp
  *
  * @param indentableHeaders     a reference to the vector to be built.
+ * @param fileType              the type of the files being processed.
  */
-void ASResource::buildIndentableHeaders(std::vector<const std::string*>* indentableHeaders)
+void ASResource::buildIndentableHeaders(std::vector<const std::string*>* indentableHeaders, int fileType)
 {
 	indentableHeaders->emplace_back(&AS_RETURN);
+
+	// the C++20 coroutine statements are continued like 'return'
+	if (fileType == C_TYPE)
+	{
+		indentableHeaders->emplace_back(&AS_CO_RETURN);
+		indentableHeaders->emplace_back(&AS_CO_YIELD);
+	}
+
+	sort(indentableHeaders->begin(), indentableHeaders->end(), sortOnName);
 }
 
 /**
