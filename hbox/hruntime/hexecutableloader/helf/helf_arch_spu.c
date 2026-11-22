@@ -422,3 +422,50 @@ bool helf_spu_dynamic_string_get(helf_file_input_t *input_file,uint64_t offset,c
     }
     return helf_arch_dynamic_string_get(input_file,offset,buffer,buffer_length);
 }
+
+/* helf_relocation_howto_begin */
+static const helf_arch_relocation_howto_t helf_spu_reloc_howto[]=
+{
+    {0x00000000u,0,0,0,0,0x0040,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000001u,4,10,4,14,0x0000,0x0000000000000000ULL,0x0000000000FFC000ULL},
+    {0x00000002u,4,16,2,7,0x0000,0x0000000000000000ULL,0x00000000007FFF80ULL},
+    {0x00000003u,4,16,16,7,0x0000,0x0000000000000000ULL,0x00000000007FFF80ULL},
+    {0x00000004u,4,16,0,7,0x0000,0x0000000000000000ULL,0x00000000007FFF80ULL},
+    {0x00000005u,4,18,0,7,0x0000,0x0000000000000000ULL,0x0000000001FFFF80ULL},
+    {0x00000006u,4,32,0,0,0x0000,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+    {0x00000007u,4,16,2,7,0x0003,0x0000000000000000ULL,0x00000000007FFF80ULL},
+    {0x00000008u,4,7,0,14,0x0000,0x0000000000000000ULL,0x00000000001FC000ULL},
+    {0x00000009u,4,9,2,0,0x0013,0x0000000000000000ULL,0x000000000180007FULL},
+    {0x0000000Au,4,9,2,0,0x0013,0x0000000000000000ULL,0x000000000000C07FULL},
+    {0x0000000Bu,4,10,0,14,0x0000,0x0000000000000000ULL,0x0000000000FFC000ULL},
+    {0x0000000Cu,4,16,0,7,0x0000,0x0000000000000000ULL,0x00000000007FFF80ULL},
+    {0x0000000Du,4,32,0,0,0x0003,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+    {0x0000000Eu,4,16,0,7,0x0000,0x0000000000000000ULL,0x00000000007FFF80ULL},
+    {0x0000000Fu,4,32,0,0,0x0000,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+    {0x00000010u,8,64,0,0,0x0000,0x0000000000000000ULL,0xFFFFFFFFFFFFFFFFULL},
+    {0x00000011u,0,0,0,0,0x0000,0x0000000000000000ULL,0x0000000000000000ULL},
+};
+
+bool helf_spu_relocation_howto_get(uint32_t type,helf_arch_relocation_howto_t *howto)
+{
+    if(howto==NULL)
+    {
+        return false;
+    }
+    size_t count=sizeof(helf_spu_reloc_howto)/sizeof(helf_spu_reloc_howto[0]);
+    if(count==0)
+    {
+        return false;
+    }
+    for(size_t i=0;i<count;i++)
+    {
+        if(helf_spu_reloc_howto[i].type==type)
+        {
+            *howto=helf_spu_reloc_howto[i];
+            return true;
+        }
+    }
+    return false;
+}
+/* helf_relocation_howto_end */
+

@@ -468,3 +468,171 @@ bool helf_riscv64_dynamic_string_get(helf_file_input_t *input_file,uint64_t offs
     }
     return helf_arch_dynamic_string_get(input_file,offset,buffer,buffer_length);
 }
+
+/* helf_relocation_howto_begin */
+static const helf_arch_relocation_howto_t helf_riscv64_reloc_howto[]=
+{
+    {0x00000000u,0,0,0,0,0x0040,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000001u,4,32,0,0,0x0000,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+    {0x00000002u,8,64,0,0,0x0000,0x0000000000000000ULL,0xFFFFFFFFFFFFFFFFULL},
+    {0x00000003u,8,32,0,0,0x0080,0x0000000000000000ULL,0xFFFFFFFFFFFFFFFFULL},
+    {0x00000004u,0,0,0,0,0x0180,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000005u,8,64,0,0,0x0140,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000006u,4,32,0,0,0x01C0,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+    {0x00000007u,8,64,0,0,0x01C0,0x0000000000000000ULL,0xFFFFFFFFFFFFFFFFULL},
+    {0x00000008u,4,32,0,0,0x01C8,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+    {0x00000009u,8,64,0,0,0x01C8,0x0000000000000000ULL,0xFFFFFFFFFFFFFFFFULL},
+    {0x0000000Au,4,32,0,0,0x01C0,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+    {0x0000000Bu,8,64,0,0,0x01C0,0x0000000000000000ULL,0xFFFFFFFFFFFFFFFFULL},
+    {0x0000000Cu,0,0,0,0,0x01C0,0x0000000000000000ULL,0xFFFFFFFFFFFFFFFFULL},
+    {0x00000010u,4,32,0,0,0x0003,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000011u,4,32,0,0,0x0003,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000012u,8,64,0,0,0x0003,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000013u,8,64,0,0,0x0003,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000014u,4,32,0,0,0x0201,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000015u,4,32,0,0,0x03C1,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000016u,4,32,0,0,0x01C1,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000017u,4,32,0,0,0x0003,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000018u,4,32,0,0,0x0000,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000019u,4,32,0,0,0x0000,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000001Au,4,32,0,0,0x0000,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000001Bu,4,32,0,0,0x0000,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000001Cu,4,32,0,0,0x0000,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000001Du,4,32,0,0,0x01C8,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000001Eu,4,32,0,0,0x01C0,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000001Fu,4,32,0,0,0x01C0,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000020u,0,0,0,0,0x01C0,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000021u,1,8,0,0,0x0010,0x0000000000000000ULL,0x00000000000000FFULL},
+    {0x00000022u,2,16,0,0,0x0010,0x0000000000000000ULL,0x000000000000FFFFULL},
+    {0x00000023u,4,32,0,0,0x0010,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+    {0x00000024u,8,64,0,0,0x0010,0x0000000000000000ULL,0xFFFFFFFFFFFFFFFFULL},
+    {0x00000025u,1,8,0,0,0x0010,0x0000000000000000ULL,0x00000000000000FFULL},
+    {0x00000026u,2,16,0,0,0x0010,0x0000000000000000ULL,0x000000000000FFFFULL},
+    {0x00000027u,4,32,0,0,0x0010,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+    {0x00000028u,8,64,0,0,0x0010,0x0000000000000000ULL,0xFFFFFFFFFFFFFFFFULL},
+    {0x0000002Bu,0,0,0,0,0x0000,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000002Cu,2,16,0,0,0x0003,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000002Du,2,16,0,0,0x0003,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000002Eu,2,16,0,0,0x0000,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000002Fu,4,32,0,0,0x0000,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000030u,4,32,0,0,0x0000,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000031u,4,32,0,0,0x01C0,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000032u,4,32,0,0,0x01C0,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000033u,0,0,0,0,0x0040,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000034u,1,8,0,0,0x0010,0x0000000000000000ULL,0x000000000000003FULL},
+    {0x00000035u,1,8,0,0,0x0000,0x0000000000000000ULL,0x000000000000003FULL},
+    {0x00000036u,1,8,0,0,0x0000,0x0000000000000000ULL,0x00000000000000FFULL},
+    {0x00000037u,2,16,0,0,0x0000,0x0000000000000000ULL,0x000000000000FFFFULL},
+    {0x00000038u,4,32,0,0,0x0000,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+    {0x00000039u,4,32,0,0,0x0001,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+    {0x0000003Au,8,32,0,0,0x0080,0x0000000000000000ULL,0xFFFFFFFFFFFFFFFFULL},
+    {0x0000003Cu,0,0,0,0,0x0010,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000003Du,0,0,0,0,0x0010,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000003Eu,4,32,0,0,0x01C9,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x0000003Fu,4,32,0,0,0x01C0,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000040u,4,32,0,0,0x01C0,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000041u,0,0,0,0,0x01C0,0x0000000000000000ULL,0x0000000000000000ULL},
+};
+
+bool helf_riscv64_relocation_howto_get(uint32_t type,helf_arch_relocation_howto_t *howto)
+{
+    if(howto==NULL)
+    {
+        return false;
+    }
+    size_t count=sizeof(helf_riscv64_reloc_howto)/sizeof(helf_riscv64_reloc_howto[0]);
+    if(count==0)
+    {
+        return false;
+    }
+    for(size_t i=0;i<count;i++)
+    {
+        if(helf_riscv64_reloc_howto[i].type==type)
+        {
+            *howto=helf_riscv64_reloc_howto[i];
+            return true;
+        }
+    }
+    return false;
+}
+/* helf_relocation_howto_end */
+
+
+bool helf_riscv64_relocation_apply(uint32_t type,uint8_t *target,uintptr_t place,uintptr_t symbol_address,int64_t addend,const helf_arch_relocation_context_t *context)
+{
+    bool big_endian=(context!=NULL)?context->big_endian:false;
+    uint64_t value=(uint64_t)(symbol_address+(uintptr_t)addend);
+    switch(type)
+    {
+    case 26:
+        {
+            uint32_t insn=helf_arch_read32(target,big_endian);
+            uint32_t hi=(uint32_t)((value+0x800U)>>12)&0xFFFFF;
+            helf_arch_write32(target,(insn&0xFFFU)|(hi<<12),big_endian);
+        }
+        return true;
+    case 27:
+        {
+            uint32_t insn=helf_arch_read32(target,big_endian);
+            uint32_t lo=(uint32_t)value&0xFFF;
+            helf_arch_write32(target,(insn&0xFFFFFU)|(lo<<20),big_endian);
+        }
+        return true;
+    case 28:
+        {
+            uint32_t insn=helf_arch_read32(target,big_endian);
+            uint32_t lo=(uint32_t)value&0xFFF;
+            insn=(insn&~0xFE000F80U)|(((lo>>5)&0x7F)<<25)|((lo&0x1F)<<7);
+            helf_arch_write32(target,insn,big_endian);
+        }
+        return true;
+    case 23:
+        {
+            uint64_t rel=(uint64_t)((int64_t)value-(int64_t)place);
+            uint32_t insn=helf_arch_read32(target,big_endian);
+            uint32_t hi=(uint32_t)((rel+0x800U)>>12)&0xFFFFF;
+            helf_arch_write32(target,(insn&0xFFFU)|(hi<<12),big_endian);
+        }
+        return true;
+    case 18:
+    case 19:
+        {
+            int64_t rel=(int64_t)value-(int64_t)place;
+            uint32_t hi=(uint32_t)((uint64_t)(rel+0x800)>>12)&0xFFFFF;
+            uint32_t lo=(uint32_t)rel&0xFFF;
+            uint32_t insn0=helf_arch_read32(target,big_endian);
+            uint32_t insn1=helf_arch_read32(target+4,big_endian);
+            helf_arch_write32(target,(insn0&0xFFFU)|(hi<<12),big_endian);
+            helf_arch_write32(target+4,(insn1&0xFFFFFU)|(lo<<20),big_endian);
+        }
+        return true;
+    case 17:
+        {
+            int64_t rel=(int64_t)value-(int64_t)place;
+            uint64_t imm=(uint64_t)rel;
+            uint32_t insn=helf_arch_read32(target,big_endian);
+            insn&=0xFFFU;
+            insn|=((imm>>20)&1U)<<31;
+            insn|=((imm>>1)&0x3FFU)<<21;
+            insn|=((imm>>11)&1U)<<20;
+            insn|=((imm>>12)&0xFFU)<<12;
+            helf_arch_write32(target,insn,big_endian);
+        }
+        return true;
+    case 16:
+        {
+            int64_t rel=(int64_t)value-(int64_t)place;
+            uint64_t imm=(uint64_t)rel;
+            uint32_t insn=helf_arch_read32(target,big_endian);
+            insn&=~0xFE000F80U;
+            insn|=((imm>>12)&1U)<<31;
+            insn|=((imm>>5)&0x3FU)<<25;
+            insn|=((imm>>1)&0xFU)<<8;
+            insn|=((imm>>11)&1U)<<7;
+            helf_arch_write32(target,insn,big_endian);
+        }
+        return true;
+    default:
+        return false;
+    }
+}

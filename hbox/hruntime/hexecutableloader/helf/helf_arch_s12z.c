@@ -412,3 +412,40 @@ bool helf_s12z_dynamic_string_get(helf_file_input_t *input_file,uint64_t offset,
     }
     return helf_arch_dynamic_string_get(input_file,offset,buffer,buffer_length);
 }
+
+/* helf_relocation_howto_begin */
+static const helf_arch_relocation_howto_t helf_s12z_reloc_howto[]=
+{
+    {0x00000000u,0,0,0,0,0x0040,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000001u,3,24,0,0,0x0010,0x0000000000FFFFFFULL,0x0000000000FFFFFFULL},
+    {0x00000002u,0,0,0,0,0x0000,0x0000000000000000ULL,0x0000000000000000ULL},
+    {0x00000003u,2,15,0,0,0x0013,0x0000000000000000ULL,0x0000000000007FFFULL},
+    {0x00000004u,3,24,0,0,0x0000,0x0000000000000000ULL,0x0000000000FFFFFFULL},
+    {0x00000005u,3,18,0,0,0x0010,0x0000000000000000ULL,0x000000000005FFFFULL},
+    {0x00000006u,4,32,0,0,0x0000,0x00000000FFFFFFFFULL,0x00000000FFFFFFFFULL},
+    {0x00000007u,4,32,0,0,0x0000,0x0000000000000000ULL,0x00000000FFFFFFFFULL},
+};
+
+bool helf_s12z_relocation_howto_get(uint32_t type,helf_arch_relocation_howto_t *howto)
+{
+    if(howto==NULL)
+    {
+        return false;
+    }
+    size_t count=sizeof(helf_s12z_reloc_howto)/sizeof(helf_s12z_reloc_howto[0]);
+    if(count==0)
+    {
+        return false;
+    }
+    for(size_t i=0;i<count;i++)
+    {
+        if(helf_s12z_reloc_howto[i].type==type)
+        {
+            *howto=helf_s12z_reloc_howto[i];
+            return true;
+        }
+    }
+    return false;
+}
+/* helf_relocation_howto_end */
+

@@ -403,6 +403,8 @@ bool helf_m32r_dynamic_info_get(helf_file_input_t *input_file,size_t index,helf_
  */
 bool helf_m32r_dynamic_string_get(helf_file_input_t *input_file,uint64_t offset,char *buffer,size_t buffer_length);
 
+bool helf_m32r_relocation_howto_get(uint32_t type,helf_arch_relocation_howto_t *howto);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

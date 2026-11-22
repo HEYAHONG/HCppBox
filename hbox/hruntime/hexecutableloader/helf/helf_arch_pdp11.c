@@ -402,3 +402,32 @@ bool helf_pdp11_dynamic_string_get(helf_file_input_t *input_file,uint64_t offset
     }
     return helf_arch_dynamic_string_get(input_file,offset,buffer,buffer_length);
 }
+
+/* helf_relocation_howto_begin */
+static const helf_arch_relocation_howto_t helf_pdp11_reloc_howto[]=
+{
+};
+
+bool helf_pdp11_relocation_howto_get(uint32_t type,helf_arch_relocation_howto_t *howto)
+{
+    if(howto==NULL)
+    {
+        return false;
+    }
+    size_t count=sizeof(helf_pdp11_reloc_howto)/sizeof(helf_pdp11_reloc_howto[0]);
+    if(count==0)
+    {
+        return false;
+    }
+    for(size_t i=0;i<count;i++)
+    {
+        if(helf_pdp11_reloc_howto[i].type==type)
+        {
+            *howto=helf_pdp11_reloc_howto[i];
+            return true;
+        }
+    }
+    return false;
+}
+/* helf_relocation_howto_end */
+

@@ -637,6 +637,14 @@ struct helf_elf64_rela
 
 
 /*
+ * 特殊节索引
+ */
+#define HELF_SHN_UNDEF      0           /* Undefined section. */
+#define HELF_SHN_ABS        0xfff1      /* Associated symbol is absolute. */
+#define HELF_SHN_COMMON     0xfff2      /* Associated symbol is common. */
+#define HELF_SHN_XINDEX     0xffff      /* Index is in extra table. */
+
+/*
  * e_type
  */
 #define HELF_ET_NONE        0           /* Unknown type. */

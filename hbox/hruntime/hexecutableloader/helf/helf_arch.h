@@ -118,6 +118,113 @@ typedef struct helf_arch_relocation_type_name
 } helf_arch_relocation_type_name_t;
 
 /*
+ * 重定位应用类型
+ */
+typedef enum
+{
+    HELF_ARCH_RELOC_KIND_NORMAL=0,      /**< 普通重定位 */
+    HELF_ARCH_RELOC_KIND_NONE=1,        /**< 空重定位 */
+    HELF_ARCH_RELOC_KIND_RELATIVE=2,    /**< 相对基址重定位 */
+    HELF_ARCH_RELOC_KIND_IRELATIVE=3,   /**< 间接相对基址重定位 */
+    HELF_ARCH_RELOC_KIND_GLOB_DAT=4,    /**< GOT/全局数据重定位 */
+    HELF_ARCH_RELOC_KIND_JUMP_SLOT=5,   /**< PLT/JUMP_SLOT重定位 */
+    HELF_ARCH_RELOC_KIND_COPY=6,        /**< COPY重定位 */
+    HELF_ARCH_RELOC_KIND_UNSUPPORTED=7  /**< 暂不支持(TLS/GOT等) */
+} helf_arch_reloc_kind_t;
+
+/*
+ * 重定位应用描述(基于BFD HOWTO语义)
+ */
+typedef struct helf_arch_relocation_howto
+{
+    uint32_t    type;               /**< 重定位类型 */
+    uint8_t     size;               /**< 目标字段字节数 */
+    uint8_t     bitsize;            /**< 目标字段位数 */
+    uint8_t     rightshift;         /**< 重定位值右移位数 */
+    uint8_t     bitpos;             /**< 重定位值左移位数 */
+    uint16_t    flags;              /**< 标志位(HELF_ARCH_RELOC_HOWTO_*) */
+    uint64_t    src_mask;           /**< 源字段掩码 */
+    uint64_t    dst_mask;           /**< 目标字段掩码 */
+} helf_arch_relocation_howto_t;
+
+#define HELF_ARCH_RELOC_HOWTO_PC_RELATIVE       (1U<<0)   /**< 相对PC */
+#define HELF_ARCH_RELOC_HOWTO_PCREL_OFFSET      (1U<<1)   /**< PC相对时减偏移 */
+#define HELF_ARCH_RELOC_HOWTO_NEGATE            (1U<<2)   /**< 取负 */
+#define HELF_ARCH_RELOC_HOWTO_PARTIAL_INPLACE   (1U<<3)   /**< 部分在原位 */
+#define HELF_ARCH_RELOC_HOWTO_SPECIAL           (1U<<4)   /**< 使用特殊函数 */
+#define HELF_ARCH_RELOC_HOWTO_USE_SYMBOL_SIZE   (1U<<5)   /**< 使用符号大小而非地址 */
+#define HELF_ARCH_RELOC_HOWTO_GOT               (1U<<9)   /**< GOT相关重定位 */
+#define HELF_ARCH_RELOC_HOWTO_GOT_PCREL         (1U<<10)  /**< 相对GOT的PC相对重定位 */
+#define HELF_ARCH_RELOC_HOWTO_GOT_RELAX         (1U<<11)  /**< 可松弛的GOT PC相对重定位 */
+#define HELF_ARCH_RELOC_HOWTO_KIND_SHIFT        6         /**< 类型移位数 */
+#define HELF_ARCH_RELOC_HOWTO_KIND_MASK         (7U<<HELF_ARCH_RELOC_HOWTO_KIND_SHIFT) /**< 类型掩码 */
+
+/** \brief 获取重定位应用描述
+ *
+ * \param machine uint16_t 机器类型(HELF_EM_*)
+ * \param elfclass uint8_t ELF类别(HELF_ELFCLASS_*)
+ * \param type uint32_t 重定位类型
+ * \param howto helf_arch_relocation_howto_t* 重定位描述
+ * \return bool 是否找到
+ *
+ */
+bool helf_arch_relocation_howto_get(uint16_t machine,uint8_t elfclass,uint32_t type,helf_arch_relocation_howto_t *howto);
+
+/*
+ * 架构重定位应用上下文
+ */
+typedef struct helf_arch_relocation_context
+{
+    uint16_t    machine;                /**< 机器类型 */
+    uint8_t     elfclass;               /**< ELF类别 */
+    uint8_t     elfdata;                /**< ELF数据格式 */
+    bool        big_endian;             /**< 是否大端 */
+    uintptr_t   toc_base;               /**< PPC64 TOC基地址 */
+    void        *usr;                   /**< 用户参数 */
+    bool        (*address_is_executable)(void *usr,uintptr_t address); /**< 地址是否可执行 */
+} helf_arch_relocation_context_t;
+
+uint16_t helf_arch_read16(const uint8_t *data,bool big_endian);
+uint32_t helf_arch_read32(const uint8_t *data,bool big_endian);
+uint64_t helf_arch_read64(const uint8_t *data,bool big_endian);
+void helf_arch_write16(uint8_t *data,uint16_t value,bool big_endian);
+void helf_arch_write32(uint8_t *data,uint32_t value,bool big_endian);
+void helf_arch_write64(uint8_t *data,uint64_t value,bool big_endian);
+
+/** \brief 应用架构专用重定位
+ *
+ * \return bool 是否已处理,false表示继续走通用流程
+ *
+ */
+bool helf_arch_relocation_apply(uint16_t machine,uint8_t elfclass,uint32_t type,uint8_t *target,uintptr_t place,uintptr_t symbol_address,int64_t addend,const helf_arch_relocation_context_t *context);
+
+/** \brief 架构专用符号地址修正(如PPC64 ELFv1函数描述符)
+ *
+ * \return bool 是否已处理
+ *
+ */
+bool helf_arch_relocation_symbol_address(uint16_t machine,uint8_t elfclass,uint32_t type,uintptr_t *address,const helf_arch_relocation_context_t *context);
+
+/** \brief 获取架构专用TOC大小
+ *
+ * \return size_t TOC大小
+ *
+ */
+size_t helf_arch_relocation_toc_size_get(uint16_t machine,uint8_t elfclass,helf_file_input_t *input_file);
+
+/** \brief 是否为需要优先处理的架构相关节(如PPC64 .opd)
+ *
+ * \return bool 是否优先
+ *
+ */
+bool helf_arch_relocation_section_is_priority(uint16_t machine,uint8_t elfclass,const char *name);
+
+/** \brief 解码MIPS64特殊r_info布局
+ *
+ */
+void helf_mips64_relocation_info_decode(uint64_t info,bool big_endian,helf_arch_relocation_info_t *out);
+
+/*
  * 架构相关节类型名称表项
  */
 typedef struct helf_arch_section_type_name

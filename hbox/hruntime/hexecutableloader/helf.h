@@ -14,10 +14,25 @@ extern "C"
 {
 #endif // __cplusplus
 
+/*
+ * 加载器依赖 hmemory/hruntime。为保持仅解析/编辑场景可独立使用，
+ * 仅在依赖头文件可用时编译加载器。
+ */
+#if defined(__HRUNTIME_H__)
+#define HELF_LOADER_AVAILABLE 1
+#elif defined(__has_include)
+#if __has_include("hmemory.h") && __has_include("hruntime.h")
+#define HELF_LOADER_AVAILABLE 1
+#endif
+#endif
+
 #include "helf/helf_common.h"
 #include "helf/helf_section.h"
 #include "helf/helf_arch.h"
 #include "helf/helf_output.h"
+#ifdef HELF_LOADER_AVAILABLE
+#include "helf/helf_loader.h"
+#endif
 #include "helf/helf_arch_aarch64.h"
 #include "helf/helf_arch_alpha.h"
 #include "helf/helf_arch_amd64.h"

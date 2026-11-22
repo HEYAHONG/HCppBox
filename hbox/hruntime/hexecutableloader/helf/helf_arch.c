@@ -907,8 +907,22 @@ bool helf_arch_relocation_get(helf_file_input_t *input_file,size_t section_index
         {
             info->addend=(int64_t)helf_arch_read_uint64(&buffer[16],big_endian);
         }
-        info->symbol=(uint32_t)(info->info >> 32);
-        info->type=(uint32_t)(info->info & 0xFFFFFFFFULL);
+        uint16_t machine=0;
+        helf_elf64_file_header_t header;
+        if(helf_file_input_64_bits_header_get(input_file,&header))
+        {
+            machine=header.e_machine;
+        }
+        if(machine==HELF_EM_MIPS)
+        {
+            /* MIPS64使用独立的r_info布局 */
+            helf_mips64_relocation_info_decode(info->info,big_endian,info);
+        }
+        else
+        {
+            info->symbol=(uint32_t)(info->info >> 32);
+            info->type=(uint32_t)(info->info & 0xFFFFFFFFULL);
+        }
     }
     else
     {
@@ -1484,4 +1498,101 @@ bool helf_arch_dynamic_string_get(helf_file_input_t *input_file,uint64_t offset,
     }
     buffer[i]=0;
     return true;
+}
+
+uint16_t helf_arch_read16(const uint8_t *data,bool big_endian)
+{
+    if(data==NULL)
+    {
+        return 0;
+    }
+    if(big_endian)
+    {
+        return (uint16_t)(((uint16_t)data[0]<<8)|((uint16_t)data[1]));
+    }
+    return (uint16_t)(((uint16_t)data[1]<<8)|((uint16_t)data[0]));
+}
+
+uint32_t helf_arch_read32(const uint8_t *data,bool big_endian)
+{
+    if(data==NULL)
+    {
+        return 0;
+    }
+    if(big_endian)
+    {
+        return ((uint32_t)data[0]<<24)|((uint32_t)data[1]<<16)|((uint32_t)data[2]<<8)|((uint32_t)data[3]);
+    }
+    return ((uint32_t)data[3]<<24)|((uint32_t)data[2]<<16)|((uint32_t)data[1]<<8)|((uint32_t)data[0]);
+}
+
+uint64_t helf_arch_read64(const uint8_t *data,bool big_endian)
+{
+    if(data==NULL)
+    {
+        return 0;
+    }
+    if(big_endian)
+    {
+        return ((uint64_t)helf_arch_read32(data,true)<<32)|helf_arch_read32(data+4,true);
+    }
+    return ((uint64_t)helf_arch_read32(data+4,false)<<32)|helf_arch_read32(data,false);
+}
+
+void helf_arch_write16(uint8_t *data,uint16_t value,bool big_endian)
+{
+    if(data==NULL)
+    {
+        return;
+    }
+    if(big_endian)
+    {
+        data[0]=(uint8_t)(value>>8);
+        data[1]=(uint8_t)value;
+    }
+    else
+    {
+        data[0]=(uint8_t)value;
+        data[1]=(uint8_t)(value>>8);
+    }
+}
+
+void helf_arch_write32(uint8_t *data,uint32_t value,bool big_endian)
+{
+    if(data==NULL)
+    {
+        return;
+    }
+    if(big_endian)
+    {
+        data[0]=(uint8_t)(value>>24);
+        data[1]=(uint8_t)(value>>16);
+        data[2]=(uint8_t)(value>>8);
+        data[3]=(uint8_t)value;
+    }
+    else
+    {
+        data[0]=(uint8_t)value;
+        data[1]=(uint8_t)(value>>8);
+        data[2]=(uint8_t)(value>>16);
+        data[3]=(uint8_t)(value>>24);
+    }
+}
+
+void helf_arch_write64(uint8_t *data,uint64_t value,bool big_endian)
+{
+    if(data==NULL)
+    {
+        return;
+    }
+    if(big_endian)
+    {
+        helf_arch_write32(data,(uint32_t)(value>>32),true);
+        helf_arch_write32(data+4,(uint32_t)value,true);
+    }
+    else
+    {
+        helf_arch_write32(data,(uint32_t)value,false);
+        helf_arch_write32(data+4,(uint32_t)(value>>32),false);
+    }
 }

@@ -11,6 +11,10 @@
 #include "helf/helf_common.c"
 #include "helf/helf_arch.c"
 #include "helf/helf_output.c"
+#ifdef HELF_LOADER_AVAILABLE
+#include "helf/helf_arch_reloc.c"
+#include "helf/helf_loader.c"
+#endif
 #include "helf/helf_arch_aarch64.c"
 #include "helf/helf_arch_alpha.c"
 #include "helf/helf_arch_amd64.c"
