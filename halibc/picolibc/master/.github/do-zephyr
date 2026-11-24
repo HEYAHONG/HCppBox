@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+HERE=`dirname "$0"`
+"$HERE"/do-zephyr-test aarch64-zephyr -Dmultilib=false "$@"
+"$HERE"/do-zephyr-test arc-zephyr -Dmultilib=false "$@"
+"$HERE"/do-zephyr-test arc64-zephyr -Dmultilib=false "$@"
+"$HERE"/do-zephyr-test arm-zephyr -Dmultilib=false "$@"
+"$HERE"/do-zephyr-test clang-aarch64 -Dmultilib=false "$@"
+#"$HERE"/do-zephyr-test clang-arm "$@" # blocked by bug in compiler-rt
+"$HERE"/do-zephyr-test clang-riscv -Dmultilib-include='rv32imac' "$@"
+"$HERE"/do-zephyr-build microblazeel -Dmultilib=false "$@"
+"$HERE"/do-zephyr-test mips-zephyr -Dmultilib=false "$@"
+"$HERE"/do-zephyr-test riscv-zephyr -Dmultilib=false "$@"
+"$HERE"/do-zephyr-test rx-zephyr-elf -Dmultilib=false "$@"
+"$HERE"/do-zephyr-test sparc-zephyr -Dmultilib=false "$@"
+"$HERE"/do-zephyr-test x86_64-zephyr -Dmultilib=false "$@"
+"$HERE"/do-zephyr-test xtensa-dc233c -Dmultilib=false "$@"
+"$HERE"/do-zephyr-build xtensa-espressif_esp32 -Dmultilib=false "$@"
+"$HERE"/do-zephyr-build xtensa-espressif_esp32s2 -Dmultilib=false "$@"
+"$HERE"/do-zephyr-build xtensa-nxp_imx_adsp -Dmultilib=false "$@"
+"$HERE"/do-zephyr-build xtensa-nxp_imx8m_adsp -Dmultilib=false "$@"
+"$HERE"/do-zephyr-build xtensa-sample_controller -Dmultilib=false "$@"

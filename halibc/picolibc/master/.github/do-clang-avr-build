@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+HERE=$(dirname "$0")
+
+if [ -d /opt/picolibc-ci ]; then
+    TOP=/opt/picolibc-ci
+else
+    TOP=/opt
+fi
+
+AVR_SDK_INSTALL_DIR=${AVR_SDK_INSTALL_DIR:-$TOP/avr}
+C_INCLUDE_PATH="$AVR_SDK_INSTALL_DIR/avr/include${C_INCLUDE_PATH:+:$C_INCLUDE_PATH}"
+export C_INCLUDE_PATH
+
+exec "$HERE"/do-build clang-avr "$@" -Danalyzer=false

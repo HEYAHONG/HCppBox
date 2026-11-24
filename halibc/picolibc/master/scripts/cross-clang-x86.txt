@@ -1,0 +1,30 @@
+[binaries]
+c = ['clang', '-target', 'i686-none-elf', '-march=core2', '-mfpmath=sse', '-msse2', '-fno-pic', '-fno-PIE', '-static', '-nostdlib']
+cpp = ['clang', '-target', 'i686-none-elf', '-march=core2', '-mfpmath=sse', '-msse2', '-fno-pic', '-fno-PIE', '-static', '-nostdlib']
+c_ld = 'lld'
+cpp_ld = 'lld'
+ar = 'ar'
+as = 'as'
+nm = 'nm'
+strip = 'strip'
+objcopy = 'objcopy'
+# only needed to run tests
+exe_wrapper = ['env', 'run-i386']
+
+[host_machine]
+system='linux'
+cpu_family='x86'
+cpu='x86'
+endian='little'
+
+[properties]
+skip_sanity_check = true
+needs_exe_wrapper = true
+c_link_args = ['-L/usr/lib/llvm-21/lib/clang/21/lib/linux','-L/usr/lib/llvm-22/lib/clang/22/lib/linux','-L/usr/lib/llvm-23/lib/clang/23/lib/linux']
+cpp_link_args = ['-L/usr/lib/llvm-21/lib/clang/21/lib/linux','-L/usr/lib/llvm-22/lib/clang/22/lib/linux','-L/usr/lib/llvm-23/lib/clang/23/lib/linux']
+librt='-lclang_rt.builtins-i386'
+link_spec = '--build-id=none'
+default_flash_addr = '0x00100000'
+default_flash_size = '0x00400000'
+default_ram_addr   = '0x00500000'
+default_ram_size   = '0x00200000'

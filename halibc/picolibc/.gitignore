@@ -1,0 +1,11 @@
+*.diff
+*.patch
+*.orig
+*.rej
+.DS_Store
+.vs
+*.user
+*.nupkg
+*.included
+
+picolibc

@@ -23,8 +23,8 @@
 
 注意:应当尽可能使用最新版编译器。
 
-- GCC4.9.0及更新版本:https://gcc.gnu.org/
-- Clang 3.4 及更新版本:https://clang.llvm.org/
+- GCC:https://gcc.gnu.org/
+- Clang:https://clang.llvm.org/
 
 ### 可测试的其他编译器/IDE环境
 
@@ -47,6 +47,17 @@ MSVC的编译器对C/C++标准支持随着版本的升级而逐渐完善，较�
 测试目录见[test](test)目录。
 
 # 组件
+
+## halibc
+
+可替换的libc,主要包含一个可替换的C运行库，可替换编译器自带的运行库，详情参考[halibc](halibc)。
+
+本组件主要用于C运行库。
+
+本组件可能使用到的编程语言:
+
+- 汇编
+- C语言
 
 ## hplatformbox
 

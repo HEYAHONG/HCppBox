@@ -1,0 +1,285 @@
+/*
+ * Copyright 2022 jdbouleu <hi@jdoubleu.de>
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * .
+ * 1. Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * .
+ * 2. Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following
+ * disclaimer in the documentation and/or other materials provided
+ * with the distribution.
+ * .
+ * 3. Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ * .
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/* Test that valid POSIX timezone strings are correctly parsed by tzset(3). */
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+// BEGIN test vectors
+#include <time.h>
+#include <limits.h>
+
+#define IN_SECONDS(h, m, s) ((int32_t)(h) * 3600 + (m) * 60 + (s))
+#define NO_TIME             INT_MIN
+
+struct tz_test {
+    const char *tzstr;
+    int32_t     offset_seconds;
+    int32_t     dst_offset_seconds;
+};
+
+extern const struct tm      winter_tm;
+extern const struct tm      summer_tm;
+extern const time_t         winter_time;
+extern const time_t         summer_time;
+extern const struct tz_test test_timezones[];
+
+// winter time is March, 21st 2022 at 8:15pm and 20 seconds
+const struct tm             winter_tm = { .tm_sec = 20,
+                                          .tm_min = 15,
+                                          .tm_hour = 20,
+                                          .tm_mday = 21,
+                                          .tm_mon = 3 - 1,
+                                          .tm_year = 2022 - 1900,
+                                          .tm_isdst = 0 };
+
+// summer time is July, 15th 2022 at 10:50am and 40 seconds
+const struct tm             summer_tm = { .tm_sec = 40,
+                                          .tm_min = 50,
+                                          .tm_hour = 10,
+                                          .tm_mday = 15,
+                                          .tm_mon = 7 - 1,
+                                          .tm_year = 2022 - 1900,
+                                          .tm_isdst = 1 };
+
+// UTC unix time for the winter time
+const time_t                winter_time = 1647893720;
+const time_t                summer_time = 1657882240;
+
+const struct tz_test        test_timezones[] = {
+    /*
+     * creating test vectors based on the POSIX spec
+     * (https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap08.html#tag_08_03)
+     */
+    // normal std names
+    { "MAR1", IN_SECONDS(1, 0, 0), NO_TIME },
+    { "MAR-1", -IN_SECONDS(1, 0, 0), NO_TIME },
+    { "MAR+2", IN_SECONDS(2, 0, 0), NO_TIME },
+    { "MAR7", IN_SECONDS(7, 0, 0), NO_TIME },
+    { "MAR-7", -IN_SECONDS(7, 0, 0), NO_TIME },
+    { "MARS5", IN_SECONDS(5, 0, 0), NO_TIME },
+    { "MARSM5", IN_SECONDS(5, 0, 0), NO_TIME },
+    { "MARSMOON5", IN_SECONDS(5, 0, 0), NO_TIME }, // assuming TZNAME_MAX >= 8
+    { "MARS5:23:42", IN_SECONDS(5, 23, 42), NO_TIME },
+    { "SUN-7:14:24", -IN_SECONDS(7, 14, 24), NO_TIME },
+    // with DST
+    { "MAR5SMAR", IN_SECONDS(5, 0, 0), IN_SECONDS(4, 0, 0) }, // only DST name
+    { "MAR5SMAR2", IN_SECONDS(5, 0, 0), IN_SECONDS(2, 0, 0) }, // DST name with offset
+    { "MAR3SMAR-3", IN_SECONDS(3, 0, 0), -IN_SECONDS(3, 0, 0) },
+    { "MARSWINTER4MARSUMMER", IN_SECONDS(4, 0, 0), IN_SECONDS(3, 0, 0) },
+    { "MARSWINTER4MARSUMMER3", IN_SECONDS(4, 0, 0), IN_SECONDS(3, 0, 0) },
+    // with DST IN_SECONDSs
+    { "WMARS3SMARS,J80", IN_SECONDS(3, 0, 0), IN_SECONDS(2, 0, 0) },
+    { "WMARS3SMARS,J80,J134", IN_SECONDS(3, 0, 0), IN_SECONDS(2, 0, 0) },
+    { "WMARS3SMARS,79", IN_SECONDS(3, 0, 0), IN_SECONDS(2, 0, 0) },
+    { "WMARS3SMARS,76,134", IN_SECONDS(3, 0, 0), IN_SECONDS(2, 0, 0) },
+    { "WMARS3SMARS,76/02,134/03", IN_SECONDS(3, 0, 0), IN_SECONDS(2, 0, 0) },
+    { "WMARS3SMARS,76/02:15:45,134/03:40:20", IN_SECONDS(3, 0, 0), IN_SECONDS(2, 0, 0) },
+    { "WMARS3SMARS,M3.4.1/02:15:45,M8.3.1/03:40:20", IN_SECONDS(3, 0, 0), IN_SECONDS(2, 0, 0) },
+
+    // special std names
+    { "<UNK>-1", -IN_SECONDS(1, 0, 0), NO_TIME },
+    { "<UNKNOWN>-2", -IN_SECONDS(2, 0, 0), NO_TIME }, // require TZNAME_MAX >= 7 + 1
+    { "<003>3", IN_SECONDS(3, 0, 0), NO_TIME },
+    { "<+04>4", IN_SECONDS(4, 0, 0), NO_TIME },
+    { "<-05>-5", -IN_SECONDS(5, 0, 0), NO_TIME },
+    { "<A-5>6", IN_SECONDS(6, 0, 0), NO_TIME },
+    { "<+A5>-7", -IN_SECONDS(7, 0, 0), NO_TIME },
+    { "<0123456>8", IN_SECONDS(8, 0, 0), NO_TIME },
+    { "<0A1B2C3>9", IN_SECONDS(9, 0, 0), NO_TIME },
+    { "<RD-04>-4<RD+005>5", -IN_SECONDS(4, 0, 0), IN_SECONDS(5, 0, 0) },
+    { "<WINT+03>3<SUM+02>", IN_SECONDS(3, 0, 0), IN_SECONDS(2, 0, 0) },
+    { "<WINT+03>3<SUM+02>2", IN_SECONDS(3, 0, 0), IN_SECONDS(2, 0, 0) },
+    { "<WINT+03>3:15<SUM+02>2:30:15", IN_SECONDS(3, 15, 0), IN_SECONDS(2, 30, 15) },
+    { "<H3M15>3:15<H2M30S15>2:30:15", IN_SECONDS(3, 15, 0),
+     IN_SECONDS(2, 30, 15) }, // requires TZNAME_MAX >= 8 + 1
+    { "<+H6M20S12>6:20:12<-H4M40S14>-4:40:14", IN_SECONDS(6, 20, 12),
+     -IN_SECONDS(4, 40, 14) }, // requires TZNAME_MAX >= 9 + 1
+
+    /*
+     * real-world test vectors.
+     * IN_SECONDSzones extracted from the tzdb (https://github.com/eggert/tz#2019e).
+     * The IN_SECONDSzone strings can also be obtained from
+     * https://raw.githubusercontent.com/nayarsystems/posix_tz_db/master/zones.csv.
+     */
+    { /* Etc/GMT-14 */ "<+14>-14", -IN_SECONDS(14, 0, 0), NO_TIME },
+    { /* Etc/GMT+12 */ "<-12>12", IN_SECONDS(12, 0, 0), NO_TIME },
+    { /* Africa/Casablanca */ "<+01>-1", -IN_SECONDS(1, 0, 0), NO_TIME },
+    { /* America/Araguaina */ "<-03>3", IN_SECONDS(3, 0, 0), NO_TIME },
+    { /* America/Asuncion */ "<-04>4<-03>,M10.1.0/0,M3.4.0/0", IN_SECONDS(4, 0, 0),
+     IN_SECONDS(3, 0, 0) },
+    { /* America/Los_Angeles */ "PST8PDT,M3.2.0,M11.1.0", IN_SECONDS(8, 0, 0),
+     IN_SECONDS(7, 0, 0) },
+    { /* America/New_York */ "EST5EDT,M3.2.0,M11.1.0", IN_SECONDS(5, 0, 0), IN_SECONDS(4, 0, 0) },
+    { /* America/Scoresbysund */ "<-01>1<+00>,M3.5.0/0,M10.5.0/1", IN_SECONDS(1, 0, 0),
+     IN_SECONDS(0, 0, 0) },
+    { /* Asia/Colombo */ "<+0530>-5:30", -IN_SECONDS(5, 30, 0), NO_TIME },
+    { /* Europe/Berlin */ "CET-1CEST,M3.5.0,M10.5.0/3", -IN_SECONDS(1, 0, 0),
+     -IN_SECONDS(2, 0, 0) },
+
+/// test parsing errors
+// 1. names are too long
+#ifdef __PICOLIBC__
+    /* glibc is more lenient about name lengths, don't check on that */
+    { "JUSTEXCEEDI1:11:11", 0, NO_TIME },
+    { "AVERYLONGNAMEWHICHEXCEEDSTZNAMEMAX2:22:22", 0, NO_TIME },
+    { "FIRSTVERYLONGNAME3:33:33SECONDVERYLONGNAME4:44:44", 0, 0 },
+    { "<JUSTEXCEEDI>5:55:55", 0, NO_TIME },
+    { "<FIRSTVERYLONGNAME>3:33:33<SECONDVERYLONGNAME>4:44:44", 0, 0 },
+    { "<+JUSTEXCEED>5:55:55", 0, NO_TIME },
+
+    // 2. names are too short
+    { "JU6:34:47", 0, NO_TIME },
+    { "HE6:34:47LO3:34:47", 0, 0 },
+    { "<AB>2:34:47", 0, NO_TIME },
+    { "<AB>2:34:47<CD>3:34:47", 0, 0 },
+#endif
+
+    // 3. names contain invalid chars
+    { "N?ME2:10:56", 0, NO_TIME },
+    { "N!ME2:10:56", 0, NO_TIME },
+    { "N/ME2:10:56", 0, NO_TIME },
+    { "N$ME2:10:56", 0, NO_TIME },
+    { "NAME?2:10:56", 0, NO_TIME },
+    { "?NAME2:10:56", 0, NO_TIME },
+    { "NAME?UNK4:21:15", 0, NO_TIME },
+    { "NAME!UNK4:22:15NEXT/NAME4:23:15", 0, NO_TIME },
+
+    // 4. bogus strings
+    { "NOINFO", 0, NO_TIME },
+    { "HOUR:16:18", 0, NO_TIME },
+    { "<BEGIN", 0, NO_TIME },
+    { "<NEXT:55", 0, NO_TIME },
+    { ">WRONG<2:15:00", 0, NO_TIME },
+    { "ST<ART4:30:00", 0, NO_TIME },
+    //{"MANY8:00:00:00",  0,  NO_TIME},
+    { "\0", 0, NO_TIME },
+    { "M\0STR7:30:36", 0, NO_TIME }
+};
+
+// Rule times, checked with localtime_r(): the tests above use mktime() with a
+// fixed tm_isdst, so they don't depend on when DST starts or ends.
+struct rule_test {
+    const char *tzstr;
+    time_t      utc;
+    int         isdst;
+    int         hour;
+};
+
+extern const struct rule_test test_rules[];
+
+const struct rule_test        test_rules[] = {
+    // America/Nuuk since tzdb 2023a: a negative rule time (POSIX.1-2024)
+    { "<-02>2<-01>,M3.5.0/-1,M10.5.0/0", 1642248000, 0, 10 }, // 2022-01-15 12:00 UTC
+    { "<-02>2<-01>,M3.5.0/-1,M10.5.0/0", 1648341000, 0, 22 }, // 2022-03-27 00:30 UTC
+    { "<-02>2<-01>,M3.5.0/-1,M10.5.0/0", 1648344600, 1, 0  }, // 2022-03-27 01:30 UTC
+    { "<-02>2<-01>,M3.5.0/-1,M10.5.0/0", 1667089800, 1, 23 }, // 2022-10-30 00:30 UTC
+    { "<-02>2<-01>,M3.5.0/-1,M10.5.0/0", 1667093400, 0, 23 }, // 2022-10-30 01:30 UTC
+    // explicit plus sign
+    { "EST5EDT,M3.2.0/+2,M11.1.0/+2",    1642248000, 0, 7  }, // 2022-01-15 12:00 UTC
+    { "EST5EDT,M3.2.0/+2,M11.1.0/+2",    1657886400, 1, 8  }, // 2022-07-15 12:00 UTC
+    // Asia/Jerusalem: a rule time past 24 hours
+    { "IST-2IDT,M3.4.4/26,M10.5.0",      1648164600, 0, 1  }, // 2022-03-24 23:30 UTC
+    { "IST-2IDT,M3.4.4/26,M10.5.0",      1648168200, 1, 3  }, // 2022-03-25 00:30 UTC
+};
+
+// END test vectors
+
+static int failed = 0;
+
+#define TEST_ASSERT_EQUAL_INT_MESSAGE(...) assert_equal(__VA_ARGS__)
+static void
+assert_equal(int lhs, int rhs, const char *msg)
+{
+    if (lhs != rhs) {
+        printf("Assertion failed! Expected %d to equal %d. %s\n", lhs, rhs, msg);
+        ++failed;
+    }
+}
+
+static void
+test_TimezoneStrings(void)
+{
+    char buffer[128];
+
+    for (size_t i = 0; i < (sizeof(test_timezones) / sizeof(struct tz_test)); ++i) {
+        struct tz_test ptr = test_timezones[i];
+
+        setenv("TZ", ptr.tzstr, 1);
+        tzset();
+
+        snprintf(buffer, 128, "winter time, timezone = \"%s\"", ptr.tzstr);
+
+        struct tm winter_tm_copy = winter_tm; // copy
+        TEST_ASSERT_EQUAL_INT_MESSAGE(winter_time + ptr.offset_seconds, mktime(&winter_tm_copy),
+                                      buffer);
+
+        if (ptr.dst_offset_seconds != NO_TIME) {
+            snprintf(buffer, 128, "summer time, timezone = \"%s\"", ptr.tzstr);
+
+            struct tm summer_tm_copy = summer_tm; // copy
+            TEST_ASSERT_EQUAL_INT_MESSAGE(summer_time + ptr.dst_offset_seconds,
+                                          mktime(&summer_tm_copy), buffer);
+        }
+    }
+}
+
+static void
+test_RuleTimes(void)
+{
+    char buffer[128];
+
+    for (size_t i = 0; i < (sizeof(test_rules) / sizeof(struct rule_test)); ++i) {
+        struct rule_test ptr = test_rules[i];
+        struct tm        tm;
+
+        setenv("TZ", ptr.tzstr, 1);
+        tzset();
+        localtime_r(&ptr.utc, &tm);
+
+        snprintf(buffer, 128, "tm_isdst at %lld, timezone = \"%s\"", (long long)ptr.utc, ptr.tzstr);
+        TEST_ASSERT_EQUAL_INT_MESSAGE(ptr.isdst, tm.tm_isdst, buffer);
+        snprintf(buffer, 128, "tm_hour at %lld, timezone = \"%s\"", (long long)ptr.utc, ptr.tzstr);
+        TEST_ASSERT_EQUAL_INT_MESSAGE(ptr.hour, tm.tm_hour, buffer);
+    }
+}
+
+int
+main(void)
+{
+    test_TimezoneStrings();
+    test_RuleTimes();
+    exit(failed);
+}

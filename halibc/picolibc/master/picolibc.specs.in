@@ -1,0 +1,33 @@
+%rename link	picolibc_link
+%rename link_libgcc	picolibc_link_libgcc
+%rename cpp	picolibc_cpp
+%rename cc1	picolibc_cc1
+%rename cc1plus	picolibc_cc1plus
+
+*cpp:
+@SPECS_ISYSTEM@ %{-printf=*: -D_PICOLIBC_PRINTF='%*'} %{-scanf=*: -D_PICOLIBC_SCANF='%*'} %{!ffreestanding:%{!nostdinc: -imacros stdc-predef.h}} %(picolibc_cpp)
+
+*cc1:
+@TLSMODEL@ @STACKGUARD@ @CC1_SPEC@ %(picolibc_cc1)
+
+*cc1plus:
+@SPECS_ISYSTEM@ @TLSMODEL@ @STACKGUARD@ @CC1_SPEC@ @CC1PLUS_SPEC@ %(picolibc_cc1plus)
+
+*link_libgcc:
+@SPECS_LIBGCC_PATH@ %(picolibc_link_libgcc)
+
+*link:
+@SPECS_PRINTF@ @SPECS_LIBPATH@ %{-printf=*:--defsym=@PREFIX@vfprintf=@PREFIX@__%*_vfprintf} %{-scanf=*:--defsym=@PREFIX@vfscanf=@PREFIX@__%*_vfscanf} %{!T:-T@PICOLIBC_LD@} @LINK_SPEC@ %(picolibc_link)
+
+*link_gcc_c_sequence:
+--start-group %(libgcc) @ADDITIONAL_LIBS@ -lc @OSLIB_SPEC@ --end-group
+
+*lib:
+
+
+*endfile:
+@CRTEND@
+
+*startfile:
+@SPECS_STARTFILE@ @CRTBEGIN@
+@SPECS_EXTRA@

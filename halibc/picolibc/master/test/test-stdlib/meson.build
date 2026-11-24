@@ -1,0 +1,230 @@
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Copyright © 2025 Keith Packard
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer in the documentation and/or other materials provided
+#    with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+# OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+tests = [
+  'test-atexit',
+  'test-bsearch',
+  'test-call-once',
+  'test-double-free',
+  'test-efcvt',
+  'test-malloc',
+  'test-malloc-stress',
+  'test-many-malloc',
+  'test-memalignment',
+  'test-on_exit',
+  'test-quick-exit',
+  'test-qsort-r',
+  'test-qsort-r-posix',
+  'test-rand',
+  'test-stdckdint',
+  'test-strtod',
+  ]
+
+tests_cpp = [
+  'test-qsort-r-cplusplus'
+  ]
+
+tests_failure = [
+  'test-abort',
+  ]
+
+test_extra_libs = {}
+
+if enable_native_tests and oslib_test_variant == ''
+  tests += [
+    'test-call-once-threads',
+  ]
+  test_extra_libs = {
+    'test-call-once-threads' : native_lib,
+  }
+endif
+
+test_extra_c_args = {}
+
+test_args = {}
+
+# call_once holds the libc lock while running the user function, which
+# may itself use the libc lock; lock-valid.c rejects recursive locking.
+tests_no_lock_valid = [
+  'test-call-once',
+  ]
+
+foreach params : targets
+  target = params['name']
+  target_dir = params['dir']
+  target_c_args = params['c_args']
+
+  _libs = [get_variable('lib_c_link' + target)]
+  if is_variable(oslib_test + target)
+    _libs += [get_variable(oslib_test + target)]
+  endif
+  if is_variable(libfallback_var + target)
+    _libs += [get_variable(libfallback_var + target)]
+  endif
+
+  _lib_files=[]
+  foreach _lib : _libs
+    _lib_files += _lib.full_path()
+  endforeach
+
+  if is_variable(crt0_test + target)
+    _objs = [get_variable(crt0_test + target)]
+  else
+    _objs = []
+  endif
+
+  _c_args = target_c_args + get_variable('test_c_args' + target, test_c_args)
+  _link_args = target_c_args + _lib_files + get_variable('test_link_args' + target, test_link_args)
+  _link_depends = get_variable('test_link_depends' + target, test_link_depends) + _libs
+  if have_cplusplus
+    _cpp_args = target_c_args + get_variable('test_cpp_args' + target, test_cpp_args)
+  endif
+
+  foreach t1 : tests
+    t1_src = t1 + '.c'
+    test_file_name_arg=['-DTEST_FILE_NAME="' + t1 + target + '.txt"']
+
+    if test_extra_libs.has_key(t1) or t1 in tests_no_lock_valid
+      lock_source = []
+    else
+      lock_source = test_lock_valid
+    endif
+
+    test(t1 + target,
+	 executable(t1 + target, [t1_src] + lock_source,
+		    c_args: printf_compile_args_d + test_file_name_arg + test_extra_c_args.get(t1, []) + _c_args,
+		    link_args: printf_link_args_d + _link_args,
+		    objects: _objs,
+		    link_depends:  _link_depends,
+                    link_with: test_extra_libs.get(t1, []),
+		    include_directories: inc),
+         depends: bios_bin,
+         args: test_args.get(t1, []),
+	 timeout: 120,
+         suite: 'test-stdlib',
+	 env: test_env)
+  endforeach
+
+  foreach t1 : tests_failure
+    t1_src = t1 + '.c'
+    t1 += '-failure'
+    test_file_name_arg=['-DTEST_FILE_NAME="' + t1 + target + '.txt"']
+
+    if test_extra_libs.has_key(t1)
+      lock_source = []
+    else
+      lock_source = test_lock_valid
+    endif
+
+    test(t1 + target,
+	 executable(t1 + target, [t1_src] + lock_source,
+		    c_args: printf_compile_args_d + test_file_name_arg + test_extra_c_args.get(t1, []) + _c_args,
+		    link_args: printf_link_args_d + _link_args,
+		    objects: _objs,
+		    link_depends:  _link_depends,
+                    link_with: test_extra_libs.get(t1, []),
+		    include_directories: inc),
+         depends: bios_bin,
+         args: test_args.get(t1, []),
+	 timeout: 60,
+         suite: 'test-stdlib',
+	 env: test_env,
+         should_fail: true)
+  endforeach
+
+  if have_cplusplus
+    foreach t1 : tests_cpp
+      t1_src = t1 + '.cpp'
+      test(t1 + target,
+           executable(t1 + target, t1_src,
+                      cpp_args: _cpp_args,
+                      link_args: _cpp_args + _link_args,
+                      objects: _objs,
+                      link_depends: _link_depends,
+                      include_directories: inc),
+           depends: bios_bin,
+           suite: 'test-stdlib',
+           env: test_env)
+    endforeach
+  endif
+
+endforeach
+
+# Host libc may not provide memalignment or call_once in stdlib.h yet.
+test_skip_native = [
+  'test-call-once',
+  'test-call-once-threads',
+  'test-memalignment',
+  'test-qsort-r',
+  'test-qsort-r-posix',
+]
+
+if enable_native_tests
+
+  foreach t1 : tests
+    if t1 in test_skip_native
+      continue
+    endif
+    t1_src = t1 + '.c'
+    t1_name = t1 + '-native'
+    test_file_name_arg=['-DTEST_FILE_NAME="' + t1_name + '.txt"']
+
+    test(t1_name,
+	 executable(t1_name, t1_src,
+		    c_args: native_c_args + test_file_name_arg + ctype_c_args,
+		    link_args: native_c_args,
+                    dependencies: native_lib_m),
+         suite: 'test-stdlib',
+         env: test_env
+        )
+  endforeach
+
+  foreach t1 : tests_failure
+    t1_src = t1 + '.c'
+    t1_name = t1 + '-failure--native'
+    test_file_name_arg=['-DTEST_FILE_NAME="' + t1_name + '.txt"']
+
+    test(t1_name,
+	 executable(t1_name, t1_src,
+		    c_args: native_c_args + test_file_name_arg + ctype_c_args,
+		    link_args: native_c_args,
+                    dependencies: native_lib_m),
+         suite: 'test-stdlib',
+         env: test_env,
+         should_fail: true
+        )
+  endforeach
+
+endif

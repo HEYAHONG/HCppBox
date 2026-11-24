@@ -1,0 +1,8 @@
+{
+    "name": "winsize",
+    "headers": ["asm-generic/termios.h"],
+    "members": [
+	{"name": "ws_row"},
+	{"name": "ws_col"}
+    ]
+}

@@ -1,0 +1,239 @@
+/*
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * Copyright © 2026 Keith Packard
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+load "test-float.5c"
+
+typedef struct {
+	real a, b, c;
+} test_vector_t;
+
+test_vector_t[] test_values;
+test_vector_t[] test_extra;
+
+test_values = (test_vector_t[0]) {};
+test_extra = (test_vector_t[0]) {};
+
+typedef struct {
+	string	x1, x2, x3, y;
+} special_t;
+
+special_t[] specials;
+
+specials = (special_t[0]) {};
+
+real
+single_round_one(real a);
+
+real
+single_round_two(real a, real b);
+
+real
+single_round_three(real a, real b, real c);
+
+real
+range32(real a)
+{
+	a = real32(a);
+	if (abs(a) > max_binary32)
+		raise infinity(a < 0);
+	/* Results which round to zero keep their sign */
+	if (abs(a) < min_denorm_binary32)
+		return copysign(plus_zero, a);
+	return a;
+}
+
+real
+range64(real a)
+{
+	a = real64(a);
+	if (abs(a) > max_binary64)
+		raise infinity(a < 0);
+	/* Results which round to zero keep their sign */
+	if (abs(a) < min_denorm_binary64)
+		return copysign(plus_zero, a);
+	return a;
+}
+
+real
+range80(real a)
+{
+	a = real80(a);
+	if (abs(a) > max_binary80)
+		raise infinity(a < 0);
+	/* Results which round to zero keep their sign */
+	if (abs(a) < min_denorm_binary80)
+		return copysign(plus_zero, a);
+	return a;
+}
+
+real
+range80m(real a)
+{
+	a = real80m(a);
+	if (abs(a) > max_binary80m)
+		raise infinity(a < 0);
+	/* Results which round to zero keep their sign */
+	if (abs(a) < min_denorm_binary80m)
+		return copysign(plus_zero, a);
+	return a;
+}
+
+real
+range128(real a)
+{
+	a = real128(a);
+	if (abs(a) > max_binary128)
+		raise infinity(a < 0);
+	/* Results which round to zero keep their sign */
+	if (abs(a) < min_denorm_binary128)
+		return copysign(plus_zero, a);
+	return a;
+}
+
+int[] bits = { 64, 80, 128 };
+
+void
+check_ifdef(int i, int d)
+{
+	if (d % 3 == 0) {
+		int thirds = d / 3;
+
+		if (i % thirds == 0)
+			printf("#ifdef HAS_BINARY%d\n", bits[i / thirds]);
+	} else {
+		int halves = d / 2;
+
+		if (i % halves == 0)
+			printf("#ifdef HAS_BINARY%d\n", bits[i / halves + 1]);
+	}
+}
+
+void
+check_endif(int i, int d)
+{
+	if (d % 3 == 0) {
+		int thirds = d / 3;
+
+		if ((i + 1) % thirds == 0)
+			printf("#endif /* HAS_BINARY%d */\n", bits[(i + 1) / thirds - 1]);
+	} else {
+		int halves = d / 2;
+
+		if ((i + 1) % halves == 0)
+			printf("#endif /* HAS_BINARY%d */\n", bits[(i + 1) / halves]);
+	}
+}
+
+void
+do_value(string v)
+{
+	printf("REAL(");
+	for (int c = 0; c < dim(real_convs); c++) {
+		if (c > 0)
+			printf(", ");
+		if (String::index(v, "INF") >= 0)
+			printf("%s", v);
+		else
+			printf("%s(%s)", real_convs[c].macro, v);
+	}
+	printf(")");
+}
+
+void
+test_one()
+{
+	for (int i = 0; i < dim(specials); i++) {
+		printf("{ .x = ");
+		do_value(specials[i].x1);
+		printf(", .y = ");
+		do_value(specials[i].y);
+		printf("},\n");
+	}
+	for (int i = 0; i < dim(test_extra); i++)
+		compute_real_one(test_extra[i].a, single_round_one);
+	for (int i = 0; i < dim(test_values); i++) {
+		check_ifdef(i, dim(test_values));
+		compute_real_one(test_values[i].a, single_round_one);
+		check_endif(i, dim(test_values));
+	}
+}
+
+void
+test_two()
+{
+	for (int i = 0; i < dim(specials); i++) {
+		printf("{ .x1 = ");
+		do_value(specials[i].x1);
+		printf(", .x2 = ");
+		do_value(specials[i].x2);
+		printf(", .y = ");
+		do_value(specials[i].y);
+		printf("},\n");
+	}
+	for (int i = 0; i < dim(test_extra); i++)
+		compute_real_real(test_extra[i].a, test_extra[i].b,
+				  single_round_two);
+	for (int i = 0; i < dim(test_values); i++) {
+		check_ifdef(i, dim(test_values));
+		compute_real_real(test_values[i].a, test_values[i].b,
+				  single_round_two);
+		check_endif(i, dim(test_values));
+	}
+}
+
+void
+test_three()
+{
+	for (int i = 0; i < dim(specials); i++) {
+		printf("{ .x1 = ");
+		do_value(specials[i].x1);
+		printf(", .x2 = ");
+		do_value(specials[i].x2);
+		printf(", .x3 = ");
+		do_value(specials[i].x3);
+		printf(", .y = ");
+		do_value(specials[i].y);
+		printf("},\n");
+	}
+	for (int i = 0; i < dim(test_extra); i++)
+		compute_real_real_real(test_extra[i].a, test_extra[i].b,
+				       test_extra[i].c, single_round_three);
+	for (int i = 0; i < dim(test_values); i++) {
+		check_ifdef(i, dim(test_values));
+		compute_real_real_real(test_values[i].a, test_values[i].b,
+				       test_values[i].c, single_round_three);
+		check_endif(i, dim(test_values));
+	}
+}

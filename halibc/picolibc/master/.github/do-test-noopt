@@ -1,0 +1,35 @@
+#!/bin/sh
+HERE=`dirname "$0"`
+TARGET=$1
+shift
+
+if [ -d /opt/picolibc-ci ]; then
+    TOP=/opt/picolibc-ci
+else
+    TOP=/opt
+fi
+
+# Use the picolibc-ci-tools meson
+if [ -d "$TOP"/meson-stable/bin ]; then
+    PATH="$TOP"/meson-stable/bin:$PATH
+fi
+
+OPTIONS=""
+
+case "$TARGET" in
+    *m68k*)
+	# Disable analyzer on m68k because the compiler gets very confused
+	# about complex values
+
+	OPTIONS="$OPTIONS -Danalyzer=false"
+	;;
+    *msp430*)
+
+	# Use traps with the sanitizer on msp430 as the handlers make many
+	# tests too large
+
+	OPTIONS="$OPTIONS -Dsanitize-trap-on-error=true"
+	;;
+esac
+
+"$HERE"/do-run "$TARGET" "$@" $OPTIONS

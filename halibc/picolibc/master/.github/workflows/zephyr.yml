@@ -1,0 +1,163 @@
+name: Zephyr
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: '37 5 * * *'
+
+# When a PR is updated, cancel the jobs from the previous version. Merges
+# do not define head_ref, so use run_id to never cancel those jobs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  DOCKERFILE: picolibc/.github/Dockerfile-zephyr
+  IMAGE_FILE: dockerimg-zephyr.tar.zst
+  IMAGE: picolibc
+  PACKAGES_FILE: picolibc/.github/zephyr-packages.txt
+  EXTRA_FILE: picolibc/.github/zephyr-files.txt
+  TOOLCHAINS_FILE: picolibc/.github/zephyr-toolchains.txt
+  BEFORE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  AFTER_SHA: ${{ github.event.pull_request.head.sha || github.event.after }}
+
+jobs:
+  cache-maker:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    outputs:
+      image-key: ${{ steps.key.outputs.key }}
+    steps:
+      - name: Clone picolibc
+        uses: actions/checkout@v7
+        with:
+          path: picolibc
+          fetch-depth: 128
+
+      - name: Compute the Docker Image cache key
+        id: key
+        run: echo "key=${{ env.IMAGE_FILE }}-${{ hashFiles( env.DOCKERFILE, env.PACKAGES_FILE, env.EXTRA_FILE, env.TOOLCHAINS_FILE ) }}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the Docker Image
+        id: cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.IMAGE_FILE }}
+          key: ${{ steps.key.outputs.key }}
+          lookup-only: true
+
+      # A scheduled run only refreshes main's cache entry, so it isn't
+      # evicted while PRs still need it; restoring it updates its
+      # last-access time, which a lookup doesn't.
+      - name: Refresh the Docker Image cache entry
+        if: github.event_name == 'schedule' && steps.cache.outputs.cache-hit == 'true'
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ env.IMAGE_FILE }}
+          key: ${{ steps.key.outputs.key }}
+
+      - name: Set up Docker Buildx
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build picolibc container
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: docker/build-push-action@v7
+        with:
+          platforms: linux/amd64
+          file: .github/Dockerfile-zephyr
+          tags: ${{ env.IMAGE }}:latest
+          outputs: type=docker,force-compression=true,compression=zstd,compression-level=22,dest=${{ env.IMAGE_FILE }}
+
+      - name: Delete stale Docker Image caches from main
+        if: github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          KEY: ${{ steps.key.outputs.key }}
+        run: |
+          gh cache list --ref refs/heads/main --key "$IMAGE_FILE-" --limit 100 --json id,key \
+            --jq ".[] | select(.key != \"$KEY\") | .id" | xargs -r -n1 gh cache delete
+
+  minsize-zephyr:
+    needs: cache-maker
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        meson_flags: [
+          "-Dsanitize=undefined",
+
+          # math configurations, one with multithread disabled and with locale, original malloc and atexit/onexit code
+          "-Dsanitize=undefined -Dio-float-exact=false -Dio-long-long=true -Dio-percent-b=true -Dio-long-double=true -Dnewlib-obsolete-math=false -Dwant-math-errno=true -Dsingle-thread=true -Dmb-capable=true -Dmb-extended-charsets=true -Dprintf-small-ultoa=true -Dprintf-percent-n=true -Dstrcmp-pair=true",
+          "-Danalyzer=true -Dformat-default=integer -Dfreestanding=true -Dnewlib-obsolete-math=true -Dwant-math-errno=true -Dassert-verbose=true -Dfast-bufio=true -Dstdio-locking=true -Dstdio-exit-flush=true -Dfstat-bufsiz=true -Dmalloc-small-bucket=1024 -Dfast-memfuncs=true",
+        ]
+        test: [
+          "./.github/do-zephyr",
+        ]
+    steps:
+      - name: Clone picolibc
+        uses: actions/checkout@v7
+        with:
+          path: picolibc
+          fetch-depth: 128
+
+      - name: Restore the Docker Image
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.IMAGE_FILE }}
+          key: ${{ needs.cache-maker.outputs.image-key }}
+          fail-on-cache-miss: true
+
+      - name: Load and Check the Docker Image
+        run: |
+          docker load -i $IMAGE_FILE
+          docker images -a $IMAGE
+      - name: Minsize test
+        run: |
+          docker run -v $(readlink -f picolibc):/picolibc -e DOCKERFILE -e PACKAGES_FILE -e EXTRA_FILE -e TOOLCHAINS_FILE -e BEFORE_SHA -e AFTER_SHA -w /picolibc $IMAGE ${{ matrix.test }} ${{ matrix.meson_flags }} --buildtype minsize
+  release-zephyr:
+    needs: cache-maker
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        meson_flags: [
+          "-Dsanitize=undefined",
+
+          # math configurations, one with multithread disabled and with locale, original malloc and atexit/onexit code
+          "-Dsanitize=undefined -Dio-float-exact=false -Dio-long-long=true -Dio-percent-b=true -Dio-long-double=true -Dnewlib-obsolete-math=false -Dwant-math-errno=true -Dsingle-thread=true -Dmb-capable=true -Dmb-extended-charsets=true -Dprintf-small-ultoa=true -Dprintf-percent-n=true -Dstrcmp-pair=true",
+          "-Danalyzer=true -Dformat-default=integer -Dfreestanding=true -Dnewlib-obsolete-math=true -Dwant-math-errno=true -Dassert-verbose=true -Dfast-bufio=true -Dstdio-locking=true -Dstdio-exit-flush=true -Dfstat-bufsiz=true -Dmalloc-small-bucket=1024 -Dfast-memfuncs=true",
+        ]
+        test: [
+          "./.github/do-zephyr",
+        ]
+    steps:
+      - name: Clone picolibc
+        uses: actions/checkout@v7
+        with:
+          path: picolibc
+          fetch-depth: 128
+
+      - name: Restore the Docker Image
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.IMAGE_FILE }}
+          key: ${{ needs.cache-maker.outputs.image-key }}
+          fail-on-cache-miss: true
+
+      - name: Load and Check the Docker Image
+        run: |
+          docker load -i $IMAGE_FILE
+          docker images -a $IMAGE
+      - name: Release test
+        run: |
+          docker run -v $(readlink -f picolibc):/picolibc -e DOCKERFILE -e PACKAGES_FILE -e EXTRA_FILE -e TOOLCHAINS_FILE -e BEFORE_SHA -e AFTER_SHA -w /picolibc $IMAGE ${{ matrix.test }} ${{ matrix.meson_flags }} --buildtype release
