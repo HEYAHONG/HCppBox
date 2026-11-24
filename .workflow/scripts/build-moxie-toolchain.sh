@@ -11,6 +11,10 @@
 # The caller is responsible for adding .../bin to PATH.
 set -euo pipefail
 
+# crosstool-NG refuses to build when running as root unless this override is
+# set. All CI jobs run in ephemeral containers (or VMs) as root, so allow it.
+export CT_ALLOW_BUILD_AS_ROOT_SURE=1
+
 CTNG_VERSION="${CTNG_VERSION:-1.29.0}"
 CT_PREFIX="${CT_PREFIX:-$HOME/x-tools}"
 TARGET="moxie-unknown-elf"
