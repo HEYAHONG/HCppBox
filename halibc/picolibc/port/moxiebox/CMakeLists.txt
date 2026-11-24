@@ -15,9 +15,17 @@ file(GLOB MOXIEBOX_LIBOS_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/libos/*.c
     )
 
+#
+# moxie机器相关实现，全部保存在本目录，不修改上游master目录。
+#
+set(MOXIEBOX_MACHINE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/libc/machine/moxie/setjmp.S
+    )
+
 target_sources(picolibc_c_port PRIVATE
     ${MOXIEBOX_PICOCRT_FILES}
     ${MOXIEBOX_LIBOS_FILES}
+    ${MOXIEBOX_MACHINE_FILES}
     )
 
 target_include_directories(picolibc_c_port PRIVATE
