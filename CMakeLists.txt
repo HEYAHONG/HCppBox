@@ -3,6 +3,11 @@ if(POLICY CMP0079 )
     cmake_policy(SET CMP0079 NEW)
 endif()
 
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/halibc")
+    add_subdirectory(halibc EXCLUDE_FROM_ALL)
+endif()
+
+
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/hplatformbox")
     add_subdirectory(hplatformbox EXCLUDE_FROM_ALL)
 endif()
