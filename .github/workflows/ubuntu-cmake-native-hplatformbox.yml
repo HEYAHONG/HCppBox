@@ -48,6 +48,17 @@ jobs:
           echo "/usr/local/bin" >> "$GITHUB_PATH"
           echo "MOXIE_TOOLCHAIN=/usr/local/bin" >> "$GITHUB_ENV"
 
+      - name: Verify moxie toolchain
+        # Fail early (and show the effective PATH) if the toolchain from the
+        # previous step is not visible to later steps.
+        run: |
+          ls -ld "$(dirname "$MOXIE_TOOLCHAIN")" "$MOXIE_TOOLCHAIN"
+          ls -l "$MOXIE_TOOLCHAIN/moxie-unknown-elf-gcc" "$MOXIE_TOOLCHAIN/moxie-unknown-elf-g++" || true
+          test -x "$MOXIE_TOOLCHAIN/moxie-unknown-elf-gcc"
+          "$MOXIE_TOOLCHAIN/moxie-unknown-elf-gcc" --version
+          echo "PATH=$PATH"
+          command -v moxie-unknown-elf-gcc || true
+
       - name: Prepare Zephyr
         run: |
           # Only the RISC-V toolchain from the image is used, so fetch just the

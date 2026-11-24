@@ -89,8 +89,10 @@ defconfig="$workdir/moxie-unknown-elf.defconfig"
 cp "$ctng_dir/samples/moxie-unknown-elf/crosstool.config" "$defconfig"
 # The sample defconfig leaves C++ disabled; append the override so Kconfig
 # enables C++ (and libstdc++ for the target). Install system-wide so the
-# toolchain binaries are placed in /usr/local/bin.
-printf '%s\n' 'CT_CC_LANG_CXX=y' "CT_PREFIX_DIR=\"${INSTALL_PREFIX}\"" >> "$defconfig"
+# toolchain binaries are placed in /usr/local/bin, and keep the /usr/local
+# tree writable (do not "render the toolchain read-only").
+printf '%s\n' 'CT_CC_LANG_CXX=y' 'CT_PREFIX_DIR_RO=n' \
+    "CT_PREFIX_DIR=\"${INSTALL_PREFIX}\"" >> "$defconfig"
 DEFCONFIG="$defconfig" "$ctng_dir/ct-ng" defconfig
 
 if ! grep -q '^CT_CC_LANG_CXX=y$' .config; then
