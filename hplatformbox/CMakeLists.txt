@@ -19,3 +19,5 @@ endif()
 add_subdirectory(risc-v)
 
 
+add_subdirectory(moxie)
+

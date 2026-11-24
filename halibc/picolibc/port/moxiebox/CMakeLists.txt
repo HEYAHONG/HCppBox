@@ -1,12 +1,3 @@
-#***************************************************************
-# Name:      CMakeLists.txt
-# Purpose:   moxiebox picolibc C运行库CMake构建脚本
-# Author:    HYH (hyhsystem.cn)
-# Created:   2026-11-24
-# Copyright: HYH (hyhsystem.cn)
-# License:   MIT
-#**************************************************************/
-
 set(MOXIEBOX_PICOCRT_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/picocrt/crt0.c
     )

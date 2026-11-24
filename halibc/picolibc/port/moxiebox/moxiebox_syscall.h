@@ -63,7 +63,9 @@ __moxiebox_exit(int status)
     register long r0 __asm__("$r0") = status;
 
     __asm__ volatile("swi 1" : : "r"(r0) : "memory");
-    __builtin_unreachable();
+
+    for (;;) {
+    }
 }
 
 static inline long

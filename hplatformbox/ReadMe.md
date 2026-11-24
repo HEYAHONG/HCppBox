@@ -10,4 +10,5 @@
 
 - [mcs-51](mcs-51)：MCS-51平台代码
 - [risc-v](risc-v)：RISC-V平台代码
+- [moxie](moxie):moxie平台代码
 

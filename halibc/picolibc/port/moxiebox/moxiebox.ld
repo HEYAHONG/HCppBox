@@ -1,12 +1,3 @@
-/***************************************************************
- * Name:      moxiebox.ld
- * Purpose:   moxiebox picolibc程序链接脚本
- * Author:    HYH (hyhsystem.cn)
- * Created:   2026-11-24
- * Copyright: HYH (hyhsystem.cn)
- * License:   MIT
- **************************************************************/
-
 ENTRY(_start)
 
 SECTIONS

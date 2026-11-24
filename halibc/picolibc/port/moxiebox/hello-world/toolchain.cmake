@@ -1,11 +1,3 @@
-#***************************************************************
-# Name:      toolchain.cmake
-# Purpose:   moxie moxiebox交叉编译工具链设置
-# Author:    HYH (hyhsystem.cn)
-# Created:   2026-11-24
-# Copyright: HYH (hyhsystem.cn)
-# License:   MIT
-#***************************************************************
 cmake_minimum_required(VERSION 3.20)
 
 set(CMAKE_SYSTEM_NAME Generic)

@@ -1,11 +1,3 @@
-#***************************************************************
-# Name:      CMakeLists.txt
-# Purpose:   picolibc moxiebox hello-world模板
-# Author:    HYH (hyhsystem.cn)
-# Created:   2026-11-24
-# Copyright: HYH (hyhsystem.cn)
-# License:   MIT
-#***************************************************************
 cmake_minimum_required(VERSION 3.25)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/toolchain.cmake)
