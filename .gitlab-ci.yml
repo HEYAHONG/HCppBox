@@ -177,11 +177,18 @@ scons-native:
 # ---------------------------------------------------------------------------
 cmake-native-hplatformbox:
   stage: build
+  # The moxie-unknown-elf toolchain build can take a long time.
+  timeout: 4h
   before_script:
     - !reference [.base, before_script]
     - >-
       apt-get install -y -f --no-install-recommends
       sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf
+      autoconf automake libtool libtool-bin gperf bison flex texinfo help2man
+      libncurses-dev python3-dev gawk wget curl bzip2 xz-utils unzip patch
+      file gettext pkg-config rsync meson ninja-build
+    - bash .workflow/scripts/build-moxie-toolchain.sh
+    - export PATH="$HOME/x-tools/moxie-unknown-elf/bin:$PATH"
   script:
     - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE test
     - cmake --build build --config $BUILD_TYPE -t hplatformbox

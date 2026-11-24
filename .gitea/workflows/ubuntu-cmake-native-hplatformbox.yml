@@ -30,6 +30,21 @@ jobs:
           sudo apt-get update &&
           sudo apt-get install -y -f cmake build-essential
 
+      - name: Install moxie toolchain build dependencies
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install -y -f autoconf automake libtool libtool-bin gperf
+          bison flex texinfo help2man libncurses-dev python3-dev gawk wget curl
+          bzip2 xz-utils unzip patch file gettext pkg-config rsync meson ninja-build
+
+      - name: Build moxie-unknown-elf toolchain
+        # crosstool-NG's moxie-unknown-elf sample with C++ enabled. The build
+        # retries transient network failures internally up to 3 times.
+        run: bash .workflow/scripts/build-moxie-toolchain.sh
+
+      - name: Add moxie toolchain to PATH
+        run: echo "$HOME/x-tools/moxie-unknown-elf/bin" >> "$GITEA_PATH"
+
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only
         # required if you are using a single-configuration generator such as make.
