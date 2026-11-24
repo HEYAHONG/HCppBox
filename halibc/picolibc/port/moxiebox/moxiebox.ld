@@ -1,0 +1,111 @@
+/***************************************************************
+ * Name:      moxiebox.ld
+ * Purpose:   moxiebox picolibc程序链接脚本
+ * Author:    HYH (hyhsystem.cn)
+ * Created:   2026-11-24
+ * Copyright: HYH (hyhsystem.cn)
+ * License:   MIT
+ **************************************************************/
+
+ENTRY(_start)
+
+SECTIONS
+{
+    . = 0x00001000;
+    __text_start = .;
+
+    .text : {
+        *(.text.startup .text.startup.*)
+        *(.text .text.*)
+        *(.gnu.linkonce.t.*)
+
+        KEEP (*(.init))
+        KEEP (*(.fini))
+    }
+
+    . = ALIGN(4);
+    __text_end = .;
+    PROVIDE (__etext = .);
+    PROVIDE (_etext = .);
+    PROVIDE (etext = .);
+
+    .rodata : {
+        *(.rodata .rodata.*)
+        *(.srodata.cst16)
+        *(.srodata.cst8)
+        *(.srodata.cst4)
+        *(.srodata.cst2)
+        *(.srodata .srodata.*)
+        *(.gnu.linkonce.r.*)
+        *(.data.rel.ro .data.rel.ro.*)
+        *(.gcc_except_table .gcc_except_table.*)
+        *(.eh_frame_hdr)
+        . = ALIGN(4);
+        __eh_frame_start = .;
+        KEEP (*(.eh_frame .eh_frame.*))
+        . = ALIGN(4);
+        LONG (0);
+        __eh_frame_end = .;
+
+        . = ALIGN(4);
+        __preinit_array_start = .;
+        KEEP (*(.preinit_array))
+        __preinit_array_end = .;
+
+        __init_array_start = .;
+        KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*)
+                SORT_BY_INIT_PRIORITY(.ctors.*)))
+        KEEP (*(.init_array .ctors))
+        __init_array_end = .;
+
+        __fini_array_start = .;
+        KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*)
+                SORT_BY_INIT_PRIORITY(.dtors.*)))
+        KEEP (*(.fini_array .dtors))
+        __fini_array_end = .;
+
+        __bothinit_array_start = __preinit_array_start;
+        __bothinit_array_end = __init_array_end;
+    }
+
+    . = ALIGN(4);
+    __data_start = .;
+    .data : {
+        *(.data .data.*)
+        *(.gnu.linkonce.d.*)
+        *(.sdata .sdata.*)
+    }
+
+    . = ALIGN(4);
+    __data_end = .;
+    __data_source = LOADADDR(.data);
+    __data_size = __data_end - __data_start;
+
+    __bss_start = .;
+    .bss : {
+        *(.bss .bss.*)
+        *(.sbss .sbss.*)
+        *(COMMON)
+    }
+
+    . = ALIGN(4);
+    __bss_end = .;
+    __bss_size = __bss_end - __bss_start;
+
+    . = ALIGN(4);
+    __heap_start = .;
+    __heap_end = .;
+    PROVIDE (end = .);
+    PROVIDE (_end = .);
+
+    /*
+     * newlib风格的_ctype_别名，供moxie工具链的libstdc++使用。
+     * picolibc以_ctype_b + 127作为字符类型表基址。
+     */
+    PROVIDE (_ctype_ = _ctype_b + 127);
+
+    /DISCARD/ : {
+        *(.comment)
+        *(.note .note.*)
+    }
+}
