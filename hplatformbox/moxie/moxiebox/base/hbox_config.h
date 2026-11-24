@@ -22,8 +22,14 @@
 #define HRUNTIME_USING_SYMBOL_SECTION 1
 
 /*
- * 不使用HBox内部系统调用实现，moxiebox使用picolibc C运行库的系统调用。
+ * 关闭不兼容的syscall调用
  */
-#define HDEFAULTS_SYSCALL_NO_IMPLEMENTATION 1
+#define HDEFAULTS_SYSCALL_NO_HIOCTL     1
+#define HDEFAULTS_SYSCALL_NO_HMSYNC     1
+#define HDEFAULTS_SYSCALL_NO_HMPROTECT  1
+#define HDEFAULTS_SYSCALL_NO_HFSYNC     1
+#define HDEFAULTS_SYSCALL_NO_HFCNTL     1
+#define HDEFAULTS_SYSCALL_NO_HOPENAT    1
+#define HDEFAULTS_SYSCALL_NO_HMKDIR     1
 
 #endif // __HBOX_CONFIG_H__
