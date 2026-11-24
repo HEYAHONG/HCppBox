@@ -41,7 +41,12 @@ jobs:
         run: bash .workflow/scripts/build-moxie-toolchain.sh
 
       - name: Add moxie toolchain to PATH
-        run: echo "$HOME/x-tools/moxie-unknown-elf/bin" >> "$GITHUB_PATH"
+        # GITHUB_PATH updates are not always propagated to later steps of
+        # container jobs (the runner rebuilds the container PATH), so also
+        # export MOXIE_TOOLCHAIN, which the Moxie CMake toolchain file uses.
+        run: |
+          echo "$HOME/x-tools/moxie-unknown-elf/bin" >> "$GITHUB_PATH"
+          echo "MOXIE_TOOLCHAIN=$HOME/x-tools/moxie-unknown-elf/bin" >> "$GITHUB_ENV"
 
       - name: Prepare Zephyr
         run: |
@@ -61,16 +66,20 @@ jobs:
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only
         # required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
-        run: >-
-          cmake -B ${{ github.workspace }}/build
-          -DBUILD_HPLATFORMBOX_RISCV_SIM_ZEPHYR=ON
-          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} test
+        run: |
+          export PATH="$HOME/x-tools/moxie-unknown-elf/bin:$PATH"
+          export MOXIE_TOOLCHAIN="$HOME/x-tools/moxie-unknown-elf/bin"
+          cmake -B "${{ github.workspace }}/build" \
+            -DBUILD_HPLATFORMBOX_RISCV_SIM_ZEPHYR=ON \
+            -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}" test
 
       - name: Build
         # Build your program with the given configuration
-        run: >-
-          cmake --build ${{ github.workspace }}/build
-          --config ${{ env.BUILD_TYPE }} -t hplatformbox
+        run: |
+          export PATH="$HOME/x-tools/moxie-unknown-elf/bin:$PATH"
+          export MOXIE_TOOLCHAIN="$HOME/x-tools/moxie-unknown-elf/bin"
+          cmake --build "${{ github.workspace }}/build" \
+            --config "${{ env.BUILD_TYPE }}" -t hplatformbox
 
       - name: Package hplatformbox
         # Only publish from pushes to master; pull requests from forks have a
