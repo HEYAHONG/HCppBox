@@ -7,8 +7,8 @@
 # component tarballs (binutils, gcc, newlib, gdb, ...) during the build and a
 # transient network failure should not abort the whole CI job.
 #
-# The toolchain is installed into ${CT_PREFIX:-$HOME/x-tools}/moxie-unknown-elf.
-# The caller is responsible for adding .../bin to PATH.
+# The toolchain is installed system-wide into ${MOXIE_TOOLCHAIN_PREFIX:-/usr/local}
+# (so moxie-unknown-elf-gcc lands in /usr/local/bin, which is already on PATH).
 set -euo pipefail
 
 # crosstool-NG refuses to build when running as root unless this override is
@@ -16,18 +16,16 @@ set -euo pipefail
 export CT_ALLOW_BUILD_AS_ROOT_SURE=1
 
 CTNG_VERSION="${CTNG_VERSION:-1.29.0}"
-CT_PREFIX="${CT_PREFIX:-$HOME/x-tools}"
+INSTALL_PREFIX="${MOXIE_TOOLCHAIN_PREFIX:-/usr/local}"
 TARGET="moxie-unknown-elf"
-GCC="$CT_PREFIX/$TARGET/bin/$TARGET-gcc"
-
-export CT_PREFIX
+GCC="$INSTALL_PREFIX/bin/$TARGET-gcc"
 
 if [ -x "$GCC" ]; then
     echo "moxie toolchain already installed: $GCC"
     exit 0
 fi
 
-mkdir -p "$CT_PREFIX"
+mkdir -p "$INSTALL_PREFIX"
 workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
 
@@ -90,12 +88,17 @@ cd "$workdir/work"
 defconfig="$workdir/moxie-unknown-elf.defconfig"
 cp "$ctng_dir/samples/moxie-unknown-elf/crosstool.config" "$defconfig"
 # The sample defconfig leaves C++ disabled; append the override so Kconfig
-# enables C++ (and libstdc++ for the target).
-printf '%s\n' 'CT_CC_LANG_CXX=y' >> "$defconfig"
+# enables C++ (and libstdc++ for the target). Install system-wide so the
+# toolchain binaries are placed in /usr/local/bin.
+printf '%s\n' 'CT_CC_LANG_CXX=y' "CT_PREFIX_DIR=\"${INSTALL_PREFIX}\"" >> "$defconfig"
 DEFCONFIG="$defconfig" "$ctng_dir/ct-ng" defconfig
 
 if ! grep -q '^CT_CC_LANG_CXX=y$' .config; then
     echo "Failed to enable C++ for ${TARGET}" >&2
+    exit 1
+fi
+if ! grep -q "^CT_PREFIX_DIR=\"${INSTALL_PREFIX}\"$" .config; then
+    echo "Failed to set the install prefix to ${INSTALL_PREFIX}" >&2
     exit 1
 fi
 

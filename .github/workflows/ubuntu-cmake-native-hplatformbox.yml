@@ -41,12 +41,12 @@ jobs:
         run: bash .workflow/scripts/build-moxie-toolchain.sh
 
       - name: Add moxie toolchain to PATH
-        # GITHUB_PATH updates are not always propagated to later steps of
-        # container jobs (the runner rebuilds the container PATH), so also
-        # export MOXIE_TOOLCHAIN, which the Moxie CMake toolchain file uses.
+        # The toolchain is installed into /usr/local, so its binaries are in
+        # /usr/local/bin. MOXIE_TOOLCHAIN is also exported because the Moxie
+        # CMake toolchain file uses it for the nested ROM builds.
         run: |
-          echo "$HOME/x-tools/moxie-unknown-elf/bin" >> "$GITHUB_PATH"
-          echo "MOXIE_TOOLCHAIN=$HOME/x-tools/moxie-unknown-elf/bin" >> "$GITHUB_ENV"
+          echo "/usr/local/bin" >> "$GITHUB_PATH"
+          echo "MOXIE_TOOLCHAIN=/usr/local/bin" >> "$GITHUB_ENV"
 
       - name: Prepare Zephyr
         run: |
@@ -67,8 +67,8 @@ jobs:
         # required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html
         run: |
-          export PATH="$HOME/x-tools/moxie-unknown-elf/bin:$PATH"
-          export MOXIE_TOOLCHAIN="$HOME/x-tools/moxie-unknown-elf/bin"
+          export PATH="/usr/local/bin:$PATH"
+          export MOXIE_TOOLCHAIN="/usr/local/bin"
           cmake -B "${{ github.workspace }}/build" \
             -DBUILD_HPLATFORMBOX_RISCV_SIM_ZEPHYR=ON \
             -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}" test
@@ -76,8 +76,8 @@ jobs:
       - name: Build
         # Build your program with the given configuration
         run: |
-          export PATH="$HOME/x-tools/moxie-unknown-elf/bin:$PATH"
-          export MOXIE_TOOLCHAIN="$HOME/x-tools/moxie-unknown-elf/bin"
+          export PATH="/usr/local/bin:$PATH"
+          export MOXIE_TOOLCHAIN="/usr/local/bin"
           cmake --build "${{ github.workspace }}/build" \
             --config "${{ env.BUILD_TYPE }}" -t hplatformbox
 
