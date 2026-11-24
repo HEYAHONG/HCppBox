@@ -38,6 +38,30 @@ SECTIONS
         *(.srodata .srodata.*)
         *(.gnu.linkonce.r.*)
         *(.data.rel.ro .data.rel.ro.*)
+
+        /*
+         * HBox支持段。
+         */
+        . = ALIGN(4);
+        PROVIDE (__hshell_command_start = .);
+        KEEP (*(SORT(.HShellCommand*)))
+        PROVIDE (__hshell_command_end = .);
+
+        . = ALIGN(4);
+        PROVIDE (__hruntime_init_start = .);
+        KEEP (*(SORT(.HRuntimeInit*)))
+        PROVIDE (__hruntime_init_end = .);
+
+        . = ALIGN(4);
+        PROVIDE (__hruntime_loop_start = .);
+        KEEP (*(SORT(.HRuntimeLoop*)))
+        PROVIDE (__hruntime_loop_end = .);
+
+        . = ALIGN(4);
+        PROVIDE (__hruntime_symbol_start = .);
+        KEEP (*(SORT(.HRuntimeSymbol*)))
+        PROVIDE (__hruntime_symbol_end = .);
+
         *(.gcc_except_table .gcc_except_table.*)
         *(.eh_frame_hdr)
         . = ALIGN(4);
