@@ -454,12 +454,86 @@ void hs_moxie_moxiebox_el_register_write(hs_moxie_moxiebox_el_t *machine,uint32_
     }
 }
 
+/*
+ * 将内核定时器值同步到特殊寄存器，保持机器层可见状态一致。
+ */
+static void hs_moxie_moxiebox_el_timer_sync_sregs(hs_moxie_moxiebox_el_t *machine)
+{
+    if(machine==NULL)
+    {
+        return;
+    }
+    hs_moxie_core_el_t *core=hs_moxie_moxiebox_el_core(machine);
+    uint64_t time=hs_moxie_core_el_timer_time_get(core);
+    uint64_t timecmp=hs_moxie_core_el_timer_timecmp_get(core);
+    machine->sregs[HS_MOXIE_CORE_EL_SREG_TIME_LO]=(uint32_t)time;
+    machine->sregs[HS_MOXIE_CORE_EL_SREG_TIME_HI]=(uint32_t)(time>>32);
+    machine->sregs[HS_MOXIE_CORE_EL_SREG_TIMECMP_LO]=(uint32_t)timecmp;
+    machine->sregs[HS_MOXIE_CORE_EL_SREG_TIMECMP_HI]=(uint32_t)(timecmp>>32);
+}
+
 static void hs_moxie_moxiebox_el_sreg_write_internal(hs_moxie_moxiebox_el_t *machine,uint32_t index,uint32_t value)
 {
     if(machine==NULL || index>=256)
     {
         return;
     }
+
+    hs_moxie_core_el_t *core=hs_moxie_moxiebox_el_core(machine);
+    switch(index)
+    {
+    case HS_MOXIE_CORE_EL_SREG_SATP:
+    {
+        hs_moxie_core_el_satp_set(core,value);
+        machine->sregs[index]=value;
+        return;
+    }
+    case HS_MOXIE_CORE_EL_SREG_MSTATUS:
+    {
+        hs_moxie_core_el_mstatus_set(core,value);
+        machine->sregs[index]=value;
+        return;
+    }
+    case HS_MOXIE_CORE_EL_SREG_MIP:
+    {
+        hs_moxie_core_el_mip_set(core,value);
+        machine->sregs[index]=hs_moxie_core_el_mip_get(core);
+        return;
+    }
+    case HS_MOXIE_CORE_EL_SREG_TIME_LO:
+    {
+        uint64_t time=hs_moxie_core_el_timer_time_get(core);
+        hs_moxie_core_el_timer_time_set(core,(time&0xFFFFFFFF00000000ULL)|value);
+        hs_moxie_moxiebox_el_timer_sync_sregs(machine);
+        return;
+    }
+    case HS_MOXIE_CORE_EL_SREG_TIME_HI:
+    {
+        uint64_t time=hs_moxie_core_el_timer_time_get(core);
+        hs_moxie_core_el_timer_time_set(core,(time&0xFFFFFFFFULL)|((uint64_t)value<<32));
+        hs_moxie_moxiebox_el_timer_sync_sregs(machine);
+        return;
+    }
+    case HS_MOXIE_CORE_EL_SREG_TIMECMP_LO:
+    {
+        uint64_t timecmp=hs_moxie_core_el_timer_timecmp_get(core);
+        hs_moxie_core_el_timer_timecmp_set(core,(timecmp&0xFFFFFFFF00000000ULL)|value);
+        hs_moxie_moxiebox_el_timer_sync_sregs(machine);
+        return;
+    }
+    case HS_MOXIE_CORE_EL_SREG_TIMECMP_HI:
+    {
+        uint64_t timecmp=hs_moxie_core_el_timer_timecmp_get(core);
+        hs_moxie_core_el_timer_timecmp_set(core,(timecmp&0xFFFFFFFFULL)|((uint64_t)value<<32));
+        hs_moxie_moxiebox_el_timer_sync_sregs(machine);
+        return;
+    }
+    default:
+    {
+    }
+    break;
+    }
+
     machine->sregs[index]=value;
     if(index==6)
     {
@@ -478,12 +552,152 @@ uint32_t hs_moxie_moxiebox_el_sreg_read(hs_moxie_moxiebox_el_t *machine,uint32_t
     {
         return 0;
     }
+    hs_moxie_core_el_t *core=hs_moxie_moxiebox_el_core(machine);
+    switch(index)
+    {
+    case HS_MOXIE_CORE_EL_SREG_SATP:
+    {
+        return hs_moxie_core_el_satp_get(core);
+    }
+    case HS_MOXIE_CORE_EL_SREG_MSTATUS:
+    {
+        return hs_moxie_core_el_mstatus_get(core);
+    }
+    case HS_MOXIE_CORE_EL_SREG_MIP:
+    {
+        return hs_moxie_core_el_mip_get(core);
+    }
+    case HS_MOXIE_CORE_EL_SREG_TIME_LO:
+    {
+        return (uint32_t)hs_moxie_core_el_timer_time_get(core);
+    }
+    case HS_MOXIE_CORE_EL_SREG_TIME_HI:
+    {
+        return (uint32_t)(hs_moxie_core_el_timer_time_get(core)>>32);
+    }
+    case HS_MOXIE_CORE_EL_SREG_TIMECMP_LO:
+    {
+        return (uint32_t)hs_moxie_core_el_timer_timecmp_get(core);
+    }
+    case HS_MOXIE_CORE_EL_SREG_TIMECMP_HI:
+    {
+        return (uint32_t)(hs_moxie_core_el_timer_timecmp_get(core)>>32);
+    }
+    default:
+    {
+    }
+    break;
+    }
     return machine->sregs[index];
 }
 
 void hs_moxie_moxiebox_el_sreg_write(hs_moxie_moxiebox_el_t *machine,uint32_t index,uint32_t value)
 {
     hs_moxie_moxiebox_el_sreg_write_internal(machine,index,value);
+}
+
+uint64_t hs_moxie_moxiebox_el_timer_time_get(hs_moxie_moxiebox_el_t *machine)
+{
+    if(machine==NULL)
+    {
+        return 0;
+    }
+    return hs_moxie_core_el_timer_time_get(hs_moxie_moxiebox_el_core(machine));
+}
+
+bool hs_moxie_moxiebox_el_timer_time_set(hs_moxie_moxiebox_el_t *machine,uint64_t value)
+{
+    if(machine==NULL)
+    {
+        return false;
+    }
+    hs_moxie_core_el_t *core=hs_moxie_moxiebox_el_core(machine);
+    if(core==NULL)
+    {
+        return false;
+    }
+    hs_moxie_core_el_timer_time_set(core,value);
+    hs_moxie_moxiebox_el_timer_sync_sregs(machine);
+    return true;
+}
+
+uint64_t hs_moxie_moxiebox_el_timer_timecmp_get(hs_moxie_moxiebox_el_t *machine)
+{
+    if(machine==NULL)
+    {
+        return 0;
+    }
+    return hs_moxie_core_el_timer_timecmp_get(hs_moxie_moxiebox_el_core(machine));
+}
+
+bool hs_moxie_moxiebox_el_timer_timecmp_set(hs_moxie_moxiebox_el_t *machine,uint64_t value)
+{
+    if(machine==NULL)
+    {
+        return false;
+    }
+    hs_moxie_core_el_t *core=hs_moxie_moxiebox_el_core(machine);
+    if(core==NULL)
+    {
+        return false;
+    }
+    hs_moxie_core_el_timer_timecmp_set(core,value);
+    hs_moxie_moxiebox_el_timer_sync_sregs(machine);
+    return true;
+}
+
+bool hs_moxie_moxiebox_el_software_interrupt_raise(hs_moxie_moxiebox_el_t *machine)
+{
+    if(machine==NULL)
+    {
+        return false;
+    }
+    return hs_moxie_core_el_software_interrupt_raise(hs_moxie_moxiebox_el_core(machine));
+}
+
+bool hs_moxie_moxiebox_el_software_interrupt_clear(hs_moxie_moxiebox_el_t *machine)
+{
+    if(machine==NULL)
+    {
+        return false;
+    }
+    return hs_moxie_core_el_software_interrupt_clear(hs_moxie_moxiebox_el_core(machine));
+}
+
+bool hs_moxie_moxiebox_el_software_interrupt_pending(hs_moxie_moxiebox_el_t *machine)
+{
+    if(machine==NULL)
+    {
+        return false;
+    }
+    return hs_moxie_core_el_software_interrupt_pending(hs_moxie_moxiebox_el_core(machine));
+}
+
+bool hs_moxie_moxiebox_el_external_interrupt_raise(hs_moxie_moxiebox_el_t *machine)
+{
+    if(machine==NULL)
+    {
+        return false;
+    }
+    return hs_moxie_core_el_external_interrupt_raise(hs_moxie_moxiebox_el_core(machine));
+}
+
+bool hs_moxie_moxiebox_el_external_interrupt_clear(hs_moxie_moxiebox_el_t *machine)
+{
+    if(machine==NULL)
+    {
+        return false;
+    }
+    return hs_moxie_core_el_external_interrupt_clear(hs_moxie_moxiebox_el_core(machine));
+}
+
+bool hs_moxie_moxiebox_el_external_interrupt_pending(hs_moxie_moxiebox_el_t *machine)
+{
+    if(machine==NULL)
+    {
+        return false;
+    }
+    return hs_moxie_core_el_external_interrupt_pending(hs_moxie_moxiebox_el_core(machine));
 }
 
 static int hs_moxie_moxiebox_el_mmap_prot(uint32_t prot)
@@ -1788,10 +2002,13 @@ void hs_moxie_moxiebox_el_reset(hs_moxie_moxiebox_el_t *machine)
     machine->flags.return_valid=0;
     machine->flags.reset_pending=0;
     hs_moxie_core_el_reset(hs_moxie_moxiebox_el_core(machine));
+    machine->sregs[HS_MOXIE_CORE_EL_SREG_MSTATUS]=hs_moxie_core_el_mstatus_get(hs_moxie_moxiebox_el_core(machine));
+    machine->sregs[HS_MOXIE_CORE_EL_SREG_MIP]=hs_moxie_core_el_mip_get(hs_moxie_moxiebox_el_core(machine));
+    hs_moxie_moxiebox_el_timer_sync_sregs(machine);
     machine->flags.started=1;
 }
 
-int hs_moxie_moxiebox_el_step(hs_moxie_moxiebox_el_t *machine,size_t count)
+int hs_moxie_moxiebox_el_step(hs_moxie_moxiebox_el_t *machine,uint32_t elapsed_us,size_t count)
 {
     if(machine==NULL)
     {
@@ -1813,6 +2030,7 @@ int hs_moxie_moxiebox_el_step(hs_moxie_moxiebox_el_t *machine,size_t count)
     {
         return 1;
     }
+    hs_moxie_core_el_timer_time_advance(hs_moxie_moxiebox_el_core(machine),elapsed_us);
     while(count--)
     {
         hs_moxie_core_el_tick(hs_moxie_moxiebox_el_core(machine),1);

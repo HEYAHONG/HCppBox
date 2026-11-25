@@ -38,7 +38,7 @@ moxie定义16个寄存器。
 | 0          | status register                                              |
 | 1          | a pointer to the Exception Handler routine (invoked by `swi`, IRQs, Divide by Zero and illegal instructions (`bad`)) |
 | 2          | upon invocation of the Excecption Handler .                  |
-| 3          | the `swi` request number (by convention)                     |
+| 3          | the `swi` or interrupt request number (by convention)        |
 | 4          | address of the supervisor mode stack on which exceptions are executed |
 | 5          | return address upon entering the exception handler           |
 | 6          | reserved                                                     |
@@ -95,7 +95,11 @@ moxiebox具有一个空白的的32位地址空间。
 
 ### 中断（异常）
 
-swi指令可触发软中断。但由于moxiebox为沙箱，因此并不执行ELF文件中的中断处理程序,而是由moxiebox模拟实现相应功能。
+swi指令可触发软中断。
+
+但由于moxiebox为沙箱，因此并不执行ELF文件中的中断处理程序,而是由moxiebox模拟实现相应功能。
+
+**注意：部分功能由hbox扩展。**
 
 | swi中断号（系统调用号） | 说明         | 调用约定                                                                 | 备注                                              |
 | ----------------------- | ------------ | ------------------------------------------------------------------------ | ------------------------------------------------- |
@@ -115,6 +119,21 @@ swi指令可触发软中断。但由于moxiebox为沙箱，因此并不执行ELF
 | 144                     | msync        | `$r0`=地址, `$r1`=长度, `$r2`=flags; 返回`$r0`=0                          | 标志转换为`HMMAN_MS_*`                            |
 | 148                     | fdatasync    | `$r0`=fd; 返回`$r0`=0                                                     | 出错返回负错误码                                  |
 | 355                     | getrandom    | `$r0`=缓冲区, `$r1`=长度, `$r2`=flags; 返回`$r0`=已生成字节数             | 出错返回负错误码                                  |
+
+### 特殊寄存器
+
+特殊寄存器由hbox扩展，官方沙箱无此功能。
+
+| 特殊寄存器 | 描述                                                         |
+| ---------- | ------------------------------------------------------------ |
+| 10         | `satp`，Sv32页表基址，bit31为模式(1=Sv32，0=无MMU)           |
+| 11         | `mie`，中断使能，bit3为MSIE(软件中断)，bit7为MTIE(定时器中断)，bit11为MEIE(外部中断) |
+| 12         | `time`低32位，每次step累加elapsed_us                         |
+| 13         | `time`高32位，低32位进位时递增                               |
+| 14         | `timecmp`低32位                                              |
+| 15         | `timecmp`高32位，`time>=timecmp`且MTIE置位时产生中断         |
+| 16         | `mstatus`，bit3为MIE全局中断使能，复位值1；仅影响中断，不影响swi与其它异常 |
+| 17         | `mip`，bit3为MSIP(程序可写，触发软件中断)，bit7为MTIP(只读)，bit11为MEIP(只读) |
 
 ### 初始状态
 

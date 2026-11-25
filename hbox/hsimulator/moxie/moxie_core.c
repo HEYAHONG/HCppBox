@@ -27,14 +27,40 @@ struct hs_moxie_core
     uint32_t            interrupt_value;    /**< 等待处理的中断附带值 */
     uint32_t            fault_cause;        /**< 当前指令产生的异常原因 */
     uint32_t            fault_value;        /**< 当前指令产生的异常附带值 */
+    uint32_t            mem_access;         /**< 当前内存访问类型 */
+    uint32_t            satp;               /**< Sv32页表基址缓存 */
+    uint32_t            mstatus;            /**< 全局中断状态缓存 */
+    uint64_t            timer_time;         /**< 定时器计数(time) */
+    uint64_t            timer_timecmp;      /**< 定时器比较值(timecmp) */
     struct
     {
         uint32_t        exception_pending:1;    /**< 存在等待处理的异常 */
         uint32_t        interrupt_pending:1;    /**< 存在等待处理的中断 */
         uint32_t        halted:1;               /**< 因无法进入异常处理程序而暂停 */
         uint32_t        halted_by_interrupt:1;  /**< 暂停由中断引起 */
+        uint32_t        timer_pending:1;        /**< 定时器中断条件成立 */
+        uint32_t        software_interrupt_pending:1; /**< 软件中断等待处理 */
     }                   flags;
 };
+
+/*
+ * 内存访问类型。
+ */
+#define HS_MOXIE_CORE_MEM_ACCESS_FETCH  0
+#define HS_MOXIE_CORE_MEM_ACCESS_LOAD   1
+#define HS_MOXIE_CORE_MEM_ACCESS_STORE  2
+
+/*
+ * Sv32 PTE位定义。
+ */
+#define HS_MOXIE_CORE_PTE_V             (1UL << 0)
+#define HS_MOXIE_CORE_PTE_R             (1UL << 1)
+#define HS_MOXIE_CORE_PTE_W             (1UL << 2)
+#define HS_MOXIE_CORE_PTE_X             (1UL << 3)
+#define HS_MOXIE_CORE_PTE_U             (1UL << 4)
+#define HS_MOXIE_CORE_PTE_G             (1UL << 5)
+#define HS_MOXIE_CORE_PTE_A             (1UL << 6)
+#define HS_MOXIE_CORE_PTE_D             (1UL << 7)
 
 /*
  * 大端序读写辅助函数。
@@ -102,6 +128,18 @@ static inline uint32_t hs_moxie_core_sreg_read(hs_moxie_core_t *core,uint32_t in
 {
     uint8_t data[4];
     uint32_t value=0;
+    if(core!=NULL && index==HS_MOXIE_CORE_SREG_SATP)
+    {
+        return core->satp;
+    }
+    if(core!=NULL && index==HS_MOXIE_CORE_SREG_MSTATUS)
+    {
+        return core->mstatus;
+    }
+    if(core!=NULL && index==HS_MOXIE_CORE_SREG_MIP)
+    {
+        return hs_moxie_core_mip_get(core);
+    }
     if(index<256 && hs_moxie_core_io_call(core,(uint32_t)HS_MOXIE_CORE_IO_SREG_READ,index,data,sizeof(data)))
     {
         value=hs_moxie_core_read_u32(core,data);
@@ -114,6 +152,18 @@ static inline void hs_moxie_core_sreg_write(hs_moxie_core_t *core,uint32_t index
     uint8_t data[4];
     if(index<256)
     {
+        if(core!=NULL && index==HS_MOXIE_CORE_SREG_SATP)
+        {
+            core->satp=value;
+        }
+        if(core!=NULL && index==HS_MOXIE_CORE_SREG_MSTATUS)
+        {
+            core->mstatus=value;
+        }
+        if(core!=NULL && index==HS_MOXIE_CORE_SREG_MIP)
+        {
+            hs_moxie_core_mip_set(core,value);
+        }
         hs_moxie_core_write_u32(core,data,value);
         hs_moxie_core_io_call(core,(uint32_t)HS_MOXIE_CORE_IO_SREG_WRITE,index,data,sizeof(data));
     }
@@ -146,9 +196,163 @@ static inline void hs_moxie_core_fault_set(hs_moxie_core_t *core,uint32_t cause,
     }
 }
 
+/*
+ * 物理地址内存访问(不经过Sv32翻译)，用于页表遍历。
+ */
+static bool hs_moxie_core_physical_read(hs_moxie_core_t *core,uint32_t address,uint8_t *data,size_t len)
+{
+    return hs_moxie_core_io_call(core,(uint32_t)HS_MOXIE_CORE_IO_MEMORY_READ,address,data,len);
+}
+
+static bool hs_moxie_core_physical_write(hs_moxie_core_t *core,uint32_t address,const uint8_t *data,size_t len)
+{
+    return hs_moxie_core_io_call(core,(uint32_t)HS_MOXIE_CORE_IO_MEMORY_WRITE,address,(uint8_t *)data,len);
+}
+
+static bool hs_moxie_core_mmu_fault(hs_moxie_core_t *core,uint32_t va)
+{
+    hs_moxie_core_fault_set(core,HS_MOXIE_CORE_EXCEPTION_MMU_MISS,va);
+    return false;
+}
+
+/*
+ * Sv32地址翻译。
+ * satp.MODE=0时按无MMU处理，保证未启用时行为与修改前一致。
+ */
+static bool hs_moxie_core_mmu_translate(hs_moxie_core_t *core,uint32_t va,uint32_t access,uint32_t *pa)
+{
+    if(pa==NULL)
+    {
+        return false;
+    }
+    *pa=va;
+    if(core==NULL)
+    {
+        return true;
+    }
+
+    uint32_t satp=core->satp;
+    if((satp&HS_MOXIE_CORE_SATP_MODE)==0)
+    {
+        return true;
+    }
+
+    uint64_t table=((uint64_t)(satp&HS_MOXIE_CORE_SATP_PPN))<<12;
+    uint32_t vpn1=(va>>22)&0x3FF;
+    uint32_t vpn0=(va>>12)&0x3FF;
+    uint32_t offset=va&0xFFF;
+
+    for(int level=1; level>=0; level--)
+    {
+        uint32_t vpn=(level==1)?vpn1:vpn0;
+        uint64_t pte_address=table+((uint64_t)vpn*4);
+        if(pte_address>0xFFFFFFFFULL)
+        {
+            return hs_moxie_core_mmu_fault(core,va);
+        }
+
+        uint8_t pte_data[4];
+        if(!hs_moxie_core_physical_read(core,(uint32_t)pte_address,pte_data,sizeof(pte_data)))
+        {
+            return hs_moxie_core_mmu_fault(core,va);
+        }
+        uint32_t pte=hs_moxie_core_read_u32(core,pte_data);
+        if((pte&HS_MOXIE_CORE_PTE_V)==0 ||
+           (((pte&HS_MOXIE_CORE_PTE_R)==0)&&((pte&HS_MOXIE_CORE_PTE_W)!=0)))
+        {
+            return hs_moxie_core_mmu_fault(core,va);
+        }
+
+        if((pte&(HS_MOXIE_CORE_PTE_R|HS_MOXIE_CORE_PTE_X))!=0)
+        {
+            /*
+             * 叶子PTE，检查访问权限。
+             */
+            if(access==HS_MOXIE_CORE_MEM_ACCESS_FETCH)
+            {
+                if((pte&HS_MOXIE_CORE_PTE_X)==0)
+                {
+                    return hs_moxie_core_mmu_fault(core,va);
+                }
+            }
+            else if(access==HS_MOXIE_CORE_MEM_ACCESS_LOAD)
+            {
+                if((pte&HS_MOXIE_CORE_PTE_R)==0)
+                {
+                    return hs_moxie_core_mmu_fault(core,va);
+                }
+            }
+            else
+            {
+                if((pte&HS_MOXIE_CORE_PTE_W)==0)
+                {
+                    return hs_moxie_core_mmu_fault(core,va);
+                }
+            }
+
+            uint64_t ppn=(pte>>10)&0x3FFFFFUL;
+            if(level==1)
+            {
+                /*
+                 * 4MB超级页，PPN[0]必须为0。
+                 */
+                if((ppn&0x3FF)!=0)
+                {
+                    return hs_moxie_core_mmu_fault(core,va);
+                }
+                ppn=(ppn&0xFFFFFC00UL)|vpn0;
+            }
+
+            uint64_t pa64=(ppn<<12)|offset;
+            if(pa64>0xFFFFFFFFULL)
+            {
+                return hs_moxie_core_mmu_fault(core,va);
+            }
+
+            /*
+             * 硬件更新A/D位。
+             */
+            uint32_t new_pte=pte;
+            if((new_pte&HS_MOXIE_CORE_PTE_A)==0)
+            {
+                new_pte|=HS_MOXIE_CORE_PTE_A;
+            }
+            if(access==HS_MOXIE_CORE_MEM_ACCESS_STORE && (new_pte&HS_MOXIE_CORE_PTE_D)==0)
+            {
+                new_pte|=HS_MOXIE_CORE_PTE_D;
+            }
+            if(new_pte!=pte)
+            {
+                uint8_t new_pte_data[4];
+                hs_moxie_core_write_u32(core,new_pte_data,new_pte);
+                hs_moxie_core_physical_write(core,(uint32_t)pte_address,new_pte_data,sizeof(new_pte_data));
+            }
+
+            *pa=(uint32_t)pa64;
+            return true;
+        }
+        else
+        {
+            if(level==0)
+            {
+                return hs_moxie_core_mmu_fault(core,va);
+            }
+            table=((uint64_t)((pte>>10)&0x3FFFFFUL))<<12;
+        }
+    }
+
+    return hs_moxie_core_mmu_fault(core,va);
+}
+
 static bool hs_moxie_core_memory_read(hs_moxie_core_t *core,uint32_t address,uint8_t *data,size_t len)
 {
-    if(hs_moxie_core_io_call(core,(uint32_t)HS_MOXIE_CORE_IO_MEMORY_READ,address,data,len))
+    uint32_t physical=address;
+    uint32_t access=(core!=NULL)?core->mem_access:HS_MOXIE_CORE_MEM_ACCESS_FETCH;
+    if(!hs_moxie_core_mmu_translate(core,address,access,&physical))
+    {
+        return false;
+    }
+    if(hs_moxie_core_physical_read(core,physical,data,len))
     {
         return true;
     }
@@ -158,7 +362,13 @@ static bool hs_moxie_core_memory_read(hs_moxie_core_t *core,uint32_t address,uin
 
 static bool hs_moxie_core_memory_write(hs_moxie_core_t *core,uint32_t address,const uint8_t *data,size_t len)
 {
-    if(hs_moxie_core_io_call(core,(uint32_t)HS_MOXIE_CORE_IO_MEMORY_WRITE,address,(uint8_t *)data,len))
+    uint32_t physical=address;
+    uint32_t access=(core!=NULL)?core->mem_access:HS_MOXIE_CORE_MEM_ACCESS_STORE;
+    if(!hs_moxie_core_mmu_translate(core,address,access,&physical))
+    {
+        return false;
+    }
+    if(hs_moxie_core_physical_write(core,physical,data,len))
     {
         return true;
     }
@@ -168,12 +378,20 @@ static bool hs_moxie_core_memory_write(hs_moxie_core_t *core,uint32_t address,co
 
 static inline bool hs_moxie_core_load_u8(hs_moxie_core_t *core,uint32_t address,uint8_t *value)
 {
+    if(core!=NULL)
+    {
+        core->mem_access=HS_MOXIE_CORE_MEM_ACCESS_LOAD;
+    }
     return hs_moxie_core_memory_read(core,address,value,1);
 }
 
 static inline bool hs_moxie_core_load_u16(hs_moxie_core_t *core,uint32_t address,uint16_t *value)
 {
     uint8_t data[2];
+    if(core!=NULL)
+    {
+        core->mem_access=HS_MOXIE_CORE_MEM_ACCESS_LOAD;
+    }
     if(hs_moxie_core_memory_read(core,address,data,sizeof(data)))
     {
         *value=hs_moxie_core_read_u16(core,data);
@@ -185,6 +403,10 @@ static inline bool hs_moxie_core_load_u16(hs_moxie_core_t *core,uint32_t address
 static inline bool hs_moxie_core_load_u32(hs_moxie_core_t *core,uint32_t address,uint32_t *value)
 {
     uint8_t data[4];
+    if(core!=NULL)
+    {
+        core->mem_access=HS_MOXIE_CORE_MEM_ACCESS_LOAD;
+    }
     if(hs_moxie_core_memory_read(core,address,data,sizeof(data)))
     {
         *value=hs_moxie_core_read_u32(core,data);
@@ -195,12 +417,20 @@ static inline bool hs_moxie_core_load_u32(hs_moxie_core_t *core,uint32_t address
 
 static inline bool hs_moxie_core_store_u8(hs_moxie_core_t *core,uint32_t address,uint8_t value)
 {
+    if(core!=NULL)
+    {
+        core->mem_access=HS_MOXIE_CORE_MEM_ACCESS_STORE;
+    }
     return hs_moxie_core_memory_write(core,address,&value,1);
 }
 
 static inline bool hs_moxie_core_store_u16(hs_moxie_core_t *core,uint32_t address,uint16_t value)
 {
     uint8_t data[2];
+    if(core!=NULL)
+    {
+        core->mem_access=HS_MOXIE_CORE_MEM_ACCESS_STORE;
+    }
     hs_moxie_core_write_u16(core,data,value);
     return hs_moxie_core_memory_write(core,address,data,sizeof(data));
 }
@@ -208,6 +438,10 @@ static inline bool hs_moxie_core_store_u16(hs_moxie_core_t *core,uint32_t addres
 static inline bool hs_moxie_core_store_u32(hs_moxie_core_t *core,uint32_t address,uint32_t value)
 {
     uint8_t data[4];
+    if(core!=NULL)
+    {
+        core->mem_access=HS_MOXIE_CORE_MEM_ACCESS_STORE;
+    }
     hs_moxie_core_write_u32(core,data,value);
     return hs_moxie_core_memory_write(core,address,data,sizeof(data));
 }
@@ -225,8 +459,11 @@ static void hs_moxie_core_exception_enter(hs_moxie_core_t *core,uint32_t cause,u
     }
 
     hs_moxie_core_sreg_write(core,HS_MOXIE_CORE_SREG_EXCEPTION_CAUSE,cause);
-    if(cause==HS_MOXIE_CORE_EXCEPTION_SWI)
+    if(cause==HS_MOXIE_CORE_EXCEPTION_SWI || cause==HS_MOXIE_CORE_EXCEPTION_IRQ)
     {
+        /*
+         * 特殊寄存器3在swi时传递swi号，在中断时传递中断号。
+         */
         hs_moxie_core_sreg_write(core,HS_MOXIE_CORE_SREG_SWI_NUMBER,value);
     }
     hs_moxie_core_sreg_write(core,HS_MOXIE_CORE_SREG_EXCEPTION_PC,pc);
@@ -267,7 +504,27 @@ static void hs_moxie_core_exception_enter(hs_moxie_core_t *core,uint32_t cause,u
  */
 static bool hs_moxie_core_interrupt_process(hs_moxie_core_t *core)
 {
-    if(core==NULL || core->flags.interrupt_pending==0)
+    if(core==NULL)
+    {
+        return false;
+    }
+
+    bool generic_pending=(core->flags.interrupt_pending!=0);
+    bool software_pending=(core->flags.software_interrupt_pending!=0);
+    bool timer_pending=(core->flags.timer_pending!=0);
+    if(generic_pending || software_pending || timer_pending)
+    {
+        uint32_t mie=hs_moxie_core_sreg_read(core,HS_MOXIE_CORE_SREG_MIE);
+        generic_pending=generic_pending && ((mie&HS_MOXIE_CORE_MIE_MEIE)!=0);
+        software_pending=software_pending && ((mie&HS_MOXIE_CORE_MIE_MSIE)!=0);
+        timer_pending=timer_pending && ((mie&HS_MOXIE_CORE_MIE_MTIE)!=0);
+    }
+    if(!generic_pending && !software_pending && !timer_pending)
+    {
+        return false;
+    }
+
+    if((core->mstatus&HS_MOXIE_CORE_MSTATUS_MIE)==0)
     {
         return false;
     }
@@ -286,8 +543,18 @@ static bool hs_moxie_core_interrupt_process(hs_moxie_core_t *core)
         return true;
     }
 
-    core->flags.interrupt_pending=0;
-    hs_moxie_core_exception_enter(core,HS_MOXIE_CORE_EXCEPTION_IRQ,core->interrupt_value,hs_moxie_core_pc_read(core));
+    uint32_t value=HS_MOXIE_CORE_INTERRUPT_TIMER;
+    if(generic_pending)
+    {
+        value=HS_MOXIE_CORE_INTERRUPT_EXTERNAL;
+        core->flags.interrupt_pending=0;
+    }
+    else if(software_pending)
+    {
+        value=HS_MOXIE_CORE_INTERRUPT_SOFTWARE;
+        core->flags.software_interrupt_pending=0;
+    }
+    hs_moxie_core_exception_enter(core,HS_MOXIE_CORE_EXCEPTION_IRQ,value,hs_moxie_core_pc_read(core));
     return true;
 }
 
@@ -363,6 +630,7 @@ static void hs_moxie_core_exec(hs_moxie_core_t *core)
     }
 
     uint32_t pc=hs_moxie_core_pc_read(core);
+    core->mem_access=HS_MOXIE_CORE_MEM_ACCESS_FETCH;
     uint8_t opcode_data[2];
     if(!hs_moxie_core_memory_read(core,pc,opcode_data,sizeof(opcode_data)))
     {
@@ -1132,6 +1400,11 @@ void hs_moxie_core_tick(hs_moxie_core_t * core,size_t cycles)
     {
         hs_moxie_core_io_call(core,(uint32_t)HS_MOXIE_CORE_IO_TICK_ENTER,hs_moxie_core_pc_read(core),(uint8_t *)&cycles,sizeof(cycles));
 
+        /*
+         * 定时器比较。
+         */
+        core->flags.timer_pending=(core->timer_time>=core->timer_timecmp);
+
         bool exception_taken=false;
         if(core->flags.exception_pending!=0)
         {
@@ -1170,6 +1443,10 @@ void hs_moxie_core_reset(hs_moxie_core_t * core)
         memset(core,0,sizeof(hs_moxie_core_t));
         core->io=io;
         core->usr=usr;
+        core->satp=0;
+        core->mstatus=HS_MOXIE_CORE_MSTATUS_DEFAULT;
+        core->timer_time=0;
+        core->timer_timecmp=UINT64_MAX;
 
         {
             uint32_t value=0;
@@ -1200,6 +1477,128 @@ void hs_moxie_core_reset(hs_moxie_core_t * core)
             }
         }
     }
+}
+
+uint32_t hs_moxie_core_satp_get(hs_moxie_core_t *core)
+{
+    if(core==NULL)
+    {
+        return 0;
+    }
+    return core->satp;
+}
+
+void hs_moxie_core_satp_set(hs_moxie_core_t *core,uint32_t value)
+{
+    if(core==NULL)
+    {
+        return;
+    }
+    core->satp=value;
+}
+
+uint32_t hs_moxie_core_mstatus_get(hs_moxie_core_t *core)
+{
+    if(core==NULL)
+    {
+        return 0;
+    }
+    return core->mstatus;
+}
+
+void hs_moxie_core_mstatus_set(hs_moxie_core_t *core,uint32_t value)
+{
+    if(core==NULL)
+    {
+        return;
+    }
+    core->mstatus=value;
+}
+
+uint32_t hs_moxie_core_mip_get(hs_moxie_core_t *core)
+{
+    if(core==NULL)
+    {
+        return 0;
+    }
+    uint32_t mip=0;
+    if(core->flags.software_interrupt_pending!=0)
+    {
+        mip|=HS_MOXIE_CORE_MIP_MSIP;
+    }
+    if(core->flags.timer_pending!=0)
+    {
+        mip|=HS_MOXIE_CORE_MIP_MTIP;
+    }
+    if(core->flags.interrupt_pending!=0)
+    {
+        mip|=HS_MOXIE_CORE_MIP_MEIP;
+    }
+    return mip;
+}
+
+void hs_moxie_core_mip_set(hs_moxie_core_t *core,uint32_t value)
+{
+    if(core==NULL)
+    {
+        return;
+    }
+    if((value&HS_MOXIE_CORE_MIP_MSIP)!=0)
+    {
+        core->flags.software_interrupt_pending=1;
+    }
+    else
+    {
+        core->flags.software_interrupt_pending=0;
+    }
+}
+
+uint64_t hs_moxie_core_timer_time_get(hs_moxie_core_t *core)
+{
+    if(core==NULL)
+    {
+        return 0;
+    }
+    return core->timer_time;
+}
+
+void hs_moxie_core_timer_time_set(hs_moxie_core_t *core,uint64_t value)
+{
+    if(core==NULL)
+    {
+        return;
+    }
+    core->timer_time=value;
+    core->flags.timer_pending=(core->timer_time>=core->timer_timecmp);
+}
+
+void hs_moxie_core_timer_time_advance(hs_moxie_core_t *core,uint64_t delta)
+{
+    if(core==NULL)
+    {
+        return;
+    }
+    core->timer_time+=delta;
+    core->flags.timer_pending=(core->timer_time>=core->timer_timecmp);
+}
+
+uint64_t hs_moxie_core_timer_timecmp_get(hs_moxie_core_t *core)
+{
+    if(core==NULL)
+    {
+        return 0;
+    }
+    return core->timer_timecmp;
+}
+
+void hs_moxie_core_timer_timecmp_set(hs_moxie_core_t *core,uint64_t value)
+{
+    if(core==NULL)
+    {
+        return;
+    }
+    core->timer_timecmp=value;
+    core->flags.timer_pending=(core->timer_time>=core->timer_timecmp);
 }
 
 bool hs_moxie_core_io(hs_moxie_core_t *core,hs_moxie_core_io_opt_t opt,uint32_t address,uint8_t *data,size_t len)
@@ -1237,14 +1636,37 @@ bool hs_moxie_core_exception_clear(hs_moxie_core_t *core)
     return true;
 }
 
-bool hs_moxie_core_interrupt_raise(hs_moxie_core_t *core,uint32_t value)
+bool hs_moxie_core_external_interrupt_raise(hs_moxie_core_t *core)
 {
     if(core==NULL || core->flags.interrupt_pending!=0 || core->flags.halted!=0)
     {
         return false;
     }
-    core->interrupt_value=value;
     core->flags.interrupt_pending=1;
+    return true;
+}
+
+bool hs_moxie_core_external_interrupt_clear(hs_moxie_core_t *core)
+{
+    return hs_moxie_core_interrupt_clear(core);
+}
+
+bool hs_moxie_core_external_interrupt_pending(hs_moxie_core_t *core)
+{
+    if(core==NULL)
+    {
+        return false;
+    }
+    return core->flags.interrupt_pending!=0;
+}
+
+bool hs_moxie_core_interrupt_raise(hs_moxie_core_t *core,uint32_t value)
+{
+    if(!hs_moxie_core_external_interrupt_raise(core))
+    {
+        return false;
+    }
+    core->interrupt_value=value;
     return true;
 }
 
@@ -1262,6 +1684,35 @@ bool hs_moxie_core_interrupt_clear(hs_moxie_core_t *core)
         core->flags.halted_by_interrupt=0;
     }
     return true;
+}
+
+bool hs_moxie_core_software_interrupt_raise(hs_moxie_core_t *core)
+{
+    if(core==NULL)
+    {
+        return false;
+    }
+    core->flags.software_interrupt_pending=1;
+    return true;
+}
+
+bool hs_moxie_core_software_interrupt_clear(hs_moxie_core_t *core)
+{
+    if(core==NULL)
+    {
+        return false;
+    }
+    core->flags.software_interrupt_pending=0;
+    return true;
+}
+
+bool hs_moxie_core_software_interrupt_pending(hs_moxie_core_t *core)
+{
+    if(core==NULL)
+    {
+        return false;
+    }
+    return core->flags.software_interrupt_pending!=0;
 }
 
 bool hs_moxie_core_halted(hs_moxie_core_t *core)

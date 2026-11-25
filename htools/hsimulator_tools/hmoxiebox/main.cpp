@@ -18,6 +18,13 @@
 
 static std::string g_output_filename;
 
+static uint64_t now_us(void)
+{
+    htimespec_t ts={0};
+    hclock_gettime(HCLOCK_MONOTONIC,&ts);
+    return (uint64_t)ts.tv_sec*1000000ULL+(uint64_t)ts.tv_nsec/1000ULL;
+}
+
 static void show_banner()
 {
     const uint8_t * banner=RCGetHandle("banner");
@@ -124,9 +131,9 @@ struct machine_ops<hs_moxie_moxiebox_t>
     {
         return hs_moxie_moxiebox_prepare(machine,mem,length);
     }
-    static int step(machine_t *machine,size_t count)
+    static int step(machine_t *machine,uint32_t elapsed_us,size_t count)
     {
-        return hs_moxie_moxiebox_step(machine,count);
+        return hs_moxie_moxiebox_step(machine,elapsed_us,count);
     }
     static bool stopped(machine_t *machine)
     {
@@ -186,9 +193,9 @@ struct machine_ops<hs_moxie_moxiebox_el_t>
     {
         return hs_moxie_moxiebox_el_prepare(machine,mem,length);
     }
-    static int step(machine_t *machine,size_t count)
+    static int step(machine_t *machine,uint32_t elapsed_us,size_t count)
     {
-        return hs_moxie_moxiebox_el_step(machine,count);
+        return hs_moxie_moxiebox_el_step(machine,elapsed_us,count);
     }
     static bool stopped(machine_t *machine)
     {
@@ -459,9 +466,17 @@ static int run_vm(helf_file_input_t *input_file,uint32_t base,size_t span,
         return -1;
     }
 
+    uint64_t last_us=now_us();
     while(!ops::stopped(machine))
     {
-        int ret=ops::step(machine,100000);
+        uint64_t current_us=now_us();
+        uint64_t elapsed_us=current_us-last_us;
+        last_us=current_us;
+        if(elapsed_us>UINT32_MAX)
+        {
+            elapsed_us=UINT32_MAX;
+        }
+        int ret=ops::step(machine,(uint32_t)elapsed_us,512);
         if(ret<0)
         {
             hfprintf(stderr,"machine step failed!\r\n");

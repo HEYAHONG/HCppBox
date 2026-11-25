@@ -32,12 +32,12 @@ size_t hs_moxie_core_el_size(void);
  *
  *
  */
-#define HS_MOXIE_CORE_EL_SIZE()  (sizeof(uintptr_t)*2+sizeof(uint32_t)*8+sizeof(uint64_t))
+#define HS_MOXIE_CORE_EL_SIZE()  (sizeof(uintptr_t)*2+sizeof(uint32_t)*12+sizeof(uint64_t)*3)
 #endif // HS_MOXIE_CORE_EL_SIZE
 
 /*
  * 注意:本文件为小端序moxie内核。除特殊说明外，IO操作中的多字节数据均为小端序。
- * 即地址较低处存放数据的低字节。
+ * 即地址较低处存放数据的高字节。
  */
 typedef enum
 {
@@ -80,6 +80,49 @@ typedef enum
  */
 typedef bool (*hs_moxie_core_el_io_t)(hs_moxie_core_el_t *core,uint32_t opt,uint32_t address,uint8_t *data,size_t len,void *usr);
 
+/*
+ * Sv32页表寄存器(satp)定义。
+ * 仅支持Sv32模式(MODE=1)；MODE=0时按无MMU处理。
+ */
+#define HS_MOXIE_CORE_EL_SATP_MODE         (1UL << 31)        /**< Sv32模式位 */
+#define HS_MOXIE_CORE_EL_SATP_ASID         (0x7FC00000UL)     /**< ASID */
+#define HS_MOXIE_CORE_EL_SATP_PPN          (0x003FFFFFUL)     /**< 根页表PPN */
+#define HS_MOXIE_CORE_EL_SATP_MODE_BARE    0                   /**< 无MMU */
+#define HS_MOXIE_CORE_EL_SATP_MODE_SV32    1                   /**< Sv32 */
+
+/*
+ * MIE寄存器位定义。
+ * 当前仅定时器中断(MTIE)参与中断处理，其余位保留。
+ */
+#define HS_MOXIE_CORE_EL_MIE_SSIE          (1UL << 1)
+#define HS_MOXIE_CORE_EL_MIE_MSIE          (1UL << 3)
+#define HS_MOXIE_CORE_EL_MIE_STIE          (1UL << 5)
+#define HS_MOXIE_CORE_EL_MIE_MTIE          (1UL << 7)
+#define HS_MOXIE_CORE_EL_MIE_SEIE          (1UL << 9)
+#define HS_MOXIE_CORE_EL_MIE_MEIE          (1UL << 11)
+
+/*
+ * mip寄存器位定义。
+ * MSIP可由程序写入以触发软件中断；MTIP/MEIP为只读状态位。
+ */
+#define HS_MOXIE_CORE_EL_MIP_MSIP          (1UL << 3)
+#define HS_MOXIE_CORE_EL_MIP_MTIP          (1UL << 7)
+#define HS_MOXIE_CORE_EL_MIP_MEIP          (1UL << 11)
+
+/*
+ * mstatus寄存器位定义。
+ * MIE用于全局中断使能，仅影响中断，不影响swi与其它异常。
+ */
+#define HS_MOXIE_CORE_EL_MSTATUS_MIE       (1UL << 3)
+#define HS_MOXIE_CORE_EL_MSTATUS_DEFAULT   HS_MOXIE_CORE_EL_MSTATUS_MIE
+
+/** \brief 定时器中断附带值 */
+#define HS_MOXIE_CORE_EL_INTERRUPT_TIMER   7
+/** \brief 软件中断附带值 */
+#define HS_MOXIE_CORE_EL_INTERRUPT_SOFTWARE 3
+/** \brief 外部中断附带值 */
+#define HS_MOXIE_CORE_EL_INTERRUPT_EXTERNAL 11
+
 /** \brief moxie异常原因
  *
  */
@@ -107,6 +150,14 @@ typedef enum
     HS_MOXIE_CORE_EL_SREG_SIM_RETURN_ADDR=6,           /**< 模拟器返回值地址(moxiebox扩展) */
     HS_MOXIE_CORE_EL_SREG_SIM_RETURN_LEN=7,            /**< 模拟器返回值长度/初始栈地址(moxiebox扩展) */
     HS_MOXIE_CORE_EL_SREG_DEVICE_TREE=9,               /**< 设备树地址 */
+    HS_MOXIE_CORE_EL_SREG_SATP=10,                     /**< Sv32页表基址(satp) */
+    HS_MOXIE_CORE_EL_SREG_MIE=11,                      /**< 中断使能(mie) */
+    HS_MOXIE_CORE_EL_SREG_TIME_LO=12,                  /**< 定时器计数低32位 */
+    HS_MOXIE_CORE_EL_SREG_TIME_HI=13,                  /**< 定时器计数高32位 */
+    HS_MOXIE_CORE_EL_SREG_TIMECMP_LO=14,               /**< 定时器比较值低32位 */
+    HS_MOXIE_CORE_EL_SREG_TIMECMP_HI=15,               /**< 定时器比较值高32位 */
+    HS_MOXIE_CORE_EL_SREG_MSTATUS=16,                  /**< 全局中断状态(mstatus) */
+    HS_MOXIE_CORE_EL_SREG_MIP=17,                      /**< 中断挂起(mip) */
 } hs_moxie_core_el_sreg_t;                             /**< moxie特殊寄存器编号 */
 
 /** \brief  初始化 hs_moxie_core_el_io_t (小端序)
@@ -133,6 +184,94 @@ void hs_moxie_core_el_tick(hs_moxie_core_el_t * core,size_t cycles);
  *
  */
 void hs_moxie_core_el_reset(hs_moxie_core_el_t * core);
+
+/** \brief 获取Sv32 satp寄存器缓存值
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \return uint32_t satp值
+ *
+ */
+uint32_t hs_moxie_core_el_satp_get(hs_moxie_core_el_t *core);
+
+/** \brief 设置Sv32 satp寄存器缓存值
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \param value uint32_t satp值
+ *
+ */
+void hs_moxie_core_el_satp_set(hs_moxie_core_el_t *core,uint32_t value);
+
+/** \brief 获取mstatus缓存值
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \return uint32_t mstatus值
+ *
+ */
+uint32_t hs_moxie_core_el_mstatus_get(hs_moxie_core_el_t *core);
+
+/** \brief 设置mstatus缓存值
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \param value uint32_t mstatus值
+ *
+ */
+void hs_moxie_core_el_mstatus_set(hs_moxie_core_el_t *core,uint32_t value);
+
+/** \brief 获取mip挂起状态
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \return uint32_t mip值
+ *
+ */
+uint32_t hs_moxie_core_el_mip_get(hs_moxie_core_el_t *core);
+
+/** \brief 设置mip挂起状态(仅MSIP可写)
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \param value uint32_t mip值
+ *
+ */
+void hs_moxie_core_el_mip_set(hs_moxie_core_el_t *core,uint32_t value);
+
+/** \brief 获取定时器计数(time)
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \return uint64_t 定时器计数
+ *
+ */
+uint64_t hs_moxie_core_el_timer_time_get(hs_moxie_core_el_t *core);
+
+/** \brief 设置定时器计数(time)
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \param value uint64_t 定时器计数
+ *
+ */
+void hs_moxie_core_el_timer_time_set(hs_moxie_core_el_t *core,uint64_t value);
+
+/** \brief 推进定时器计数(time)
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \param delta uint64_t 增加的时间
+ *
+ */
+void hs_moxie_core_el_timer_time_advance(hs_moxie_core_el_t *core,uint64_t delta);
+
+/** \brief 获取定时器比较值(timecmp)
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \return uint64_t 定时器比较值
+ *
+ */
+uint64_t hs_moxie_core_el_timer_timecmp_get(hs_moxie_core_el_t *core);
+
+/** \brief 设置定时器比较值(timecmp)
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \param value uint64_t 定时器比较值
+ *
+ */
+void hs_moxie_core_el_timer_timecmp_set(hs_moxie_core_el_t *core,uint64_t value);
 
 /** \brief moxie执行IO操作
  *
@@ -180,6 +319,54 @@ bool hs_moxie_core_el_interrupt_raise(hs_moxie_core_el_t *core,uint32_t value);
  *
  */
 bool hs_moxie_core_el_interrupt_clear(hs_moxie_core_el_t *core);
+
+/** \brief 触发外部中断
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \return bool 是否成功
+ *
+ */
+bool hs_moxie_core_el_external_interrupt_raise(hs_moxie_core_el_t *core);
+
+/** \brief 清除外部中断
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \return bool 是否成功
+ *
+ */
+bool hs_moxie_core_el_external_interrupt_clear(hs_moxie_core_el_t *core);
+
+/** \brief 外部中断是否等待处理
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \return bool 是否等待处理
+ *
+ */
+bool hs_moxie_core_el_external_interrupt_pending(hs_moxie_core_el_t *core);
+
+/** \brief 触发软件中断
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \return bool 是否成功
+ *
+ */
+bool hs_moxie_core_el_software_interrupt_raise(hs_moxie_core_el_t *core);
+
+/** \brief 清除软件中断
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \return bool 是否成功
+ *
+ */
+bool hs_moxie_core_el_software_interrupt_clear(hs_moxie_core_el_t *core);
+
+/** \brief 软件中断是否等待处理
+ *
+ * \param core hs_moxie_core_el_t* moxie内核指针
+ * \return bool 是否等待处理
+ *
+ */
+bool hs_moxie_core_el_software_interrupt_pending(hs_moxie_core_el_t *core);
 
 /** \brief moxie是否处于异常等待(无法进入异常处理程序)状态
  *

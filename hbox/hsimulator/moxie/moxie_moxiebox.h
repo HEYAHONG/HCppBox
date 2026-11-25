@@ -29,7 +29,7 @@
  *
  * 5. 运行:
  *    while(!hs_moxie_moxiebox_stopped(machine))
- *        hs_moxie_moxiebox_step(machine,count);
+ *        hs_moxie_moxiebox_step(machine,elapsed_us,count);
  *
  * 6. 复位/销毁:
  *    hs_moxie_moxiebox_reset(machine);   // 关闭未关闭文件并清理hmmap申请的内存
@@ -375,11 +375,12 @@ void hs_moxie_moxiebox_reset(hs_moxie_moxiebox_t *machine);
 /** \brief 虚拟机步进
  *
  * \param machine hs_moxie_moxiebox_t* 虚拟机指针
+ * \param elapsed_us uint32_t 本次步进经过的时间(微秒)，累加到定时器time
  * \param count size_t 本次最多执行的指令条数
  * \return int 0=正常运行，1=已停止(退出或异常)，-1=参数错误或配置检查失败
  *
  */
-int hs_moxie_moxiebox_step(hs_moxie_moxiebox_t *machine,size_t count);
+int hs_moxie_moxiebox_step(hs_moxie_moxiebox_t *machine,uint32_t elapsed_us,size_t count);
 
 /** \brief 获取内核指针
  *
@@ -500,6 +501,88 @@ uint32_t hs_moxie_moxiebox_sreg_read(hs_moxie_moxiebox_t *machine,uint32_t index
  *
  */
 void hs_moxie_moxiebox_sreg_write(hs_moxie_moxiebox_t *machine,uint32_t index,uint32_t value);
+
+/** \brief 获取定时器计数(time)
+ *
+ * \param machine hs_moxie_moxiebox_t* 虚拟机指针
+ * \return uint64_t 定时器计数
+ *
+ */
+uint64_t hs_moxie_moxiebox_timer_time_get(hs_moxie_moxiebox_t *machine);
+
+/** \brief 设置定时器计数(time)
+ *
+ * \param machine hs_moxie_moxiebox_t* 虚拟机指针
+ * \param value uint64_t 定时器计数
+ * \return bool 是否成功
+ *
+ */
+bool hs_moxie_moxiebox_timer_time_set(hs_moxie_moxiebox_t *machine,uint64_t value);
+
+/** \brief 获取定时器比较值(timecmp)
+ *
+ * \param machine hs_moxie_moxiebox_t* 虚拟机指针
+ * \return uint64_t 定时器比较值
+ *
+ */
+uint64_t hs_moxie_moxiebox_timer_timecmp_get(hs_moxie_moxiebox_t *machine);
+
+/** \brief 设置定时器比较值(timecmp)
+ *
+ * \param machine hs_moxie_moxiebox_t* 虚拟机指针
+ * \param value uint64_t 定时器比较值
+ * \return bool 是否成功
+ *
+ */
+bool hs_moxie_moxiebox_timer_timecmp_set(hs_moxie_moxiebox_t *machine,uint64_t value);
+
+/** \brief 触发软件中断(mie.MSIE使能时生效)
+ *
+ * \param machine hs_moxie_moxiebox_t* 虚拟机指针
+ * \return bool 是否成功
+ *
+ */
+bool hs_moxie_moxiebox_software_interrupt_raise(hs_moxie_moxiebox_t *machine);
+
+/** \brief 清除软件中断
+ *
+ * \param machine hs_moxie_moxiebox_t* 虚拟机指针
+ * \return bool 是否成功
+ *
+ */
+bool hs_moxie_moxiebox_software_interrupt_clear(hs_moxie_moxiebox_t *machine);
+
+/** \brief 软件中断是否等待处理
+ *
+ * \param machine hs_moxie_moxiebox_t* 虚拟机指针
+ * \return bool 是否等待处理
+ *
+ */
+bool hs_moxie_moxiebox_software_interrupt_pending(hs_moxie_moxiebox_t *machine);
+
+/** \brief 触发外部中断(mie.MEIE使能时生效)
+ *
+ * \param machine hs_moxie_moxiebox_t* 虚拟机指针
+ * \return bool 是否成功
+ *
+ */
+bool hs_moxie_moxiebox_external_interrupt_raise(hs_moxie_moxiebox_t *machine);
+
+/** \brief 清除外部中断
+ *
+ * \param machine hs_moxie_moxiebox_t* 虚拟机指针
+ * \return bool 是否成功
+ *
+ */
+bool hs_moxie_moxiebox_external_interrupt_clear(hs_moxie_moxiebox_t *machine);
+
+/** \brief 外部中断是否等待处理
+ *
+ * \param machine hs_moxie_moxiebox_t* 虚拟机指针
+ * \return bool 是否等待处理
+ *
+ */
+bool hs_moxie_moxiebox_external_interrupt_pending(hs_moxie_moxiebox_t *machine);
 
 #ifdef __cplusplus
 }
