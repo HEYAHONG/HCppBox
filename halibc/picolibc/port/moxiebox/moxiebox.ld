@@ -101,11 +101,22 @@ SECTIONS
         *(.bss .bss.*)
         *(.sbss .sbss.*)
         *(COMMON)
-    }
 
-    . = ALIGN(4);
-    __bss_end = .;
-    __bss_size = __bss_end - __bss_start;
+        . = ALIGN(4);
+        __bss_end = .;
+        __bss_size = __bss_end - __bss_start;
+
+        /*
+         * .data初始值快照，用于moxiebox重启时恢复.data。
+         * 位于.bss末尾但不包含在__bss_start..__bss_end内，
+         * 因此crt0清BSS时不会清除快照。
+         */
+        __data_snapshot_magic = .;
+        . += 4;
+        __data_snapshot_data = .;
+        . += __data_size;
+        __data_snapshot_end = .;
+    }
 
     . = ALIGN(4);
     __heap_start = .;
