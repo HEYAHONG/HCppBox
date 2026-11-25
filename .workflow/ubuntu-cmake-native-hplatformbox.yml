@@ -29,8 +29,8 @@ stages:
           - set -e
           - bash .workflow/scripts/apt-install.sh build-essential cmake ca-certificates git sdcc gcc-riscv64-unknown-elf picolibc-riscv64-unknown-elf autoconf automake libtool libtool-bin gperf bison flex texinfo help2man libncurses-dev python3-dev gawk wget curl bzip2 xz-utils unzip patch file gettext pkg-config rsync meson ninja-build
           - bash .workflow/scripts/build-moxie-toolchain.sh
-          - export PATH="/usr/local/bin:$PATH"
-          - export MOXIE_TOOLCHAIN="/usr/local/bin"
+          - export PATH="/opt/moxie-unknown-elf/bin:$PATH"
+          - export MOXIE_TOOLCHAIN="/opt/moxie-unknown-elf/bin"
           - riscv64-unknown-elf-gcc -specs=picolibcpp.specs --version
           - cmake -B build -DCMAKE_BUILD_TYPE=Release test
           - cmake --build build --config Release -t hplatformbox

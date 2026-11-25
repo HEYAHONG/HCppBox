@@ -43,9 +43,24 @@ jobs:
         run: bash .workflow/scripts/build-moxie-toolchain.sh
 
       - name: Add moxie toolchain to PATH
+        # The toolchain is installed into /opt/moxie-unknown-elf, so its
+        # binaries are in /opt/moxie-unknown-elf/bin. MOXIE_TOOLCHAIN is also
+        # exported because the Moxie CMake toolchain file uses it for the
+        # nested ROM builds.
         run: |
-          echo "/usr/local/bin" >> "$GITEA_PATH"
-          echo "MOXIE_TOOLCHAIN=/usr/local/bin" >> "$GITEA_ENV"
+          echo "/opt/moxie-unknown-elf/bin" >> "$GITEA_PATH"
+          echo "MOXIE_TOOLCHAIN=/opt/moxie-unknown-elf/bin" >> "$GITEA_ENV"
+
+      - name: Verify moxie toolchain
+        # Fail early (and show the effective PATH) if the toolchain from the
+        # previous step is not visible to later steps.
+        run: |
+          ls -ld "$(dirname "$MOXIE_TOOLCHAIN")" "$MOXIE_TOOLCHAIN"
+          ls -l "$MOXIE_TOOLCHAIN/moxie-unknown-elf-gcc" "$MOXIE_TOOLCHAIN/moxie-unknown-elf-g++" || true
+          test -x "$MOXIE_TOOLCHAIN/moxie-unknown-elf-gcc"
+          "$MOXIE_TOOLCHAIN/moxie-unknown-elf-gcc" --version
+          echo "PATH=$PATH"
+          command -v moxie-unknown-elf-gcc || true
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only

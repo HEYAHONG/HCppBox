@@ -7,8 +7,14 @@
 # component tarballs (binutils, gcc, newlib, gdb, ...) during the build and a
 # transient network failure should not abort the whole CI job.
 #
-# The toolchain is installed system-wide into ${MOXIE_TOOLCHAIN_PREFIX:-/usr/local}
-# (so moxie-unknown-elf-gcc lands in /usr/local/bin, which is already on PATH).
+# The toolchain is installed into a dedicated prefix,
+# ${MOXIE_TOOLCHAIN_PREFIX:-/opt/moxie-unknown-elf}, so moxie-unknown-elf-gcc
+# lands in /opt/moxie-unknown-elf/bin. The workflows add that directory to PATH.
+#
+# CT_RM_RF_PREFIX_DIR is disabled (see below): crosstool-NG would otherwise
+# delete the whole installation prefix at the start of a build. Keep the prefix
+# dedicated anyway; do not install into /usr/local, where unrelated files such
+# as the CI runner's Node.js binaries live.
 set -euo pipefail
 
 # crosstool-NG refuses to build when running as root unless this override is
@@ -16,9 +22,17 @@ set -euo pipefail
 export CT_ALLOW_BUILD_AS_ROOT_SURE=1
 
 CTNG_VERSION="${CTNG_VERSION:-1.29.0}"
-INSTALL_PREFIX="${MOXIE_TOOLCHAIN_PREFIX:-/usr/local}"
+INSTALL_PREFIX="${MOXIE_TOOLCHAIN_PREFIX:-/opt/moxie-unknown-elf}"
 TARGET="moxie-unknown-elf"
 GCC="$INSTALL_PREFIX/bin/$TARGET-gcc"
+
+case "$INSTALL_PREFIX" in
+    /|/usr|/usr/local|/usr/local/)
+        echo "Refusing to install the toolchain into ${INSTALL_PREFIX}:" >&2
+        echo "use a dedicated directory such as /opt/${TARGET} instead." >&2
+        exit 1
+        ;;
+esac
 
 if [ -x "$GCC" ]; then
     echo "moxie toolchain already installed: $GCC"
@@ -88,15 +102,20 @@ cd "$workdir/work"
 defconfig="$workdir/moxie-unknown-elf.defconfig"
 cp "$ctng_dir/samples/moxie-unknown-elf/crosstool.config" "$defconfig"
 # The sample defconfig leaves C++ disabled; append the override so Kconfig
-# enables C++ (and libstdc++ for the target). Install system-wide so the
-# toolchain binaries are placed in /usr/local/bin, and keep the /usr/local
-# tree writable (do not "render the toolchain read-only").
-printf '%s\n' 'CT_CC_LANG_CXX=y' 'CT_PREFIX_DIR_RO=n' \
+# enables C++ (and libstdc++ for the target). Install into a dedicated prefix,
+# never remove that prefix before building (CT_RM_RF_PREFIX_DIR=n, so a stale
+# prefix cannot make crosstool-NG delete unrelated files), and keep the tree
+# writable (do not "render the toolchain read-only").
+printf '%s\n' 'CT_CC_LANG_CXX=y' 'CT_PREFIX_DIR_RO=n' 'CT_RM_RF_PREFIX_DIR=n' \
     "CT_PREFIX_DIR=\"${INSTALL_PREFIX}\"" >> "$defconfig"
 DEFCONFIG="$defconfig" "$ctng_dir/ct-ng" defconfig
 
 if ! grep -q '^CT_CC_LANG_CXX=y$' .config; then
     echo "Failed to enable C++ for ${TARGET}" >&2
+    exit 1
+fi
+if ! grep -Eq '^(CT_RM_RF_PREFIX_DIR=n|# CT_RM_RF_PREFIX_DIR is not set)$' .config; then
+    echo "Failed to disable removal of the install prefix" >&2
     exit 1
 fi
 if ! grep -q "^CT_PREFIX_DIR=\"${INSTALL_PREFIX}\"$" .config; then

@@ -188,8 +188,8 @@ cmake-native-hplatformbox:
       libncurses-dev python3-dev gawk wget curl bzip2 xz-utils unzip patch
       file gettext pkg-config rsync meson ninja-build
     - bash .workflow/scripts/build-moxie-toolchain.sh
-    - export PATH="/usr/local/bin:$PATH"
-    - export MOXIE_TOOLCHAIN="/usr/local/bin"
+    - export PATH="/opt/moxie-unknown-elf/bin:$PATH"
+    - export MOXIE_TOOLCHAIN="/opt/moxie-unknown-elf/bin"
   script:
     - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE test
     - cmake --build build --config $BUILD_TYPE -t hplatformbox
