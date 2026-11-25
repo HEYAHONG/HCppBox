@@ -46,14 +46,20 @@ add_subdirectory(${ROOT_DIR}/hrc HRC EXCLUDE_FROM_ALL)
 add_executable(${PROJECT_NAME}
     main.cpp
     shell.cpp
+    hbox_config.c
+    port.c
     )
 
 hbox_enable(${PROJECT_NAME})
 hrc_enable(${PROJECT_NAME})
 
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${HBOX_DIR}/h3rdparty/3rdparty/FreeRTOS/Kernel)
+
 target_link_libraries(${PROJECT_NAME}
     "-Wl,--start-group"
     HBox
+    h3rdparty_freertos_kernel
     h3rdparty_printf
     h3rdparty_common
     picolibc_c_port

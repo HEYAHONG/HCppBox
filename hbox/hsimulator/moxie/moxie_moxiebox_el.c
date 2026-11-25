@@ -500,6 +500,12 @@ static void hs_moxie_moxiebox_el_sreg_write_internal(hs_moxie_moxiebox_el_t *mac
         machine->sregs[index]=hs_moxie_core_el_mip_get(core);
         return;
     }
+    case HS_MOXIE_CORE_EL_SREG_CC:
+    {
+        hs_moxie_core_el_condition_code_set(core,value);
+        machine->sregs[index]=value;
+        return;
+    }
     case HS_MOXIE_CORE_EL_SREG_TIME_LO:
     {
         uint64_t time=hs_moxie_core_el_timer_time_get(core);
@@ -566,6 +572,10 @@ uint32_t hs_moxie_moxiebox_el_sreg_read(hs_moxie_moxiebox_el_t *machine,uint32_t
     case HS_MOXIE_CORE_EL_SREG_MIP:
     {
         return hs_moxie_core_el_mip_get(core);
+    }
+    case HS_MOXIE_CORE_EL_SREG_CC:
+    {
+        return hs_moxie_core_el_condition_code(core);
     }
     case HS_MOXIE_CORE_EL_SREG_TIME_LO:
     {

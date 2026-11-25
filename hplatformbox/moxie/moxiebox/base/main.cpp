@@ -6,14 +6,49 @@
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
  **************************************************************/
+#include "FreeRTOS.h"
+#include "task.h"
 #include "hruntime.h"
 #include "hshell.h"
 #include "hrc.h"
 
+void vApplicationIdleHook(void)
+{
+}
+
+void vApplicationStackOverflowHook(TaskHandle_t xTask,char *pcTaskName)
+{
+    (void)xTask;
+    (void)pcTaskName;
+
+    for(;;)
+    {
+    }
+}
+
+void vApplicationMallocFailedHook(void)
+{
+    for(;;)
+    {
+    }
+}
+
+static void main_task(void *arg)
+{
+    (void)arg;
+
+    hruntime_init();
+
+    for(;;)
+    {
+        hruntime_loop();
+        vTaskDelay(1);
+    }
+}
+
 int main(void)
 {
     hruntime_init_lowlevel();
-    hruntime_init();
 
     {
         const char *banner=(const char *)RCGetHandle("banner");
@@ -25,9 +60,17 @@ int main(void)
 
     hshell_printf(NULL,"HBox hshell base\r\n");
 
+    if(xTaskCreate(main_task,"main",2048,NULL,2,NULL)!=pdPASS)
+    {
+        for(;;)
+        {
+        }
+    }
+
+    vTaskStartScheduler();
+
     for(;;)
     {
-        hruntime_loop();
     }
 
     return 0;

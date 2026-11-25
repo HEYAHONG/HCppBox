@@ -132,7 +132,7 @@ swi指令可触发软中断。
 | 13         | `time`高32位，低32位进位时递增                               |
 | 14         | `timecmp`低32位                                              |
 | 15         | `timecmp`高32位，`time>=timecmp`且MTIE置位时产生中断         |
-| 16         | `mstatus`，bit3为MIE全局中断使能，复位值1；仅影响中断，不影响swi与其它异常 |
+| 16         | `mstatus`，bit3为MIE全局中断使能，bit7为MPIE中断前使能(用户可读写)，复位值MIE=1；仅影响中断，不影响swi与其它异常 |
 | 17         | `mip`，bit3为MSIP(程序可写，触发软件中断)，bit7为MTIP(只读)，bit11为MEIP(只读) |
 
 ### 初始状态

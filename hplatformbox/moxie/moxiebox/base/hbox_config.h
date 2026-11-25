@@ -15,6 +15,17 @@
 #define HCPPRT_NO_ATOMIC 1
 
 /*
+ * 启用C++构造函数
+ */
+#define HCPPRT_USE_CTORS 1
+
+/*
+ * 启用FreeRTOS内核
+ */
+#define FREERTOS_KERNEL 1
+#define FREERTOS_KERNEL_MEMMANG_HEAP 4
+
+/*
  * 启用HRuntime初始化、循环与符号段
  */
 #define HRUNTIME_USING_INIT_SECTION 1

@@ -114,7 +114,17 @@ typedef bool (*hs_moxie_core_io_t)(hs_moxie_core_t *core,uint32_t opt,uint32_t a
  * MIE用于全局中断使能，仅影响中断，不影响swi与其它异常。
  */
 #define HS_MOXIE_CORE_MSTATUS_MIE       (1UL << 3)
+#define HS_MOXIE_CORE_MSTATUS_MPIE      (1UL << 7)
 #define HS_MOXIE_CORE_MSTATUS_DEFAULT   HS_MOXIE_CORE_MSTATUS_MIE
+
+/*
+ * MPIE(中断前使能)说明:
+ * - 进入中断(IRQ)时，若MIE为1则置位MPIE，随后清除MIE；
+ * - 中断处理程序执行ret时，若返回地址等于EXCEPTION_PC(特殊寄存器5)，
+ *   则用MPIE恢复MIE，并清除本次中断返回标志；
+ * - 该返回判断只在进入中断后有效，普通函数ret不会触发。
+ * - MPIE可由用户通过ssr/gsr读写特殊寄存器16。
+ */
 
 /** \brief 定时器中断附带值 */
 #define HS_MOXIE_CORE_INTERRUPT_TIMER   7
@@ -158,6 +168,7 @@ typedef enum
     HS_MOXIE_CORE_SREG_TIMECMP_HI=15,               /**< 定时器比较值高32位 */
     HS_MOXIE_CORE_SREG_MSTATUS=16,                  /**< 全局中断状态(mstatus) */
     HS_MOXIE_CORE_SREG_MIP=17,                      /**< 中断挂起(mip) */
+    HS_MOXIE_CORE_SREG_CC=18,                       /**< 条件码(moxiebox扩展，供上下文切换保存) */
 } hs_moxie_core_sreg_t;                             /**< moxie特殊寄存器编号 */
 
 /** \brief  初始化 hs_moxie_core_io_t (大端序)
@@ -383,6 +394,14 @@ bool hs_moxie_core_halted(hs_moxie_core_t *core);
  *
  */
 uint32_t hs_moxie_core_condition_code(hs_moxie_core_t *core);
+
+/** \brief moxie设置当前条件码
+ *
+ * \param core hs_moxie_core_t* moxie内核指针
+ * \param cc uint32_t 条件码
+ *
+ */
+void hs_moxie_core_condition_code_set(hs_moxie_core_t *core,uint32_t cc);
 
 #ifdef __cplusplus
 }

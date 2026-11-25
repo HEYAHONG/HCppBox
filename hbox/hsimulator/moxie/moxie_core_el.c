@@ -40,6 +40,7 @@ struct hs_moxie_core_el
         uint32_t        halted_by_interrupt:1;  /**< 暂停由中断引起 */
         uint32_t        timer_pending:1;        /**< 定时器中断条件成立 */
         uint32_t        software_interrupt_pending:1; /**< 软件中断等待处理 */
+        uint32_t        mpie_pending:1;         /**< 中断返回待恢复MIE(进入中断后有效) */
     }                   flags;
 };
 
@@ -484,6 +485,23 @@ static void hs_moxie_core_el_exception_enter(hs_moxie_core_el_t *core,uint32_t c
     {
         if(cause!=HS_MOXIE_CORE_EL_EXCEPTION_SWI)
         {
+            /*
+             * 进入中断时保存MIE到MPIE并关闭MIE，
+             * 由ret返回中断PC时自动恢复。
+             */
+            if(cause==HS_MOXIE_CORE_EL_EXCEPTION_IRQ && core->flags.mpie_pending==0)
+            {
+                if((core->mstatus&HS_MOXIE_CORE_EL_MSTATUS_MIE)!=0)
+                {
+                    core->mstatus|=HS_MOXIE_CORE_EL_MSTATUS_MPIE;
+                }
+                else
+                {
+                    core->mstatus&=(~HS_MOXIE_CORE_EL_MSTATUS_MPIE);
+                }
+                core->mstatus&=(~HS_MOXIE_CORE_EL_MSTATUS_MIE);
+                core->flags.mpie_pending=1;
+            }
             hs_moxie_core_el_sreg_write(core,HS_MOXIE_CORE_EL_SREG_STATUS,status&(~0x01UL));
         }
         hs_moxie_core_el_pc_write(core,handler);
@@ -747,6 +765,23 @@ static void hs_moxie_core_el_exec(hs_moxie_core_el_t *core)
             hs_moxie_core_el_register_write(core,0,new_frame_pointer);
             hs_moxie_core_el_register_write(core,1,frame_pointer+12);
             next_pc=return_address;
+            if(core->flags.mpie_pending!=0 &&
+               return_address==hs_moxie_core_el_sreg_read(core,HS_MOXIE_CORE_EL_SREG_EXCEPTION_PC))
+            {
+                /*
+                 * ret恢复到中断前执行地址时，从MPIE恢复MIE。
+                 * 仅进入中断后的第一次匹配ret有效。
+                 */
+                if((core->mstatus&HS_MOXIE_CORE_EL_MSTATUS_MPIE)!=0)
+                {
+                    core->mstatus|=HS_MOXIE_CORE_EL_MSTATUS_MIE;
+                }
+                else
+                {
+                    core->mstatus&=(~HS_MOXIE_CORE_EL_MSTATUS_MIE);
+                }
+                core->flags.mpie_pending=0;
+            }
         }
         break;
         case 0x05:  //add
@@ -1731,4 +1766,13 @@ uint32_t hs_moxie_core_el_condition_code(hs_moxie_core_el_t *core)
         return 0;
     }
     return core->cc;
+}
+
+void hs_moxie_core_el_condition_code_set(hs_moxie_core_el_t *core,uint32_t cc)
+{
+    if(core==NULL)
+    {
+        return;
+    }
+    core->cc=cc;
 }

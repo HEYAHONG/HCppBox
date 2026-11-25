@@ -15,6 +15,120 @@
 #include H3RDPARTY_ARGTABLE3_HEADER
 #include "hsimulator/moxie/moxie_moxiebox.h"
 #include "hsimulator/moxie/moxie_moxiebox_el.h"
+#include <errno.h>
+
+/*
+ * 控制台输入：非阻塞读取。
+ * 返回值：
+ *   1  读到字符
+ *   0  当前无数据
+ *  -1  输入结束
+ */
+#if defined(_WIN32) || defined(WIN32) || defined(WINDOWS)
+#include <conio.h>
+#include <windows.h>
+
+static void console_init(void)
+{
+#if defined(ENABLE_VIRTUAL_TERMINAL_INPUT)
+    {
+        HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+        DWORD Mode = 0;
+        if (GetConsoleMode(hStdin, &Mode))
+        {
+            Mode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
+            SetConsoleMode(hStdin, Mode);
+        }
+    }
+#endif
+#if defined(ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+    {
+        HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+        DWORD Mode = 0;
+        if (GetConsoleMode(hStdout, &Mode))
+        {
+            Mode |= (ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+            SetConsoleMode(hStdout, Mode);
+        }
+    }
+#endif
+}
+
+static int console_read(uint8_t *ch)
+{
+    if(!_kbhit())
+    {
+        return 0;
+    }
+    *ch=(uint8_t)_getch();
+    return 1;
+}
+
+#else
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+static bool is_eofd=false;
+
+static void reset_console_keyboard(void)
+{
+    struct termios term;
+    if(tcgetattr(0, &term)==0)
+    {
+        term.c_lflag |= ICANON | ECHO;
+        tcsetattr(0, TCSANOW, &term);
+    }
+}
+
+static void set_console_keyboard(void)
+{
+    atexit(reset_console_keyboard);
+    struct termios term;
+    if(tcgetattr(0, &term)==0)
+    {
+        term.c_lflag &= ~(ICANON | ECHO);
+        tcsetattr(0, TCSANOW, &term);
+    }
+    int flags = fcntl(0, F_GETFL, 0);
+    if(flags>=0)
+    {
+        fcntl(0, F_SETFL, flags | O_NONBLOCK);
+    }
+}
+
+static int console_read(uint8_t *ch)
+{
+    if(is_eofd)
+    {
+        return -1;
+    }
+    ssize_t rread=read(fileno(stdin),ch,1);
+    if(rread>0)
+    {
+        return 1;
+    }
+    if(rread==0)
+    {
+        is_eofd=true;
+        return -1;
+    }
+    if(errno==EAGAIN || errno==EWOULDBLOCK || errno==EINTR)
+    {
+        return 0;
+    }
+    is_eofd=true;
+    return -1;
+}
+
+static void console_init(void)
+{
+    setbuf(stdin,NULL);
+    setbuf(stdout,NULL);
+    set_console_keyboard();
+}
+
+#endif
 
 static std::string g_output_filename;
 
@@ -151,6 +265,14 @@ struct machine_ops<hs_moxie_moxiebox_t>
     {
         return hs_moxie_moxiebox_memory_read(machine,address,data,length);
     }
+    static bool memory_write(machine_t *machine,uint32_t address,const void *data,size_t length)
+    {
+        return hs_moxie_moxiebox_memory_write(machine,address,data,length);
+    }
+    static void set_swi(machine_t *machine,hs_moxie_moxiebox_swi_t swi,void *usr)
+    {
+        hs_moxie_moxiebox_set_swi(machine,swi,usr);
+    }
     static bool return_buffer(machine_t *machine,uint32_t *address,uint32_t *length)
     {
         return hs_moxie_moxiebox_return_buffer(machine,address,length);
@@ -213,11 +335,74 @@ struct machine_ops<hs_moxie_moxiebox_el_t>
     {
         return hs_moxie_moxiebox_el_memory_read(machine,address,data,length);
     }
+    static bool memory_write(machine_t *machine,uint32_t address,const void *data,size_t length)
+    {
+        return hs_moxie_moxiebox_el_memory_write(machine,address,data,length);
+    }
+    static void set_swi(machine_t *machine,hs_moxie_moxiebox_el_swi_t swi,void *usr)
+    {
+        hs_moxie_moxiebox_el_set_swi(machine,swi,usr);
+    }
     static bool return_buffer(machine_t *machine,uint32_t *address,uint32_t *length)
     {
         return hs_moxie_moxiebox_el_return_buffer(machine,address,length);
     }
 };
+
+/*
+ * 控制台读取回调：拦截guest fd 0的read，使用非阻塞控制台输入。
+ */
+template<typename M>
+static bool console_swi_cb(M *machine,void *usr,uint32_t number)
+{
+    (void)usr;
+    using ops=machine_ops<M>;
+    if(number!=3)
+    {
+        return false;
+    }
+    if(machine->regs[2]!=0)
+    {
+        return false;
+    }
+    uint32_t address=machine->regs[3];
+    uint32_t count=machine->regs[4];
+    if(count==0)
+    {
+        machine->regs[2]=0;
+        return true;
+    }
+    uint8_t buffer[64];
+    uint32_t done=0;
+    bool eof=false;
+    while(done<count && done<sizeof(buffer))
+    {
+        uint8_t c=0;
+        int ret=console_read(&c);
+        if(ret<0)
+        {
+            eof=true;
+            break;
+        }
+        if(ret==0)
+        {
+            break;
+        }
+        buffer[done++]=c;
+    }
+    if(done==0)
+    {
+        machine->regs[2]=eof?0:(uint32_t)(-(int)EAGAIN);
+        return true;
+    }
+    if(!ops::memory_write(machine,address,buffer,done))
+    {
+        machine->regs[2]=(uint32_t)(-(int)EFAULT);
+        return true;
+    }
+    machine->regs[2]=done;
+    return true;
+}
 
 static std::string g_arch="auto";
 static std::string g_elf_filename;
@@ -465,6 +650,9 @@ static int run_vm(helf_file_input_t *input_file,uint32_t base,size_t span,
         ops::deinit(machine);
         return -1;
     }
+
+    ops::set_swi(machine,console_swi_cb<M>,NULL);
+    console_init();
 
     uint64_t last_us=now_us();
     while(!ops::stopped(machine))
