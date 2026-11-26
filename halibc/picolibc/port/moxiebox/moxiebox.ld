@@ -83,6 +83,9 @@ SECTIONS
         __bothinit_array_end = __init_array_end;
     }
 
+    /*
+     * crt0的memcpy/memset按4字节复制，数据区保持4字节对齐。
+     */
     . = ALIGN(4);
     __data_start = .;
     .data : {
@@ -96,6 +99,7 @@ SECTIONS
     __data_source = LOADADDR(.data);
     __data_size = __data_end - __data_start;
 
+    . = ALIGN(4);
     __bss_start = .;
     .bss : {
         *(.bss .bss.*)
@@ -111,10 +115,13 @@ SECTIONS
          * 位于.bss末尾但不包含在__bss_start..__bss_end内，
          * 因此crt0清BSS时不会清除快照。
          */
+        . = ALIGN(4);
         __data_snapshot_magic = .;
         . += 4;
+        . = ALIGN(4);
         __data_snapshot_data = .;
         . += __data_size;
+        . = ALIGN(4);
         __data_snapshot_end = .;
     }
 
