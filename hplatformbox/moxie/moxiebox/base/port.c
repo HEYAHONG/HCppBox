@@ -34,15 +34,22 @@
 
 #define PORT_TIMER_INTERVAL_US  (1000000UL / configTICK_RATE_HZ)
 
-#define PORT_CONTEXT_WORDS      11
-#define PORT_EXIT_FRAME_WORDS   3
-
 volatile UBaseType_t uxCriticalNesting = 0;
+volatile uint32_t ulMainStackPointer = 0;
 
 extern void *volatile pxCurrentTCB;
 extern void prvTaskExitError(void);
 extern void vPortStartFirstTask(void);
 extern void vPortExceptionHandler(void);
+
+static inline uint32_t
+port_get_sp(void)
+{
+    uint32_t sp;
+
+    __asm__ volatile("mov %0, $sp" : "=r"(sp));
+    return sp;
+}
 
 static inline uint32_t
 port_sreg_read(uint32_t sreg)
@@ -139,7 +146,7 @@ vPortYield(void)
 uint32_t
 vPortExceptionC(uint32_t context)
 {
-    *(StackType_t **)pxCurrentTCB = (StackType_t *)(uintptr_t)context;
+    (void)context;
 
     if (port_sreg_read(PORT_SREG_CAUSE) == PORT_EXCEPTION_IRQ) {
         uint32_t value = port_sreg_read(PORT_SREG_VALUE);
@@ -169,6 +176,11 @@ prvSetupTimerInterrupt(void)
 BaseType_t
 xPortStartScheduler(void)
 {
+    /*
+     * 保存调度器启动时的主栈指针，异常处理程序使用该栈执行C代码。
+     * 任务上下文仍保存在各自任务栈上。
+     */
+    ulMainStackPointer = port_get_sp();
     uxCriticalNesting = 0;
     prvSetupTimerInterrupt();
     vPortStartFirstTask();
@@ -240,7 +252,12 @@ __asm__(".section .text\n"
         "    sto.l 68($sp), $r0\n"
         "    gsr $r0, 18\n"
         "    sto.l 60($sp), $r0\n"
+        "    ldi.l $r0, pxCurrentTCB\n"
+        "    ld.l $r0, ($r0)\n"
+        "    st.l ($r0), $sp\n"
         "    mov $r0, $sp\n"
+        "    ldi.l $r1, ulMainStackPointer\n"
+        "    ld.l $sp, ($r1)\n"
         "    jsra vPortExceptionC\n"
         "    mov $sp, $r0\n"
         "    ldo.l $fp, 60($sp)\n"
