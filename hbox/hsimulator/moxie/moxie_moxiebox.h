@@ -86,7 +86,7 @@ extern "C"
  * - 所有swi首先调用外部服务回调，回调返回true表示已接管（包括SYS_EXIT与SYS_MMAP）。
  * - 回调未处理时，SYS_EXIT与SYS_MMAP由虚拟机内部处理，其余swi进入体系结构异常流程。
  * - SYS_MMAP通过hmmap分配主机内存，并将moxie保护/映射标志转换为HMMAN_*标志。
- * - 内置实现包括：reset/read/write/open/close/lseek/mkdir/gettimeofday/settimeofday/mmap/munmap/msync/fsync/fdatasync/getrandom/exit。
+ * - 内置实现包括：reset/read/write/open/openat/close/ioctl/fcntl/lseek/mkdir/gettimeofday/settimeofday/clock_gettime/clock_getres/clock_settime/mmap/mprotect/munmap/msync/fsync/fdatasync/getrandom/exit。
  * - 其余系统调用号仅在此定义，由用户SWI回调选择实现；回调返回false时进入体系结构异常流程。
  * - 文件描述符通过虚拟机内部fd_table映射到主机文件描述符；复位时关闭虚拟机打开但未关闭的文件。
  * - 文件描述符0/1/2为标准输入/输出/错误，虚拟机无需open即可直接使用，close不会关闭主机标准流。

@@ -22,14 +22,25 @@
 #define MOXIEBOX_SYS_OPEN           5
 #define MOXIEBOX_SYS_CLOSE          6
 #define MOXIEBOX_SYS_LSEEK          19
+#define MOXIEBOX_SYS_IOCTL          54
+#define MOXIEBOX_SYS_FCNTL          55
 #define MOXIEBOX_SYS_GETTIMEOFDAY   78
 #define MOXIEBOX_SYS_MMAP           90
 #define MOXIEBOX_SYS_MUNMAP         91
+#define MOXIEBOX_SYS_MPROTECT       125
+#define MOXIEBOX_SYS_CLOCK_SETTIME  264
+#define MOXIEBOX_SYS_CLOCK_GETTIME  265
+#define MOXIEBOX_SYS_CLOCK_GETRES   266
+#define MOXIEBOX_SYS_OPENAT         295
 #define MOXIEBOX_SYS_GETRANDOM      355
 
 /*
  * moxiebox open flags.
  */
+#define MOXIEBOX_O_RDONLY       0
+#define MOXIEBOX_O_WRONLY       1
+#define MOXIEBOX_O_RDWR         2
+#define MOXIEBOX_O_ACCMODE      3
 #define MOXIEBOX_O_CREAT        0100
 #define MOXIEBOX_O_EXCL         0200
 #define MOXIEBOX_O_NOCTTY       0400
@@ -45,6 +56,7 @@
 #define MOXIEBOX_O_CLOEXEC      02000000
 #define MOXIEBOX_O_SYNC         04010000
 #define MOXIEBOX_O_PATH         010000000
+#define MOXIEBOX_O_TMPFILE      020200000
 
 /*
  * moxiebox mmap protection and flag values.
@@ -56,6 +68,36 @@
 #define MOXIEBOX_MAP_SHARED     (1UL << 0)
 #define MOXIEBOX_MAP_PRIVATE    (1UL << 1)
 #define MOXIEBOX_MAP_ANONYMOUS  (1UL << 2)
+
+/*
+ * moxiebox fcntl commands and fd flags.
+ */
+#define MOXIEBOX_F_DUPFD            0
+#define MOXIEBOX_F_GETFD            1
+#define MOXIEBOX_F_SETFD            2
+#define MOXIEBOX_F_GETFL            3
+#define MOXIEBOX_F_SETFL            4
+#define MOXIEBOX_F_DUPFD_CLOEXEC    1030
+#define MOXIEBOX_FD_CLOEXEC         1
+
+/*
+ * moxiebox special directory fd.
+ */
+#define MOXIEBOX_AT_FDCWD           (-100)
+
+/*
+ * moxiebox clock ids.
+ */
+#define MOXIEBOX_CLOCK_REALTIME             0
+#define MOXIEBOX_CLOCK_MONOTONIC            1
+#define MOXIEBOX_CLOCK_PROCESS_CPUTIME_ID   2
+#define MOXIEBOX_CLOCK_THREAD_CPUTIME_ID    3
+#define MOXIEBOX_CLOCK_MONOTONIC_RAW        4
+#define MOXIEBOX_CLOCK_REALTIME_COARSE      5
+#define MOXIEBOX_CLOCK_MONOTONIC_COARSE     6
+#define MOXIEBOX_CLOCK_BOOTTIME             7
+#define MOXIEBOX_CLOCK_REALTIME_ALARM       8
+#define MOXIEBOX_CLOCK_BOOTTIME_ALARM       9
 
 static inline void
 __moxiebox_exit(int status)
@@ -102,11 +144,48 @@ __moxiebox_open(const char *path, int flags, int mode)
 }
 
 static inline long
+__moxiebox_openat(int dirfd, const char *path, int flags, int mode)
+{
+    register long r0 __asm__("$r0") = dirfd;
+    register const char *r1 __asm__("$r1") = path;
+    register long r2 __asm__("$r2") = flags;
+    register long r3 __asm__("$r3") = mode;
+
+    __asm__ volatile("swi 295"
+                     : "+r"(r0)
+                     : "r"(r1), "r"(r2), "r"(r3)
+                     : "memory");
+    return r0;
+}
+
+static inline long
 __moxiebox_close(int fd)
 {
     register long r0 __asm__("$r0") = fd;
 
     __asm__ volatile("swi 6" : "+r"(r0) : : "memory");
+    return r0;
+}
+
+static inline long
+__moxiebox_ioctl(int fd, unsigned long request, void *param)
+{
+    register long r0 __asm__("$r0") = fd;
+    register unsigned long r1 __asm__("$r1") = request;
+    register void *r2 __asm__("$r2") = param;
+
+    __asm__ volatile("swi 54" : "+r"(r0) : "r"(r1), "r"(r2) : "memory");
+    return r0;
+}
+
+static inline long
+__moxiebox_fcntl(int fd, int cmd, long arg)
+{
+    register long r0 __asm__("$r0") = fd;
+    register long r1 __asm__("$r1") = cmd;
+    register long r2 __asm__("$r2") = arg;
+
+    __asm__ volatile("swi 55" : "+r"(r0) : "r"(r1), "r"(r2) : "memory");
     return r0;
 }
 
@@ -128,6 +207,47 @@ __moxiebox_gettimeofday(void *tv, void *tz)
     register long r1 __asm__("$r1") = (long)(uintptr_t)tz;
 
     __asm__ volatile("swi 78" : "+r"(r0) : "r"(r1) : "memory");
+    return r0;
+}
+
+static inline long
+__moxiebox_clock_settime(long clockid, const void *tp)
+{
+    register long r0 __asm__("$r0") = clockid;
+    register const void *r1 __asm__("$r1") = tp;
+
+    __asm__ volatile("swi 264" : "+r"(r0) : "r"(r1) : "memory");
+    return r0;
+}
+
+static inline long
+__moxiebox_clock_gettime(long clockid, void *tp)
+{
+    register long r0 __asm__("$r0") = clockid;
+    register void *r1 __asm__("$r1") = tp;
+
+    __asm__ volatile("swi 265" : "+r"(r0) : "r"(r1) : "memory");
+    return r0;
+}
+
+static inline long
+__moxiebox_clock_getres(long clockid, void *res)
+{
+    register long r0 __asm__("$r0") = clockid;
+    register void *r1 __asm__("$r1") = res;
+
+    __asm__ volatile("swi 266" : "+r"(r0) : "r"(r1) : "memory");
+    return r0;
+}
+
+static inline long
+__moxiebox_mprotect(void *addr, size_t length, int prot)
+{
+    register long r0 __asm__("$r0") = (long)(uintptr_t)addr;
+    register size_t r1 __asm__("$r1") = length;
+    register long r2 __asm__("$r2") = prot;
+
+    __asm__ volatile("swi 125" : "+r"(r0) : "r"(r1), "r"(r2) : "memory");
     return r0;
 }
 

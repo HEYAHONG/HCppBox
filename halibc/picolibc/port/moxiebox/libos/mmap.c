@@ -12,8 +12,9 @@
 #include <sys/mman.h>
 
 #include "moxiebox_syscall.h"
+#include "moxiebox_libos.h"
 
-static int
+int
 moxiebox_mmap_prot(int prot)
 {
     int ret = 0;

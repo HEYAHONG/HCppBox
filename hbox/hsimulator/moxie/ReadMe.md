@@ -111,13 +111,20 @@ swi指令可触发软中断。
 | 6                       | 关闭文件     | `$r0`=fd; 返回`$r0`=0                                                     | 出错返回负错误码                                  |
 | 19                      | 文件定位     | `$r0`=fd, `$r1`=偏移, `$r2`=whence; 返回`$r0`=新偏移                      | whence转换为host `SEEK_*`                         |
 | 39                      | 创建目录     | `$r0`=路径, `$r1`=模式; 返回`$r0`=0                                       | 出错返回负错误码                                  |
+| 54                      | ioctl        | `$r0`=fd, `$r1`=request, `$r2`=参数; 返回`$r0`=结果                       | request方向/长度翻译，指针参数按guest内存复制     |
+| 55                      | fcntl        | `$r0`=fd, `$r1`=命令, `$r2`=参数; 返回`$r0`=结果                          | 命令与标志翻译，支持常用命令；主机未定义标志不翻译 |
 | 78                      | 获取时间     | `$r0`=timeval, `$r1`=timezone; 返回`$r0`=0                                | 按guest端序写入内存                               |
 | 79                      | 设置时间     | `$r0`=timeval, `$r1`=timezone; 返回`$r0`=0                                | 按guest端序读取内存                               |
 | 90                      | 执行mmap     | `$r0`=地址, `$r1`=长度, `$r2`=prot, `$r3`=flags, `$r4`=fd, `$r5`=偏移; 返回`$r0`=guest地址 | 支持匿名映射与文件映射                            |
 | 91                      | 执行munmap   | `$r0`=地址, `$r1`=长度; 返回`$r0`=0                                       | 出错返回负错误码                                  |
 | 118                     | fsync        | `$r0`=fd; 返回`$r0`=0                                                     | 出错返回负错误码                                  |
+| 125                     | mprotect     | `$r0`=地址, `$r1`=长度, `$r2`=prot; 返回`$r0`=0                           | prot转换为`HMMAN_PROT_*`，按内存区域更新权限      |
 | 144                     | msync        | `$r0`=地址, `$r1`=长度, `$r2`=flags; 返回`$r0`=0                          | 标志转换为`HMMAN_MS_*`                            |
 | 148                     | fdatasync    | `$r0`=fd; 返回`$r0`=0                                                     | 出错返回负错误码                                  |
+| 264                     | clock_settime| `$r0`=clockid, `$r1`=timespec; 返回`$r0`=0                                | clockid与时间按guest端序处理                      |
+| 265                     | clock_gettime| `$r0`=clockid, `$r1`=timespec; 返回`$r0`=0                                | 按guest端序写入内存                               |
+| 266                     | clock_getres | `$r0`=clockid, `$r1`=timespec; 返回`$r0`=0                                | 按guest端序写入内存                               |
+| 295                     | openat       | `$r0`=dirfd, `$r1`=路径, `$r2`=标志, `$r3`=模式; 返回`$r0`=guest fd       | dirfd与标志翻译                                   |
 | 355                     | getrandom    | `$r0`=缓冲区, `$r1`=长度, `$r2`=flags; 返回`$r0`=已生成字节数             | 出错返回负错误码                                  |
 
 ### 特殊寄存器

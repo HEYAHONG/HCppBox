@@ -919,6 +919,40 @@ static int hs_moxie_moxiebox_open_flags(uint32_t flags)
     return ret;
 }
 
+static uint32_t hs_moxie_moxiebox_open_flags_to_guest(int flags)
+{
+    uint32_t ret=HS_MOXIE_MOXIEBOX_OPEN_RDONLY;
+    switch(flags&O_ACCMODE)
+    {
+    case O_WRONLY:
+        ret=HS_MOXIE_MOXIEBOX_OPEN_WRONLY;
+        break;
+    case O_RDWR:
+        ret=HS_MOXIE_MOXIEBOX_OPEN_RDWR;
+        break;
+    default:
+        ret=HS_MOXIE_MOXIEBOX_OPEN_RDONLY;
+        break;
+    }
+    if((flags&O_CREAT)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_CREAT;
+    if((flags&O_EXCL)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_EXCL;
+    if((flags&O_NOCTTY)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_NOCTTY;
+    if((flags&O_TRUNC)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_TRUNC;
+    if((flags&O_APPEND)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_APPEND;
+    if((flags&O_NONBLOCK)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_NONBLOCK;
+    if((flags&O_DSYNC)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_DSYNC;
+    if((flags&O_DIRECT)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_DIRECT;
+    if((flags&O_LARGEFILE)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_LARGEFILE;
+    if((flags&O_DIRECTORY)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_DIRECTORY;
+    if((flags&O_NOFOLLOW)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_NOFOLLOW;
+    if((flags&O_NOATIME)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_NOATIME;
+    if((flags&O_CLOEXEC)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_CLOEXEC;
+    if((flags&O_SYNC)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_SYNC;
+    if((flags&O_PATH)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_PATH;
+    if((flags&O_TMPFILE)!=0) ret|=HS_MOXIE_MOXIEBOX_OPEN_TMPFILE;
+    return ret;
+}
+
 static int hs_moxie_moxiebox_lseek_whence(uint32_t whence)
 {
     switch(whence)
@@ -1080,6 +1114,41 @@ static bool hs_moxie_moxiebox_sys_open(hs_moxie_moxiebox_t *machine)
     return true;
 }
 
+static bool hs_moxie_moxiebox_sys_openat(hs_moxie_moxiebox_t *machine)
+{
+    char path_buffer[HS_MOXIE_MOXIEBOX_PATH_MAX];
+    int err=0;
+    const char *path=hs_moxie_moxiebox_guest_string(machine,machine->regs[3],path_buffer,sizeof(path_buffer),&err);
+    if(path==NULL)
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,err?(-err):EFAULT);
+    }
+
+    int host_dirfd=(int)(int32_t)machine->regs[2];
+    if(host_dirfd!=-100 && host_dirfd>=0)
+    {
+        host_dirfd=hs_moxie_moxiebox_fd_host(machine,machine->regs[2]);
+        if(host_dirfd<0)
+        {
+            return hs_moxie_moxiebox_syscall_error(machine,EBADF);
+        }
+    }
+
+    int host_fd=hopenat(host_dirfd,path,hs_moxie_moxiebox_open_flags(machine->regs[4]),(unsigned int)machine->regs[5]);
+    if(host_fd<0)
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,errno?errno:EIO);
+    }
+    int guest_fd=hs_moxie_moxiebox_fd_alloc(machine,host_fd);
+    if(guest_fd<0)
+    {
+        hclose(host_fd);
+        return hs_moxie_moxiebox_syscall_error(machine,EMFILE);
+    }
+    machine->regs[2]=(uint32_t)guest_fd;
+    return true;
+}
+
 static bool hs_moxie_moxiebox_sys_close(hs_moxie_moxiebox_t *machine)
 {
     int ret=hs_moxie_moxiebox_fd_close(machine,machine->regs[2]);
@@ -1099,6 +1168,164 @@ static bool hs_moxie_moxiebox_sys_lseek(hs_moxie_moxiebox_t *machine)
         return hs_moxie_moxiebox_syscall_error(machine,EBADF);
     }
     hlseek_off_t ret=hlseek(fd,(int32_t)machine->regs[3],hs_moxie_moxiebox_lseek_whence(machine->regs[4]));
+    if(ret<0)
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,errno?errno:EIO);
+    }
+    machine->regs[2]=(uint32_t)ret;
+    return true;
+}
+
+static bool hs_moxie_moxiebox_sys_fcntl(hs_moxie_moxiebox_t *machine)
+{
+    int fd=hs_moxie_moxiebox_fd_host(machine,machine->regs[2]);
+    if(fd<0)
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,EBADF);
+    }
+
+    uint32_t cmd=machine->regs[3];
+    uint32_t arg=machine->regs[4];
+    int ret=-1;
+
+    switch(cmd)
+    {
+    case HS_MOXIE_MOXIEBOX_FCNTL_F_DUPFD:
+    case HS_MOXIE_MOXIEBOX_FCNTL_F_DUPFD_CLOEXEC:
+    {
+        int host_fd=hfcntl(fd,F_DUPFD,(int)arg);
+        if(host_fd<0)
+        {
+            return hs_moxie_moxiebox_syscall_error(machine,errno?errno:EIO);
+        }
+#ifdef FD_CLOEXEC
+        if(cmd==HS_MOXIE_MOXIEBOX_FCNTL_F_DUPFD_CLOEXEC)
+        {
+            if(hfcntl(host_fd,F_SETFD,FD_CLOEXEC)<0)
+            {
+                hclose(host_fd);
+                return hs_moxie_moxiebox_syscall_error(machine,errno?errno:EIO);
+            }
+        }
+#endif
+        int guest_fd=hs_moxie_moxiebox_fd_alloc(machine,host_fd);
+        if(guest_fd<0)
+        {
+            hclose(host_fd);
+            return hs_moxie_moxiebox_syscall_error(machine,EMFILE);
+        }
+        machine->regs[2]=(uint32_t)guest_fd;
+        return true;
+    }
+    case HS_MOXIE_MOXIEBOX_FCNTL_F_GETFD:
+    {
+        ret=hfcntl(fd,F_GETFD);
+        if(ret>=0)
+        {
+            uint32_t guest_flags=0;
+#ifdef FD_CLOEXEC
+            if((ret&FD_CLOEXEC)!=0)
+            {
+                guest_flags|=HS_MOXIE_MOXIEBOX_FD_CLOEXEC;
+            }
+#endif
+            machine->regs[2]=guest_flags;
+            return true;
+        }
+    }
+    break;
+    case HS_MOXIE_MOXIEBOX_FCNTL_F_SETFD:
+    {
+        int host_flags=0;
+#ifdef FD_CLOEXEC
+        if((arg&HS_MOXIE_MOXIEBOX_FD_CLOEXEC)!=0)
+        {
+            host_flags|=FD_CLOEXEC;
+        }
+#else
+        (void)arg;
+#endif
+        ret=hfcntl(fd,F_SETFD,host_flags);
+    }
+    break;
+    case HS_MOXIE_MOXIEBOX_FCNTL_F_GETFL:
+    {
+        ret=hfcntl(fd,F_GETFL);
+        if(ret>=0)
+        {
+            machine->regs[2]=hs_moxie_moxiebox_open_flags_to_guest(ret);
+            return true;
+        }
+    }
+    break;
+    case HS_MOXIE_MOXIEBOX_FCNTL_F_SETFL:
+    {
+        int host_flags=hs_moxie_moxiebox_open_flags(arg);
+        host_flags&=(O_APPEND|O_NONBLOCK|O_DSYNC|O_DIRECT|O_NOATIME|O_SYNC);
+        ret=hfcntl(fd,F_SETFL,host_flags);
+    }
+    break;
+    default:
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,ENOSYS);
+    }
+    }
+
+    if(ret<0)
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,errno?errno:EIO);
+    }
+    machine->regs[2]=0;
+    return true;
+}
+
+static bool hs_moxie_moxiebox_sys_ioctl(hs_moxie_moxiebox_t *machine)
+{
+    int fd=hs_moxie_moxiebox_fd_host(machine,machine->regs[2]);
+    if(fd<0)
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,EBADF);
+    }
+
+    unsigned long request=(unsigned long)machine->regs[3];
+    uint32_t arg=machine->regs[4];
+    unsigned int size=__HIOC_SIZE(request);
+    unsigned int dir=__HIOC_DIR(request);
+    int ret=-1;
+
+    if(size==0 || dir==__HIOC_NONE)
+    {
+        ret=hioctl(fd,request,(unsigned long)arg);
+    }
+    else
+    {
+        uint8_t buffer[HS_MOXIE_MOXIEBOX_IO_BUFFER_SIZE];
+        void *host_arg=hs_moxie_moxiebox_memory_to_host(machine,arg,size,(dir&__HIOC_WRITE)!=0);
+        if(host_arg==NULL)
+        {
+            if(size>sizeof(buffer))
+            {
+                return hs_moxie_moxiebox_syscall_error(machine,EINVAL);
+            }
+            host_arg=buffer;
+            if((dir&__HIOC_WRITE)!=0)
+            {
+                if(!hs_moxie_moxiebox_memory_read(machine,arg,buffer,size))
+                {
+                    return hs_moxie_moxiebox_syscall_error(machine,EFAULT);
+                }
+            }
+        }
+        ret=hioctl(fd,request,host_arg);
+        if(ret>=0 && (dir&__HIOC_READ)!=0 && host_arg==buffer)
+        {
+            if(!hs_moxie_moxiebox_memory_write(machine,arg,buffer,size))
+            {
+                return hs_moxie_moxiebox_syscall_error(machine,EFAULT);
+            }
+        }
+    }
+
     if(ret<0)
     {
         return hs_moxie_moxiebox_syscall_error(machine,errno?errno:EIO);
@@ -1132,6 +1359,76 @@ static bool hs_moxie_moxiebox_sys_mkdir(hs_moxie_moxiebox_t *machine)
         return hs_moxie_moxiebox_syscall_error(machine,err?(-err):EFAULT);
     }
     if(hmkdir(path,(unsigned long)machine->regs[3])<0)
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,errno?errno:EIO);
+    }
+    machine->regs[2]=0;
+    return true;
+}
+
+static hclockid_t hs_moxie_moxiebox_clockid(uint32_t clockid)
+{
+    switch(clockid)
+    {
+    case 0:
+        return HCLOCK_REALTIME;
+    case 1:
+        return HCLOCK_MONOTONIC;
+    default:
+        return (hclockid_t)clockid;
+    }
+}
+
+static bool hs_moxie_moxiebox_sys_clock_gettime(hs_moxie_moxiebox_t *machine)
+{
+    htimespec_t ts;
+    if(hclock_gettime(hs_moxie_moxiebox_clockid(machine->regs[2]),&ts)<0)
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,errno?errno:EIO);
+    }
+    uint8_t buffer[8];
+    hs_moxie_moxiebox_write_u32(buffer+0,(uint32_t)ts.tv_sec);
+    hs_moxie_moxiebox_write_u32(buffer+4,(uint32_t)ts.tv_nsec);
+    if(!hs_moxie_moxiebox_memory_write(machine,machine->regs[3],buffer,sizeof(buffer)))
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,EFAULT);
+    }
+    machine->regs[2]=0;
+    return true;
+}
+
+static bool hs_moxie_moxiebox_sys_clock_getres(hs_moxie_moxiebox_t *machine)
+{
+    htimespec_t ts;
+    if(hclock_getres(hs_moxie_moxiebox_clockid(machine->regs[2]),&ts)<0)
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,errno?errno:EIO);
+    }
+    if(machine->regs[3]!=0)
+    {
+        uint8_t buffer[8];
+        hs_moxie_moxiebox_write_u32(buffer+0,(uint32_t)ts.tv_sec);
+        hs_moxie_moxiebox_write_u32(buffer+4,(uint32_t)ts.tv_nsec);
+        if(!hs_moxie_moxiebox_memory_write(machine,machine->regs[3],buffer,sizeof(buffer)))
+        {
+            return hs_moxie_moxiebox_syscall_error(machine,EFAULT);
+        }
+    }
+    machine->regs[2]=0;
+    return true;
+}
+
+static bool hs_moxie_moxiebox_sys_clock_settime(hs_moxie_moxiebox_t *machine)
+{
+    uint8_t buffer[8];
+    if(!hs_moxie_moxiebox_memory_read(machine,machine->regs[3],buffer,sizeof(buffer)))
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,EFAULT);
+    }
+    htimespec_t ts;
+    ts.tv_sec=(time_t)hs_moxie_moxiebox_read_u32(buffer+0);
+    ts.tv_nsec=(long)hs_moxie_moxiebox_read_u32(buffer+4);
+    if(hclock_settime(hs_moxie_moxiebox_clockid(machine->regs[2]),&ts)<0)
     {
         return hs_moxie_moxiebox_syscall_error(machine,errno?errno:EIO);
     }
@@ -1294,6 +1591,52 @@ static bool hs_moxie_moxiebox_sys_msync(hs_moxie_moxiebox_t *machine)
     return true;
 }
 
+static bool hs_moxie_moxiebox_sys_mprotect(hs_moxie_moxiebox_t *machine)
+{
+    uint32_t address=machine->regs[2];
+    uint32_t length=machine->regs[3];
+    uint32_t guest_prot=machine->regs[4];
+    if(length==0)
+    {
+        machine->regs[2]=0;
+        return true;
+    }
+    uint64_t end=(uint64_t)address+length;
+    if(end>0x100000000ULL)
+    {
+        return hs_moxie_moxiebox_syscall_error(machine,EINVAL);
+    }
+
+    for(size_t i=0;i<machine->memory_count;i++)
+    {
+        hs_moxie_moxiebox_memory_t *mem=&machine->memory[i];
+        uint64_t mem_start=mem->start;
+        uint64_t mem_end=mem_start+mem->length;
+        if(address>=mem_start && end<=mem_end)
+        {
+            size_t offset=(size_t)(address-mem_start);
+            int host_prot=hs_moxie_moxiebox_mmap_prot(guest_prot);
+            if(mem->flags.mmap_backed && mem->data!=NULL)
+            {
+                if(hmprotect(mem->data+offset,(size_t)length,host_prot)<0)
+                {
+                    return hs_moxie_moxiebox_syscall_error(machine,errno?errno:EACCES);
+                }
+            }
+            if(address==mem->start && length==mem->length)
+            {
+                bool readonly=((guest_prot&HS_MOXIE_MOXIEBOX_PROT_WRITE)==0);
+                mem->flags.readonly=readonly;
+                const char *suffix=strchr(mem->tags,',');
+                snprintf(mem->tags,sizeof(mem->tags),"%s%s",readonly?"ro":"rw",suffix?suffix:",");
+            }
+            machine->regs[2]=0;
+            return true;
+        }
+    }
+    return hs_moxie_moxiebox_syscall_error(machine,ENOMEM);
+}
+
 static bool hs_moxie_moxiebox_sys_munmap(hs_moxie_moxiebox_t *machine)
 {
     uint32_t address=machine->regs[2];
@@ -1364,9 +1707,24 @@ static bool hs_moxie_moxiebox_swi_handle(hs_moxie_moxiebox_t *machine,uint32_t n
             handled=hs_moxie_moxiebox_sys_open(machine);
         }
         break;
+        case HS_MOXIE_MOXIEBOX_SYS_OPENAT:
+        {
+            handled=hs_moxie_moxiebox_sys_openat(machine);
+        }
+        break;
         case HS_MOXIE_MOXIEBOX_SYS_CLOSE:
         {
             handled=hs_moxie_moxiebox_sys_close(machine);
+        }
+        break;
+        case HS_MOXIE_MOXIEBOX_SYS_IOCTL:
+        {
+            handled=hs_moxie_moxiebox_sys_ioctl(machine);
+        }
+        break;
+        case HS_MOXIE_MOXIEBOX_SYS_FCNTL:
+        {
+            handled=hs_moxie_moxiebox_sys_fcntl(machine);
         }
         break;
         case HS_MOXIE_MOXIEBOX_SYS_LSEEK:
@@ -1389,9 +1747,29 @@ static bool hs_moxie_moxiebox_swi_handle(hs_moxie_moxiebox_t *machine,uint32_t n
             handled=hs_moxie_moxiebox_sys_settimeofday(machine);
         }
         break;
+        case HS_MOXIE_MOXIEBOX_SYS_CLOCK_SETTIME:
+        {
+            handled=hs_moxie_moxiebox_sys_clock_settime(machine);
+        }
+        break;
+        case HS_MOXIE_MOXIEBOX_SYS_CLOCK_GETTIME:
+        {
+            handled=hs_moxie_moxiebox_sys_clock_gettime(machine);
+        }
+        break;
+        case HS_MOXIE_MOXIEBOX_SYS_CLOCK_GETRES:
+        {
+            handled=hs_moxie_moxiebox_sys_clock_getres(machine);
+        }
+        break;
         case HS_MOXIE_MOXIEBOX_SYS_MMAP:
         {
             handled=hs_moxie_moxiebox_sys_mmap(machine);
+        }
+        break;
+        case HS_MOXIE_MOXIEBOX_SYS_MPROTECT:
+        {
+            handled=hs_moxie_moxiebox_sys_mprotect(machine);
         }
         break;
         case HS_MOXIE_MOXIEBOX_SYS_MUNMAP:
