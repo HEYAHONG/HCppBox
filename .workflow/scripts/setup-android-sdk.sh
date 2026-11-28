@@ -14,22 +14,32 @@ set -euo pipefail
 : "${ANDROID_CMAKE:=3.31.1}"
 
 # --- JDK --------------------------------------------------------------------
-if [ -z "${JAVA_HOME:-}" ] || [ ! -x "${JAVA_HOME}/bin/java" ]; then
-    for candidate in /usr/lib/jvm/java-17-openjdk-* /usr/lib/jvm/java-17-*; do
-        if [ -x "${candidate}/bin/java" ]; then
-            JAVA_HOME="${candidate}"
-            export JAVA_HOME
-            break
-        fi
-    done
+# Prefer JDK 17: the test projects use Gradle 8.7, which does not support the
+# class-file version produced by newer default JDKs (e.g. Java 25). The runner
+# may already export JAVA_HOME pointing at such a JDK, so override it.
+java_home=""
+for candidate in \
+    /usr/lib/jvm/java-17-openjdk-amd64 \
+    /usr/lib/jvm/java-17-openjdk-* \
+    /usr/lib/jvm/*-17-*; do
+    if [ -x "${candidate}/bin/java" ]; then
+        java_home="${candidate}"
+        break
+    fi
+done
+if [ -z "${java_home}" ] && [ -n "${JAVA_HOME:-}" ] && [ -x "${JAVA_HOME}/bin/java" ]; then
+    java_home="${JAVA_HOME}"
 fi
-if [ -n "${JAVA_HOME:-}" ]; then
+if [ -n "${java_home}" ]; then
+    JAVA_HOME="${java_home}"
+    export JAVA_HOME
     export PATH="${JAVA_HOME}/bin:${PATH}"
 fi
 if ! command -v java >/dev/null 2>&1; then
     echo "java not found; install openjdk-17-jdk-headless before sourcing this script" >&2
     return 1
 fi
+echo "Java: $(java -version 2>&1 | head -n 1)"
 
 # --- Android SDK ------------------------------------------------------------
 sdk_root=""
