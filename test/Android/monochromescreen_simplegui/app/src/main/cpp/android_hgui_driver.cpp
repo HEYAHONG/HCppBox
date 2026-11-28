@@ -252,3 +252,88 @@ size_t android_hgui_driver_copy_frame(uint32_t *dst,size_t capacity)
     }
     return pixel_count;
 }
+
+extern "C"
+bool android_hgui_driver_touch_event(uint8_t action,uint32_t id,int32_t x,int32_t y,int32_t dx,int32_t dy,uint16_t pressure)
+{
+    hgui_gui_event_touch_t touch={0};
+    touch.touch_which=0;
+    touch.touch_id=id;
+    touch.touch_x=x;
+    touch.touch_y=y;
+    touch.touch_dx=dx;
+    touch.touch_dy=dy;
+    touch.touch_pressure=pressure;
+    touch.touch_action=action;
+    return hgui_gui_event_touch_emit(&touch,hgui_driver_event_input_helper,hgui_driver_default_get());
+}
+
+extern "C"
+bool android_hgui_driver_mouse_motion_event(int32_t x,int32_t y,int32_t xrel,int32_t yrel,uint16_t button_state)
+{
+    hgui_gui_event_mouse_motion_t motion={0};
+    motion.mouse_which=0;
+    motion.mouse_state=button_state;
+    motion.mouse_x=x;
+    motion.mouse_y=y;
+    motion.mouse_xrel=xrel;
+    motion.mouse_yrel=yrel;
+    return hgui_gui_event_mouse_motion_emit(&motion,hgui_driver_event_input_helper,hgui_driver_default_get());
+}
+
+extern "C"
+bool android_hgui_driver_mouse_button_event(uint8_t button,uint8_t press_or_release,int32_t x,int32_t y)
+{
+    hgui_gui_event_mouse_button_t mouse_button={0};
+    mouse_button.mouse_which=0;
+    mouse_button.mouse_button=button;
+    mouse_button.mouse_press_or_release=press_or_release?HGUI_GUI_EVENT_MOUSE_BUTTON_STATE_PRESSED:HGUI_GUI_EVENT_MOUSE_BUTTON_STATE_RELEASED;
+    mouse_button.mouse_x=x;
+    mouse_button.mouse_y=y;
+    return hgui_gui_event_mouse_button_emit(&mouse_button,hgui_driver_event_input_helper,hgui_driver_default_get());
+}
+
+extern "C"
+bool android_hgui_driver_mouse_wheel_event(int32_t x,int32_t y,int32_t delta)
+{
+    if(delta==0)
+    {
+        return false;
+    }
+    {
+        uint8_t button=(delta>0)?HGUI_GUI_EVENT_MOUSE_BUTTON_WHEELUP:HGUI_GUI_EVENT_MOUSE_BUTTON_WHEELDOWN;
+        bool ret=android_hgui_driver_mouse_button_event(button,HGUI_GUI_EVENT_MOUSE_BUTTON_STATE_PRESSED,x,y);
+        ret=android_hgui_driver_mouse_button_event(button,HGUI_GUI_EVENT_MOUSE_BUTTON_STATE_RELEASED,x,y) && ret;
+        return ret;
+    }
+}
+
+extern "C"
+bool android_hgui_driver_joystick_axis_event(uint8_t which,uint8_t axis,int16_t value)
+{
+    hgui_gui_event_joy_axis_t joy_axis={0};
+    joy_axis.joy_which=which;
+    joy_axis.joy_axis=axis;
+    joy_axis.joy_value=value;
+    return hgui_gui_event_joy_axis_emit(&joy_axis,hgui_driver_event_input_helper,hgui_driver_default_get());
+}
+
+extern "C"
+bool android_hgui_driver_joystick_hat_event(uint8_t which,uint8_t hat,uint8_t value)
+{
+    hgui_gui_event_joy_hat_t joy_hat={0};
+    joy_hat.joy_which=which;
+    joy_hat.joy_hat=hat;
+    joy_hat.joy_value=value;
+    return hgui_gui_event_joy_hat_emit(&joy_hat,hgui_driver_event_input_helper,hgui_driver_default_get());
+}
+
+extern "C"
+bool android_hgui_driver_joystick_button_event(uint8_t which,uint8_t button,uint8_t press_or_release)
+{
+    hgui_gui_event_joy_button_t joy_button={0};
+    joy_button.joy_which=which;
+    joy_button.joy_button=button;
+    joy_button.joy_press_or_release=press_or_release?1:0;
+    return hgui_gui_event_joy_button_emit(&joy_button,hgui_driver_event_input_helper,hgui_driver_default_get());
+}

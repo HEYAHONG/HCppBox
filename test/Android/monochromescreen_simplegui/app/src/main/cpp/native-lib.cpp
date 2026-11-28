@@ -1,6 +1,6 @@
 /***************************************************************
  * Name:      native-lib.cpp
- * Purpose:   monochromescreen的JNI接口。
+ * Purpose:   monochromesimplegui的JNI接口。
  * Author:    HYH (hyhsystem.cn)
  * Copyright: HYH (hyhsystem.cn)
  * License:   MIT
@@ -156,4 +156,74 @@ Java_cn_hyhsystem_hcppbox_monochromesimplegui_Native_keyEvent(JNIEnv *env, jclas
     key.key_value=(uint32_t)key_value & 0x7FFF;
     key.key_press_or_release=pressed?1:0;
     hgui_gui_event_key_emit(&key,hgui_driver_event_input_helper,hgui_driver_default_get());
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_cn_hyhsystem_hcppbox_monochromesimplegui_Native_touchEvent(JNIEnv *env, jclass clazz, jint action, jint id, jint x, jint y, jint dx, jint dy, jint pressure)
+{
+    (void)env;
+    (void)clazz;
+    std::lock_guard<std::mutex> lock(g_app_mutex);
+    android_hgui_driver_touch_event((uint8_t)action,(uint32_t)id,(int32_t)x,(int32_t)y,(int32_t)dx,(int32_t)dy,(uint16_t)pressure);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_cn_hyhsystem_hcppbox_monochromesimplegui_Native_mouseMotion(JNIEnv *env, jclass clazz, jint x, jint y, jint xrel, jint yrel, jint button_state)
+{
+    (void)env;
+    (void)clazz;
+    std::lock_guard<std::mutex> lock(g_app_mutex);
+    android_hgui_driver_mouse_motion_event((int32_t)x,(int32_t)y,(int32_t)xrel,(int32_t)yrel,(uint16_t)button_state);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_cn_hyhsystem_hcppbox_monochromesimplegui_Native_mouseButton(JNIEnv *env, jclass clazz, jint button, jboolean pressed, jint x, jint y)
+{
+    (void)env;
+    (void)clazz;
+    std::lock_guard<std::mutex> lock(g_app_mutex);
+    android_hgui_driver_mouse_button_event((uint8_t)button,pressed?1:0,(int32_t)x,(int32_t)y);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_cn_hyhsystem_hcppbox_monochromesimplegui_Native_mouseWheel(JNIEnv *env, jclass clazz, jint x, jint y, jint delta)
+{
+    (void)env;
+    (void)clazz;
+    std::lock_guard<std::mutex> lock(g_app_mutex);
+    android_hgui_driver_mouse_wheel_event((int32_t)x,(int32_t)y,(int32_t)delta);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_cn_hyhsystem_hcppbox_monochromesimplegui_Native_joystickAxis(JNIEnv *env, jclass clazz, jint which, jint axis, jint value)
+{
+    (void)env;
+    (void)clazz;
+    std::lock_guard<std::mutex> lock(g_app_mutex);
+    android_hgui_driver_joystick_axis_event((uint8_t)which,(uint8_t)axis,(int16_t)value);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_cn_hyhsystem_hcppbox_monochromesimplegui_Native_joystickHat(JNIEnv *env, jclass clazz, jint which, jint hat, jint value)
+{
+    (void)env;
+    (void)clazz;
+    std::lock_guard<std::mutex> lock(g_app_mutex);
+    android_hgui_driver_joystick_hat_event((uint8_t)which,(uint8_t)hat,(uint8_t)value);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_cn_hyhsystem_hcppbox_monochromesimplegui_Native_joystickButton(JNIEnv *env, jclass clazz, jint which, jint button, jboolean pressed)
+{
+    (void)env;
+    (void)clazz;
+    std::lock_guard<std::mutex> lock(g_app_mutex);
+    android_hgui_driver_joystick_button_event((uint8_t)which,(uint8_t)button,pressed?1:0);
 }

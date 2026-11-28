@@ -23,6 +23,16 @@ public final class Native {
     public static final int KEY_F2 = 283;
     public static final int KEY_F3 = 284;
 
+    public static final int TOUCH_ACTION_DOWN = 1;
+    public static final int TOUCH_ACTION_UP = 2;
+    public static final int TOUCH_ACTION_MOTION = 3;
+
+    public static final int MOUSE_BUTTON_LEFT = 1;
+    public static final int MOUSE_BUTTON_MIDDLE = 2;
+    public static final int MOUSE_BUTTON_RIGHT = 3;
+    public static final int MOUSE_BUTTON_X1 = 6;
+    public static final int MOUSE_BUTTON_X2 = 7;
+
     private Native() {
     }
 
@@ -51,4 +61,18 @@ public final class Native {
      * @param pressed  true为按下，false为弹起
      */
     public static native void keyEvent(int keyValue, boolean pressed);
+
+    public static native void touchEvent(int action, int id, int x, int y, int dx, int dy, int pressure);
+
+    public static native void mouseMotion(int x, int y, int xrel, int yrel, int buttonState);
+
+    public static native void mouseButton(int button, boolean pressed, int x, int y);
+
+    public static native void mouseWheel(int x, int y, int delta);
+
+    public static native void joystickAxis(int which, int axis, int value);
+
+    public static native void joystickHat(int which, int hat, int value);
+
+    public static native void joystickButton(int which, int button, boolean pressed);
 }

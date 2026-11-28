@@ -1,6 +1,8 @@
 package cn.hyhsystem.hcppbox.monochromescreen;
 
 import android.os.Bundle;
+import android.util.SparseArray;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -8,6 +10,18 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int[] JOYSTICK_AXIS_IDS = {
+            MotionEvent.AXIS_X,
+            MotionEvent.AXIS_Y,
+            MotionEvent.AXIS_Z,
+            MotionEvent.AXIS_RZ,
+            MotionEvent.AXIS_RX,
+            MotionEvent.AXIS_RY
+    };
+
+    private final SparseArray<float[]> joystickAxisState = new SparseArray<>();
+    private final SparseArray<Integer> joystickHatState = new SparseArray<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +102,101 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private static int keyCodeToJoystickButton(int keyCode) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BUTTON_A:
+                return 0;
+            case KeyEvent.KEYCODE_BUTTON_B:
+                return 1;
+            case KeyEvent.KEYCODE_BUTTON_X:
+                return 2;
+            case KeyEvent.KEYCODE_BUTTON_Y:
+                return 3;
+            case KeyEvent.KEYCODE_BUTTON_L1:
+                return 4;
+            case KeyEvent.KEYCODE_BUTTON_R1:
+                return 5;
+            case KeyEvent.KEYCODE_BUTTON_L2:
+                return 6;
+            case KeyEvent.KEYCODE_BUTTON_R2:
+                return 7;
+            case KeyEvent.KEYCODE_BUTTON_THUMBL:
+                return 8;
+            case KeyEvent.KEYCODE_BUTTON_THUMBR:
+                return 9;
+            case KeyEvent.KEYCODE_BUTTON_START:
+                return 10;
+            case KeyEvent.KEYCODE_BUTTON_SELECT:
+                return 11;
+            case KeyEvent.KEYCODE_BUTTON_MODE:
+                return 12;
+            default:
+                return -1;
+        }
+    }
+
+    private boolean handleJoystickMotion(MotionEvent event) {
+        int deviceId = event.getDeviceId() & 0xFF;
+        float[] axisState = joystickAxisState.get(deviceId);
+        if (axisState == null) {
+            axisState = new float[JOYSTICK_AXIS_IDS.length];
+            joystickAxisState.put(deviceId, axisState);
+        }
+        for (int i = 0; i < JOYSTICK_AXIS_IDS.length; i++) {
+            float value = event.getAxisValue(JOYSTICK_AXIS_IDS[i]);
+            if (Math.abs(value - axisState[i]) < 0.01f) {
+                continue;
+            }
+            axisState[i] = value;
+            int intValue = (int) (value * 32767.0f);
+            if (intValue < -32768) {
+                intValue = -32768;
+            } else if (intValue > 32767) {
+                intValue = 32767;
+            }
+            Native.joystickAxis(deviceId, i, intValue);
+        }
+
+        float hatX = event.getAxisValue(MotionEvent.AXIS_HAT_X);
+        float hatY = event.getAxisValue(MotionEvent.AXIS_HAT_Y);
+        int hat = 0;
+        if (hatY < -0.5f) {
+            hat |= 0x01;
+        } else if (hatY > 0.5f) {
+            hat |= 0x04;
+        }
+        if (hatX < -0.5f) {
+            hat |= 0x08;
+        } else if (hatX > 0.5f) {
+            hat |= 0x02;
+        }
+        Integer oldHat = joystickHatState.get(deviceId);
+        if (oldHat == null || oldHat != hat) {
+            joystickHatState.put(deviceId, hat);
+            Native.joystickHat(deviceId, 0, hat);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        if (event.isFromSource(InputDevice.SOURCE_JOYSTICK) || event.isFromSource(InputDevice.SOURCE_GAMEPAD)) {
+            return handleJoystickMotion(event);
+        }
+        return super.onGenericMotionEvent(event);
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event.isFromSource(InputDevice.SOURCE_GAMEPAD) || event.isFromSource(InputDevice.SOURCE_JOYSTICK) || KeyEvent.isGamepadButton(keyCode)) {
+            int joystickButton = keyCodeToJoystickButton(keyCode);
+            if (joystickButton >= 0) {
+                if (event.getRepeatCount() == 0) {
+                    Native.joystickButton(event.getDeviceId() & 0xFF, joystickButton, true);
+                }
+                return true;
+            }
+        }
         int hguiKey = keyCodeToHguiKey(keyCode);
         if (hguiKey >= 0) {
             if (event.getRepeatCount() == 0) {
@@ -102,6 +209,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (event.isFromSource(InputDevice.SOURCE_GAMEPAD) || event.isFromSource(InputDevice.SOURCE_JOYSTICK) || KeyEvent.isGamepadButton(keyCode)) {
+            int joystickButton = keyCodeToJoystickButton(keyCode);
+            if (joystickButton >= 0) {
+                Native.joystickButton(event.getDeviceId() & 0xFF, joystickButton, false);
+                return true;
+            }
+        }
         int hguiKey = keyCodeToHguiKey(keyCode);
         if (hguiKey >= 0) {
             Native.keyEvent(hguiKey, false);

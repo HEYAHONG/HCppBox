@@ -15,13 +15,13 @@ target_include_directories(HCppBox PUBLIC ./ )
 find_package(Threads REQUIRED)
 target_link_libraries(HCppBox  ${CMAKE_THREAD_LIBS_INIT})
 
-#链接ws2_32库
+#链接Windows系统库
 if(WIN32)
-    target_link_libraries(HCppBox ws2_32)
+    target_link_libraries(HCppBox ws2_32 winmm gdi32 user32)
 endif()
 
 if(CYGWIN)
-    target_link_libraries(HCppBox ws2_32 gdi32)
+    target_link_libraries(HCppBox ws2_32 winmm gdi32 user32)
 endif()
 
 if(DEFINED ENV{HCPPBOX_USE_PURE_CPLUSPLUS})

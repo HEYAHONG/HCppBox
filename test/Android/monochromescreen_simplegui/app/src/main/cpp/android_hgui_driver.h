@@ -63,6 +63,20 @@ uint64_t android_hgui_driver_frame_id(void);
  */
 size_t android_hgui_driver_copy_frame(uint32_t *dst,size_t capacity);
 
+bool android_hgui_driver_touch_event(uint8_t action,uint32_t id,int32_t x,int32_t y,int32_t dx,int32_t dy,uint16_t pressure);
+
+bool android_hgui_driver_mouse_motion_event(int32_t x,int32_t y,int32_t xrel,int32_t yrel,uint16_t button_state);
+
+bool android_hgui_driver_mouse_button_event(uint8_t button,uint8_t press_or_release,int32_t x,int32_t y);
+
+bool android_hgui_driver_mouse_wheel_event(int32_t x,int32_t y,int32_t delta);
+
+bool android_hgui_driver_joystick_axis_event(uint8_t which,uint8_t axis,int16_t value);
+
+bool android_hgui_driver_joystick_hat_event(uint8_t which,uint8_t hat,uint8_t value);
+
+bool android_hgui_driver_joystick_button_event(uint8_t which,uint8_t button,uint8_t press_or_release);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

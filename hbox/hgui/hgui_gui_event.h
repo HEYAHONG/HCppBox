@@ -27,8 +27,15 @@ typedef bool (*hgui_gui_event_callback_t)(uint8_t type,void *eventparam,size_t e
 
 typedef enum
 {
-    HGUI_GUI_EVENT_TYPE_KEY=0,//按键事件
-    HGUI_GUI_EVENT_TYPE_USR_START=100,//用户事件起始，大于此值的事件类型用户可自行使用。
+    HGUI_GUI_EVENT_TYPE_KEY=0,              //按键事件
+    HGUI_GUI_EVENT_TYPE_MOUSE_MOTION=1,     //鼠标移动事件
+    HGUI_GUI_EVENT_TYPE_MOUSE_BUTTON=2,     //鼠标按键事件
+    HGUI_GUI_EVENT_TYPE_TOUCH=3,            //触摸事件
+    HGUI_GUI_EVENT_TYPE_JOY_AXIS=4,         //游戏杆(joystick)轴事件
+    HGUI_GUI_EVENT_TYPE_JOY_BALL=5,         //游戏杆(joystick)轨迹球事件
+    HGUI_GUI_EVENT_TYPE_JOY_HAT=6,          //游戏杆(joystick)帽开关事件
+    HGUI_GUI_EVENT_TYPE_JOY_BUTTON=7,       //游戏杆(joystick)按键事件
+    HGUI_GUI_EVENT_TYPE_USR_START=100,      //用户事件起始，大于此值的事件类型用户可自行使用。
 } hgui_gui_event_type_t;
 
 
@@ -323,6 +330,282 @@ bool hgui_gui_event_key_emit(const hgui_gui_event_key_t *key,hgui_gui_event_call
  *
  */
 hgui_gui_event_key_t *hgui_gui_event_key_get(hgui_gui_event_key_t *key,uint8_t type,void *eventparam,size_t eventparam_length,void *usr);
+
+
+typedef enum
+{
+    HGUI_GUI_EVENT_MOUSE_BUTTON_UNKNOWN = 0,
+    HGUI_GUI_EVENT_MOUSE_BUTTON_LEFT = 1,       /**< 左键*/
+    HGUI_GUI_EVENT_MOUSE_BUTTON_MIDDLE = 2,     /**< 中键*/
+    HGUI_GUI_EVENT_MOUSE_BUTTON_RIGHT = 3,      /**< 右键*/
+    HGUI_GUI_EVENT_MOUSE_BUTTON_WHEELUP = 4,    /**< 滚轮向上*/
+    HGUI_GUI_EVENT_MOUSE_BUTTON_WHEELDOWN = 5,  /**< 滚轮向下*/
+    HGUI_GUI_EVENT_MOUSE_BUTTON_X1 = 6,         /**< 扩展键1*/
+    HGUI_GUI_EVENT_MOUSE_BUTTON_X2 = 7          /**< 扩展键2*/
+} hgui_gui_event_mouse_button_value_t;
+
+typedef enum
+{
+    HGUI_GUI_EVENT_MOUSE_BUTTON_STATE_RELEASED = 0, /**< 按键弹起*/
+    HGUI_GUI_EVENT_MOUSE_BUTTON_STATE_PRESSED = 1   /**< 按键按下*/
+} hgui_gui_event_mouse_button_state_t;
+
+typedef enum
+{
+    HGUI_GUI_EVENT_MOUSE_BUTTON_MASK_LEFT = 0x01,   /**< 左键按下*/
+    HGUI_GUI_EVENT_MOUSE_BUTTON_MASK_MIDDLE = 0x02, /**< 中键按下*/
+    HGUI_GUI_EVENT_MOUSE_BUTTON_MASK_RIGHT = 0x04,  /**< 右键按下*/
+    HGUI_GUI_EVENT_MOUSE_BUTTON_MASK_X1 = 0x08,     /**< 扩展键1按下*/
+    HGUI_GUI_EVENT_MOUSE_BUTTON_MASK_X2 = 0x10      /**< 扩展键2按下*/
+} hgui_gui_event_mouse_button_mask_t;
+
+/**< 事件类型为HGUI_GUI_EVENT_TYPE_MOUSE_MOTION时的事件参数*/
+typedef struct
+{
+    uint32_t mouse_which;       /**< 鼠标设备索引*/
+    uint16_t mouse_state;       /**< 鼠标按键状态位图,见hgui_gui_event_mouse_button_mask_t*/
+    uint16_t reserved;          /**< 保留*/
+    int32_t mouse_x;            /**< 鼠标X坐标(像素)*/
+    int32_t mouse_y;            /**< 鼠标Y坐标(像素)*/
+    int32_t mouse_xrel;         /**< 相对上次的X坐标变化量(像素)*/
+    int32_t mouse_yrel;         /**< 相对上次的Y坐标变化量(像素)*/
+} hgui_gui_event_mouse_motion_t;
+
+/**< 事件类型为HGUI_GUI_EVENT_TYPE_MOUSE_BUTTON时的事件参数*/
+typedef struct
+{
+    uint32_t mouse_which;               /**< 鼠标设备索引*/
+    uint8_t mouse_button;               /**< 按键,见hgui_gui_event_mouse_button_value_t*/
+    uint8_t mouse_press_or_release;     /**< 1=按键按下,0=按键弹起,见hgui_gui_event_mouse_button_state_t*/
+    uint16_t reserved;                  /**< 保留*/
+    int32_t mouse_x;                    /**< 鼠标X坐标(像素)*/
+    int32_t mouse_y;                    /**< 鼠标Y坐标(像素)*/
+} hgui_gui_event_mouse_button_t;
+
+typedef enum
+{
+    HGUI_GUI_EVENT_TOUCH_ACTION_UNKNOWN = 0,
+    HGUI_GUI_EVENT_TOUCH_ACTION_DOWN = 1,   /**< 触摸点按下*/
+    HGUI_GUI_EVENT_TOUCH_ACTION_UP = 2,     /**< 触摸点弹起*/
+    HGUI_GUI_EVENT_TOUCH_ACTION_MOTION = 3  /**< 触摸点移动*/
+} hgui_gui_event_touch_action_t;
+
+/**< 事件类型为HGUI_GUI_EVENT_TYPE_TOUCH时的事件参数，坐标采用像素(非归一化坐标)*/
+typedef struct
+{
+    uint32_t touch_which;               /**< 触摸设备索引*/
+    uint32_t touch_id;                  /**< 触摸点ID(手指ID)*/
+    int32_t touch_x;                    /**< 触摸点X坐标(像素)*/
+    int32_t touch_y;                    /**< 触摸点Y坐标(像素)*/
+    int32_t touch_dx;                   /**< 相对上次的X坐标变化量(像素)*/
+    int32_t touch_dy;                   /**< 相对上次的Y坐标变化量(像素)*/
+    uint16_t touch_pressure;            /**< 压力,0~65535,0表示不支持*/
+    uint8_t touch_action;               /**< 触摸动作,见hgui_gui_event_touch_action_t*/
+    uint8_t reserved;                   /**< 保留*/
+} hgui_gui_event_touch_t;
+
+typedef enum
+{
+    HGUI_GUI_EVENT_JOY_HAT_CENTERED = 0x00,      /**< 居中*/
+    HGUI_GUI_EVENT_JOY_HAT_UP = 0x01,            /**< 上*/
+    HGUI_GUI_EVENT_JOY_HAT_RIGHT = 0x02,         /**< 右*/
+    HGUI_GUI_EVENT_JOY_HAT_DOWN = 0x04,          /**< 下*/
+    HGUI_GUI_EVENT_JOY_HAT_LEFT = 0x08,          /**< 左*/
+    HGUI_GUI_EVENT_JOY_HAT_RIGHTUP = 0x03,       /**< 右上*/
+    HGUI_GUI_EVENT_JOY_HAT_RIGHTDOWN = 0x06,     /**< 右下*/
+    HGUI_GUI_EVENT_JOY_HAT_LEFTUP = 0x09,        /**< 左上*/
+    HGUI_GUI_EVENT_JOY_HAT_LEFTDOWN = 0x0C       /**< 左下*/
+} hgui_gui_event_joy_hat_value_t;
+
+/**< 事件类型为HGUI_GUI_EVENT_TYPE_JOY_AXIS时的事件参数*/
+typedef struct
+{
+    uint8_t joy_which;          /**< 游戏杆设备索引*/
+    uint8_t joy_axis;           /**< 轴索引*/
+    int16_t joy_value;          /**< 轴的值,-32768~32767*/
+} hgui_gui_event_joy_axis_t;
+
+/**< 事件类型为HGUI_GUI_EVENT_TYPE_JOY_BALL时的事件参数*/
+typedef struct
+{
+    uint8_t joy_which;          /**< 游戏杆设备索引*/
+    uint8_t joy_ball;           /**< 轨迹球索引*/
+    int16_t joy_xrel;           /**< 相对X坐标变化量*/
+    int16_t joy_yrel;           /**< 相对Y坐标变化量*/
+} hgui_gui_event_joy_ball_t;
+
+/**< 事件类型为HGUI_GUI_EVENT_TYPE_JOY_HAT时的事件参数*/
+typedef struct
+{
+    uint8_t joy_which;          /**< 游戏杆设备索引*/
+    uint8_t joy_hat;            /**< 帽开关索引*/
+    uint8_t joy_value;          /**< 帽开关的值,见hgui_gui_event_joy_hat_value_t*/
+    uint8_t reserved;           /**< 保留*/
+} hgui_gui_event_joy_hat_t;
+
+/**< 事件类型为HGUI_GUI_EVENT_TYPE_JOY_BUTTON时的事件参数*/
+typedef struct
+{
+    uint8_t joy_which;                  /**< 游戏杆设备索引*/
+    uint8_t joy_button;                 /**< 按键索引*/
+    uint8_t joy_press_or_release;       /**< 1=按键按下,0=按键弹起*/
+    uint8_t reserved;                   /**< 保留*/
+} hgui_gui_event_joy_button_t;
+
+
+/** \brief 发射鼠标移动事件
+ *
+ * \param motion const hgui_gui_event_mouse_motion_t* 鼠标移动事件
+ * \param event_cb hgui_gui_event_callback_t 事件回调
+ * \param usr void* 用户参数
+ * \return bool 是否发射成功
+ *
+ */
+bool hgui_gui_event_mouse_motion_emit(const hgui_gui_event_mouse_motion_t *motion,hgui_gui_event_callback_t event_cb,void *usr);
+
+/** \brief 获取鼠标移动事件
+ *
+ * \param motion hgui_gui_event_mouse_motion_t* 鼠标移动事件，用于存储从事件中接收的数据,为NULL时返回NULL
+ * \param type uint8_t 事件类型
+ * \param eventparam void* 事件参数
+ * \param eventparam_length size_t 事件参数长度
+ * \param usr void* 用户参数
+ * \return hgui_gui_event_mouse_motion_t* 失败返回NULL
+ *
+ */
+hgui_gui_event_mouse_motion_t *hgui_gui_event_mouse_motion_get(hgui_gui_event_mouse_motion_t *motion,uint8_t type,void *eventparam,size_t eventparam_length,void *usr);
+
+/** \brief 发射鼠标按键事件
+ *
+ * \param button const hgui_gui_event_mouse_button_t* 鼠标按键事件
+ * \param event_cb hgui_gui_event_callback_t 事件回调
+ * \param usr void* 用户参数
+ * \return bool 是否发射成功
+ *
+ */
+bool hgui_gui_event_mouse_button_emit(const hgui_gui_event_mouse_button_t *button,hgui_gui_event_callback_t event_cb,void *usr);
+
+/** \brief 获取鼠标按键事件
+ *
+ * \param button hgui_gui_event_mouse_button_t* 鼠标按键事件，用于存储从事件中接收的数据,为NULL时返回NULL
+ * \param type uint8_t 事件类型
+ * \param eventparam void* 事件参数
+ * \param eventparam_length size_t 事件参数长度
+ * \param usr void* 用户参数
+ * \return hgui_gui_event_mouse_button_t* 失败返回NULL
+ *
+ */
+hgui_gui_event_mouse_button_t *hgui_gui_event_mouse_button_get(hgui_gui_event_mouse_button_t *button,uint8_t type,void *eventparam,size_t eventparam_length,void *usr);
+
+/** \brief 发射触摸事件
+ *
+ * \param touch const hgui_gui_event_touch_t* 触摸事件
+ * \param event_cb hgui_gui_event_callback_t 事件回调
+ * \param usr void* 用户参数
+ * \return bool 是否发射成功
+ *
+ */
+bool hgui_gui_event_touch_emit(const hgui_gui_event_touch_t *touch,hgui_gui_event_callback_t event_cb,void *usr);
+
+/** \brief 获取触摸事件
+ *
+ * \param touch hgui_gui_event_touch_t* 触摸事件，用于存储从事件中接收的数据,为NULL时返回NULL
+ * \param type uint8_t 事件类型
+ * \param eventparam void* 事件参数
+ * \param eventparam_length size_t 事件参数长度
+ * \param usr void* 用户参数
+ * \return hgui_gui_event_touch_t* 失败返回NULL
+ *
+ */
+hgui_gui_event_touch_t *hgui_gui_event_touch_get(hgui_gui_event_touch_t *touch,uint8_t type,void *eventparam,size_t eventparam_length,void *usr);
+
+/** \brief 发射游戏杆轴事件
+ *
+ * \param axis const hgui_gui_event_joy_axis_t* 游戏杆轴事件
+ * \param event_cb hgui_gui_event_callback_t 事件回调
+ * \param usr void* 用户参数
+ * \return bool 是否发射成功
+ *
+ */
+bool hgui_gui_event_joy_axis_emit(const hgui_gui_event_joy_axis_t *axis,hgui_gui_event_callback_t event_cb,void *usr);
+
+/** \brief 获取游戏杆轴事件
+ *
+ * \param axis hgui_gui_event_joy_axis_t* 游戏杆轴事件，用于存储从事件中接收的数据,为NULL时返回NULL
+ * \param type uint8_t 事件类型
+ * \param eventparam void* 事件参数
+ * \param eventparam_length size_t 事件参数长度
+ * \param usr void* 用户参数
+ * \return hgui_gui_event_joy_axis_t* 失败返回NULL
+ *
+ */
+hgui_gui_event_joy_axis_t *hgui_gui_event_joy_axis_get(hgui_gui_event_joy_axis_t *axis,uint8_t type,void *eventparam,size_t eventparam_length,void *usr);
+
+/** \brief 发射游戏杆轨迹球事件
+ *
+ * \param ball const hgui_gui_event_joy_ball_t* 游戏杆轨迹球事件
+ * \param event_cb hgui_gui_event_callback_t 事件回调
+ * \param usr void* 用户参数
+ * \return bool 是否发射成功
+ *
+ */
+bool hgui_gui_event_joy_ball_emit(const hgui_gui_event_joy_ball_t *ball,hgui_gui_event_callback_t event_cb,void *usr);
+
+/** \brief 获取游戏杆轨迹球事件
+ *
+ * \param ball hgui_gui_event_joy_ball_t* 游戏杆轨迹球事件，用于存储从事件中接收的数据,为NULL时返回NULL
+ * \param type uint8_t 事件类型
+ * \param eventparam void* 事件参数
+ * \param eventparam_length size_t 事件参数长度
+ * \param usr void* 用户参数
+ * \return hgui_gui_event_joy_ball_t* 失败返回NULL
+ *
+ */
+hgui_gui_event_joy_ball_t *hgui_gui_event_joy_ball_get(hgui_gui_event_joy_ball_t *ball,uint8_t type,void *eventparam,size_t eventparam_length,void *usr);
+
+/** \brief 发射游戏杆帽开关事件
+ *
+ * \param hat const hgui_gui_event_joy_hat_t* 游戏杆帽开关事件
+ * \param event_cb hgui_gui_event_callback_t 事件回调
+ * \param usr void* 用户参数
+ * \return bool 是否发射成功
+ *
+ */
+bool hgui_gui_event_joy_hat_emit(const hgui_gui_event_joy_hat_t *hat,hgui_gui_event_callback_t event_cb,void *usr);
+
+/** \brief 获取游戏杆帽开关事件
+ *
+ * \param hat hgui_gui_event_joy_hat_t* 游戏杆帽开关事件，用于存储从事件中接收的数据,为NULL时返回NULL
+ * \param type uint8_t 事件类型
+ * \param eventparam void* 事件参数
+ * \param eventparam_length size_t 事件参数长度
+ * \param usr void* 用户参数
+ * \return hgui_gui_event_joy_hat_t* 失败返回NULL
+ *
+ */
+hgui_gui_event_joy_hat_t *hgui_gui_event_joy_hat_get(hgui_gui_event_joy_hat_t *hat,uint8_t type,void *eventparam,size_t eventparam_length,void *usr);
+
+/** \brief 发射游戏杆按键事件
+ *
+ * \param button const hgui_gui_event_joy_button_t* 游戏杆按键事件
+ * \param event_cb hgui_gui_event_callback_t 事件回调
+ * \param usr void* 用户参数
+ * \return bool 是否发射成功
+ *
+ */
+bool hgui_gui_event_joy_button_emit(const hgui_gui_event_joy_button_t *button,hgui_gui_event_callback_t event_cb,void *usr);
+
+/** \brief 获取游戏杆按键事件
+ *
+ * \param button hgui_gui_event_joy_button_t* 游戏杆按键事件，用于存储从事件中接收的数据,为NULL时返回NULL
+ * \param type uint8_t 事件类型
+ * \param eventparam void* 事件参数
+ * \param eventparam_length size_t 事件参数长度
+ * \param usr void* 用户参数
+ * \return hgui_gui_event_joy_button_t* 失败返回NULL
+ *
+ */
+hgui_gui_event_joy_button_t *hgui_gui_event_joy_button_get(hgui_gui_event_joy_button_t *button,uint8_t type,void *eventparam,size_t eventparam_length,void *usr);
 
 #ifdef __cplusplus
 }
