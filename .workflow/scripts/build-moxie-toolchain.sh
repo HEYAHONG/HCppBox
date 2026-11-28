@@ -100,6 +100,8 @@ mkdir -p "$workdir/work"
 cd "$workdir/work"
 
 defconfig="$workdir/moxie-unknown-elf.defconfig"
+local_tarballs="$workdir/local-tarballs"
+mkdir -p "$local_tarballs"
 cp "$ctng_dir/samples/moxie-unknown-elf/crosstool.config" "$defconfig"
 # The sample defconfig leaves C++ disabled; append the override so Kconfig
 # enables C++ (and libstdc++ for the target). Install into a dedicated prefix,
@@ -107,7 +109,8 @@ cp "$ctng_dir/samples/moxie-unknown-elf/crosstool.config" "$defconfig"
 # prefix cannot make crosstool-NG delete unrelated files), and keep the tree
 # writable (do not "render the toolchain read-only").
 printf '%s\n' 'CT_CC_LANG_CXX=y' 'CT_PREFIX_DIR_RO=n' 'CT_RM_RF_PREFIX_DIR=n' \
-    "CT_PREFIX_DIR=\"${INSTALL_PREFIX}\"" >> "$defconfig"
+    "CT_PREFIX_DIR=\"${INSTALL_PREFIX}\"" \
+    "CT_LOCAL_TARBALLS_DIR=\"${local_tarballs}\"" >> "$defconfig"
 DEFCONFIG="$defconfig" "$ctng_dir/ct-ng" defconfig
 
 if ! grep -q '^CT_CC_LANG_CXX=y$' .config; then
@@ -122,6 +125,106 @@ if ! grep -q "^CT_PREFIX_DIR=\"${INSTALL_PREFIX}\"$" .config; then
     echo "Failed to set the install prefix to ${INSTALL_PREFIX}" >&2
     exit 1
 fi
+if ! grep -q "^CT_LOCAL_TARBALLS_DIR=\"${local_tarballs}\"$" .config; then
+    echo "Failed to set the local tarballs directory" >&2
+    exit 1
+fi
+
+# --- prefetch and verify all component tarballs -----------------------------
+# crosstool-NG downloads each component from a list of mirrors and aborts on
+# the first digest mismatch without trying the next mirror. Some mirrors
+# (e.g. invisible-mirror.net for ncurses) answer with a challenge page instead
+# of the tarball. Download every tarball ourselves, verify it against the
+# SHA512 in crosstool-NG's packages/<pkg>/<version>/chksum, and put it into the
+# local tarballs directory so the build uses verified local copies.
+config_value() {
+    sed -n "s/^$1=\"\\(.*\\)\"$/\\1/p" .config | head -n 1
+}
+
+pkg_mirrors() {
+    local pkg="$1"
+    (
+        set +eu
+        CT_Mirrors() {
+            case "$1" in
+                GNU)
+                    printf 'https://ftpmirror.gnu.org/gnu/%s\n' "$2"
+                    printf 'https://ftp.gnu.org/gnu/%s\n' "$2"
+                    ;;
+                sourceware)
+                    printf 'https://sourceware.org/%s/ftp\n' "$2"
+                    printf 'https://mirrors.kernel.org/sourceware/%s\n' "$2"
+                    ;;
+                *)
+                    :
+                    ;;
+            esac
+        }
+        # shellcheck disable=SC1091
+        . "$PWD/.config"
+        eval "printf '%s\n' \"\${CT_${pkg}_MIRRORS}\""
+    )
+}
+
+prefetch_component_tarballs() {
+    local pkg version pkg_name template formats ext basename filename digest
+    local chksum_file tmp url actual
+    for pkg in $(sed -n 's/^CT_\([A-Z0-9_]*\)_ARCHIVE_FILENAME=.*/\1/p' .config); do
+        version="$(config_value "CT_${pkg}_VERSION")"
+        pkg_name="$(config_value "CT_${pkg}_PKG_NAME")"
+        template="$(config_value "CT_${pkg}_ARCHIVE_FILENAME")"
+        formats="$(config_value "CT_${pkg}_ARCHIVE_FORMATS")"
+        if [ -z "${version}" ] || [ -z "${pkg_name}" ] || [ -z "${template}" ]; then
+            continue
+        fi
+        chksum_file="$ctng_dir/packages/$(printf '%s' "${pkg}" | tr 'A-Z' 'a-z')/${version}/chksum"
+        if [ ! -r "${chksum_file}" ]; then
+            continue
+        fi
+        basename="${template//@\{pkg_name\}/${pkg_name}}"
+        basename="${basename//@\{version\}/${version}}"
+        filename=""
+        for ext in ${formats}; do
+            # lzip is not installed by the CI, so skip the .tar.lz format.
+            if [ "${ext}" = ".tar.lz" ] && ! command -v lzip >/dev/null 2>&1; then
+                continue
+            fi
+            if grep -q "^sha512 ${basename}${ext} " "${chksum_file}"; then
+                filename="${basename}${ext}"
+                break
+            fi
+        done
+        if [ -z "${filename}" ] || [ -f "${local_tarballs}/${filename}" ]; then
+            continue
+        fi
+        digest="$(awk -v f="${filename}" '$1 == "sha512" && $2 == f { print $3 }' "${chksum_file}")"
+        if [ -z "${digest}" ]; then
+            continue
+        fi
+        echo "Prefetching ${filename}"
+        tmp="${local_tarballs}/${filename}.part"
+        for url in $(pkg_mirrors "${pkg}"); do
+            rm -f "${tmp}"
+            if ! curl -fsSL --retry 3 --retry-delay 5 --connect-timeout 20 --max-time 900 \
+                -o "${tmp}" "${url}/${filename}"; then
+                continue
+            fi
+            actual="$(sha512sum "${tmp}" | awk '{ print $1 }')"
+            if [ "${actual}" = "${digest}" ]; then
+                mv "${tmp}" "${local_tarballs}/${filename}"
+                break
+            fi
+            echo "Bad SHA512 for ${url}/${filename}; trying the next mirror" >&2
+            rm -f "${tmp}"
+        done
+        if [ ! -f "${local_tarballs}/${filename}" ]; then
+            # Let crosstool-NG try; it may know a mirror that is not listed here.
+            echo "WARNING: failed to prefetch ${filename}; crosstool-NG will download it" >&2
+        fi
+    done
+}
+
+prefetch_component_tarballs
 
 # --- build the toolchain ----------------------------------------------------
 attempt=1
