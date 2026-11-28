@@ -1,0 +1,75 @@
+# 对应 .github/workflows/ubuntu-android-test.yml
+# 遍历 test/Android 下的 Android 工程，按常用 ABI 构建 debug/release APK。
+# 发布使用 Gitee 内置的 release@gitee 插件，无需配置 GITEE_TOKEN。
+version: '1.0'
+name: ubuntu-android-test
+displayName: ubuntu android test
+triggers:
+  trigger: auto
+  # 仅在 testing 标签更新时触发，避免每次 Push/PR 都消耗构建额度。
+  push:
+    tags:
+      precise:
+        - testing
+stages:
+  - name: build
+    displayName: 构建
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: execute@docker
+        name: build_android
+        displayName: Android 构建（Ubuntu 26.04）
+        certificate: ''
+        # Gitee Go 访问 Docker Hub 不稳定，使用 DaoCloud 公共镜像加速。
+        image: docker.m.daocloud.io/library/ubuntu:26.04
+        command:
+          - set -e
+          - bash .workflow/scripts/apt-install.sh openjdk-17-jdk-headless unzip curl ca-certificates git
+          # 在同一个 bash 进程中完成 SDK 安装和工程构建，保证导出的环境变量有效。
+          - bash -c 'set -euo pipefail; . .workflow/scripts/setup-android-sdk.sh; . .workflow/scripts/build-android-projects.sh'
+          - rm -f android-apks-snapshot.tar.gz && tar -C dist -czf android-apks-snapshot.tar.gz .
+        artifacts:
+          - name: android-apks
+            path:
+              - ./dist
+          - name: android-apks-archive
+            path:
+              - ./android-apks-snapshot.tar.gz
+        caches: []
+        notify: []
+        strategy:
+          retry: '0'
+  - name: release
+    displayName: 发布
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: release@gitee
+        name: release_android
+        displayName: 发布 Android APK 到 Gitee Release
+        releaseName: testing
+        description: .workflow/release-notes.txt
+        tagName: testing
+        upstreamArtifact:
+          - android-apks
+          - android-apks-archive
+        # Gitee Release 插件按文件路径逐个附加；新增 Android 工程时需同步补充对应 APK。
+        assertFiles:
+          - ./dist/HelloWorld-armeabi-v7a-snapshot-debug.apk
+          - ./dist/HelloWorld-armeabi-v7a-snapshot-release.apk
+          - ./dist/HelloWorld-arm64-v8a-snapshot-debug.apk
+          - ./dist/HelloWorld-arm64-v8a-snapshot-release.apk
+          - ./dist/HelloWorld-x86-snapshot-debug.apk
+          - ./dist/HelloWorld-x86-snapshot-release.apk
+          - ./dist/HelloWorld-x86_64-snapshot-debug.apk
+          - ./dist/HelloWorld-x86_64-snapshot-release.apk
+          # 全部 APK 的归档，新增工程时也能发布。
+          - ./android-apks-snapshot.tar.gz
+        prerelease: true
+        allowUpdate: true
+        notify: []
+        strategy:
+          retry: '0'

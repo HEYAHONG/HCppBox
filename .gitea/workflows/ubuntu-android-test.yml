@@ -1,0 +1,74 @@
+# This workflow builds the Android projects under test/Android on Ubuntu.
+# Every subdirectory that contains a Gradle settings file, a Gradle build file
+# and the Gradle wrapper is treated as an Android project.
+name: ubuntu android test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  ANDROID_COMPILE_SDK: "34"
+  ANDROID_BUILD_TOOLS: "34.0.0"
+  ANDROID_NDK: "26.1.10909125"
+  ANDROID_CMAKE: "3.31.1"
+  # Common Android ABIs; build-android-projects.sh enables ABI splits for these.
+  ANDROID_ABIS: "armeabi-v7a arm64-v8a x86 x86_64"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install JDK and tools
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install -y -f openjdk-17-jdk-headless unzip curl
+          ca-certificates python3
+
+      - name: Build Android projects
+        # setup-android-sdk.sh installs the SDK packages and exports the
+        # environment; build-android-projects.sh discovers the projects, builds
+        # all configured ABIs and writes the APKs to dist/.
+        shell: bash
+        run: |
+          set -euo pipefail
+          source .workflow/scripts/setup-android-sdk.sh
+          source .workflow/scripts/build-android-projects.sh
+
+      - name: Upload APKs to testing release
+        if: gitea.event_name == 'push'
+        env:
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          api="${{ gitea.server_url }}/api/v1/repos/${{ gitea.repository }}"
+          auth="Authorization: token $GITEA_TOKEN"
+          release_id=$(curl -fsS -H "$auth" "$api/releases/tags/testing" \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')
+          shopt -s nullglob
+          files=(dist/*.apk)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No APK files to upload" >&2
+            exit 1
+          fi
+          for asset in "${files[@]}"; do
+            asset_name=$(basename "$asset")
+            asset_id=$(curl -fsS -H "$auth" "$api/releases/$release_id/assets" \
+              | python3 -c 'import json,sys
+          name = sys.argv[1]
+          print(next((str(a["id"]) for a in json.load(sys.stdin) if a["name"] == name), ""))' \
+                "$asset_name")
+            if [ -n "$asset_id" ]; then
+              curl -fsS -X DELETE -H "$auth" "$api/releases/$release_id/assets/$asset_id"
+            fi
+            curl -fsS -X POST -H "$auth" -F "attachment=@$asset" \
+              "$api/releases/$release_id/assets?name=$asset_name"
+          done

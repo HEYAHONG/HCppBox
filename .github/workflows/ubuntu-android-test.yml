@@ -1,0 +1,72 @@
+# This workflow builds the Android projects under test/Android on Ubuntu.
+# Every subdirectory that contains a Gradle settings file, a Gradle build file
+# and the Gradle wrapper is treated as an Android project.
+name: ubuntu android test
+
+on:
+  push:
+    tags: [testing]
+
+env:
+  ANDROID_COMPILE_SDK: "34"
+  ANDROID_BUILD_TOOLS: "34.0.0"
+  ANDROID_NDK: "26.1.10909125"
+  ANDROID_CMAKE: "3.31.1"
+  # Common Android ABIs; build-android-projects.sh enables ABI splits for these.
+  ANDROID_ABIS: "armeabi-v7a arm64-v8a x86 x86_64"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install JDK and tools
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install -y -f openjdk-17-jdk-headless unzip curl
+          ca-certificates
+
+      - name: Build Android projects
+        # setup-android-sdk.sh installs the SDK packages and exports the
+        # environment; build-android-projects.sh discovers the projects, builds
+        # all configured ABIs and writes the APKs to dist/.
+        shell: bash
+        run: |
+          set -euo pipefail
+          source .workflow/scripts/setup-android-sdk.sh
+          source .workflow/scripts/build-android-projects.sh
+
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apks
+          path: dist/*.apk
+          if-no-files-found: error
+
+      - name: Upload APKs to testing release
+        # Only publish from pushes to the testing tag; pull requests from forks
+        # have a read-only GITHUB_TOKEN and cannot upload release assets.
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(dist/*.apk)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No APK files to upload" >&2
+            exit 1
+          fi
+          for attempt in 1 2 3 4 5; do
+            echo "gh release upload: attempt ${attempt} of 5"
+            if gh release upload testing "${files[@]}" --clobber; then
+              exit 0
+            fi
+            sleep $((attempt * 10))
+          done
+          exit 1

@@ -173,6 +173,31 @@ scons-native:
     - cd test && scons
 
 # ---------------------------------------------------------------------------
+# Android (mirror of ubuntu-android-test.yml)
+# ---------------------------------------------------------------------------
+android-test:
+  stage: build
+  # The Android SDK/NDK download and the Gradle builds take a while.
+  timeout: 2h
+  variables:
+    ANDROID_COMPILE_SDK: "34"
+    ANDROID_BUILD_TOOLS: "34.0.0"
+    ANDROID_NDK: "26.1.10909125"
+    ANDROID_CMAKE: "3.31.1"
+    ANDROID_ABIS: "armeabi-v7a arm64-v8a x86 x86_64"
+  before_script:
+    - apt-get update
+    - >-
+      apt-get install -y -f --no-install-recommends
+      openjdk-17-jdk-headless unzip curl ca-certificates
+  script:
+    - bash -c 'set -euo pipefail; . .workflow/scripts/setup-android-sdk.sh; . .workflow/scripts/build-android-projects.sh'
+  artifacts:
+    paths:
+      - dist/*.apk
+    expire_in: never
+
+# ---------------------------------------------------------------------------
 # hplatformbox firmware (mirror of ubuntu-cmake-native-hplatformbox.yml)
 # ---------------------------------------------------------------------------
 cmake-native-hplatformbox:
@@ -566,19 +591,22 @@ release-test-mingw-x86_64:
 # ---------------------------------------------------------------------------
 # Windows release (publishes every zip from dist/ to the testing release)
 # ---------------------------------------------------------------------------
-.release-windows:
+.release-artifacts:
   stage: release
   before_script:
     - !reference [.base, before_script]
+  variables:
+    # File pattern uploaded by the job; overridden per artifact type.
+    ASSET_GLOB: "dist/*.zip"
   rules:
     - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"'
   script:
     - |
       set -eu
       shopt -s nullglob
-      files=(dist/*.zip)
+      files=($ASSET_GLOB)
       if [ ${#files[@]} -eq 0 ]; then
-        echo "dist/ 中没有可发布的 zip 制品文件" >&2
+        echo "dist/ 中没有可发布的制品文件" >&2
         exit 1
       fi
       PKG_VERSION=testing
@@ -593,7 +621,7 @@ release-test-mingw-x86_64:
         curl -fsS --request DELETE --header "$AUTH" "$API/packages/$pkg_id"
       done
 
-      # 上传本任务的全部 zip 制品到通用包注册表。
+      # 上传本任务的全部制品文件到通用包注册表。
       for asset_path in "${files[@]}"; do
         asset_name=$(basename "$asset_path")
         pkg_url="$API/packages/generic/$PKG_NAME/$PKG_VERSION/$asset_name"
@@ -626,7 +654,7 @@ release-test-mingw-x86_64:
       done
 
 release-windows-x64:
-  extends: .release-windows
+  extends: .release-artifacts
   variables:
     PKG_NAME: htools-windows-x64
   needs:
@@ -639,7 +667,7 @@ release-windows-x64:
       artifacts: true
 
 release-windows-x86:
-  extends: .release-windows
+  extends: .release-artifacts
   variables:
     PKG_NAME: htools-windows-x86
   needs:
@@ -649,4 +677,13 @@ release-windows-x86:
           - TARGET_ARCH: x86
             VCPKG_TRIPLET: x86-windows
             VCVARS: vcvars32.bat
+      artifacts: true
+
+release-android:
+  extends: .release-artifacts
+  variables:
+    PKG_NAME: android-apks
+    ASSET_GLOB: "dist/*.apk"
+  needs:
+    - job: android-test
       artifacts: true
