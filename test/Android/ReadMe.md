@@ -37,3 +37,23 @@ Android Studio是用于开发 Android 应用的官方集成开发环境 (IDE)。
 helloworld，一般用于测试编译。
 
 本项目可直接使用Android Studio打开工程目录[HelloWorld](HelloWorld)。
+
+## monochromescreen
+
+128x64单色点阵屏示例（与[../monochromescreen](../monochromescreen)功能一致）。
+
+由于HCPPGui不支持Android，本项目在native层自行注册hgui驱动，并使用Android自定义View作为点阵屏画布。驱动采用双缓冲，C++层一次完整的界面操作完成后才提交到显示缓冲区，避免绘图过程中出现闪烁。界面下半部分提供屏幕按键：
+
+- 第一排：F1、F2、F3
+- 第二排：确定（Enter）、取消（Esc）、切换（Tab）
+- 方向键：上、下、左、右（十字排列）
+
+本项目可直接使用Android Studio打开工程目录[monochromescreen](monochromescreen)。
+
+## monochromescreen_simplegui
+
+128x64单色点阵屏SimpleGUI示例（与[../monochromescreen_simplegui](../monochromescreen_simplegui)功能一致）。
+
+与monochromescreen相同，本项目使用自定义View作为点阵屏画布（同样采用双缓冲），并提供F1、F2、F3、确定、取消、切换及十字方向键。
+
+本项目可直接使用Android Studio打开工程目录[monochromescreen_simplegui](monochromescreen_simplegui)。

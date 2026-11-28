@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">monochromescreen_simplegui</string>
+    <string name="key_f1">F1</string>
+    <string name="key_f2">F2</string>
+    <string name="key_f3">F3</string>
+    <string name="key_ok">确定</string>
+    <string name="key_cancel">取消</string>
+    <string name="key_tab">切换</string>
+    <string name="key_up">▲</string>
+    <string name="key_down">▼</string>
+    <string name="key_left">◀</string>
+    <string name="key_right">▶</string>
+</resources>
