@@ -1,7 +1,7 @@
 add_custom_target(moxie_rom)
 add_dependencies(hplatformbox moxie_rom)
 
-find_program(MOXIE_UNKNOWN_ELF_GCC moxie-unknown-moxiebox-gcc moxie-unknown-elf-gcc )
+find_program(MOXIE_UNKNOWN_ELF_GCC NAMES moxie-unknown-moxiebox-gcc moxie-unknown-elf-gcc )
 if(MOXIE_UNKNOWN_ELF_GCC)
     message(STATUS "moxie-unknown-elf-gcc:" ${MOXIE_UNKNOWN_ELF_GCC})
 elseif(DEFINED ENV{MOXIE_TOOLCHAIN})
